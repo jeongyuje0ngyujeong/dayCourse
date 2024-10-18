@@ -4,9 +4,25 @@ import { SlCalender } from "react-icons/sl";
 import {data} from './data';
 import styled from 'styled-components';
 
-const Title = styled.h1 `
-    font-size: 50px;
+const Container = styled.div `
+    display: flex;
+    justify-content: center; 
+    flex-direction: column;
+    align-items: center;
+`
+
+const InnerContainer = styled.div `
+    display:flex;
+    align-items:center;
     `
+
+const Input = styled.input `
+    margin-left: 10px;
+    `
+
+const List = styled.div `
+    flex-direction: column; 
+`
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,11 +36,16 @@ const Search = () => {
 
     return (
         <div>
-            <Title>Hofgfme Page</Title>
-            <p>Welcome to the Home Page!</p>
-            <h3>달력 <SlCalender /></h3>
-            < input type="text" placeholder="검색하기" value={searchTerm} onChange={handleInputChange} />
-            <ul>
+            <Container>
+            <p>이곳은 공유 앨범 페이지 입니다</p>
+            <InnerContainer>
+                <SlCalender />
+            < Input type="text"
+                placeholder="검색하기"
+                value={searchTerm} 
+                onChange={handleInputChange} />
+            </InnerContainer>
+            <List>
                 {filteredData.length > 0 ? (
                     filteredData.map( item => (
                         <li key={item.id} > {item.title} </li>
@@ -32,7 +53,9 @@ const Search = () => {
                 ) : (
                     <li>검색 결과 없음</li>
                 )}
-            </ul>
+                </List>
+            
+            </Container>
         </div>
     );
 };
