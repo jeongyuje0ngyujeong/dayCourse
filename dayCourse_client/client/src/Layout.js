@@ -28,7 +28,7 @@ export default function Layout() {
         <ul>
             <Nav href='home' text='홈'/>
             <Nav href='calendar' text='캘린더'/>
-            <Nav href='elbum' text='공유앨범'/>
+            <Nav href='album' text='공유앨범'/>
             <Nav href='mypage' text='마이페이지'/>
         </ul>
         </nav>
