@@ -1,0 +1,19 @@
+{
+  "name": "daycourse",
+  "version": "1.0.0",
+  "description": "jungle project haejo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeongyuje0ngyujeong/dayCourse.git"
+  },
+  "author": "jeongyuje0ngyujeong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jeongyuje0ngyujeong/dayCourse/issues"
+  },
+  "homepage": "https://github.com/jeongyuje0ngyujeong/dayCourse#readme"
+}
