@@ -99,7 +99,7 @@ button:active {
 }
 
 #sidebar {
-  width: 23rem;
+  width: 20%;
   background-color: #f7f7f7;
   border-right: solid 1px #e3e3e3;
   display: flex;
@@ -117,7 +117,7 @@ button:active {
   display: flex;
   align-items: center;
   margin: 0;
-  padding: 2rem 2rem;
+  padding: 3rem 2rem;
   border-bottom: 1px solid #e3e3e3;
   order: 0;
   line-height: 1;
@@ -214,7 +214,7 @@ i {
   overflow: hidden;
 
   white-space: pre;
-  padding: 0.8rem;
+  padding: 1.2rem;
   border-radius: 8px;
   color: inherit;
   font-size: 20px;
@@ -237,7 +237,7 @@ i {
 
 #detail {
   flex: 1;
-  padding: 2rem 4rem;
+  padding: 5% 10%;
   width: 100%;
 }
 
@@ -348,20 +348,6 @@ i {
 
 #contact-form p:last-child button[type="button"] {
   color: inherit;
-}
-
-#zero-state {
-  margin: 2rem auto;
-  text-align: center;
-  color: #818181;
-}
-
-#zero-state a {
-  color: inherit;
-}
-
-#zero-state a:hover {
-  color: #121212;
 }
 
 /* #zero-state:before {

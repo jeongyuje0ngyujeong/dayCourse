@@ -2,35 +2,33 @@
 import styled from "styled-components";
 
 const Title = styled.h1 `
-  font-size : 50px;
-  color: red;
-  `
+`
+const Weekly = styled.div `
+  border-radius: 20px;
+  border: 1px, solid;
+  margin: 2rem auto;
+  text-align: center;
+  color: #818181;
+  width: 100%;
+`
+const Footer = styled.div `
+  margin: 2rem auto;
+  text-align: center;
+  color: #818181;
+`
 
 export default function Home() {
   return (
     <>
-    <p id="zero-state">
-      This is a demo for React Router.
-      <br />
-      Check out{" "}
-      <a href="https://reactrouter.com">
-        the docs at reactrouter.com
-      </a>
-      .
-    </p>
-    <div>
-     <Title> hello </Title>
-    </div>
-    {/* style="max-width: 630px; width: 100%;" */}
-    {/* <header>
-      header
-    </header>
-    <main>
-      main
-    </main>
-    <footer>
-      footer
-    </footer> */}
+    <Title>안녕하세요.</Title>
+    <hr/>
+    <Weekly> 
+      일주일 달력
+    </Weekly>
+
+    <Footer>
+      This is a footer for Home.
+    </Footer>
     </>
   );
 }

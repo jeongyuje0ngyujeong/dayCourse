@@ -3,7 +3,7 @@
 export default function Album() {
   return (
     <>
-    <div>elbum</div>
+    <div>album</div>
     </>
   );
 }
