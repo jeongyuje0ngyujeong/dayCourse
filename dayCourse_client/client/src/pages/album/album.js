@@ -5,7 +5,7 @@ import React from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
 
-export default function Elbum() {
+export default function Album() {
   return (
     <>
     <div>

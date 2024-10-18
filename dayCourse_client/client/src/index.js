@@ -5,7 +5,7 @@ import './index.css';
 import Layout from "./Layout";
 import Home from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
-import Elbum from "./pages/Elbum/Elbum";
+import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 // import reportWebVitals from './reportWebVitals';
@@ -19,6 +19,7 @@ const router = createBrowserRouter([
       {
         errorElement: <ErrorPage />,
         children: [
+          { index: true, element: <Home/> },
           {
             path: "home",
             element: <Home/>,
@@ -28,8 +29,8 @@ const router = createBrowserRouter([
             element: <Calendar/>,
           },
           {
-            path: "elbum",
-            element: <Elbum/>,
+            path: "album",
+            element: <Album/>,
           },
           {
             path: "mypage",
