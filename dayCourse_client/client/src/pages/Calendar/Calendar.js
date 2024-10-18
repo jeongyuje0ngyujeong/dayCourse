@@ -1,9 +1,10 @@
-// import { Outlet} from "react-router-dom";
+import { PageTitle, Footer } from '../../commonStyles';
 
-export default function Calendar() {
+export default function Home() {
   return (
     <>
-    <div>calendar</div>
+    <PageTitle>Calendar</PageTitle>
+    <Footer/>
     </>
   );
 }

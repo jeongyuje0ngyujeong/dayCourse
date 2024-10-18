@@ -2,11 +2,9 @@
 import React, {useState} from 'react';
 import { SlCalender } from "react-icons/sl";
 import {data} from './data';
-import styled from 'styled-components';
+// import styled from 'styled-components';
+import { PageTitle } from '../../commonStyles';
 
-const Title = styled.h1 `
-    font-size: 50px;
-    `
 
 const Search = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,7 +18,7 @@ const Search = () => {
 
     return (
         <div>
-            <Title>Hofgfme Page</Title>
+            <PageTitle>Hofgfme Page</PageTitle>
             <p>Welcome to the Home Page!</p>
             <h3>달력 <SlCalender /></h3>
             < input type="text" placeholder="검색하기" value={searchTerm} onChange={handleInputChange} />

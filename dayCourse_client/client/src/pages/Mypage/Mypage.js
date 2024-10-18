@@ -1,9 +1,10 @@
-// import { Outlet} from "react-router-dom";
+import { PageTitle, Footer } from '../../commonStyles';
 
-export default function Mypage() {
+export default function Home() {
   return (
     <>
-    <div>mypage</div>
+    <PageTitle>My Page</PageTitle>
+    <Footer/>
     </>
   );
 }
