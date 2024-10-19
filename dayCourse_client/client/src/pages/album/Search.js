@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { SlCalender } from "react-icons/sl";
 import {data} from './data';
-// import styled from 'styled-components';
+import styled from 'styled-components';
 import { PageTitle } from '../../commonStyles';
 
 const Container = styled.div `

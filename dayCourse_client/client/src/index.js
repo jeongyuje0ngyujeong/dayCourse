@@ -5,7 +5,7 @@ import './index.css';
 import Layout from "./Layout";
 import Home from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
-import Album from "./pages/album/album";
+import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 // import reportWebVitals from './reportWebVitals';
