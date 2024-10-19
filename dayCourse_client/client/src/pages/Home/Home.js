@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {useState} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import {DayTable} from '../Calendar/Calendar'
+import {DayTable, CalendarButton} from '../Calendar/Calendar'
 
 const Weekly = styled.div`
   display: flex;
@@ -30,6 +30,8 @@ const MonthContainer = styled.div `
   display: flex;
   flex-direction: row;
   text-align: center;
+  ${'' /* justify-content: center;  */}
+  align-items: center; 
 `
 const CalendarContainer = styled.div `
   display: flex;
@@ -93,8 +95,8 @@ export default function Home() {
     <CalendarContainer>
       <MonthContainer>
         <h3>{year}. {st_month}</h3>
-        <button type="button" onClick={() => handlePrevWeek()}>{'<'}</button>
-        <button type="button" onClick={() => handleNextWeek()}>{'>'}</button>
+        <CalendarButton type="button" onClick={() => handlePrevWeek()}>{'<'}</CalendarButton>
+        <CalendarButton type="button" onClick={() => handleNextWeek()}>{'>'}</CalendarButton>
       </MonthContainer>
       <DayTable/> 
       <DayOfWeek startDay={startDay} endDay={endDay}/>

@@ -5,10 +5,8 @@ import styled from 'styled-components';
 const MonthContainer = styled.div `
   display: flex;
   flex-direction: row;
-  text-align: center;
   justify-content: center; 
-  padding: 20px;
-  ${'' /* justify-content: space-between; */}
+  align-items: center; 
 `
 
 const CalendarContainer = styled.div `
@@ -65,6 +63,20 @@ const Cell = styled.td`
   &:hover {
     background-color: #e0e0e0; 
   }
+`
+
+export const CalendarButton = styled.button`
+  all: unset;
+  text-align: center;
+  border: none; /* 불필요한 테두리 제거 */
+  cursor: pointer;
+  &:hover {
+    background-color: transparent; /* 배경 변화 없음 */
+    color: inherit; /* 글자색 변화 없음 */
+    transform: none; /* 크기나 위치 변화 없음 */
+  }
+  width: 2rem; 
+  height: 2rem;
 `
 
 function GroupDatesByWeek(props){
@@ -141,9 +153,9 @@ export default function Calendar() {
     <PageTitle>Calendar</PageTitle>
 
     <MonthContainer>
-      <button type="button" onClick={() => handlePrevMonth()}>{'<'}</button>
+      <CalendarButton onClick={() => handlePrevMonth()}>{'<'}</CalendarButton>
       <PageTitle>{year}. {st_month}</PageTitle>
-      <button type="button" onClick={() => handleNextMonth()}>{'>'}</button>
+      <CalendarButton onClick={() => handleNextMonth()}>{'>'}</CalendarButton>
     </MonthContainer>
 
     <CalendarContainer>
