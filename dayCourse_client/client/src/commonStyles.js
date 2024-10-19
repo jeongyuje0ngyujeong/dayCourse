@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const PageTitle = styled.h1 `
-    font-size: 50px;
+    font-size: 30px;
     `
 
 const FooterText = styled.div `
@@ -16,3 +16,5 @@ export function Footer(){
     </FooterText>
     )
 }
+
+
