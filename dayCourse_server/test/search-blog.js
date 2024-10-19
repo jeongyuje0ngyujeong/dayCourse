@@ -7,10 +7,10 @@ var client_id = 'mJquI2shJRRNjhQiXfrN';
 var client_secret = 'YtFz32RaxB';
 
 
-app.get('/search/blog', async function (req, res) {
-    const query = '광교 오늘의초밥';
+app.get('/search/local', async function (req, res) {
+    const query = '광교';
     const encodedQuery = encodeURIComponent(query);
-    const api_url = `https://openapi.naver.com/v1/search/blog.json?query=${encodedQuery}`;
+    const api_url = `https://openapi.naver.com/v1/search/local.json?query=${encodedQuery}`;
 
     try {
         const response = await axios.get(api_url, {
@@ -29,5 +29,5 @@ app.get('/search/blog', async function (req, res) {
 });
 
 app.listen(3000, function () {
-   console.log('http://127.0.0.1:3000/search/blog?query=검색어 app listening on port 3000!');
+   console.log('http://127.0.0.1:3000/search/local?query=검색어 app listening on port 3000!');
 });
