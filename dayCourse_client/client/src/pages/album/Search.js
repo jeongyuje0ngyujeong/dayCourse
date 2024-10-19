@@ -1,8 +1,8 @@
-
 import React, {useState} from 'react';
 import { SlCalender } from "react-icons/sl";
 import {data} from './data';
 import styled from 'styled-components';
+import { PageTitle } from '../../commonStyles';
 
 const Container = styled.div `
     display: flex;
@@ -40,7 +40,7 @@ const Search = () => {
             <p>이곳은 공유 앨범 페이지 입니다</p>
             <InnerContainer>
                 <SlCalender />
-            < Input type="text"
+            <Input type="text"
                 placeholder="검색하기"
                 value={searchTerm} 
                 onChange={handleInputChange} />
