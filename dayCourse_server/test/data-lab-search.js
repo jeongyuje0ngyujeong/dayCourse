@@ -8,7 +8,7 @@ var api_url = 'https://openapi.naver.com/v1/datalab/search';
 var request_body = {
     "startDate": "2023-10-19",
     "endDate": "2024-10-18",
-    "timeUnit": "month",
+    "timeUnit": "month",bfdd
     "keywordGroups": [
         {
             "groupName": "추천 장소",
