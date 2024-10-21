@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider,} from "react-router-dom";
 import './index.css';
 import Layout from "./Layout";
-import Home from "./pages/Home/Home";
+import Home, { action as homeAction, loader as homeLoader } from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
-import Album from "./pages/album/album";
+import Schedule, {loader as scheduleLoader, action as scheduleAction} from "./pages/Calendar/Schedule";
+import CreateSchedule, {action as createAction,} from "./pages/Create/create";
+import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 // import reportWebVitals from './reportWebVitals';
@@ -19,10 +21,32 @@ const router = createBrowserRouter([
       {
         errorElement: <ErrorPage />,
         children: [
-          { index: true, element: <Home/> },
+          // { index: true, element: <Home /> },
           {
             path: "home",
             element: <Home/>,
+            loader: homeLoader,
+            action: homeAction,
+            children: [
+              {
+                path: "schedules/:year/:month/:date",
+                loader: scheduleLoader,
+                action: scheduleAction,
+                element: <Schedule />,
+              },
+              {
+                path: "schedules/:year/:month/:date/edit",
+                element: <CreateSchedule />,
+                loader: scheduleLoader,
+                action: scheduleAction,
+              },
+            ]
+          },
+          {
+            path: "schedules/:id/create",
+            element: <CreateSchedule />,
+            loader: scheduleLoader,
+            action: createAction,
           },
           {
             path: "calendar",

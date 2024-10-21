@@ -1,4 +1,5 @@
 import { PageTitle, Footer } from '../../commonStyles';
+import { Button } from '../../Button';
 import {useState} from 'react';
 import styled from 'styled-components';
 
@@ -7,16 +8,17 @@ const MonthContainer = styled.div `
   flex-direction: row;
   justify-content: center; 
   align-items: center; 
+  color: black;
 `
 
 const CalendarContainer = styled.div `
   display: flex;
   flex-direction: column;
   margin: 0 auto; 
-  width: 90%;
-  height: 70%;
+  width: 100%;
+  height: 80%;
   color: #818181;
-  padding: 0.5rem;
+  ${'' /* padding: 0.5rem; */}
   ${'' /* background-color: #90B54C; */}
 `
 const StyleDayT = styled.table`
@@ -63,20 +65,6 @@ const Cell = styled.td`
   &:hover {
     background-color: #e0e0e0; 
   }
-`
-
-export const CalendarButton = styled.button`
-  all: unset;
-  text-align: center;
-  border: none; /* 불필요한 테두리 제거 */
-  cursor: pointer;
-  &:hover {
-    background-color: transparent; /* 배경 변화 없음 */
-    color: inherit; /* 글자색 변화 없음 */
-    transform: none; /* 크기나 위치 변화 없음 */
-  }
-  width: 2rem; 
-  height: 2rem;
 `
 
 function GroupDatesByWeek(props){
@@ -153,9 +141,9 @@ export default function Calendar() {
     <PageTitle>Calendar</PageTitle>
 
     <MonthContainer>
-      <CalendarButton onClick={() => handlePrevMonth()}>{'<'}</CalendarButton>
+      <Button onClick={() => handlePrevMonth()} border='none'>{'<'}</Button>
       <PageTitle>{year}. {st_month}</PageTitle>
-      <CalendarButton onClick={() => handleNextMonth()}>{'>'}</CalendarButton>
+      <Button onClick={() => handleNextMonth()} border='none'>{'>'}</Button>
     </MonthContainer>
 
     <CalendarContainer>
