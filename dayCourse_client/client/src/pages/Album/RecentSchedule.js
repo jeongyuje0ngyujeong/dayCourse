@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { data } from './RecentScheduleData';
+import { data } from './Recent_schedule_data';
 
 const Container = styled.div`
     justify-content: center; /* 수평 중앙 정렬 */
