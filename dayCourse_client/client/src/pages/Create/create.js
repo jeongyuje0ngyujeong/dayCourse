@@ -1,0 +1,69 @@
+import { Form, useLoaderData, redirect, } from "react-router-dom";
+import { updateSchedule} from "../../schedules";
+
+export async function action({ request, params }) {
+  const formData = await request.formData();
+  const updates = Object.fromEntries(formData);
+  await updateSchedule(params.id, updates);
+  return redirect(`/home`);
+}
+
+export default function CreateSchedule() {
+  const { schedule } = useLoaderData();
+
+  return (
+    <Form method="post" id="schedule-form">
+      <span>약속 날짜</span>
+      <p>
+        <input
+          placeholder="년"
+          aria-label="년"
+          type="text"
+          name="year"
+          defaultValue={schedule?.year}
+        />
+        <input
+          placeholder="월"
+          aria-label="월"
+          type="text"
+          name="month"
+          defaultValue={schedule?.month}
+        />
+        <input
+          placeholder="일"
+          aria-label="일"
+          type="text"
+          name="date"
+          defaultValue={schedule?.date}
+        />
+      </p>
+      <p>
+      <span>그룹</span>
+      <p>
+      <label>
+        <input
+          type="text"
+          name="group"
+          placeholder="누구와의 약속인가요?"
+          defaultValue={schedule?.group}
+        />
+      </label>
+      </p>
+      </p>
+      <span>Notes</span>
+      <p>
+      <label>
+        <textarea
+          name="notes"
+          defaultValue={schedule?.notes}
+          rows={6}
+        />
+      </label>
+      </p>
+      <p>
+        <button type="submit">Save</button>
+        <button type="button">Cancel</button>
+      </p>
+    </Form>
+  );
+}

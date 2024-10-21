@@ -1,14 +1,31 @@
 import styled from "styled-components";
 import {useState} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import {DayTable, CalendarButton} from '../Calendar/Calendar'
+import {DayTable} from '../Calendar/Calendar'
+// import Schedule from '../Calendar/Schedule'
+import { Button } from '../../Button';
+import { Outlet, useLoaderData, Link, Form, redirect, } from "react-router-dom";
+import { getSchedules, createSchedule} from "../../schedules";
+
+export async function action() {
+  const schedule = await createSchedule();
+  return redirect(`/schedules/${schedule.id}/create`);
+}
+
+const WeekBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`
 
 const Weekly = styled.div`
   display: flex;
   flex-direction: row;
   border-top: 1px solid;
   border-bottom: 1px solid;
-  ${'' /* margin: 0 auto; */}
+  border-color: green;
+  margin: 0 auto;
   width: 100%;
   height: 15%;
   align-items: center;
@@ -30,16 +47,21 @@ const MonthContainer = styled.div `
   display: flex;
   flex-direction: row;
   text-align: center;
-  ${'' /* justify-content: center;  */}
+  height: 5%;
   align-items: center; 
 `
 const CalendarContainer = styled.div `
   display: flex;
   flex-direction: column;
   margin: 0 auto; 
-  width: 90%;
+  width: 100%;
   height: 100%;
-  color: #818181;
+`
+
+const ScheduleContainer = styled.div `
+  display: flex;
+  flex-direction: column;
+  margin: 1rem auto; 
 `
 
 function DayOfWeek(props){
@@ -62,6 +84,12 @@ function DayOfWeek(props){
   )
 };
 
+export async function loader() {
+  const schedules= await getSchedules();
+  return { schedules };
+}
+
+// 날짜칸을 선택 -> useState 변경-> loader의 인자 -> loader의 return값을 얻어옴
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const year = currentDate.getFullYear();
@@ -88,18 +116,54 @@ export default function Home() {
       new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()+7)
     );
   };
+
+  const { schedules} = useLoaderData();
+
   return (
     <>
     <PageTitle>Home</PageTitle>
-    <h3>한 주 일정</h3>
     <CalendarContainer>
+      <WeekBar>
+        <h3>한 주 일정</h3>
+        <Form method="post">
+          <Button type='submit' width='6rem' background='#90B54C' color='white'>+ 일정추가</Button>
+        </Form>
+        
+      </WeekBar>
       <MonthContainer>
         <h3>{year}. {st_month}</h3>
-        <CalendarButton type="button" onClick={() => handlePrevWeek()}>{'<'}</CalendarButton>
-        <CalendarButton type="button" onClick={() => handleNextWeek()}>{'>'}</CalendarButton>
+        <Button onClick={() => handlePrevWeek()} border='none'>{'<'}</Button>
+        <Button onClick={() => handleNextWeek()} border='none'>{'>'}</Button>
       </MonthContainer>
       <DayTable/> 
       <DayOfWeek startDay={startDay} endDay={endDay}/>
+      
+      <ScheduleContainer>
+      {schedules.length ? (
+        <ul>
+          {schedules.map((schedule) => (
+            <li key={schedule.id}>
+              <Link to={`schedules/${schedule.year}/${schedule.month}/${schedule.date}`}>
+                {schedule.year || schedule.month || schedule.date ? (
+                  <>
+                    {schedule.year} {schedule.month} {schedule.date}
+                  </>
+                ) : (
+                  <i>No Date</i>
+                )}{" "}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>
+          <i>No schedules</i>
+        </p>
+      )}
+      <Outlet />
+      </ScheduleContainer>
+
+      {/* {Schedule} */}
     </CalendarContainer>
     <Footer/>
     </>
