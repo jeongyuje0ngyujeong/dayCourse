@@ -7,6 +7,7 @@ import Home, { action as homeAction, loader as homeLoader } from "./pages/Home/H
 import Calendar from "./pages/Calendar/Calendar";
 import Schedule, {loader as scheduleLoader, action as scheduleAction} from "./pages/Calendar/Schedule";
 import CreateSchedule, {action as createAction,} from "./pages/Create/create";
+// 파일명 앞 글자는 대문자로 설정
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
