@@ -1,0 +1,66 @@
+name: deploy node api
+
+on:
+  push:
+    branches:
+      - dayCourseServer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: install node
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DAYCOURSEBACKEND }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if ! command -v npm &> /dev/null; then
+              echo 'install Node.js 20.x' &&
+              curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - &&
+              sudo apt-get install -y nodejs &&
+              sudo npm install -g n &&
+              sudo n 20.9.0;
+            fi"
+
+
+      - name: ssh + git pull + npm install + pm2 start
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DAYCOURSEBACKEND }}  
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}           
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}           
+          APP_DIR: '/home/ubuntu/dayCourse_server'          
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if [ -d \"$APP_DIR/.git\" ]; then
+              echo 'exists + pull'
+              cd $APP_DIR &&
+              git config pull.rebase true &&
+              git reset --hard origin/dayCourseServer &&
+              git pull origin dayCourseServer;
+            else
+              echo 'not exist + clone'
+              git clone -b dayCourseServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
+            fi &&
+            
+            cd $APP_DIR/dayCourse_server && 
+            
+            npm install &&
+            if ! command -v pm2 &> /dev/null; then
+              echo 'pm2 install' &&
+              sudo npm install -g pm2;
+            fi &&
+            
+            sudo setcap 'cap_net_bind_service=+ep' $(which node) 
+
+            (pm2 delete all || true) && pm2 start test/search-blog.js
+          "
