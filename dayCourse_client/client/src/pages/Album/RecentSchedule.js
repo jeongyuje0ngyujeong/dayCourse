@@ -25,7 +25,8 @@ const Box = styled.div`
 `;
 
 const RecentSchedule = () => {
-    const [selectedSchedule, setSelectedSchedule] = useState(null); // 선택된 일정 상태
+    // 선택된 일정 상태
+    const [selectedSchedule, setSelectedSchedule] = useState(null); //eslint-disable-line no-unused-vars
 
     // 클릭 핸들러
     const handleBoxClick = (schedule) => {
