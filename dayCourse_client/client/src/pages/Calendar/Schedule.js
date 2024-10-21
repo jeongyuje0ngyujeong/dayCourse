@@ -39,12 +39,12 @@ export default function Schedule() {
 
         {schedule.group && (
           <p>
-            <a
+            {/* <a
               target="_blank"
               href='#'
-            >
+            > */}
               {schedule.group}
-            </a>
+            {/* </a> */}
           </p>
         )}
 
