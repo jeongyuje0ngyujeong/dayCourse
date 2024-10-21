@@ -19,6 +19,9 @@ jobs:
       - name: Build React App
         run: npm run build
 
+      - name: echo Hello              
+        run: echo "Hello"
+
       # - name: Deploy                  # Upload build file to S3
       #   env:
       #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
