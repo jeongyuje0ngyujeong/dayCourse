@@ -8,7 +8,7 @@ export async function loader({ params }) {
 }
 
 export async function action(params) {
-  const schedule = getSchedule(params.year,params.month,params.date);
+  const schedule = getSchedule(params.year,params.month,params.date); //eslint-disable-line no-unused-vars
   // return redirect(`/schedules/${schedule.id}/edit`);
   return redirect(`/home`);
 }
