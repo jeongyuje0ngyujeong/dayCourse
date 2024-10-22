@@ -1,8 +1,8 @@
-const BASE_URL = 'http://3.34.40.16'; 
-// const BASE_URL = 'http://localhost:5001'; // 변경된 포트 사용
+const BASE_URL = 'http://43.200.172.201'; 
+//const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
 
-// 모든 플랜 가져오기
+//모든 플랜 가져오기
 export async function getPlan() {
     try {
         const response = await fetch(`${BASE_URL}/plan`); // 서버에서 모든 플랜 요청
@@ -16,6 +16,7 @@ export async function getPlan() {
         throw error;
     }
 }
+
 
 // 특정 플랜 ID에 대한 사진 가져오기
 export async function getPhotosForPlan(planId) {
