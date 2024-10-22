@@ -1,7 +1,11 @@
 import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
-import {useState} from 'react';
+import {useState,useEffect } from 'react';
 import styled from 'styled-components';
+import { getSchedule, getSchedules} from "../../schedules";
+import Modal from 'react-modal';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Schedule from "./Schedule";
 
 const MonthContainer = styled.div `
   display: flex;
@@ -46,9 +50,10 @@ export function DayTable(){
   )
 }
 
-export const DateTable = styled.table`
+const DateTable = styled.table`
   width: 100%;
   height: 100%;
+  min-height: 7rem;
   border-top: 1px solid;
   border-color: green;
   border-collapse: collapse;
@@ -67,23 +72,118 @@ const Cell = styled.td`
   }
 `
 
-function GroupDatesByWeek(props){
+const customModalStyles: ReactModal.Styles = {
+  overlay: {
+    backgroundColor: " rgba(0, 0, 0, 0.4)",
+    width: "100%",
+    height: "100vh",
+    zIndex: "10",
+    position: "fixed",
+    top: "0",
+    left: "0",
+  },
+  content: {
+    width: "50%",
+    height: "80%",
+    zIndex: "150",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    borderRadius: "10px",
+    boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.25)",
+    backgroundColor: "white",
+    justifyContent: "center",
+    overflow: "auto",
+    // display: "flex", 
+    // flexDirection: "column", 
+    // alignItems: "center", 
+  },
+};
+
+const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
+  try{
+    return (
+      <Modal style={customModalStyles} isOpen={isOpen} OnRequestClose>
+          {content && content.props.schedule && content.props.schedule.length > 0 ?
+          <h2>{content.props.schedule[0].date}</h2>:<h2></h2>}
+          <p> {content} </p>
+          <button onClick={OnRequestClose}>닫기</button>
+      </Modal>
+    );
+  }
+  catch(error) {
+    console.error("Error in ScheduleModal:", error);
+  }
+};
+
+export function GroupDatesByWeek(props){
+  const [schedules, setSchedules] = useState([]);
+
+  useEffect(() => {
+    async function fetchSchedules() {
+      let scheduleMap = {};
+      let currentDate = new Date(props.startDay);
+
+      while (currentDate <= props.endDay) {
+        const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+        const schedule = await getSchedule(dateKey);
+        scheduleMap[dateKey] = schedule;
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+
+      setSchedules(scheduleMap); 
+    }
+
+    fetchSchedules(); 
+  }, [props.startDay, props.endDay]);
+
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalContent, setModalContent] = useState('')
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCellClick = async (params, e) => {
+    e.preventDefault();
+    const scheduleData = await getSchedule(params);
+
+    // alert(params);
+    // console.log("hello", params, content);
+    
+    if (location.pathname === "/calendar"){
+      const content = <Schedule schedule = {scheduleData}/>;
+      setModalContent(content);
+      setModalIsOpen(true);
+    }
+    else{
+      navigate(`schedules/${params}`);
+    }
+  };
+
   const weeks = []; 
   let currentWeek = []; 
   let currentDate = new Date(props.startDay); 
-
-  const handleCellClick = () => {
-    alert('hello');
-  };
-
+  
   while (currentDate <= props.endDay) {
-    currentWeek.push(<Cell onClick={()=>handleCellClick()}>
-    {new Date(currentDate).getDate().toString()}
+    const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`;
+    // const events = schedules.filter(schedule => schedule.dateKey === dateKey)|| []
+    const events = schedules[dateKey];
+    // console.log(dateKey, events);
+
+    currentWeek.push(
+    <Cell key={dateKey} onClick={(e)=>handleCellClick(dateKey,e)}>
+      <div>{new Date(currentDate).getDate().toString()}</div>
+    
+      <div>
+      {events && events.length > 0 ? events.map((event, index) => (
+        <div key={index}> {event.group}</div>)):null}
+      </div>
     </Cell>);
 
     if (currentWeek.length === 7 || currentDate.getDay() === 6) {
       weeks.push(
-        <DateTable>
+        <DateTable key={currentDate.toISOString().slice(0, 10)}>
           <tbody>
             <tr>{currentWeek}</tr>
           </tbody>
@@ -104,7 +204,13 @@ function GroupDatesByWeek(props){
   }
 
   return (
-    <>{weeks}</>
+    <>{weeks}
+    <ScheduleModal
+      isOpen={modalIsOpen}
+      OnRequestClose={() => setModalIsOpen(false)}
+      content={modalContent}
+    />
+    </>
   )
 };
 
@@ -150,7 +256,6 @@ export default function Calendar() {
       <DayTable/>
       <GroupDatesByWeek startDay={startDay} endDay={endDay}/>
     </CalendarContainer>
-    
     <Footer/>
     </>
   );

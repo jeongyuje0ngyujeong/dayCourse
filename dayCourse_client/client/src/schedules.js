@@ -3,43 +3,55 @@ import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
 
 export async function getSchedules(query) {
-    await fakeNetwork(`getSchedules:${query}`);
+    // await fakeNetwork(`getSchedules:${query}`);
     let schedules = await localforage.getItem("schedules");
-    if (!schedules) schedules = [];
-    if (query) {
-        schedules = matchSorter(schedules, query, { keys: ["first", "last"] });
+    // if (!schedules) schedules = [];
+    if (!Array.isArray(schedules)) {
+        schedules = [];
     }
-    return schedules.sort(sortBy("last", "createdAt"));
+    if (query) {
+        schedules = matchSorter(schedules, query, { keys: ["dateKey"] });
+    }
+    return schedules.sort(sortBy("dateKey", "createdAt"));
 }
 
-export async function createSchedule(year, month, date) {
-    await fakeNetwork();
+export async function createSchedule(dateKey) {
+    // await fakeNetwork();
     let id = Math.random().toString(36).substring(2, 9);
-    let schedule = { id, year, month, date, createdAt: Date.now() };
+    let schedule = { id, dateKey, createdAt: Date.now() };
     let schedules = await getSchedules();
     schedules.unshift(schedule);
     await set(schedules);
     return schedule;
 }
 
-export async function getSchedule(year, month, date) {
-    await fakeNetwork(`schedule:${year}:${month}:${date}`);
-    let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(
+export async function getSchedule(dateKey) {
+    // await fakeNetwork(`schedule:${dateKey}`);
+    let schedules = await localforage.getItem("schedules") || [];
+    let schedule = schedules.filter(
         (schedule) => 
-            schedule.year === year && 
-            schedule.month === month && 
-            schedule.date === date
+            schedule.dateKey === dateKey 
     )
+    // console.log(schedule);
     return schedule ?? null;
 }
 
-export async function updateSchedule(id, updates) {
-    await fakeNetwork();
+export async function getEvent(id) {
+    // await fakeNetwork(`schedule:${dateKey}`);
+    let schedules = await localforage.getItem("schedules") || [];
+    let event = schedules.find(
+        (event) => 
+            event.id === id
+    )
+    // console.log(schedule);
+    return event ?? null;
+}
+
+export async function updateSchedule(dateKey, updates) {
+    // await fakeNetwork();
     let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(schedule => schedule.id === id);
-    console.log(id);
-    if (!schedule) throw new Error("No schedule found for", id);
+    let schedule = schedules.find(schedule => schedule.dateKey === dateKey);
+    if (!schedule) throw new Error("No schedule found for", dateKey);
     Object.assign(schedule, updates);
     await set(schedules);
     return schedule;

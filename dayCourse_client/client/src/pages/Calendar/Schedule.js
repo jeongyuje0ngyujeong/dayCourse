@@ -1,76 +1,102 @@
-import { Form, useLoaderData, redirect} from "react-router-dom";
+import { Form, useLoaderData, redirect, Link} from "react-router-dom";
 import { getSchedule} from "../../schedules";
+import styled from "styled-components";
+import { Button } from '../../Button';
 
 export async function loader({ params }) {
-  const { year, month, date } = params;
-  const schedule = await getSchedule(year, month, date);
+
+  const { dateKey } = params;
+  console.log(dateKey);
+
+  const schedule = await getSchedule(dateKey);
   return { schedule };
 }
 
-export async function action(params) {
-  const schedule = getSchedule(params.year,params.month,params.date);
-  // return redirect(`/schedules/${schedule.id}/edit`);
-  return redirect(`/home`);
-}
+// export async function action(params) {
+//   const schedule = getSchedule(params.year,params.month,params.date);
 
-export default function Schedule() {
-  const { schedule } = useLoaderData();
-  // const schedule = {
-  //   year: "2024",
-  //   month: "10",
-  //   date: "20",
-  //   group: "Minkyoung, Kyoungeun, Hyeamin, Youjeong",
-  //   place: "Hongdae",
-  //   note: "some note",
-  // };
+//   return redirect(`/home`);
+// }
 
+const EventContainer = styled.div `
+  border: 1px, solid;
+  border-radius: 1rem;
+  padding: 1rem;
+  ${'' /* margin-bottom: 1rem; */}
+  margin: 1rem 0;
+  ${'' /* background: red; */}
+
+`
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+`
+
+
+export default function Schedule(props) {
+  // const { schedule } = useLoaderData();
+  // console.log(schedule);
+  
+  const loaderData = useLoaderData();
+  const scheduleData = props.schedule || loaderData.schedule ;
+  // console.log(scheduleData.schedule);
+
+  // if (scheduleData.schedule)console.log(scheduleData.schedule.length);
   return (
-    <div id="schedule">
-      <div>
-        <h1>
-          {schedule.year || schedule.month || schedule.date ? (
-              <>
-                {schedule.year} {schedule.month} {schedule.date}
-              </>
-            ) : (
-              <i>No Date</i>
-            )}{" "}
-        </h1>
+    <div>
+      {scheduleData && scheduleData.length > 0 ? scheduleData.map((event, index) => (
+        <EventContainer key={index} id="schedule">
+          <div>
+            <h1>
+              {event.dateKey ? (
+                  <>
+                    {event.dateKey}
+                  </>
+                ) : (
+                  <i>No Date?</i>
+                )}{" "}
+            </h1>
 
-        {schedule.group && (
-          <p>
-            <a
-              target="_blank"
-              href='#'
-            >
-              {schedule.group}
-            </a>
-          </p>
-        )}
+            {event.group && (
+              <p>
+                <a
+                  target="_blank"
+                  href='#'
+                >
+                  {event.group}
+                </a>
+              </p>
+            )}
 
-        {schedule.notes && <p>{schedule.notes}</p>}
-
-        <div>
-          <Form action="edit">
-            <button type="submit">Edit</button>
-          </Form>
-          <Form
-            method="post"
-            action="destroy"
-            // onSubmit={(event) => {
-            //   if (
-            //     !confirm(
-            //       "Please confirm you want to delete this record."
-            //     )
-            //   ) {
-            //     event.preventDefault();
-            //   }
-            // }}
-          >
-            <button type="submit">Delete</button>
-          </Form>
-        </div>
-      </div>
+            {event.notes && <p>{event.notes}</p>}
+            
+            <ButtonContainer>
+              <Link to={`/schedules/${event.id}`}>
+                <button type="submit">Edit</button>
+              </Link>
+              <Form
+                method="post"
+                action="destroy"
+                // onSubmit={(event) => {
+                //   if (
+                //     !confirm(
+                //       "Please confirm you want to delete this record."
+                //     )
+                //   ) {
+                //     event.preventDefault();
+                //   }
+                // }}
+              >
+                <button type="submit">Delete</button>
+              </Form>
+            </ButtonContainer>
+          </div>
+        </EventContainer>
+      )) : <div>일정 없음</div>}
     </div>
   );
 }

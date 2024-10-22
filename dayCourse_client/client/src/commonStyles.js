@@ -5,6 +5,7 @@ export const PageTitle = styled.h1 `
     `
 
 const FooterText = styled.div `
+  display: block;
   margin: 2rem auto;
   text-align: center;
   color: #818181;

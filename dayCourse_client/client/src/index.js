@@ -5,8 +5,8 @@ import './index.css';
 import Layout from "./Layout";
 import Home, { action as homeAction, loader as homeLoader } from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
-import Schedule, {loader as scheduleLoader, action as scheduleAction} from "./pages/Calendar/Schedule";
-import CreateSchedule, {action as createAction,} from "./pages/Create/create";
+import Schedule, {loader as scheduleLoader,} from "./pages/Calendar/Schedule";
+import CreateSchedule, {action as createAction, loader as createLoader,} from "./pages/Create/create";
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
@@ -29,21 +29,22 @@ const router = createBrowserRouter([
             action: homeAction,
             children: [
               {
-                path: "schedules/:year/:month/:date",
+                path: "schedules/:dateKey",
                 loader: scheduleLoader,
-                action: scheduleAction,
+                // action: scheduleAction,
                 element: <Schedule />,
               },
-              {
-                path: "schedules/:year/:month/:date/edit",
-                element: <CreateSchedule />,
-                loader: scheduleLoader,
-                action: scheduleAction,
-              },
             ]
+          },      
+          {
+            path: "/schedules/:id",
+            element: <CreateSchedule />,
+            loader: createLoader,
+            action: createAction,
+            // action: scheduleAction,
           },
           {
-            path: "schedules/:id/create",
+            path: "schedules/create",
             element: <CreateSchedule />,
             loader: scheduleLoader,
             action: createAction,
