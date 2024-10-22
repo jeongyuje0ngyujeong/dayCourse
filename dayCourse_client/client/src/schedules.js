@@ -1,11 +1,19 @@
 import localforage from "localforage";
 import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
+import axios from 'axios';
 
 export async function getSchedules(query) {
-    // await fakeNetwork(`getSchedules:${query}`);
     let schedules = await localforage.getItem("schedules");
-    // if (!schedules) schedules = [];
+
+    // const getData = async () => {
+    //     let response = await axios.get('http://192.168.1.80:5000/home');
+    //     return response.data;
+    // }
+
+    // let schedules = await getData();
+    // console.log(schedules);
+
     if (!Array.isArray(schedules)) {
         schedules = [];
     }
@@ -16,7 +24,7 @@ export async function getSchedules(query) {
 }
 
 export async function createSchedule(dateKey) {
-    // await fakeNetwork();
+
     let id = Math.random().toString(36).substring(2, 9);
     let schedule = { id, dateKey, createdAt: Date.now() };
     let schedules = await getSchedules();
@@ -26,7 +34,7 @@ export async function createSchedule(dateKey) {
 }
 
 export async function getSchedule(dateKey) {
-    // await fakeNetwork(`schedule:${dateKey}`);
+   
     let schedules = await localforage.getItem("schedules") || [];
     let schedule = schedules.filter(
         (schedule) => 
@@ -55,7 +63,18 @@ export async function updateSchedule(dateKey, updates) {
     Object.assign(schedule, updates);
     await set(schedules);
     return schedule;
-  }
+}
+
+export async function deleteContact(id) {
+let contacts = await localforage.getItem("contacts");
+let index = contacts.findIndex(contact => contact.id === id);
+if (index > -1) {
+    contacts.splice(index, 1);
+    await set(contacts);
+    return true;
+}
+return false;
+}
 
 function set(schedules) {
     return localforage.setItem("schedules", schedules);

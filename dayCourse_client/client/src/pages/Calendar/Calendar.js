@@ -25,6 +25,14 @@ const CalendarContainer = styled.div `
   ${'' /* padding: 0.5rem; */}
   ${'' /* background-color: #90B54C; */}
 `
+
+
+const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+
+const getDayName = (day)=> {
+  return daysOfWeek[day] ?? "Invalid day";
+};
+
 const StyleDayT = styled.table`
   height: 5%;
   width: 100%;
@@ -37,6 +45,7 @@ export function DayTable(){
   <StyleDayT>
     <tbody>
       <tr>
+        {/* {daysOfWeek.map()(event, index) =>} */}
         <th title="일">일</th>
         <th title="월">월</th>
         <th title="화">화</th>

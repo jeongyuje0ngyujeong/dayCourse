@@ -26,7 +26,7 @@ const CalendarContainer = styled.div `
   flex-direction: column;
   margin: 0 auto; 
   width: 100%;
-  height: 50%;
+  height: 40%;
 `
 
 const ScheduleContainer = styled.div `
@@ -96,28 +96,7 @@ export default function Home() {
       <GroupDatesByWeek startDay={startDay} endDay={endDay}/>
       
       <ScheduleContainer>
-      {/* {schedules.length ? (
-        <ul>
-          {schedules.map((schedule) => (
-            <li key={schedule.dateKey}>
-              <Link to={`schedules/${schedule.dateKey}`}>
-                {schedule.year || schedule.month || schedule.date ? (
-                  <>
-                    {schedule.year} {schedule.month} {schedule.date}
-                  </>
-                ) : (
-                  <i>No Date</i>
-                )}{" "}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>
-          <i>No schedules</i>
-        </p>
-      )} */}
-      
+
         <Outlet />
       </ScheduleContainer>
       <Footer/>
