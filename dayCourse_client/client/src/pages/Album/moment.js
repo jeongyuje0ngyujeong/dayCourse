@@ -16,9 +16,6 @@ const Box = styled.div`
     margin: 2%;
     `;
 
-<<<<<<< HEAD:dayCourse_client/client/src/pages/Album/moment.js
-// const StyledModal = styled(Modal) ` 
-=======
 const StyledModal = styled(Modal) `
     width: 60%;
     height: 90vh;
@@ -34,7 +31,6 @@ const StyledModal = styled(Modal) `
     top:50%;
     left:50%;
     transform: translate(-50%, -50%);
->>>>>>> aehyemin:dayCourse_client/client/src/pages/album/moment.js
 
 // `
 

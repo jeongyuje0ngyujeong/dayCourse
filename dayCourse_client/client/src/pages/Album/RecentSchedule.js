@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
-import { data } from './Recent_schedule_data';
+import { data } from './RecentScheduleData';
 import Recent_1 from './Recent_1'; // 빈 페이지 컴포넌트 가져오기
 
 const Container = styled.div`
