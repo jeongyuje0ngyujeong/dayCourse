@@ -43,6 +43,6 @@ jobs:
             fi &&
             cd $APP_DIR/dayCourse_server &&
             npm install &&
-            pm2 restart app.js"
+            npx pm2 restart app.js"
           
 
