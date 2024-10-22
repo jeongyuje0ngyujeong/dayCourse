@@ -2,6 +2,8 @@ import styled from "styled-components";
 import {useState} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
 import {DayTable, CalendarButton} from '../Calendar/Calendar'
+import { Link } from 'react-router-dom'; 
+import RightSidebar from './RightSidebar'; 
 
 const Weekly = styled.div`
   display: flex;
@@ -102,6 +104,11 @@ export default function Home() {
       <DayOfWeek startDay={startDay} endDay={endDay}/>
     </CalendarContainer>
     <Footer/>
+    <Link to="/empty">
+      <button>새 페이지</button>
+    </Link>
+
+
     </>
   );
 }

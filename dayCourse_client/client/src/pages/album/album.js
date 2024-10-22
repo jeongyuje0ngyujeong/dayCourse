@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import React from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
-import Recent_schedule from './Recent_schedule.js';
+import RecentSchedule from './RecentSchedule.js';
 
 export default function Album() {
   return (
@@ -12,7 +12,7 @@ export default function Album() {
     <div>
       <Search/>
       <Moment/>
-      <Recent_schedule></Recent_schedule>
+      <RecentSchedule></RecentSchedule>
     </div>
     </>
   );

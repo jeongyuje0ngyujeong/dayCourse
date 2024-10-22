@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import { data } from './Recent_schedule_data';
+import Recent_1 from './Recent_1'; // 빈 페이지 컴포넌트 가져오기
 
 const Container = styled.div`
     justify-content: center; /* 수평 중앙 정렬 */
@@ -24,7 +26,7 @@ const Box = styled.div`
     }
 `;
 
-const Recent_schedule = () => {
+const RecentSchedule = () => {
     const [selectedSchedule, setSelectedSchedule] = useState(null); // 선택된 일정 상태
 
     // 클릭 핸들러
@@ -48,4 +50,10 @@ const Recent_schedule = () => {
     );
 };
 
-export default Recent_schedule;
+
+
+
+
+
+
+export default RecentSchedule;
