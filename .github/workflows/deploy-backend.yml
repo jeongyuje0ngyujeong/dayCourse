@@ -21,8 +21,10 @@ jobs:
         - name: Check Node v
           run: node -v
 
-        - name: Install dependencies
-          run: npm ci
+        - name: Install dependencies # 의존성 다운
+          run: |
+            cd dayCourse_server  # server 폴더로 이동
+            npm ci #clean install로 node_modules와 package-lock.json 파일을 삭제했다가 npm install로 맞추는 것
         
         - name: Deploy to EC2
           env:
