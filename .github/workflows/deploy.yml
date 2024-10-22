@@ -62,6 +62,3 @@ jobs:
             sudo setcap 'cap_net_bind_service=+ep' $(which node) 
 
             (pm2 delete all || true) && pm2 start test/search-blog.js
-            echo 'aaaaaaa'
-            pm2 list
-            curl -X GET "http://localhost:3000/home"
