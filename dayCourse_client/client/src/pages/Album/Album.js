@@ -4,7 +4,7 @@
 import React from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
-import RecentSchedule from './RecentSchedule.js';
+import RecentPlan from './RecentPlan.js';
 
 export default function Album() {
   return (
@@ -12,7 +12,7 @@ export default function Album() {
     <div>
       <Search/>
       <Moment/>
-      <RecentSchedule></RecentSchedule>
+      <RecentPlan></RecentPlan>
     </div>
     </>
   );
