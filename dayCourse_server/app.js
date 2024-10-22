@@ -1,8 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const app = express();
 
 // server.js
 const PORT = 5000;
+
+app.use(cors());
 
 const requestListener = (req, res) => {
     res.setHeader('Content-Type', 'application/json');
