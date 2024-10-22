@@ -61,19 +61,19 @@ function set(schedules) {
     return localforage.setItem("schedules", schedules);
 }
 
-let fakeCache = {};
+// let fakeCache = {};
 
-async function fakeNetwork(key) {
-    if (!key) {
-        fakeCache = {};
-    }
+// async function fakeNetwork(key) {
+//     if (!key) {
+//         fakeCache = {};
+//     }
 
-    if (fakeCache[key]) {
-        return;
-    }
+//     if (fakeCache[key]) {
+//         return;
+//     }
 
-    fakeCache[key] = true;
-    return new Promise(res => {
-        setTimeout(res, Math.random() * 800);
-    });
-}
+//     fakeCache[key] = true;
+//     return new Promise(res => {
+//         setTimeout(res, Math.random() * 800);
+//     });
+// }

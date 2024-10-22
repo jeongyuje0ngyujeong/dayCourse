@@ -2,7 +2,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
-import { getSchedule, getSchedules} from "../../schedules";
+import { getSchedule,} from "../../schedules";
 import Modal from 'react-modal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Schedule from "./Schedule";
@@ -106,7 +106,7 @@ const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
     return (
       <Modal style={customModalStyles} isOpen={isOpen} OnRequestClose>
           {content && content.props.schedule && content.props.schedule.length > 0 ?
-          <h2>{content.props.schedule[0].date}</h2>:<h2></h2>}
+          <h2>{content.props.schedule[0].date}</h2>:null}
           <p> {content} </p>
           <button onClick={OnRequestClose}>닫기</button>
       </Modal>

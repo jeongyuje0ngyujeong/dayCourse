@@ -1,7 +1,7 @@
 import { Form, useLoaderData, redirect, Link} from "react-router-dom";
 import { getSchedule} from "../../schedules";
 import styled from "styled-components";
-import { Button } from '../../Button';
+// import { Button } from '../../Button';
 
 export async function loader({ params }) {
 

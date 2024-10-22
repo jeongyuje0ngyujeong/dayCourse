@@ -4,8 +4,8 @@ import { PageTitle, Footer } from '../../commonStyles';
 import {DayTable, GroupDatesByWeek} from '../Calendar/Calendar'
 // import Schedule from '../Calendar/Schedule'
 import { Button } from '../../Button';
-import { Outlet, useLoaderData, Link, Form, redirect, } from "react-router-dom";
-import { getSchedules, createSchedule} from "../../schedules";
+import { Outlet, Form,} from "react-router-dom";
+import { getSchedules } from "../../schedules";
 
 const WeekBar = styled.div`
   display: flex;
@@ -74,7 +74,7 @@ export default function Home() {
     );
   };
 
-  const { schedules} = useLoaderData();
+  // const { schedules} = useLoaderData();
 
   return (
     <>

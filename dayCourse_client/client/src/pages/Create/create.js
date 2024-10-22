@@ -1,5 +1,5 @@
 import { Form, useLoaderData, redirect, } from "react-router-dom";
-import { createSchedule,updateSchedule,getSchedule,getEvent,} from "../../schedules";
+import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
 
 export async function action({ request, params }) {
   const formData = await request.formData();
