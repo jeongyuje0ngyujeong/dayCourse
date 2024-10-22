@@ -1,0 +1,48 @@
+name: deploy node api
+
+on:
+  push:
+    branches:
+      - dayCourseServer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '22.x'
+        
+        - name: Check Node v
+          run: node -v
+
+        - name: Install dependencies
+          run: npm ci
+        
+        - name: Deploy to EC2
+          env:
+            SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+            REMOTE_HOST: ${{ secrets.EC2_HOST }}
+            REMOTE_USER: ubuntu
+          run: |
+            echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+            ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if [ ! -d \"$APP_DIR\" ]; then
+                git clone https://github.com/your-username/your-repository.git $APP_DIR;
+            fi &&
+            cd $APP_DIR &&
+            LOCAL_COMMIT=$(git rev-parse HEAD) &&
+            REMOTE_COMMIT=$(git ls-remote origin dayCourseServer | grep HEAD | awk '{print $1}') &&
+            if [ \"$LOCAL_COMMIT\" != \"$REMOTE_COMMIT\" ]; then
+                git pull origin dayCourseServer &&
+                npm install &&
+                pm2 restart app;
+            else
+                echo 'Already up-to-date. No deployment needed.';
+            fi"
+
