@@ -16,19 +16,37 @@ const Box = styled.div`
     margin: 2%;
     `;
 
+<<<<<<< HEAD:dayCourse_client/client/src/pages/Album/moment.js
 // const StyledModal = styled(Modal) ` 
+=======
+const StyledModal = styled(Modal) `
+    width: 60%;
+    height: 90vh;
+    background-color:gray;
+    border-radius:5px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+>>>>>>> aehyemin:dayCourse_client/client/src/pages/album/moment.js
 
 // `
 
     
 
-const MomentModal = ({ isOpen, OnRequestClose, content }) => {
+const MomentModal = ({ isOpen, onRequestClose, content }) => {
     return (
-        <Modal isOpen={isOpen} OnRequestClose>
+        <StyledModal isOpen={isOpen} onRequestClose={onRequestClose} ariaHideApp={false}>
             <h3>모달 제목</h3>
             <p> {content} </p>
-            <button onClick={OnRequestClose}>닫기</button>
-        </Modal>
+            <button onClick={onRequestClose}>닫기</button>
+        </StyledModal>
     );
 };
 
@@ -53,7 +71,7 @@ const Moment = () => {
 
             <MomentModal
             isOpen={modalIsOpen}
-            OnRequestClose={() => setModalIsOpen(false)}
+            onRequestClose={() => setModalIsOpen(false)}
             content={modalContent}
             />
         </div>
