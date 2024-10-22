@@ -43,6 +43,6 @@ jobs:
             fi &&
             cd $APP_DIR/dayCourse_server &&     # 정확한 경로로 이동
             npm install &&
-            npx pm2 restart /home/ubuntu/dayCourse_server/dayCourse_server/app.js"  # app.js 경로 오류로 인해 절대 경로 지정
-          
+            # app.js 경로 오류로 인해 절대 경로 지정, 처음엔 start, 이후엔 restart
+            npx pm2 start /home/ubuntu/dayCourse_server/dayCourse_server/app.js --name daycourse || pm2 restart daycourse"
 
