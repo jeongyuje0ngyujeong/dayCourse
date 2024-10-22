@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
+import React, { useEffect} from 'react';
+// import { CustomOverlayMap, Map, MapMarker, MarkerClusterer } from 'react-kakao-maps-sdk';
 
 const { kakao } = window;
 

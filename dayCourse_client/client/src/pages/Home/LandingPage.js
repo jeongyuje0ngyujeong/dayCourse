@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-const SelectedPlacesContainer = styled.div `
-    display:flex;
-`
+// const SelectedPlacesContainer = styled.div `
+//     display:flex;
+// `
 const PlaceBox = styled.div `
     margin:10px;
 `
@@ -24,11 +24,7 @@ const DeleteButton = styled.button`
     }
 `;
 
-// 초기 데이터 설정
-const initialData = [
-    { id: '1', 장소번호: 1, 장소이름: '광교카페' },
-    { id: '2', 장소번호: 2, 장소이름: '워터쿨러' },
-];
+
 
 const LandingPage = () => {
     const [keyword, setKeyword] = useState(""); // 제출한 검색어

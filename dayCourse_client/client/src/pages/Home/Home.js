@@ -1,13 +1,13 @@
 import styled from "styled-components";
 import {useState} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import {DayTable, GroupDatesByWeek, CalendarButton,} from '../Calendar/Calendar'
+import {DayTable, GroupDatesByWeek} from '../Calendar/Calendar'
 // import Schedule from '../Calendar/Schedule'
 import { Button } from '../../Button';
 import { Outlet, Form,} from "react-router-dom";
 import { getSchedules } from "../../schedules";
 import { Link } from 'react-router-dom'; 
-import RightSidebar from './RightSidebar'; 
+// import RightSidebar from './RightSidebar'; 
 
 const WeekBar = styled.div`
   display: flex;

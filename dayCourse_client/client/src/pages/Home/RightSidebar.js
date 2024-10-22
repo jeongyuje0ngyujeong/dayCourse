@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import KakaoMap from './KakaoMap';
-import LandingPage from './LandingPage';
+// import KakaoMap from './KakaoMap';
+// import LandingPage from './LandingPage';
 
 const SidebarContainer = styled.div`
     width: 250px;

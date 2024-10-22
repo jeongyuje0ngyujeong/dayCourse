@@ -2,7 +2,7 @@ import React from 'react';
 import KakaoMap from './KakaoMap';
 import styled from "styled-components";
 import LandingPage from './LandingPage';
-import RightSidebar from './RightSidebar';
+
 
 const Box = styled.div`
     width: 50vw;
