@@ -57,6 +57,8 @@ jobs:
               echo 'pm2 install' &&
               sudo npm install -g pm2;
             fi &&
-            cat ~/.ssh/id_rsa
+            chmod 700 ~/.ssh
+            chmod 600 ~/.ssh/authorized_keys
+            chmod 600 ~/.ssh/id_rsa
             sudo setcap 'cap_net_bind_service=+ep' $(which node) 
             (pm2 delete all || true) && pm2 start app.js"
