@@ -32,19 +32,20 @@ jobs:
             REMOTE_HOST: ${{ secrets.EC2_HOST }}
             REMOTE_USER: ubuntu
           run: |
+            eval "$(ssh-agent -s)"  # SSH 에이전트 시작
             echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
             ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-            if [ ! -d \"$APP_DIR\" ]; then
+              if [ ! -d \"$APP_DIR\" ]; then
                 git clone https://github.com/your-username/your-repository.git $APP_DIR;
-            fi &&
-            cd $APP_DIR &&
-            LOCAL_COMMIT=$(git rev-parse HEAD) &&
-            REMOTE_COMMIT=$(git ls-remote origin dayCourseServer | grep HEAD | awk '{print $1}') &&
-            if [ \"$LOCAL_COMMIT\" != \"$REMOTE_COMMIT\" ]; then
+              fi &&
+              cd $APP_DIR &&
+              LOCAL_COMMIT=$(git rev-parse HEAD) &&
+              REMOTE_COMMIT=$(git ls-remote origin dayCourseServer | grep HEAD | awk '{print $1}') &&
+              if [ \"$LOCAL_COMMIT\" != \"$REMOTE_COMMIT\" ]; then
                 git pull origin dayCourseServer &&
                 npm install &&
                 pm2 restart app;
-            else
+              else
                 echo 'Already up-to-date. No deployment needed.';
-            fi"
+              fi"
 
