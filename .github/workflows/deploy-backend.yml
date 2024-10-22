@@ -36,9 +36,10 @@ jobs:
             echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
             ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
               if [ ! -d \"$APP_DIR\" ]; then
-                git clone https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
+                git clone -b dayCourseServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
               fi &&
               cd $APP_DIR/dayCourse_server &&
+
               LOCAL_COMMIT=$(git rev-parse HEAD) &&
               REMOTE_COMMIT=$(git ls-remote origin dayCourseServer | grep HEAD | awk '{print $1}') &&
               if [ \"$LOCAL_COMMIT\" != \"$REMOTE_COMMIT\" ]; then
