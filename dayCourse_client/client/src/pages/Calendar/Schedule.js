@@ -12,6 +12,11 @@ export async function loader({ params }) {
   return { schedule };
 }
 
+export async function action(params) {
+  const schedule = getSchedule(params.year,params.month,params.date); //eslint-disable-line no-unused-vars
+  // return redirect(`/schedules/${schedule.id}/edit`);
+  return redirect(`/home`);
+}
 // export async function action(params) {
 //   const schedule = getSchedule(params.year,params.month,params.date);
 
@@ -63,12 +68,12 @@ export default function Schedule(props) {
 
             {event.group && (
               <p>
-                <a
+                {/* <a
                   target="_blank"
                   href='#'
-                >
+                > */}
                   {event.group}
-                </a>
+                {/* </a> */}
               </p>
             )}
 

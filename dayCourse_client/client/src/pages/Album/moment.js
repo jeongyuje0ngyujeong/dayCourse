@@ -16,9 +16,9 @@ const Box = styled.div`
     margin: 2%;
     `;
 
-const StyledModal = styled(Modal) `
+// const StyledModal = styled(Modal) ` 
 
-`
+// `
 
     
 
