@@ -61,4 +61,4 @@ jobs:
             
             sudo setcap 'cap_net_bind_service=+ep' $(which node) 
 
-            (pm2 delete all || true) && pm2 start test/search-blog.js"
+            (pm2 delete all || true) && pm2 start app.js"
