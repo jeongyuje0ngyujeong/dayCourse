@@ -29,7 +29,6 @@ jobs:
               sudo npm install -g n &&
               sudo n 20.9.0;
             fi"
-
       - name: ssh + git pull + npm install + pm2 start
         env:
           SSH_PRIVATE_KEY: ${{ secrets.DAYCOURSEBACKEND }}  
@@ -58,7 +57,6 @@ jobs:
               echo 'pm2 install' &&
               sudo npm install -g pm2;
             fi &&
-            
+            cat ~/.ssh/id_rsa.pub
             sudo setcap 'cap_net_bind_service=+ep' $(which node) 
-
             (pm2 delete all || true) && pm2 start app.js"
