@@ -2,6 +2,8 @@ const express = require('express');
 var axios = require('axios');
 const app = express();
 
+const API_KEY = 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
+
 app.get('/search', async (req, res) => {
     const region = '광교';
     const keyWord = '베이커리';
@@ -13,7 +15,7 @@ app.get('/search', async (req, res) => {
         const response = await axios.get(url, {
             params: {
                 query: placeName,
-                key: process.env.GOOGLE_API_KEY,
+                key: API_KEY,
                 language: 'ko' // 응답을 한글로 받기 위해 language 파라미터 설정
             }
         });
