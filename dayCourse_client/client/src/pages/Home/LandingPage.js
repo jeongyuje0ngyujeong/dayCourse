@@ -5,7 +5,7 @@ import styled from "styled-components";
 // import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const SelectedPlacesContainer = styled.div `
-    display:flex;
+    display:column;
 `
 const PlaceBox = styled.div `
     margin:10px;
