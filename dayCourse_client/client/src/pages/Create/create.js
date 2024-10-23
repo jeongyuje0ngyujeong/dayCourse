@@ -8,30 +8,39 @@ export async function action({ request, params }) {
   const year= formData.get("year");
   const month= formData.get("month");
   const date= formData.get("date");
-
   const dateKey = `${year}-${month}-${date}`;
   
-  if (params.id)
+  if (params.id){
     await updateSchedule(dateKey, updates);
-  else{
-    await createSchedule(dateKey);
-    await updateSchedule(dateKey, updates);
+    return redirect(`/home/schedules/dateKey`);
   }
-  return redirect(`/home`);
+  else{
+    await createSchedule(dateKey, formData);
+    // await updateSchedule(dateKey, updates);
+    return redirect(`/home`);
+  }
 }
 
 export async function loader({ params }) {
-
+  // console.log(params);
   const { id } = params;
-  console.log(id);
-
   const event = await getEvent(id);
-  console.log(event);
+
   return { event };
 }
 
 export default function CreateSchedule() {
   const { event } = useLoaderData();
+
+  let year, month, date;
+  let group, planName, town;
+
+  if (event) {
+    [year, month, date] = event.dateKey.split('-');
+    group = event.groupName;
+    planName = event.planName;
+    town = event.town;
+  }
 
   return (
     <Form method="post" id="schedule-form">
@@ -42,46 +51,59 @@ export default function CreateSchedule() {
           aria-label="년"
           type="text"
           name="year"
-          defaultValue={event?.year}
+          defaultValue={year}
         />
         <input
           placeholder="월"
           aria-label="월"
           type="text"
           name="month"
-          defaultValue={event?.month}
+          defaultValue={month}
         />
         <input
           placeholder="일"
           aria-label="일"
           type="text"
           name="date"
-          defaultValue={event?.date}
+          defaultValue={date}
         />
       </p>
+      <span>약속 이름</span>
       <p>
+      <label>
+        <input
+          type="text"
+          name="planName"
+          placeholder={'약속의 이름을 입력해주세요.'}
+          defaultValue={planName}
+        />
+      </label>
+      </p>
+      
       <span>그룹</span>
       <p>
       <label>
         <input
           type="text"
-          name="group"
+          name="groupId"
           placeholder="누구와의 약속인가요?"
-          defaultValue={event?.group}
+          defaultValue={group}
         />
       </label>
       </p>
-      </p>
-      <span>Notes</span>
+
+      <span>위치</span>
       <p>
       <label>
-        <textarea
-          name="notes"
-          defaultValue={event?.notes}
-          rows={6}
+        <input
+          type="text"
+          name="town"
+          placeholder="어디서 만나시나요?"
+          defaultValue={town}
         />
       </label>
       </p>
+      
       <p>
         <button type="submit">Save</button>
         <button type="button">Cancel</button>

@@ -13,6 +13,7 @@ import ErrorPage from "./error-page";
 import EmptyPage from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
 // import RecentPlan from './pages/Album/RecentPlan';
 import PlanDetail from './pages/Album/PlanDetail';
+import { action as destroyAction } from "./pages/Destroy";
 // import reportWebVitals from './reportWebVitals';
 // import axios from 'axios';
 
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
                 // action: scheduleAction,
                 element: <Schedule />,
               },
+              {
+                path: "schedules/:dateKey/:eventId/destroy",
+                action: destroyAction,
+              },
             ]
           },      
           {
@@ -56,6 +61,11 @@ const router = createBrowserRouter([
           {
             path: "calendar",
             element: <Calendar/>,
+          },
+          {
+            path: "calendar/:eventId/destroy",
+            action: destroyAction,
+            // element: <Calendar/>,
           },
           {
             path: "Album",

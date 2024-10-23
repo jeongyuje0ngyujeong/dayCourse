@@ -1,38 +1,70 @@
 import localforage from "localforage";
 import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
+import axios from 'axios';
 
-export async function getSchedules(query) {
-    // await fakeNetwork(`getSchedules:${query}`);
-    let schedules = await localforage.getItem("schedules");
-    // if (!schedules) schedules = [];
+export async function getSchedules(query, startDate) {
+    // let schedules = await localforage.getItem("schedules");
+    if (!startDate)
+        startDate = new Date()
+
+    const getData = async () => {
+        let response = await axios.get('http://192.168.1.80:5000/home',{
+            params: {
+                userId: 1,
+                startDate: startDate
+            }
+        });
+        return response.data;
+    }
+
+    let schedules = await getData();
+    // console.log(schedules);
+    await set(schedules);
+
     if (!Array.isArray(schedules)) {
         schedules = [];
     }
     if (query) {
         schedules = matchSorter(schedules, query, { keys: ["dateKey"] });
     }
-    return schedules.sort(sortBy("dateKey", "createdAt"));
+    return schedules.sort(sortBy("dateKey"));
 }
 
-export async function createSchedule(dateKey) {
-    // await fakeNetwork();
-    let id = Math.random().toString(36).substring(2, 9);
-    let schedule = { id, dateKey, createdAt: Date.now() };
-    let schedules = await getSchedules();
-    schedules.unshift(schedule);
-    await set(schedules);
-    return schedule;
+export async function createSchedule(dateKey, formData) {
+    let schedules = await localforage.getItem("schedules");
+    console.log(formData);
+    const postData = async () => {
+        let response = axios.post('http://192.168.1.80:5000/home/plan', {
+            userId: 1,
+            dateKey: dateKey,
+            groupId: formData.get("groupId"),
+            planName: formData.get("planName")
+        });
+        return response;
+    }
+    
+    let result = await postData();
+    console.log(result);
+    // set(result);
+
+    return result.data.msg;
+
+    // let id = Math.random().toString(36).substring(2, 9);
+    // let schedule = { id, dateKey, createdAt: Date.now() };
+    // let schedules = await getSchedules();
+    // schedules.unshift(schedule);
+    // await set(schedules);
+    // return schedule;
 }
 
 export async function getSchedule(dateKey) {
-    // await fakeNetwork(`schedule:${dateKey}`);
     let schedules = await localforage.getItem("schedules") || [];
+
     let schedule = schedules.filter(
         (schedule) => 
             schedule.dateKey === dateKey 
     )
-    // console.log(schedule);
     return schedule ?? null;
 }
 
@@ -41,21 +73,69 @@ export async function getEvent(id) {
     let schedules = await localforage.getItem("schedules") || [];
     let event = schedules.find(
         (event) => 
-            event.id === id
+            String(event.planId) === id
     )
-    // console.log(schedule);
+    console.log(event)
     return event ?? null;
 }
 
 export async function updateSchedule(dateKey, updates) {
-    // await fakeNetwork();
+
     let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(schedule => schedule.dateKey === dateKey);
+    let schedule = schedules.find(schedule => String(schedule.dateKey) === dateKey);
     if (!schedule) throw new Error("No schedule found for", dateKey);
     Object.assign(schedule, updates);
     await set(schedules);
-    return schedule;
-  }
+
+    const postData = async () => {
+        let response = axios.post('http://192.168.1.80:5000/home/plan/update', {
+            userId: 1,
+            schedule: schedule
+        });
+        return response;
+    }
+    
+    let result = await postData();
+
+    return result.data.msg;
+
+
+    // let schedules = await localforage.getItem("schedules");
+    // let schedule = schedules.find(schedule => String(schedule.dateKey) === dateKey);
+    // if (!schedule) throw new Error("No schedule found for", dateKey);
+    // Object.assign(schedule, updates);
+    // await set(schedules);
+    // return schedule;
+}
+
+export async function deleteSchedule(id) {
+    let schedules = await localforage.getItem("schedules");
+    let schedule = schedules.find(schedule => schedule.planId === id);
+    let index = schedules.findIndex(schedule => schedule.planId === id);
+    console.log('index: ', index, id);
+    
+    const postData = async () => {
+        let response = axios.post('http://192.168.1.80:5000/home/plan/delete', {
+            userId: 1,
+            planId: schedule.planId
+        });
+        
+
+        return response;
+    }
+
+    if (index > -1) {
+        schedules.splice(index, 1);
+        
+        await postData();
+        await set(schedules);
+        
+        return schedules;
+    }
+
+    // getSchedules();
+    return false;
+}
 
 function set(schedules) {
     return localforage.setItem("schedules", schedules);

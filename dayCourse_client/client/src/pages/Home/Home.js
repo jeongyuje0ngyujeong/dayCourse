@@ -4,7 +4,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import {DayTable, GroupDatesByWeek} from '../Calendar/Calendar'
 // import Schedule from '../Calendar/Schedule'
 import { Button } from '../../Button';
-import { Outlet, Form,} from "react-router-dom";
+import { Outlet, Form, useLoaderData,} from "react-router-dom";
 import { getSchedules } from "../../schedules";
 import { Link } from 'react-router-dom'; 
 // import RightSidebar from './RightSidebar'; 
@@ -28,7 +28,7 @@ const CalendarContainer = styled.div `
   flex-direction: column;
   margin: 0 auto; 
   width: 100%;
-  height: 50%;
+  height: 40%;
 `
 
 const ScheduleContainer = styled.div `
@@ -50,6 +50,7 @@ export async function loader() {
 
 // 날짜칸을 선택 -> useState 변경-> loader의 인자 -> loader의 return값을 얻어옴
 export default function Home() {
+
   const [currentDate, setCurrentDate] = useState(new Date());
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -76,7 +77,8 @@ export default function Home() {
     );
   };
 
-  // const { schedules} = useLoaderData();
+  const [ schedules, setSchedules ] = useState(useLoaderData());
+  // const [selectedDate, setSelectedDate] = useState(null);
 
   return (
     <>
@@ -85,43 +87,24 @@ export default function Home() {
       <WeekBar>
         <h3>한 주 일정</h3>
         <Form action="/schedules/create">
-          <Button type='submit' width='6rem' background='#90B54C' color='white'>+ 일정추가</Button>
+          <Button type='submit' width='6rem' $background='#90B54C' color='white'>+ 일정추가</Button>
         </Form>
-        
       </WeekBar>
       <MonthContainer>
         <h3>{year}. {st_month}</h3>
-        <Button onClick={() => handlePrevWeek()} border='none'>{'<'}</Button>
-        <Button onClick={() => handleNextWeek()} border='none'>{'>'}</Button>
+        <Button onClick={() => handlePrevWeek()} $border='none'>{'<'}</Button>
+        <Button onClick={() => handleNextWeek()} $border='none'>{'>'}</Button>
       </MonthContainer>
+  
       <DayTable/> 
+      {/* 주단위 달력 */}
       <GroupDatesByWeek startDay={startDay} endDay={endDay}/>
-      
+
+      {/* 선택 날짜 일정 표시 */}
       <ScheduleContainer>
-      {/* {schedules.length ? (
-        <ul>
-          {schedules.map((schedule) => (
-            <li key={schedule.dateKey}>
-              <Link to={`schedules/${schedule.dateKey}`}>
-                {schedule.year || schedule.month || schedule.date ? (
-                  <>
-                    {schedule.year} {schedule.month} {schedule.date}
-                  </>
-                ) : (
-                  <i>No Date</i>
-                )}{" "}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>
-          <i>No schedules</i>
-        </p>
-      )} */}
-      
-        <Outlet />
+        <Outlet context={[schedules, setSchedules]}/>
       </ScheduleContainer>
+
       <Footer/>
     </CalendarContainer>
     <Footer/>
