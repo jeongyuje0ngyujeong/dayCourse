@@ -2,7 +2,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
-import { getSchedule,} from "../../schedules";
+import { getSchedule, getSchedules} from "../../schedules";
 import Modal from 'react-modal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Schedule from "./Schedule";
@@ -27,11 +27,6 @@ const CalendarContainer = styled.div `
 `
 
 
-const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
-
-const getDayName = (day)=> {
-  return daysOfWeek[day] ?? "Invalid day";
-};
 
 const StyleDayT = styled.table`
   height: 5%;
@@ -40,19 +35,20 @@ const StyleDayT = styled.table`
   color: #818181;
   ${'' /* border-bottom: 1px solid; */}
 `
+const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
+
+export const getDayName = (day)=> {
+  return daysOfWeek[day] ?? "Invalid day";
+};
+
 export function DayTable(){
   return (
   <StyleDayT>
     <tbody>
       <tr>
-        {/* {daysOfWeek.map()(event, index) =>} */}
-        <th title="일">일</th>
-        <th title="월">월</th>
-        <th title="화">화</th>
-        <th title="수">수</th>
-        <th title="목">목</th>
-        <th title="금">금</th>
-        <th title="토">토</th>
+        {daysOfWeek.map((day, index) => (
+          <th key={index} title={day}>{day}</th>
+        ))}
       </tr>
     </tbody>
   </StyleDayT>
@@ -110,15 +106,17 @@ const customModalStyles: ReactModal.Styles = {
   },
 };
 
-const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
+const ScheduleModal = ({ isOpen, OnRequestClose, content}) => {
   try{
+    // console.log(content);
     return (
       <Modal style={customModalStyles} isOpen={isOpen} OnRequestClose>
           {content && content.props.schedule && content.props.schedule.length > 0 ?
-          <h2>{content.props.schedule[0].date}</h2>:null}
+          <h2>{new Date(content.props.schedule[0].dateKey).getDate()} {getDayName(new Date(content.props.schedule[0].dateKey).getDay())}</h2>:null}
           <p> {content} </p>
           <button onClick={OnRequestClose}>닫기</button>
       </Modal>
+
     );
   }
   catch(error) {
@@ -126,29 +124,35 @@ const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
   }
 };
 
+
+// 시작 날짜, 끝 날짜를 인자로 호출
+// 시작, 끝 날짜 바뀔 때 해당 기간 데이터 재요청 
 export function GroupDatesByWeek(props){
   const [schedules, setSchedules] = useState([]);
-
+  
   useEffect(() => {
     async function fetchSchedules() {
       let scheduleMap = {};
       let currentDate = new Date(props.startDay);
+      
+      const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
+      // console.log(dateKey);
+      let schedules = await getSchedules(null, dateKey);
 
       while (currentDate <= props.endDay) {
-        const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()}`;
+        const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
         const schedule = await getSchedule(dateKey);
         scheduleMap[dateKey] = schedule;
         currentDate.setDate(currentDate.getDate() + 1);
       }
-
       setSchedules(scheduleMap); 
     }
-
+    
     fetchSchedules(); 
   }, [props.startDay, props.endDay]);
-
+  
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [modalContent, setModalContent] = useState('')
+  const [modalContent, setModalContent] = useState('');
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -156,12 +160,9 @@ export function GroupDatesByWeek(props){
   const handleCellClick = async (params, e) => {
     e.preventDefault();
     const scheduleData = await getSchedule(params);
-
-    // alert(params);
-    // console.log("hello", params, content);
     
     if (location.pathname === "/calendar"){
-      const content = <Schedule schedule = {scheduleData}/>;
+      const content = <Schedule schedule = {scheduleData} setSchedules = {setSchedules}/>;
       setModalContent(content);
       setModalIsOpen(true);
     }
@@ -174,19 +175,18 @@ export function GroupDatesByWeek(props){
   let currentWeek = []; 
   let currentDate = new Date(props.startDay); 
   
+
   while (currentDate <= props.endDay) {
-    const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()+1}-${currentDate.getDate()}`;
-    // const events = schedules.filter(schedule => schedule.dateKey === dateKey)|| []
+    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${currentDate.getDate()}`;
     const events = schedules[dateKey];
-    // console.log(dateKey, events);
 
     currentWeek.push(
-    <Cell key={dateKey} onClick={(e)=>handleCellClick(dateKey,e)}>
+    <Cell key={dateKey} onClick={(e)=>handleCellClick(dateKey, e)}>
       <div>{new Date(currentDate).getDate().toString()}</div>
     
       <div>
       {events && events.length > 0 ? events.map((event, index) => (
-        <div key={index}> {event.group}</div>)):null}
+        <div key={index}> {event.planName}</div>)):null}
       </div>
     </Cell>);
 
@@ -256,9 +256,9 @@ export default function Calendar() {
     <PageTitle>Calendar</PageTitle>
 
     <MonthContainer>
-      <Button onClick={() => handlePrevMonth()} border='none'>{'<'}</Button>
+      <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
       <PageTitle>{year}. {st_month}</PageTitle>
-      <Button onClick={() => handleNextMonth()} border='none'>{'>'}</Button>
+      <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
     </MonthContainer>
 
     <CalendarContainer>

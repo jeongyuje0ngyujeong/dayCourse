@@ -10,6 +10,7 @@ import CreateSchedule, {action as createAction, loader as createLoader,} from ".
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
+import { action as destroyAction } from "./pages/Destroy";
 // import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
                 // action: scheduleAction,
                 element: <Schedule />,
               },
+              {
+                path: "schedules/:dateKey/:eventId/destroy",
+                action: destroyAction,
+              },
             ]
           },      
           {
@@ -52,6 +57,11 @@ const router = createBrowserRouter([
           {
             path: "calendar",
             element: <Calendar/>,
+          },
+          {
+            path: "calendar/:eventId/destroy",
+            action: destroyAction,
+            // element: <Calendar/>,
           },
           {
             path: "Album",
