@@ -6,7 +6,7 @@ const BASE_URL = 'http://43.200.172.201';
 //모든 플랜 가져오기
 export async function getPlan() {
     try {
-        const response = await fetch(`${BASE_URL}/plan`); // 서버에서 모든 플랜 요청
+        const response = await fetch(`${BASE_URL}/home/plans/recent`); // 서버에서 모든 플랜 요청
         if (!response.ok) {
             throw new Error('플랜 가져오기 실패');
         }
