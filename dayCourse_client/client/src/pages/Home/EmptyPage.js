@@ -26,7 +26,7 @@ const EmptyPage = () => {
         <div>
             <LandingPage></LandingPage>
             <KakaoMap></KakaoMap>
-            <Box>일정칸입니다</Box>
+            {/* <Box>일정칸입니다</Box> */}
          {/* <RightSidebar></RightSidebar> */}
         </div>
 

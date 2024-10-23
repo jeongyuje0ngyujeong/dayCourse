@@ -28,7 +28,7 @@ const PlanDetail = () => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
 
     const [selectedFile, setSelectedFile] = useState(null);
-    const [userId, setUserId] = useState("")
+    const [userId, setUserId] = useState("1")
     const [imageUrls, setImageUrls] = useState([]);
 
 
