@@ -33,12 +33,13 @@ export default function CreateSchedule() {
   const { event } = useLoaderData();
 
   let year, month, date;
-  let group, planName;
+  let group, planName, town;
 
   if (event) {
     [year, month, date] = event.dateKey.split('-');
     group = event.groupName;
     planName = event.planName;
+    town = event.town;
   }
 
   return (
@@ -90,7 +91,18 @@ export default function CreateSchedule() {
         />
       </label>
       </p>
-      
+
+      <span>위치</span>
+      <p>
+      <label>
+        <input
+          type="text"
+          name="town"
+          placeholder="어디서 만나시나요?"
+          defaultValue={town}
+        />
+      </label>
+      </p>
       
       <p>
         <button type="submit">Save</button>

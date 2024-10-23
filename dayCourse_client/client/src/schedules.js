@@ -110,14 +110,17 @@ export async function updateSchedule(dateKey, updates) {
 
 export async function deleteSchedule(id) {
     let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(schedule => String(schedule.planId) === id);
-    let index = schedules.findIndex(schedule => String(schedule.planId) === id);
+    let schedule = schedules.find(schedule => schedule.planId === id);
+    let index = schedules.findIndex(schedule => schedule.planId === id);
+    console.log('index: ', index, id);
     
     const postData = async () => {
         let response = axios.post('http://192.168.1.80:5000/home/plan/delete', {
             userId: 1,
             planId: schedule.planId
         });
+        
+
         return response;
     }
 
@@ -126,9 +129,11 @@ export async function deleteSchedule(id) {
         
         await postData();
         await set(schedules);
-
+        
         return schedules;
     }
+
+    // getSchedules();
     return false;
 }
 

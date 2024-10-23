@@ -111,7 +111,7 @@ const ScheduleModal = ({ isOpen, OnRequestClose, content}) => {
     // console.log(content);
     return (
       <Modal style={customModalStyles} isOpen={isOpen} OnRequestClose>
-          {content && content.props.schedule && content.props.schedule.length > 0 ?
+          {content && content.props && content.props.schedule && content.props.schedule.length > 0 ?
           <h2>{new Date(content.props.schedule[0].dateKey).getDate()} {getDayName(new Date(content.props.schedule[0].dateKey).getDay())}</h2>:null}
           <p> {content} </p>
           <button onClick={OnRequestClose}>닫기</button>
@@ -162,7 +162,7 @@ export function GroupDatesByWeek(props){
     const scheduleData = await getSchedule(params);
     
     if (location.pathname === "/calendar"){
-      const content = <Schedule schedule = {scheduleData} setSchedules = {setSchedules}/>;
+      const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent}/>;
       setModalContent(content);
       setModalIsOpen(true);
     }
