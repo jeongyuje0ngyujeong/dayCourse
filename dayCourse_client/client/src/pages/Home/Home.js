@@ -107,11 +107,6 @@ export default function Home() {
 
       <Footer/>
     </CalendarContainer>
-    <Footer/>
-    <Link to="/empty">
-      <button>새 페이지</button>
-    </Link>
-
 
     </>
   );

@@ -124,6 +124,22 @@ const ScheduleModal = ({ isOpen, OnRequestClose, content}) => {
   }
 };
 
+async function fetchSchedules(props, setSchedules) {
+  let scheduleMap = {};
+  let currentDate = new Date(props.startDay);
+  
+  const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
+  // console.log(dateKey);
+  let schedules = await getSchedules(null, dateKey);
+
+  while (currentDate <= props.endDay) {
+    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
+    const schedule = await getSchedule(dateKey);
+    scheduleMap[dateKey] = schedule;
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+  setSchedules(scheduleMap); 
+}
 
 // 시작 날짜, 끝 날짜를 인자로 호출
 // 시작, 끝 날짜 바뀔 때 해당 기간 데이터 재요청 
@@ -131,24 +147,7 @@ export function GroupDatesByWeek(props){
   const [schedules, setSchedules] = useState([]);
   
   useEffect(() => {
-    async function fetchSchedules() {
-      let scheduleMap = {};
-      let currentDate = new Date(props.startDay);
-      
-      const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
-      // console.log(dateKey);
-      let schedules = await getSchedules(null, dateKey);
-
-      while (currentDate <= props.endDay) {
-        const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
-        const schedule = await getSchedule(dateKey);
-        scheduleMap[dateKey] = schedule;
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-      setSchedules(scheduleMap); 
-    }
-    
-    fetchSchedules(); 
+    fetchSchedules(props, setSchedules); 
   }, [props.startDay, props.endDay]);
   
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -162,7 +161,7 @@ export function GroupDatesByWeek(props){
     const scheduleData = await getSchedule(params);
     
     if (location.pathname === "/calendar"){
-      const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent}/>;
+      const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
       setModalContent(content);
       setModalIsOpen(true);
     }

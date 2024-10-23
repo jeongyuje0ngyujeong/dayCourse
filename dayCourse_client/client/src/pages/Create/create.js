@@ -1,5 +1,6 @@
 import { Form, useLoaderData, redirect, } from "react-router-dom";
 import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
+import { Link } from 'react-router-dom'; 
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -17,7 +18,7 @@ export async function action({ request, params }) {
   else{
     await createSchedule(dateKey, formData);
     // await updateSchedule(dateKey, updates);
-    return redirect(`/home`);
+    return redirect(`/empty`);
   }
 }
 
@@ -43,6 +44,7 @@ export default function CreateSchedule() {
   }
 
   return (
+    <>
     <Form method="post" id="schedule-form">
       <span>약속 날짜</span>
       <p>
@@ -106,8 +108,15 @@ export default function CreateSchedule() {
       
       <p>
         <button type="submit">Save</button>
-        <button type="button">Cancel</button>
+        <Link to="/home">
+          <button type="button">Cancel</button>
+        </Link>
       </p>
     </Form>
+
+    {/* <Link to="/empty">
+      <button>새 페이지</button>
+    </Link> */}
+    </>
   );
 }
