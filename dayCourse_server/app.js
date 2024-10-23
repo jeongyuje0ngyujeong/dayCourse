@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const app = express();
 
+//서버-클라이언트 연결 테스트
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
@@ -384,7 +385,6 @@ app.post('/home/plan/delete', async (req, res) => {
     });
 });
 
-// 3000번 포트로 서버 실행
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
