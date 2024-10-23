@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { getPlan } from '../../AlbumApi.js'; // API 함수 가져오기
+import { getPlan } from '../../AlbumApi'; // API 함수 가져오기
 
 const Container = styled.div`
     justify-content: center;
@@ -50,21 +50,21 @@ const RecentPlan = () => {
         fetchPlans();
     }, []);
 
-    const handleBoxClick = (plan) => {
-        console.log('Selected plan:', plan);
-        setSelectedPlan(plan); // 선택된 플랜 설정
-        navigate(`/plan/${plan.id}`); // 플랜 상세 페이지로 이동
+    const handleBoxClick = (item) => { // item으로 통일
+        console.log('Selected plan:', item);
+        setSelectedPlan(item); // 선택된 플랜 설정
+        navigate(`/plan/${item.planId}`); // 플랜 상세 페이지로 이동
     };
 
     return (
         <div>
             <h2>최근 플랜</h2>
             <Container>
-                {plans.map(plan => (
-                    <Box key={plan.id} onClick={() => handleBoxClick(plan)}>
+                {plans.map(item => ( // item으로 통일
+                    <Box key={item.planId} onClick={() => handleBoxClick(item)}>
                         <div>
-                            <h3>{plan.title}</h3>
-                            <p>{new Date(plan.createdAt).toLocaleDateString()}</p>
+                            <h3>{item.planName}</h3>
+                            <p>{new Date(item.createdAt).toLocaleDateString()}</p>
                         </div>
                     </Box>
                 ))}
@@ -72,7 +72,7 @@ const RecentPlan = () => {
             {selectedPlan && (
                 <SelectedPlanContainer>
                     <h3>선택된 플랜:</h3>
-                    <p>{selectedPlan.title}</p>
+                    <p>{selectedPlan.planName}</p> {/* item.planName으로 통일 */}
                 </SelectedPlanContainer>
             )}
         </div>

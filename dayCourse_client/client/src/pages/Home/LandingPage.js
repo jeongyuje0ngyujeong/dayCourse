@@ -4,9 +4,9 @@ import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 // import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
-// const SelectedPlacesContainer = styled.div `
-//     display:flex;
-// `
+const SelectedPlacesContainer = styled.div `
+    display:flex;
+`
 const PlaceBox = styled.div `
     margin:10px;
 `
@@ -51,7 +51,7 @@ const LandingPage = () => {
         <div className="landing-page">
             <RightSidebar onSubmitKeyword={submitKeyword} places={places} addPlace={addPlace}/>
             <KakaoMap searchKeyword={keyword} setPlaces={setPlaces} />
-            <selectedPlacesContainer>
+            <SelectedPlacesContainer>
                 {selectedPlaces.map((place, index) => (
                     <PlaceBox key = {index}>
                         <h5>{place.place_name}</h5>
@@ -61,7 +61,7 @@ const LandingPage = () => {
                         <DeleteButton onClick={() => removePlace(index)}>삭제</DeleteButton>
                     </PlaceBox>
                ))}
-            </selectedPlacesContainer>
+            </SelectedPlacesContainer>
         </div>
     );
 };

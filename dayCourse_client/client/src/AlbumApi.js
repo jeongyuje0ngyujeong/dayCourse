@@ -1,5 +1,6 @@
+import axios from 'axios';
 const BASE_URL = 'http://43.200.172.201'; 
-//const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
+// const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
 
 //모든 플랜 가져오기
@@ -18,42 +19,35 @@ export async function getPlan() {
 }
 
 
-// 특정 플랜 ID에 대한 사진 가져오기
-export async function getPhotosForPlan(planId) {
+//이미지 업로드
+export const uploadImage = async (userId, selectedFile) => {
+    const formData= new FormData();
+    formData.append("userId", userId);      // 사용자 ID 추가
+    formData.append("image", selectedFile); // 이미지 파일 추가
+
+
     try {
-        const response = await fetch(`${BASE_URL}/album/${planId}`);
-        if (!response.ok) {
-            throw new Error('사진 가져오기 실패');
-        }
-        const photos = await response.json();
-        return photos;
+        const response = await axios.post(`${BASE_URL}/images`, formData, {
+            hearders: {
+                "Content-Type" : "multipart/form-data",
+            },
+        });
+        return response.data;
     } catch (error) {
-        console.error('Error fetching photos:', error);
+        console.error("업로드 실패:", error);
         throw error;
     }
-}
+};
 
-// 자기 사진 등록
-export async function uploadPhoto(planId, userId, file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('planId', planId);
-    formData.append('userId', userId);
-
+// 이미지 가져오기
+export const fetchImage = async(userId) => {
     try {
-        const response = await fetch(`${BASE_URL}/upload`, {
-            method: 'POST',
-            body: formData,
+        const response = await axios.get(`${BASE_URL}/images`, {
+            params: { name : userId},
         });
-
-        if (!response.ok) {
-            throw new Error('사진 업로드 실패');
-        }
-
-        const result = await response.json();
-        return result;
-    } catch (error) {
-        console.error('포토 업로드 에러', error);
+        return response.data;
+    } catch (error)  {
+        console.error("Error fetching images:", error);
         throw error;
     }
 }
