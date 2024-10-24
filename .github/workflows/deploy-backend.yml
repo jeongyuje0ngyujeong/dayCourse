@@ -32,18 +32,16 @@ jobs:
             REMOTE_HOST: ${{ secrets.EC2_HOST }}
             REMOTE_USER: ubuntu
             APP_DIR: '/home/ubuntu/dayCourse_server'
-            run: |
-              eval "$(ssh-agent -s)"  # SSH 에이전트 시작
-              echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-              ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+          run: |
+            eval "$(ssh-agent -s)"  # SSH 에이전트 시작
+            echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+            ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
               if [ ! -d \"$APP_DIR\" ]; then
-                git clone -b dayCourseServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;   # 특정 브랜치로 clone 진행
+                git clone -b dayCourseServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
               else
                 cd $APP_DIR && git pull origin dayCourseServer;
               fi &&
-              cd $APP_DIR/dayCourse_server &&     # 정확한 경로로 이동
+              cd $APP_DIR/dayCourse_server &&
               npm install &&
-              # app.js 경로 오류로 인해 절대 경로 지정, 처음엔 start, 이후엔 restart
-              pm2 start /home/ubuntu/dayCourse_server/dayCourse_server/app.js —name daycourse -f || pm2 restart daycourse -f"
-
-
+              pm2 start /home/ubuntu/dayCourse_server/dayCourse_server/app.js --name daycourse -f || pm2 restart daycourse -f"
+          
