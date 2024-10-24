@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
 
-
+// DB 정보
 const db = mysql.createConnection({
     host: '13.124.161.75',
     user: 'daycourse',
@@ -40,6 +40,9 @@ const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
+// 회원가입, 로그인 라우터 변수 지정 및 라우터 설정
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: '찾을 수 없는 페이지입니다.' });
@@ -384,6 +387,7 @@ app.post('/home/plan/delete', async (req, res) => {
         return res.status(201).json({ msg: 'success' });
     });
 });
+
 
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {

@@ -2,9 +2,11 @@ const express = require('express');
 var axios = require('axios');
 const app = express();
 
-app.get('/search', async (req, res) => {
-    const region = '광교';
-    const keyWord = '베이커리';
+//수정중이었음
+
+app.get('/distance', async (req, res) => {
+    const start_place = '광교';
+    const end_place = ;
     const placeName = region + " " + keyWord; // 검색할 장소
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json`;
 
@@ -37,3 +39,27 @@ app.get('/search', async (req, res) => {
 app.listen(3001, () => {
     console.log('서버가 http://localhost:3001 에서 실행 중입니다');
 });
+
+const getDistance = async (req, res) => {
+    const origins = '37.259,127.036';  // 출발지 좌표
+    const destinations = '37.540,126.978';  // 목적지 좌표
+    const apiKey = 'YOUR_GOOGLE_API_KEY';  // 구글 API 키
+    
+    try {
+        const response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json`, {
+            params: {
+                origins,
+                destinations,
+                key: apiKey,
+            }
+        });
+
+        // Google Maps API 응답 결과를 프론트엔드에 전달
+        res.json(response.data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('API 요청에 실패했습니다.');
+    }
+};
+
+module.exports = { getDistance };
