@@ -2,7 +2,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
-import { getSchedule, getSchedules} from "../../schedules";
+import { getSchedule} from "../../schedules";
 import Modal from 'react-modal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Schedule from "./Schedule";
@@ -128,7 +128,7 @@ async function fetchSchedules(props, setSchedules) {
   let scheduleMap = {};
   let currentDate = new Date(props.startDay);
   
-  const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
+  // const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
   // console.log(dateKey);
   // let schedules = await getSchedules(null, dateKey);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import KakaoMap from './KakaoMap';
-import styled from "styled-components";
+// import styled from "styled-components";
 import LandingPage from './LandingPage';
 
 
