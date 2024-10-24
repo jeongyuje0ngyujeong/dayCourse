@@ -10,22 +10,52 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+        # 1. Checkout the code
         - name: Checkout code
           uses: actions/checkout@v4
         
+        # 2. Set up Node.js
         - name: Set up Node.js
           uses: actions/setup-node@v3
           with:
             node-version: '22.x'
         
+        # 3. Check Node version
         - name: Check Node v
           run: node -v
 
+        # 4. Stash local changes (only if there are changes)
+        - name: Stash local changes if any
+          id: stash
+          run: |
+            git diff-index --quiet HEAD || git stash
+            echo "::set-output name=CHANGES_STASHED::$(git stash list | wc -l)"
+
+        # 5. Pull latest changes and merge
+        - name: Pull and merge
+          run: git pull origin dayCourseServer
+
+        # 6. Apply stashed changes (only if there were stashed changes)
+        - name: Apply stashed changes if any
+          if: steps.stash.outputs.CHANGES_STASHED != '0'
+          run: git stash pop
+
+        # 7. Cache node_modules to speed up subsequent builds
+        - name: Cache node_modules
+          uses: actions/cache@v2
+          with:
+            path: node_modules
+            key: ${{ runner.os }}-node_modules-${{ hashFiles('dayCourse_server/package-lock.json') }}
+            restore-keys: |
+              ${{ runner.os }}-node_modules-
+
+        # 8. Install dependencies
         - name: Install dependencies # 의존성 다운
           run: |
             cd dayCourse_server  # server 폴더로 이동
-            npm ci #clean install로 node_modules와 package-lock.json 파일을 삭제했다가 npm install로 맞추는 것
+            npm ci # clean install로 node_modules와 package-lock.json 파일을 삭제하고 다시 설치
         
+        # 9. Deploy to EC2
         - name: Deploy to EC2
           env:
             SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -44,4 +74,3 @@ jobs:
               cd $APP_DIR/dayCourse_server &&
               npm install &&
               pm2 start /home/ubuntu/dayCourse_server/dayCourse_server/app.js --name daycourse -f || pm2 restart daycourse -f"
-          
