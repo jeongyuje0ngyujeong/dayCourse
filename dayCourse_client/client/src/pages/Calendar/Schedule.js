@@ -60,21 +60,10 @@ export default function Schedule(props) {
         <EventContainer key={index} id="schedule">
           <div>
             <h3>
-              {event.dateKey ? (
-                  <>
-                    {event.planName}
-                  </>
-                ) : (
-                  <i>No Date?</i>
-                )}{" "}
+              {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
             </h3>
 
-            {event.groupName && (
-              <p>
-                {event.groupName}
-              </p>
-            )}
-
+            {event.groupName && (<p>{event.groupName}</p>)}
             {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
@@ -85,17 +74,21 @@ export default function Schedule(props) {
                 method="post"
                 action={`${event.planId}/destroy`}
                 onSubmit={async(e) => {
-                  e.preventDefault();
                   const newSchedules = await deleteSchedule(event.planId);
-                  const newSchedule = await getSchedule(event.dateKey);
                   
-                  if (Object.keys(props).length === 0){
-                    setSchedules(newSchedules);
-                  }
-                  else if (props.setModalContent)
+                  await setSchedules(newSchedules);
+
+                  if (props.setModalContent)
                   {
+                    const newSchedule = await getSchedule(event.dateKey);
                     props.fetchSchedules();
-                    props.setModalContent(<Schedule schedule = {newSchedule} setModalContent = {props.setModalContent} fetchSchedules={props.fetchSchedules}/>);
+                    props.setModalContent(
+                      <Schedule 
+                        schedule = {newSchedule} 
+                        setModalContent = {props.setModalContent} 
+                        fetchSchedules={props.fetchSchedules}  
+                      />
+                    );
                   }
                 }}
               >
