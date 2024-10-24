@@ -78,7 +78,10 @@ export default function Home() {
     );
   };
 
-  const [ schedules, setSchedules ] = useState(useLoaderData());
+  
+
+  // const [ schedules, setSchedules ] = useState(useLoaderData());
+  const [ schedules, setSchedules ] = useState([]);
   // const [selectedDate, setSelectedDate] = useState(null);
 
   return (
@@ -110,5 +113,5 @@ export default function Home() {
     </CalendarContainer>
 
     </>
-  );
+  )
 }

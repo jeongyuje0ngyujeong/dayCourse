@@ -33,7 +33,7 @@ export async function getSchedules(query, startDate) {
 
 export async function createSchedule(dateKey, formData) {
     let schedules = await localforage.getItem("schedules");
-    console.log(formData);
+
     const postData = async () => {
         let response = axios.post('http://192.168.1.80:5000/home/plan', {
             userId: 1,
@@ -45,7 +45,7 @@ export async function createSchedule(dateKey, formData) {
     }
     
     let result = await postData();
-    console.log(result);
+
     // set(result);
 
     return result.data.msg;
@@ -75,7 +75,7 @@ export async function getEvent(id) {
         (event) => 
             String(event.planId) === id
     )
-    console.log(event)
+
     return event ?? null;
 }
 
@@ -112,7 +112,6 @@ export async function deleteSchedule(id) {
     let schedules = await localforage.getItem("schedules");
     let schedule = schedules.find(schedule => schedule.planId === id);
     let index = schedules.findIndex(schedule => schedule.planId === id);
-    console.log('index: ', index, id);
     
     const postData = async () => {
         let response = axios.post('http://192.168.1.80:5000/home/plan/delete', {
