@@ -53,7 +53,7 @@ jobs:
         - name: Install dependencies # 의존성 다운
           run: |
             cd dayCourse_server  # server 폴더로 이동
-            npm ci  # clean install로 node_modules와 package-lock.json 파일을 삭제하고 다시 설치
+            npm install
         
         # 9. Deploy to EC2
         - name: Deploy to EC2
