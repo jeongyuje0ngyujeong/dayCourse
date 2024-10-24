@@ -22,17 +22,17 @@ const CalendarContainer = styled.div `
   width: 100%;
   height: 80%;
   color: #818181;
+  padding: 0 3rem;
   ${'' /* padding: 0.5rem; */}
   ${'' /* background-color: #90B54C; */}
 `
-
-
 
 const StyleDayT = styled.table`
   height: 5%;
   width: 100%;
   table-layout: fixed;
   color: #818181;
+  margin-top: 1rem;
   ${'' /* border-bottom: 1px solid; */}
 `
 const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];

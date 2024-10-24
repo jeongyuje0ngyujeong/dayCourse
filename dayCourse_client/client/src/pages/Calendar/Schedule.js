@@ -16,11 +16,6 @@ export async function action(params) {
   // return redirect(`/schedules/${schedule.id}/edit`);
   return redirect(`/home`);
 }
-// export async function action(params) {
-//   const schedule = getSchedule(params.year,params.month,params.date);
-
-//   return redirect(`/home`);
-// }
 
 const EventContainer = styled.div `
   border: 1px, solid;
@@ -29,7 +24,16 @@ const EventContainer = styled.div `
   ${'' /* margin-bottom: 1rem; */}
   margin: 1rem 0;
   ${'' /* background: red; */}
+`
 
+const NoEventContainer = styled.div `
+  display: flex;
+  border: 1px, solid;
+  border-radius: 1rem;
+  margin: 1rem 0;
+  min-height: 5rem;
+  justify-content: center; 
+  align-items: center;
 `
 
 const ButtonContainer = styled.div`
@@ -39,7 +43,6 @@ const ButtonContainer = styled.div`
   gap: 1rem;
   width: 100%;
 `
-
 
 export default function Schedule(props) {
   
@@ -83,11 +86,10 @@ export default function Schedule(props) {
                 action={`${event.planId}/destroy`}
                 onSubmit={async(e) => {
                   // e.preventDefault();
-
                   const newSchedules = await deleteSchedule(event.planId);
                   const newSchedule = await getSchedule(event.dateKey);
                   
-                  if (!props){
+                  if (Object.keys(props).length === 0){
                     setSchedules(newSchedules);
                   }
                   else if (props.setModalContent)
@@ -102,7 +104,7 @@ export default function Schedule(props) {
             </ButtonContainer>
           </div>
         </EventContainer>
-      )) : <div>일정 없음</div>}
+      )) : <NoEventContainer><div>일정 없음</div></NoEventContainer>}
     </div>
   );
 }
