@@ -130,7 +130,7 @@ async function fetchSchedules(props, setSchedules) {
   
   const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
   // console.log(dateKey);
-  let schedules = await getSchedules(null, dateKey);
+  // let schedules = await getSchedules(null, dateKey);
 
   while (currentDate <= props.endDay) {
     const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
@@ -148,7 +148,7 @@ export function GroupDatesByWeek(props){
   
   useEffect(() => {
     fetchSchedules(props, setSchedules); 
-  }, [props.startDay, props.endDay]);
+  }, [props]);
   
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');

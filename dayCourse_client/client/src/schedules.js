@@ -32,7 +32,7 @@ export async function getSchedules(query, startDate) {
 }
 
 export async function createSchedule(dateKey, formData) {
-    let schedules = await localforage.getItem("schedules");
+    // let schedules = await localforage.getItem("schedules");
     console.log(formData);
     const postData = async () => {
         let response = axios.post('http://192.168.1.80:5000/home/plan', {

@@ -1,7 +1,7 @@
 import { Form, useLoaderData, redirect, Link, useOutletContext } from "react-router-dom";
-import { getSchedule, deleteSchedule, getSchedules} from "../../schedules";
+import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
-import {useState,useEffect } from 'react';
+
 // import { Button } from '../../Button';
 
 export async function loader({ params }) {
