@@ -1,4 +1,4 @@
-// data.js
+
 export const data = [
     { id: 1, title: "일정 1" },
     { id: 2, title: "일정 2" },

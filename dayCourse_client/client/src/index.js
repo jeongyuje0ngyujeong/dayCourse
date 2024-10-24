@@ -10,7 +10,12 @@ import CreateSchedule, {action as createAction, loader as createLoader,} from ".
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
+import EmptyPage from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
+// import RecentPlan from './pages/Album/RecentPlan';
+import PlanDetail from './pages/Album/PlanDetail';
+import { action as destroyAction } from "./pages/Destroy";
 // import reportWebVitals from './reportWebVitals';
+// import axios from 'axios';
 
 const router = createBrowserRouter([
   {
@@ -34,6 +39,10 @@ const router = createBrowserRouter([
                 // action: scheduleAction,
                 element: <Schedule />,
               },
+              {
+                path: "schedules/:dateKey/:eventId/destroy",
+                action: destroyAction,
+              },
             ]
           },      
           {
@@ -54,12 +63,25 @@ const router = createBrowserRouter([
             element: <Calendar/>,
           },
           {
+            path: "calendar/:eventId/destroy",
+            action: destroyAction,
+            // element: <Calendar/>,
+          },
+          {
             path: "Album",
             element: <Album/>,
           },
           {
             path: "mypage",
             element: <Mypage/>,
+          },
+          {
+            path: "empty",
+            element: <EmptyPage />,
+          },
+          {
+            path: "plan/:planId",
+            element: <PlanDetail />
           },
         ]
       },
