@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 // import KakaoMap from './KakaoMap';
 // import LandingPage from './LandingPage';
+import { fetchPlace, addPlace } from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+
 
 const SidebarContainer = styled.div`
     width: 250px;
@@ -34,10 +36,10 @@ const SidebarButton = styled.button`
 
     &:hover {
         background-color: #0056b3;
-    }
+    } 
 `;
 
-const RightSidebar = ({ onSubmitKeyword, places=[], addPlace}) => {
+const RightSidebar = ({ onSubmitKeyword, places=[], userId, planId, setSelectedPlaces}) => {
     const [value, setValue] = useState(""); // 입력 값 상태
 
     // 입력값 변화 감지
@@ -51,6 +53,17 @@ const RightSidebar = ({ onSubmitKeyword, places=[], addPlace}) => {
         onSubmitKeyword(value); // 제출한 검색어를 부모 컴포넌트로 전달
         setValue(""); // 제출 후 입력 필드 초기화
     };
+
+    const handlePlaceClick = async (place) => {
+        try {
+            await addPlace(userId, planId, place);
+            setSelectedPlaces((prevSelected) => [...prevSelected, place]);
+        } catch (error) {
+            console.error("장소 추가 실패!!", error);
+        }
+    }
+
+  
 
     return (
         <SidebarContainer>
@@ -70,7 +83,7 @@ const RightSidebar = ({ onSubmitKeyword, places=[], addPlace}) => {
                 </p>
                 <ul id="places-list">
                     {places.map((place, index) => (
-                        <li key={index} onClick={() => addPlace(place)}style={{cursor:'pointer'}}>
+                        <li key={index} onClick={() => handlePlaceClick(place)}style={{cursor:'pointer'}}>
                             <h5>{place.place_name}</h5>
                             {place.road_address_name && <span>{place.road_address_name}</span>}
                             <span>{place.address_name}</span>
