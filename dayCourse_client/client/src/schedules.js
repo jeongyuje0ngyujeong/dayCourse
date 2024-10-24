@@ -9,10 +9,10 @@ export async function getSchedules(query, startDate) {
         startDate = new Date()
 
     const getData = async () => {
-        let response = await axios.get('http://43.200.172.201/home',{
+        let response = await axios.get('http://192.168.1.80:5000/home',{
             params: {
                 userId: 1,
-                dateKey: startDate
+                startDate: startDate
             }
         });
         return response.data;
@@ -32,10 +32,10 @@ export async function getSchedules(query, startDate) {
 }
 
 export async function createSchedule(dateKey, formData) {
-    // let schedules = await localforage.getItem("schedules");
+    let schedules = await localforage.getItem("schedules");
     console.log(formData);
     const postData = async () => {
-        let response = axios.post('http://43.200.172.201/home/plan', {
+        let response = axios.post('http://192.168.1.80:5000/home/plan', {
             userId: 1,
             dateKey: dateKey,
             groupId: formData.get("groupId"),
@@ -88,7 +88,7 @@ export async function updateSchedule(dateKey, updates) {
     await set(schedules);
 
     const postData = async () => {
-        let response = axios.post('http://43.200.172.201/home/plan/update', {
+        let response = axios.post('http://192.168.1.80:5000/home/plan/update', {
             userId: 1,
             schedule: schedule
         });
@@ -115,7 +115,7 @@ export async function deleteSchedule(id) {
     console.log('index: ', index, id);
     
     const postData = async () => {
-        let response = axios.post('http://43.200.172.201/home/plan/delete', {
+        let response = axios.post('http://192.168.1.80:5000/home/plan/delete', {
             userId: 1,
             planId: schedule.planId
         });

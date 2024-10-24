@@ -43,7 +43,7 @@ const TabButton = styled.button`
     background: none;
     border: none;
     cursor: pointer;
-    font-weight: ${(props) => (props.active ? 'bold' : 'normal')};
+    font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')}; // isActive로 이름 변경
 
     &:hover {
         text-decoration: underline;
@@ -71,8 +71,9 @@ const RightSidebar = ({ onSubmitKeyword, places=[], userId, planId, setSelectedP
         try {
             await addPlace(userId, planId, place);
             setSelectedPlaces((prevSelected) => [...prevSelected, place]);
+            
         } catch (error) {
-            console.error("장소 추가 실패!!", error);
+            console.error("장소 추가 실패!!!!!", error);
         }
     }
 

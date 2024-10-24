@@ -25,7 +25,7 @@ export const fetchPlace = async (userId, planId) => {
 //장소 추가
 export const addPlace = async (userId, planId, place) => {
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/place?userId=1`, {
+        const response = await axios.post(`${BASE_URL}/home/plan/addPlace?userId=1`, {
             userId,
             planId,
             place,

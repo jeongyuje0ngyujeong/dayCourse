@@ -1,5 +1,5 @@
 import axios from 'axios';
-const BASE_URL = 'http://43.200.172.201'; 
+const BASE_URL = 'http://192.168.1.80:5000';
 // const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
 

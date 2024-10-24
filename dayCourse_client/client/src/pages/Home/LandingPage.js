@@ -32,7 +32,7 @@ const LandingPage = () => {
     const [selectedPlaces, setSelectedPlaces] = useState([])
     
     const userId = 1; // 예시 사용자 ID
-    const planId = 1; // 예시 플랜 ID
+    const planId = 10; // 예시 플랜 ID
 
     // 제출한 검색어 상태 업데이트
     const submitKeyword = (newKeyword) => {
@@ -78,7 +78,12 @@ const LandingPage = () => {
         const fetchExistPlace = async () => {
             try {
                 const existPlace = await fetchPlace(userId, planId);
+                if (Array.isArray(existPlace)){
                 setSelectedPlaces(existPlace);
+            } else {
+                console.error("Invalid data format:", existPlace);
+                setSelectedPlaces([]); // 잘못된 형식일 경우 빈 배열로 초기화
+            }
             } catch (error) {
                 console.error("기존 장소 불러오기 실패!", error);
             }
@@ -89,7 +94,7 @@ const LandingPage = () => {
     
     return (
         <div className="landing-page">
-            <RightSidebar userId={userId} planId={planId} places={places} setPlaces={setPlaces} addPlace={addSelectedPlace} onSubmitKeyword={submitKeyword} />
+            <RightSidebar userId={userId} planId={planId} places={places} setPlaces={setPlaces} addPlace={addSelectedPlace} onSubmitKeyword={submitKeyword} setSelectedPlaces={setSelectedPlaces} />
             <KakaoMap searchKeyword={keyword} setPlaces={setPlaces} />
             <SelectedPlacesContainer>
                 {selectedPlaces.map((place, index) => (
