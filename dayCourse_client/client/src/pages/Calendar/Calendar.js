@@ -166,6 +166,7 @@ export function GroupDatesByWeek(props){
       setModalIsOpen(true);
     }
     else{
+      // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
       navigate(`schedules/${params}`);
     }
   };
