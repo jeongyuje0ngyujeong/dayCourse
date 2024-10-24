@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
 
 // DB 정보
+// DB 정보
 const db = mysql.createConnection({
     host: '13.124.161.75',
     user: 'daycourse',
