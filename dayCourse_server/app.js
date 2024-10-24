@@ -9,7 +9,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
 
 // DB 정보
-// DB 정보
 const db = mysql.createConnection({
     host: '13.124.161.75',
     user: 'daycourse',
@@ -49,7 +48,6 @@ app.use((req, res) => {
     res.status(404).json({ message: '찾을 수 없는 페이지입니다.' });
 });
 
-<<<<<<< HEAD
 // 이미지 목록을 가져오는 엔드포인트
 app.get('/images', async (req, res) => {
 
@@ -391,8 +389,6 @@ app.post('/home/plan/delete', async (req, res) => {
 });
 
 
-=======
->>>>>>> 064e1afd39c04c14b64f2d8b3b62844d90de8fe7
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
