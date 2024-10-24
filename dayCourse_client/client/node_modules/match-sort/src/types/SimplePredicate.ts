@@ -1,0 +1,1 @@
+export type SimplePredicate<T> = (value: T) => boolean;

@@ -1,0 +1,1 @@
+export type RankFunction<T> = (value: T) => number | boolean;
