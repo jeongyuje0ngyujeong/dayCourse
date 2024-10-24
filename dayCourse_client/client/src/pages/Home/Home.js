@@ -6,7 +6,7 @@ import {DayTable, GroupDatesByWeek} from '../Calendar/Calendar'
 import { Button } from '../../Button';
 import { Outlet, Form, useLoaderData,} from "react-router-dom";
 import { getSchedules } from "../../schedules";
-import { Link } from 'react-router-dom'; 
+// import { Link } from 'react-router-dom'; 
 // import RightSidebar from './RightSidebar'; 
 
 const WeekBar = styled.div`
