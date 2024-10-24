@@ -3,11 +3,13 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const app = express();
 
+//서버-클라이언트 연결 테스트
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
 
-
+// DB 정보
+// DB 정보
 const db = mysql.createConnection({
     host: '13.124.161.75',
     user: 'daycourse',
@@ -39,11 +41,15 @@ const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
+// 회원가입, 로그인 라우터 변수 지정 및 라우터 설정
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 app.use((req, res) => {
     res.status(404).json({ message: '찾을 수 없는 페이지입니다.' });
 });
 
+<<<<<<< HEAD
 // 이미지 목록을 가져오는 엔드포인트
 app.get('/images', async (req, res) => {
 
@@ -384,7 +390,9 @@ app.post('/home/plan/delete', async (req, res) => {
     });
 });
 
-// 3000번 포트로 서버 실행
+
+=======
+>>>>>>> 064e1afd39c04c14b64f2d8b3b62844d90de8fe7
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
