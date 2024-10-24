@@ -1,5 +1,6 @@
 # Node.js dependencies
 node_modules/
+dayCourse_server/.env
 
 # 환경변수 파일
 .env
