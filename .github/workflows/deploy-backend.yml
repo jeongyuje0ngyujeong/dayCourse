@@ -44,16 +44,16 @@ jobs:
         - name: Cache node_modules
           uses: actions/cache@v2
           with:
-            path: node_modules
-            key: ${{ runner.os }}-node_modules-${{ hashFiles('dayCourse_server/package-lock.json') }}
+            path: dayCourse_server/node_modules  # 변경된 캐시 경로
+            key: ${{ runner.os }}-dayCourse_server-node_modules-${{ hashFiles('dayCourse_server/package-lock.json') }}  # 정확한 경로로 키 설정
             restore-keys: |
-              ${{ runner.os }}-node_modules-
+              ${{ runner.os }}-dayCourse_server-node_modules-
 
         # 8. Install dependencies
         - name: Install dependencies # 의존성 다운
           run: |
             cd dayCourse_server  # server 폴더로 이동
-            npm ci # clean install로 node_modules와 package-lock.json 파일을 삭제하고 다시 설치
+            npm ci  # clean install로 node_modules와 package-lock.json 파일을 삭제하고 다시 설치
         
         # 9. Deploy to EC2
         - name: Deploy to EC2
