@@ -22,7 +22,6 @@ router.post('/signup/id', async (req, res) => {
       FROM User
       WHERE User.userId = ?
       `;
-
         
     try {
         db.query(sql, [userId], (err, result) => {
