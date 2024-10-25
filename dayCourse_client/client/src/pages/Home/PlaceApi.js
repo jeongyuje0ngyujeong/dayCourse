@@ -70,3 +70,6 @@ export const recommendPlace = async (category, keyword) => {
         throw error;
     }
 }
+
+
+
