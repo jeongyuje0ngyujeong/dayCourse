@@ -16,7 +16,7 @@ jobs:
         
         # 2. Set up Node.js
         - name: Set up Node.js
-          uses: actions/setup-node@v3
+          uses: actions/setup-node@v4
           with:
             node-version: '22.x'
         
@@ -29,7 +29,7 @@ jobs:
           id: stash
           run: |
             git diff-index --quiet HEAD || git stash
-            echo "::set-output name=CHANGES_STASHED::$(git stash list | wc -l)"
+            echo "CHANGES_STASHED=$(git stash list | wc -l)" >> $GITHUB_ENV
 
         # 5. Pull latest changes and merge
         - name: Pull and merge
@@ -42,7 +42,7 @@ jobs:
 
         # 7. Cache node_modules to speed up subsequent builds
         - name: Cache node_modules
-          uses: actions/cache@v2
+          uses: actions/cache@v4
           with:
             path: dayCourse_server/node_modules  # 변경된 캐시 경로
             key: ${{ runner.os }}-dayCourse_server-node_modules-${{ hashFiles('dayCourse_server/package-lock.json') }}  # 정확한 경로로 키 설정
