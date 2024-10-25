@@ -73,3 +73,17 @@ export const recommendPlace = async (category, keyword) => {
 
 
 
+// PlaceApi.js에 추가
+export const updatePlacePriority = async (placeId, priority) => {
+    try {
+        const response = await axios.patch(`${BASE_URL}/home/plan/place/priority?userId`, {
+            placeId,
+            priority,
+        });
+        return response.data;
+    } catch (error) {
+        console.error("우선 순위 업데이트 실패:", error);
+        throw error;
+    }
+};
+
