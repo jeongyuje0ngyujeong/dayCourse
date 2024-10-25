@@ -2,7 +2,10 @@ const express = require('express');
 const db = require('./db.js')
 const apiHome = require('./routes/home.js')
 const cors = require('cors');
+const dotenv = require('dotenv');
+
 const app = express();
+dotenv.config();
 
 //서버-클라이언트 연결 테스트
 app.use(cors());
@@ -25,6 +28,10 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
 
+// 회원가입, 로그인 라우터 변수 지정 및 라우터 설정
+const { passport } = require('./auth');
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 app.use("/home", apiHome);
 
