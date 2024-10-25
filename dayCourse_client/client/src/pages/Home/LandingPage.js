@@ -75,7 +75,7 @@ const LandingPage = () => {
 
     const removePlace = async (placeId) => {
         try {
-            await deletePlace(placeId);
+            await deletePlace(placeId, userId);
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
         } catch (error) {
             console.error("장소 삭제 실패!", error);
@@ -102,7 +102,7 @@ const LandingPage = () => {
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
-                updatePlacePriority(place.placeId, place.l_priority)
+                updatePlacePriority(place.placeId || place.id, place.l_priority) // placeId 또는 id 사용
             ));
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
@@ -133,29 +133,29 @@ const LandingPage = () => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {selectedPlaces.map((place, index) => {
-                                // 유효한 place 객체인지 확인
-                                if (!place || !place.placeId || !place.place_name) {
-                                    console.warn("Invalid place object:", place);
-                                    return null; // 유효하지 않은 객체는 렌더링하지 않음
-                                }
-                                return (
-                                    <Draggable
-                                        key={place.placeId.toString()} // 고유한 키 설정
-                                        draggableId={place.placeId.toString()} // 고유한 드래그 가능 ID 설정
-                                        index={index}
-                                    >
+                                            {selectedPlaces.map((place, index) => {
+                        // 유효한 place 객체인지 확인
+                        if (!place || !place.placeId && !place.id || !place.place_name) {
+                            console.warn("Invalid place object:", place);
+                            return null; // 유효하지 않은 객체는 렌더링하지 않음
+                        }
+                        return (
+                            <Draggable
+                                key={place.placeId?.toString() || place.id?.toString()} // 고유한 키 설정
+                                draggableId={place.placeId?.toString() || place.id?.toString()} // 고유한 드래그 가능 ID 설정
+                                index={index}
+                            >
                                         {(provided) => (
                                             <PlaceBox 
                                                 ref={provided.innerRef}
                                                 {...provided.draggableProps}
                                                 {...provided.dragHandleProps}
                                             >
-                                                <h5>{place.l_priority}. {place.place_name}</h5>
+                                                <h5>{index +1}. {place.place_name}</h5>
                                                 {place.place && <span>{place.place}</span>}
                                                 <span>{place.address_name}</span>
                                                 <span>{place.phone}</span>
-                                                <DeleteButton onClick={() => removePlace(place.id)}>삭제</DeleteButton>
+                                                <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
                                             </PlaceBox>
                                         )}
                                     </Draggable>
