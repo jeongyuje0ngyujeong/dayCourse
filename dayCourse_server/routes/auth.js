@@ -1,107 +1,120 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const bcrypt = require('bcrypt');
+
+const db = require('../db')
 
 const router = express.Router();
 
-router.post('/register/check', async (req, res) => {
-    const { username } = req.body;
+// 회원가입 여부 확인
+router.post('/signup/id', async (req, res) => {
+    const { userId } = req.body;
+
+    // Check if required parameters are provided
+    if (!userId) {
+        return res.status(400).json({ error: 'userId is required' });
+    }
+
+    const sql = `
+      SELECT User.id
+      WHERE User.userId = ?
+      `;
+
         
     try {
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return res.json({ result: 'failure', message: '이미 존재하는 아이디입니다.' });
-        }
-        return res.json({ result: 'success'});
+        db.query(sql, [userId], (err, result) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
 
+            // Check if any records were found
+            if (result.length > 0) {
+                return res.json({ result: 'failure', message: '이미 존재하는 아이디입니다.' });
+            }
+
+            return res.json({ result: 'success' });
+        });
     } catch (error) {
-        res.status(500).json({ result: 'failure', message: '서버 오류 발생' });
+        console.error('Unexpected error:', error);
+        return res.status(500).json({ error: 'Unexpected error' });
     }
 });
 
 // 회원가입
-router.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+router.post('/signup', async (req, res) => {
+    const { userId, pw, userName, userGender, userAge } = req.body;
 
+    // Check if required parameters are provided
+    if (!userId || !pw || !userName || !userGender || !userAge) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const sql = `
+    INSERT INTO User (id, pw, userName, userGender, userAge)
+    VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const hashedPw =  await bcrypt.hash(pw, 10);
+    const values = [userId, hashedPw, userName, userGender, userAge];
+      
     try {
-        const newUser = new User({ 
-            username, 
-            password
-        });
-
-        await newUser.save();
-        // console.log('찍히니');
-        return res.json({ result: 'success', message: '회원가입 성공!'});
+      db.query(sql, values, (err, result) => {
+          if (err) {
+              console.error('Error fetching data:', err);
+              return res.status(500).json({ error: 'Database error' });
+          }
+        //   console.log(values)
+          return res.status(201).json({ msg: 'success'});
+      });
 
     } catch (error) {
-        console.error('Error during user registration:', error);
-        res.status(500).json({ result: 'failure', message: '서버 오류 발생' });
-    }
+        console.error('Unexpected error:', error);
+        return res.status(500).json({ error: 'Unexpected error' });
+  }
 });
 
 // 로그인
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { userId, pw } = req.body;
+
+    // Check if required parameters are provided
+    if (!userId || !pw) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    const sql = `
+        SELECT User.id, User.pw
+        WHERE User.userId
+        `;
 
     try {
-        // 사용자 확인
-        const user = await User.findOne({ username });
+        db.query(sql, [userId], async (err, result) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            // 사용자 아이디 확인
+            if (result.length === 0) {
+                return res.json({ result: 'failure', message: '존재하지 않는 아이디입니다.' });
+            }
+            // 사용자 아이디 기반 정보 확인
+            const user = result[0];
+            // 비밀번호 확인
+            const isMatch = await bcrypt.compare(pw, user.pw);
 
-        // id가 존재하지 않을 때
-        if (!user) {
-            return res.json({ result: 'failure', message: '존재하지 않는 아이디입니다.' });
-        }
-        // 비밀번호 확인        
-        const isMatch = await user.comparePassword(password);
-
-        // 비밀번호가 존재하지 않을 때
-        if (!isMatch) {
-            return res.json({ result: 'failure', message: '비밀번호가 틀렸습니다. 다시 입력해 주세요' });
-        }
-
-        // JWT 생성
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        
-        // 로그인 성공 - 토큰 반환
-        return res.json({ 
-            result: 'success',
-            access_token: token,
-            userId:user._id
+            if (isMatch) {
+                const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                return res.json({ msg: 'Login successful', token });
+            } else {
+                return res.json({ result: 'failure', message: '비밀번호가 틀렸습니다. 다시 입력해 주세요' });
+            }
         });
 
     } catch (error) {
-        res.status(500).json({ result: 'failure', message: '서버 오류 발생' });
-    }
-});
-
-// 사용자 정보 조회 라우터 (JWT 인증 필요)
-router.get('/user/:id', passport.authenticate('jwt', { session: false }), async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ result: 'failure', message: '사용자를 찾을 수 없습니다.' });
-        }
-
-        if (user.posts && user.posts.length > 0) {
-            // DB에 저장된 순서의 역순으로 posts를 정렬
-            user.posts.reverse();
-        }
-        
-        console.log(user.posts);
-
-        // posts 배열을 createdAt 필드 기준으로 최신순으로 정렬
-        // user.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        // if (user.posts && user.posts.length > 0) {
-        //     user.posts = user.posts.filter(post => post.createdAt)  // createdAt이 있는 게시물만
-        //                            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        // }
-
-
-        // 사용자 데이터 반환
-        res.json({ result: 'success', user });
-
-    } catch (error) {
-        res.status(500).json({ result: 'failure', message: '서버 오류 발생' });
+        console.error('Unexpected error:', error);
+        return res.status(500).json({ error: 'Unexpected error' });
     }
 });
 

@@ -41,7 +41,7 @@ router.get('/', async (req, res) => {
             };
         });
 
-        res.status(200).json(formattedResult); // Return the modified result
+        return res.status(200).json(formattedResult); // Return the modified result
     });
 });
 
