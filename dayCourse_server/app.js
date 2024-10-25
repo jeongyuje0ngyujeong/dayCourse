@@ -40,6 +40,7 @@ const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
+
 // 회원가입, 로그인 라우터 변수 지정 및 라우터 설정
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
