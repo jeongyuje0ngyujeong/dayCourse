@@ -43,7 +43,7 @@ export const addPlace = async (userId, planId, place) => {
 
 
 //장소 삭제
-export const deletePlace = async (placeId) => {
+export const deletePlace = async (placeId, userId) => {
     try {
         const response = await axios.delete(`${BASE_URL}/home/plan/place?userId=1`, {
             params: {placeId},
@@ -76,7 +76,7 @@ export const recommendPlace = async (category, keyword) => {
 // PlaceApi.js에 추가
 export const updatePlacePriority = async (placeId, priority) => {
     try {
-        const response = await axios.patch(`${BASE_URL}/home/plan/place/priority?userId`, {
+        const response = await axios.post(`${BASE_URL}/home/plan/place/priority?userId=1`, {
             placeId,
             priority,
         });
