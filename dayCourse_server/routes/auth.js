@@ -4,10 +4,6 @@ const passport = require('passport');
 
 const router = express.Router();
 
-// router.post('/login', passport.authenticate('jwt', { session: false }), (req, res) => {
-//     res.json({ message: 'Login successful!' });
-// });
-
 router.post('/register/check', async (req, res) => {
     const { username } = req.body;
         
