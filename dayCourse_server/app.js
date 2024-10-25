@@ -28,11 +28,12 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
 
-// 회원가입, 로그인 라우터 변수 지정 및 라우터 설정
-const { passport } = require('./auth');
+// passport 초기화 및 설정
+require('./config/passport')(passport);
+app.use(passport.initialize());
+
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
-
 app.use("/home", apiHome);
 
 // 이미지 목록을 가져오는 엔드포인트
@@ -98,12 +99,9 @@ app.post('/images', upload.single('image') , async (req, res) => {
   }
 });
 
-
 app.get('/', (req, res) => {
   res.send('테스트')
 })
-
-
 
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {

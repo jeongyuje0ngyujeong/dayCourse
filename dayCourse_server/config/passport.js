@@ -1,6 +1,6 @@
 //passport를 설정하고 JWT 인증 전략을 추가, 토큰 추출 및 검증
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
-// const User = require('../models/user');
+const db = require('./db');
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -10,16 +10,22 @@ const opts = {
 module.exports = (passport) => {
     passport.use(
         new JwtStrategy(opts, async (jwt_payload, done) => {
-            try {
-                const user = await User.findById(jwt_payload.id);
-                if (user) {
-                    return done(null, user);  // 사용자 인증 성공
-                } else {
-                    return done(null, false); // 인증 실패
+            const sql = `
+                SELECT User.id
+                WHERE User.userId = ?
+                `;
+            const userId = jwt_payload.userId;
+
+            db.query(sql, [userId], (err, result) => {
+                if (err) {
+                    return done(err, false);
                 }
-            } catch (err) {
-                return done(err, false);
-            }
-        })
+                if (result.length > 0) {
+                    return done(null, result);
+                } else {
+                    return done(null, false);
+                }
+            });
+        });
     );
 };
