@@ -13,12 +13,12 @@ export async function action({ request, params }) {
   
   if (params.id){
     await updateSchedule(dateKey, updates);
-    return redirect(`/home/schedules/dateKey`);
+    return redirect(`/home/schedules/${dateKey}`);
   }
   else{
-    await createSchedule(dateKey, formData);
+    const planId = (await createSchedule(dateKey, formData)).planId;
     // await updateSchedule(dateKey, updates);
-    return redirect(`/empty`);
+    return redirect(`/schedules/${dateKey}/${planId}/town`);
   }
 }
 
@@ -94,18 +94,6 @@ export default function CreateSchedule() {
       </label>
       </p>
 
-      <span>위치</span>
-      <p>
-      <label>
-        <input
-          type="text"
-          name="town"
-          placeholder="어디서 만나시나요?"
-          defaultValue={town}
-        />
-      </label>
-      </p>
-      
       <p>
         <button type="submit">Save</button>
         <Link to="/home">

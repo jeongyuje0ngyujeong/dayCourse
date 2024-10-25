@@ -46,9 +46,10 @@ export async function createSchedule(dateKey, formData) {
     
     let result = await postData();
 
+    getSchedules();
     // set(result);
 
-    return result.data.msg;
+    return result.data;
 
     // let id = Math.random().toString(36).substring(2, 9);
     // let schedule = { id, dateKey, createdAt: Date.now() };
@@ -79,12 +80,13 @@ export async function getEvent(id) {
     return event ?? null;
 }
 
-export async function updateSchedule(dateKey, updates) {
-
+export async function updateSchedule(planId, updates) {
+    console.log(updates);
     let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(schedule => String(schedule.dateKey) === dateKey);
-    if (!schedule) throw new Error("No schedule found for", dateKey);
+    let schedule = schedules.find(schedule => String(schedule.planId) === planId);
+    if (!schedule) throw new Error("No schedule found for", planId);
     Object.assign(schedule, updates);
+  
     await set(schedules);
 
     const postData = async () => {

@@ -144,11 +144,11 @@ async function fetchSchedules(props, setSchedules) {
 // 시작 날짜, 끝 날짜를 인자로 호출
 // 시작, 끝 날짜 바뀔 때 해당 기간 데이터 재요청 
 export function GroupDatesByWeek(props){
-  const [schedules, setSchedules] = useState([]);
+  const [schedules, setSchedules] = useState([]); 
   
   useEffect(() => {
     fetchSchedules(props, setSchedules); 
-  }, [props.startDay, props.endDay]);
+  }, [props]);
   
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
