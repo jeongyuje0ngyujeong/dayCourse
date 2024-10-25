@@ -11,6 +11,12 @@ import CreateSchedule, {action as createAction,} from "./pages/Create/create";
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
+import EmptyPage from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
+import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
+
+// import RecentPlan from './pages/Album/RecentPlan';
+import PlanDetail from './pages/Album/PlanDetail';
+import { action as destroyAction } from "./pages/Destroy";
 // import reportWebVitals from './reportWebVitals';
 
 const router = createBrowserRouter([
@@ -44,10 +50,23 @@ const router = createBrowserRouter([
             ]
           },
           {
-            path: "schedules/:id/create",
+            path: "schedules/:id",
+            element: <CreateSchedule />,
+            loader: createLoader,
+            action: createAction,
+            // action: scheduleAction,
+          },
+          {
+            path: "schedules/create",
             element: <CreateSchedule />,
             loader: scheduleLoader,
             action: createAction,
+          },
+          {
+            path: "schedules/:dateKey/:planId/town",
+            element: <UpdateTown />,
+            loader: townLoader,
+            action: townAction,
           },
           {
             path: "calendar",

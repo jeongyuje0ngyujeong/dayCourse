@@ -4,8 +4,29 @@ import { updateSchedule} from "../../schedules";
 export async function action({ request, params }) {
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
-  await updateSchedule(params.id, updates);
-  return redirect(`/home`);
+
+  const year= formData.get("year");
+  const month= formData.get("month");
+  const date= formData.get("date");
+  const dateKey = `${year}-${month}-${date}`;
+  
+  if (params.id){
+    await updateSchedule(dateKey, updates);
+    return redirect(`/home/schedules/${dateKey}`);
+  }
+  else{
+    const planId = (await createSchedule(dateKey, formData)).planId;
+    // await updateSchedule(dateKey, updates);
+    return redirect(`/schedules/${dateKey}/${planId}/town`);
+  }
+}
+
+export async function loader({ params }) {
+  // console.log(params);
+  const { id } = params;
+  const event = await getEvent(id);
+
+  return { event };
 }
 
 export default function CreateSchedule() {
@@ -49,17 +70,7 @@ export default function CreateSchedule() {
         />
       </label>
       </p>
-      </p>
-      <span>Notes</span>
-      <p>
-      <label>
-        <textarea
-          name="notes"
-          defaultValue={schedule?.notes}
-          rows={6}
-        />
-      </label>
-      </p>
+
       <p>
         <button type="submit">Save</button>
         <button type="button">Cancel</button>
