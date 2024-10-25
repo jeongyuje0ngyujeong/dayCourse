@@ -71,6 +71,7 @@ jobs:
               else
                 cd $APP_DIR && git pull origin dayCourseServer;
               fi &&
-              cd $APP_DIR/dayCourse_server &&
+              cd $APP_DIR &&  # 여기서 디렉토리 중복 문제 해결
               npm install &&
-              pm2 start /home/ubuntu/dayCourse_server/dayCourse_server/app.js --name daycourse -f || pm2 restart daycourse -f"
+              pm2 start /home/ubuntu/dayCourse_server/app.js --name daycourse -f || pm2 restart daycourse -f"
+
