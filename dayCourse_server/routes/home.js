@@ -422,54 +422,6 @@ router.post('/plan/recommend_place', async (req, res) => {
 
 
 
-    // const values = [planId, memo, place.address_name, planId];
-
-    // db.query(sql, values, (err, result) => {
-    //     if (err) {
-    //         console.error('Error inserting data:', err);
-    //         return res.status(500).json({ error: 'Database error' });
-    //     }
-
-    //     console.log(result)
-    //     return res.status(200).json({ msg: '갈라파꼬치' });
-    // });
-});
-
-router.post('/plan/place_distance', async (req, res) => {
-    const { origin, destination } = req.body.params;
-
-    // 각 좌표를 "lat,lng" 형식으로 변환
-    const origins = origin.map(point => `${point.lat},${point.lng}`).join('|');
-    const destinations = destination.map(point => `${point.lat},${point.lng}`).join('|');
-    
-    try {
-        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
-            params: {
-                origins,
-                destinations,
-                key: apiKey
-            }
-        });
-
-        console.log(response.data);
-       
-        const distances = response.data.rows.map(row =>
-            row.elements.map(element => ({
-                distance: element.distance ? element.distance.text : 'N/A',
-                duration: element.duration ? element.duration.text : 'N/A',
-            }))
-        );
-        
-        console.log(distances);
-        res.json(distances);        
-     
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('API 요청에 실패했습니다.');
-    }
-});
-
 });
 
 router.post('/plan/place/priority', async (req, res) => {
@@ -503,65 +455,6 @@ router.post('/plan/place/priority', async (req, res) => {
 
 
 router.post('/plan/place_distance', async (req, res) => {
-    const { planId } = req.body;
-
-    // Check if required parameters are provided
-    if (!userId) {
-        return res.status(400).json({ error: 'userId is required' });
-    }
-
-
-    const sql = `
-      SELECT CONCAT(ST_Y(coordinates), ',', ST_X(coordinates)) AS coordinates
-      FROM Plan_Location
-      WHERE Plan_Location.planId = ?;
-      ORDER BY Plan_Location.l_priority ASC 
-      `;
-    try {
-        db.query (sql, [planId], (err, places) => {
-            if (err) {
-                console.error('Error inserting data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            if (places.length > 0) {
-                return res.json({ result: 'failure', message: 'planId 오류' });
-            }
-            
-            const origins = places.slice(0, -1).map(point => point.coordinates).join('|');
-            const destinations = places.slice(1).map(point => point.coordinates).join('|');
-            
-            const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
-                params: {
-                    origins,
-                    destinations,
-                    key: apiKey
-                }
-            });
-
-            const distances = [];
-            for (let i = 0; i < response.data.rows.length; i++) {
-                const element = response.data.rows[i].elements[i];
-                distances.push(element.distance ? element.distance.text : 'N/A');
-            }
-
-            // const distances = response.data.rows
-            //     .map(row => row.elements.map(element => element.distance ? element.distance.text : 'N/A'))
-            //     .flat();
-            
-            console.log(distances);
-            return res.status(200).json({ msg: 'success', distances: 'distances' });
-
-        })
-        console.log(response.data);
-
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('API 요청에 실패했습니다.');
-    }
-});
-
-router.post('/plan/place_distance', async (req, res) => {
     const { origin, destination } = req.body.params;
 
     // 각 좌표를 "lat,lng" 형식으로 변환
@@ -595,5 +488,6 @@ router.post('/plan/place_distance', async (req, res) => {
         res.status(500).send('API 요청에 실패했습니다.');
     }
 });
+
 
 module.exports = router;
