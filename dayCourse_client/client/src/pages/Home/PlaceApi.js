@@ -73,6 +73,19 @@ export const recommendPlace = async (category, keyword) => {
 
 
 
+export const fetchDistance = async (planId) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/home/plan/place_distance?userId=1`, {
+            planId
+    });
+        return response.data;
+    } catch (error) {
+        console.error("거리 정보 에러:", error);
+        throw error;
+    }
+};
+
+
 // PlaceApi.js에 추가
 export const updatePlacePriority = async (placeId, priority) => {
     try {

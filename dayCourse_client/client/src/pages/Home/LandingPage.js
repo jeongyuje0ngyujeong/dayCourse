@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority , fetchDistance} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const SelectedPlacesContainer = styled.div`
@@ -25,10 +25,18 @@ const DeleteButton = styled.button`
     }
 `;
 
+const DistanceBox = styled.div`
+    margin: 10px 0;
+    font-weight: bold;
+`;
+
+
+
 const LandingPage = () => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
+    const [distances, setDistances] = useState([]);
 
     const userId = 1; 
     const planId = 10; 
@@ -113,6 +121,18 @@ const LandingPage = () => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
     }, [userId, planId]);
 
+
+
+    useEffect(() => {
+        const loadDistance = async () => {
+            if (selectedPlaces.length > 1) {
+                const distances = await fetchDistance(planId);
+                setDistances(distances);
+            }
+        };
+        loadDistance();
+    }, [selectedPlaces]);
+
     return (
         <div className="landing-page">
             <RightSidebar 
@@ -140,34 +160,41 @@ const LandingPage = () => {
                             return null; // 유효하지 않은 객체는 렌더링하지 않음
                         }
                         return (
-                            <Draggable
-                                key={place.placeId?.toString() || place.id?.toString()} // 고유한 키 설정
-                                draggableId={place.placeId?.toString() || place.id?.toString()} // 고유한 드래그 가능 ID 설정
-                                index={index}
-                            >
-                                        {(provided) => (
-                                            <PlaceBox 
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                            >
-                                                <h5>{index +1}. {place.place_name}</h5>
-                                                {place.place && <span>{place.place}</span>}
-                                                <span>{place.address_name}</span>
-                                                <span>{place.phone}</span>
-                                                <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
-                                            </PlaceBox>
-                                        )}
-                                    </Draggable>
-                                );
-                            })}
-                            {provided.placeholder}
-                        </SelectedPlacesContainer>
-                    )}
-                </Droppable>
-            </DragDropContext>
-        </div>
-    );
+                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
+                                <Draggable
+                                    draggableId={place.placeId?.toString() || place.id?.toString()} 
+                                    index={index}
+                                >
+                                    {(provided) => (
+                                        <PlaceBox 
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                        >
+                                        <h5>{selectedPlaces.indexOf(place) + 1}. {place.place_name}</h5>
+                                            {place.place && <span>{place.place}</span>}
+                                            <span>{place.address_name}</span>
+                                            <span>{place.phone}</span>
+                                            <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
+                                        </PlaceBox>
+                                    )}
+                                </Draggable>
+
+                                {index < selectedPlaces.length - 1 && distances[index] && (
+                                <DistanceBox>
+                                    {`거리 : ${distances[index]}`} 
+                                </DistanceBox>
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
+                    {provided.placeholder}
+                </SelectedPlacesContainer>
+            )}
+        </Droppable>
+    </DragDropContext>
+</div>
+);
 };
 
 export default LandingPage;
