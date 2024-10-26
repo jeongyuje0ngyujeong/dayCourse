@@ -9,8 +9,9 @@ const router = express.Router();
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
-    const { userId } = req.body;
-
+    console.log('signup id');
+    const { userId } = req.body.params;
+    console.log('userId: ' + userId);
     // Check if required parameters are provided
     if (!userId) {
         return res.status(400).json({ error: 'userId is required' });
@@ -18,6 +19,7 @@ router.post('/signup/id', async (req, res) => {
 
     const sql = `
       SELECT User.id
+      FROM User
       WHERE User.userId = ?
       `;
 
@@ -34,7 +36,7 @@ router.post('/signup/id', async (req, res) => {
                 return res.json({ result: 'failure', message: '이미 존재하는 아이디입니다.' });
             }
 
-            return res.json({ result: 'success' });
+            return res.json({ result: 'success', message: '사용 가능한 아이디입니다.'  });
         });
     } catch (error) {
         console.error('Unexpected error:', error);
@@ -44,7 +46,9 @@ router.post('/signup/id', async (req, res) => {
 
 // 회원가입
 router.post('/signup', async (req, res) => {
-    const { userId, pw, userName, userGender, userAge } = req.body;
+    console.log('signup');
+    const { userId, pw, userName, userGender, userAge } = req.body.params;
+    console.log('userId: ' + userId + ", userName: " + userName + ", userGender: " + userGender + ", userAge: " + userAge);
 
     // Check if required parameters are provided
     if (!userId || !pw || !userName || !userGender || !userAge) {
@@ -77,16 +81,19 @@ router.post('/signup', async (req, res) => {
 
 // 로그인
 router.post('/login', async (req, res) => {
-    const { userId, pw } = req.body;
-
+    console.log('login');
+    const { userId, pw } = req.body.params;
+    console.log('userId: ' + userId);
     // Check if required parameters are provided
     if (!userId || !pw) {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
+    // WHERE에서 ㅑ
     const sql = `
         SELECT User.id, User.pw
-        WHERE User.userId
+        FROM User
+        WHERE User.id = ?
         `;
 
     try {
@@ -101,12 +108,16 @@ router.post('/login', async (req, res) => {
             }
             // 사용자 아이디 기반 정보 확인
             const user = result[0];
+            console.log(user);
+
             // 비밀번호 확인
             const isMatch = await bcrypt.compare(pw, user.pw);
 
+
             if (isMatch) {
+                console.log("isit success?");
                 const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return res.json({ msg: 'Login successful', token });
+                return res.json({ result: 'success', access_token: token });
             } else {
                 return res.json({ result: 'failure', message: '비밀번호가 틀렸습니다. 다시 입력해 주세요' });
             }

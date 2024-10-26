@@ -1,8 +1,9 @@
 const express = require('express');
-const db = require('./db.js')
-const apiHome = require('./routes/home.js')
+const db = require('./db.js');
+const apiHome = require('./routes/home.js');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const passport = require('passport');
 
 const app = express();
 dotenv.config();
