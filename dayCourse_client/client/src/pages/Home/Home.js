@@ -117,7 +117,7 @@ export default function Home() {
     );
   };
 
-  const { schedules} = useLoaderData();
+  const [ schedules, setSchedules ] = useState([]);
 
   return (
     <>
@@ -167,5 +167,5 @@ export default function Home() {
     </CalendarContainer>
     <Footer/>
     </>
-  );
+  )
 }

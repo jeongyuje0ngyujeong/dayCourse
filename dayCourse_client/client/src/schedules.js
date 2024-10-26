@@ -69,11 +69,17 @@ export async function getSchedules(query, startDate) {
     let schedules = await getData();
     // console.log(schedules);
     await set(schedules);
-    return schedule;
+
+    if (!Array.isArray(schedules)) {
+        schedules = [];
+    }
+    if (query) {
+        schedules = matchSorter(schedules, query, { keys: ["dateKey"] });
+    }
+    return schedules.sort(sortBy("dateKey"));
 }
 
-export async function getSchedule(year, month, date) {
-    await fakeNetwork(`schedule:${year}:${month}:${date}`);
+export async function createSchedule(dateKey, formData) {
     let schedules = await localforage.getItem("schedules");
 
     const postData = async () => {
