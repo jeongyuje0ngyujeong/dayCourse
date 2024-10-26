@@ -1,5 +1,11 @@
-const router = require("express").Router();
+const express = require('express');
+const router = express.Router();
 const db = require('../db')
+
+const axios = require('axios');
+
+const apiKey = process.env.GOOGLE_API_KEY;
+
 
 router.get('/', async (req, res) => {
     console.log('home');
@@ -382,6 +388,40 @@ router.post('/plan/recommend_place', async (req, res) => {
     // });
 });
 
+router.post('/plan/place_distance', async (req, res) => {
+    const { origin, destination } = req.body.params;
+
+    // 각 좌표를 "lat,lng" 형식으로 변환
+    const origins = origin.map(point => `${point.lat},${point.lng}`).join('|');
+    const destinations = destination.map(point => `${point.lat},${point.lng}`).join('|');
+    
+    try {
+        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+            params: {
+                origins,
+                destinations,
+                key: apiKey
+            }
+        });
+
+        console.log(response.data);
+       
+        const distances = response.data.rows.map(row =>
+            row.elements.map(element => ({
+                distance: element.distance ? element.distance.text : 'N/A',
+                duration: element.duration ? element.duration.text : 'N/A',
+            }))
+        );
+        
+        console.log(distances);
+        res.json(distances);        
+     
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('API 요청에 실패했습니다.');
+    }
+});
 
 
 module.exports = router;
