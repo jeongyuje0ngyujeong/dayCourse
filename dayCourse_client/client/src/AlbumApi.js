@@ -1,6 +1,7 @@
 import axios from 'axios';
 // const BASE_URL = 'http://192.168.1.80:5000';
 const BASE_URL = process.env.REACT_APP_BASE_URL;  
+// 하혜민 바보
 
 // const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
