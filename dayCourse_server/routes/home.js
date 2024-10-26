@@ -254,30 +254,71 @@ router.post('/plan/place', (req, res) => {
 
 
 router.delete('/plan/place', (req, res) => {
-    console.log('place delete')
+    console.log('place delete');
     const { placeId } = req.query;
-    console.log(req.body)
-    console.log(req.query)
-    
-    if (!placeId){
+    console.log(req.body);
+    console.log(req.query);
+
+    if (!placeId) {
         return res.status(400).json({ error: 'placeId 없음!' });
     }
 
-    const sql = `
+    const sqlDelete = `
       DELETE FROM Plan_Location 
       WHERE placeId = ?;
     `;
 
-    const values = [placeId];
+    const sqlPlanId = `
+      SELECT planId FROM Plan_Location WHERE placeId = ?;
+    `;
 
-    db.query(sql, values, (err, result) => {
+    const sqlSet = `SET @new_seq = 0;`;
+
+    const sqlUpdate = `
+      UPDATE Plan_Location
+      SET l_priority = (@new_seq := @new_seq + 1)
+      WHERE planId = ?
+      ORDER BY l_priority;
+    `;
+
+    // 1. planId를 먼저 조회
+    db.query(sqlPlanId, [placeId], (err, result) => {
         if (err) {
-            console.error('Error inserting data:', err);
+            console.error('Error retrieving planId:', err);
             return res.status(500).json({ error: 'Database error' });
         }
 
-        res.status(201).json( {msg: 'success'});
+        if (result.length === 0) {
+            return res.status(404).json({ error: 'planId not found' });
+        }
 
+        const planId = result[0].planId;
+
+        // 2. 데이터 삭제 쿼리 실행
+        db.query(sqlDelete, [placeId], (err, result) => {
+            if (err) {
+                console.error('Error deleting data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            // 3. 순서 초기화 변수 설정
+            db.query(sqlSet, (err) => {
+                if (err) {
+                    console.error("Error setting variable:", err);
+                    return res.status(500).send("Database error");
+                }
+
+                // 4. 순서 업데이트 쿼리 실행
+                db.query(sqlUpdate, [planId], (err, results) => {
+                    if (err) {
+                        console.error("Error updating data:", err);
+                        return res.status(500).send("Database error");
+                    }
+
+                    return res.status(201).json({ msg: 'success' });
+                });
+            });
+        });
     });
 });
 
@@ -322,7 +363,7 @@ router.post('/plan/delete', async (req, res) => {
             // Successful insertion response
         });
 
-        console.log(values)
+
         return res.status(200).json({ msg: 'success' });
     });
 });
@@ -330,6 +371,11 @@ router.post('/plan/delete', async (req, res) => {
 
 router.post('/plan/addPlace', async (req, res) => {
     const { userId, planId, memo, place } = req.body;
+    console.log("일정장소추가")
+    //console.log(place)
+
+    const x = parseFloat(place.x);
+    const y = parseFloat(place.y);
 
     // Check if required parameters are provided
     if (!userId | !planId) {
@@ -337,13 +383,56 @@ router.post('/plan/addPlace', async (req, res) => {
     }
 
     const sql = `
-        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name)
-        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?
+        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates)
+        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})')
         FROM Plan_Location
         WHERE planId = ?;
     `;
 
     const values = [planId, memo, place.address_name, place.place_name, planId];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        return res.status(200).json({ msg: 'success' });
+    });
+});
+
+
+
+router.post('/plan/recommend_place', async (req, res) => {
+    const { userId, planId, memo, place } = req.body;
+
+    console.log('장소추천요청')
+    console.log(req.body)
+
+    const values = ['갈라파꼬치']
+
+    return res.status(200).json({ msg: 'success', recommend: values });
+
+
+
+});
+
+router.post('/plan/place/priority', async (req, res) => {
+    const { placeId, priority } = req.body;
+
+
+
+    console.log('장소순서변경')
+    // console.log(req.query)
+    // console.log(req.body)
+
+    const sql = `
+      UPDATE Plan_Location
+      SET l_priority = ?
+      WHERE placeId = ?;
+    `;
+
+    const values = [priority, placeId]
 
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -357,36 +446,6 @@ router.post('/plan/addPlace', async (req, res) => {
 });
 
 
-
-router.post('/plan/recommend_place', async (req, res) => {
-    const { userId, planId, memo, place } = req.body;
-
-    console.log('장소추천요청')
-    console.log(req.body)
-
-    // // Check if required parameters are provided
-    // if (!userId | !planId) {
-    //     return res.status(400).json({ error: 'userId or planId are required' });
-    // }
-
-    const values = ['갈라파꼬치']
-
-    return res.status(200).json({ msg: 'success', recommend: values });
-
-    
-
-    // const values = [planId, memo, place.address_name, planId];
-
-    // db.query(sql, values, (err, result) => {
-    //     if (err) {
-    //         console.error('Error inserting data:', err);
-    //         return res.status(500).json({ error: 'Database error' });
-    //     }
-
-    //     console.log(result)
-    //     return res.status(200).json({ msg: '갈라파꼬치' });
-    // });
-});
 
 router.post('/plan/place_distance', async (req, res) => {
     const { origin, destination } = req.body.params;
