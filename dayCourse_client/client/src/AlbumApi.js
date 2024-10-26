@@ -8,7 +8,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 //모든 플랜 가져오기
 export async function getPlan() {
     try {
-        const response = await fetch(`${BASE_URL}/home/plans/recent?userId=1`); // 서버에서 모든 플랜 요청
+        const response = await fetch(`${BASE_URL}/home/plans/recent`); // 서버에서 모든 플랜 요청
         if (!response.ok) {
             throw new Error('플랜 가져오기 실패');
         }
@@ -29,7 +29,7 @@ export const uploadImage = async (userId, selectedFile) => {
 
 
     try {
-        const response = await axios.post(`${BASE_URL}/images?userId=1`, formData, {
+        const response = await axios.post(`${BASE_URL}/images`, formData, {
             hearders: {
                 "Content-Type" : "multipart/form-data",
             },
