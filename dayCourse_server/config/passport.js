@@ -1,6 +1,9 @@
 //passport를 설정하고 JWT 인증 전략을 추가, 토큰 추출 및 검증
 const { Strategy: JwtStrategy, ExtractJwt } = require('passport-jwt');
-const db = require('./db');
+const db = require('../db.js');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const opts = {
     jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -26,6 +29,6 @@ module.exports = (passport) => {
                     return done(null, false);
                 }
             });
-        });
+        })
     );
 };
