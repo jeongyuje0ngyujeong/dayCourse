@@ -1,23 +1,73 @@
 import localforage from "localforage";
 import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
+import axios from 'axios';
+// http://192.168.1.80:5000
+const BASE_URL = process.env.REACT_APP_BASE_URL; 
+// const BASE_URL = 'http://192.168.1.227:3000'
 
-export async function getSchedules(query) {
-    await fakeNetwork(`getSchedules:${query}`);
-    let schedules = await localforage.getItem("schedules");
-    if (!schedules) schedules = [];
-    if (query) {
-        schedules = matchSorter(schedules, query, { keys: ["first", "last"] });
+export async function getToken() {
+    try {
+        // axios로 SGIS API에서 토큰을 받아옴
+        let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json`, {
+            params: {
+                consumer_key: "5ac5b0ab0d744c9996e0",
+                consumer_secret: "1614098cdb9b4d13adbb",
+            },
+        });
+
+        // 액세스 토큰 추출
+        let AccessToken = response.data.result.accessToken;
+       
+        return AccessToken;
+
+    } catch (error) {
+        console.error('Error fetching the token:', error);
+        return null;
     }
-    return schedules.sort(sortBy("last", "createdAt"));
 }
 
-export async function createSchedule(year, month, date) {
-    await fakeNetwork();
-    let id = Math.random().toString(36).substring(2, 9);
-    let schedule = { id, year, month, date, createdAt: Date.now() };
-    let schedules = await getSchedules();
-    schedules.unshift(schedule);
+export async function getSi(AccessToken) {
+    try {
+        // axios로 SGIS API에서 토큰을 받아옴
+        console.log("request",AccessToken);
+        let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
+            params: {
+                accessToken : AccessToken,
+                cd : 21
+            },
+        });
+
+        // 액세스 토큰 추출
+        let si = response.data;
+        console.log(si);
+       
+        return si;
+
+    } catch (error) {
+        console.error('Error fetching the si:', error);
+        return null;
+    }
+}
+
+
+export async function getSchedules(query, startDate) {
+    // let schedules = await localforage.getItem("schedules");
+    if (!startDate)
+        startDate = new Date()
+
+    const getData = async () => {
+        let response = await axios.get(`${BASE_URL}/home`,{
+            params: {
+                userId: 1,
+                startDate: startDate
+            }
+        });
+        return response.data;
+    }
+
+    let schedules = await getData();
+    // console.log(schedules);
     await set(schedules);
     return schedule;
 }
@@ -27,7 +77,7 @@ export async function getSchedule(year, month, date) {
     let schedules = await localforage.getItem("schedules");
 
     const postData = async () => {
-        let response = axios.post('http://192.168.1.80:5000/home/plan', {
+        let response = axios.post(`${BASE_URL}/home/plan`, {
             userId: 1,
             dateKey: dateKey,
             groupId: formData.get("groupId"),
@@ -82,8 +132,55 @@ export async function updateSchedule(planId, updates) {
     Object.assign(schedule, updates);
   
     await set(schedules);
-    return schedule;
-  }
+
+    const postData = async () => {
+        let response = axios.post(`${BASE_URL}/home/plan/update`, {
+            userId: 1,
+            schedule: schedule
+        });
+        return response;
+    }
+    
+    let result = await postData();
+
+    return result.data.msg;
+
+
+    // let schedules = await localforage.getItem("schedules");
+    // let schedule = schedules.find(schedule => String(schedule.dateKey) === dateKey);
+    // if (!schedule) throw new Error("No schedule found for", dateKey);
+    // Object.assign(schedule, updates);
+    // await set(schedules);
+    // return schedule;
+}
+
+export async function deleteSchedule(id) {
+    let schedules = await localforage.getItem("schedules");
+    let schedule = schedules.find(schedule => schedule.planId === id);
+    let index = schedules.findIndex(schedule => schedule.planId === id);
+    
+    const postData = async () => {
+        let response = axios.post(`${BASE_URL}/home/plan/delete`, {
+            userId: 1,
+            planId: schedule.planId
+        });
+        
+
+        return response;
+    }
+
+    if (index > -1) {
+        schedules.splice(index, 1);
+        
+        await postData();
+        await set(schedules);
+        
+        return schedules;
+    }
+
+    // getSchedules();
+    return false;
+}
 
 function set(schedules) {
     return localforage.setItem("schedules", schedules);

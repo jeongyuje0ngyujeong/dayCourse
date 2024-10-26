@@ -17,7 +17,7 @@ export async function action({ request, params }) {
   else{
     const planId = (await createSchedule(dateKey, formData)).planId;
     // await updateSchedule(dateKey, updates);
-    return redirect(`/schedules/${dateKey}/${planId}/town`);
+    return redirect(`/main/schedules/${dateKey}/${planId}/town`);
   }
 }
 

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider,} from "react-router-dom";
 import './index.css';
 import Layout from "./Layout";
+import Login from "./pages/Login/login";
+import Register from "./pages/Login/register";
 import Home, { action as homeAction, loader as homeLoader } from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
 import Schedule, {loader as scheduleLoader, action as scheduleAction} from "./pages/Calendar/Schedule";
@@ -21,14 +23,18 @@ import { action as destroyAction } from "./pages/Destroy";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/main",
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
         errorElement: <ErrorPage />,
         children: [
-          // { index: true, element: <Home /> },
+          { index: true, 
+            element: <Home /> ,
+            // loader: homeLoader,
+            // action: homeAction,
+          },
           {
             path: "home",
             element: <Home/>,
@@ -83,6 +89,16 @@ const router = createBrowserRouter([
         ]
       },
     ]
+  },
+  {
+    path: "/",
+    element: <Login />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    errorElement: <ErrorPage />,
   },
 ]);
 
