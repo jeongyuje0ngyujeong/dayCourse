@@ -105,27 +105,13 @@ const DeleteButton = styled.button`
 `;
 
 const LandingPage = () => {
-
-    async function useToken() {
-        const token = await getToken();
-        console.log('Token:', token);
-        return token;
-    }
-
-    async function loadSi(accessToken) {
-        const si = await getSi(accessToken);
+    async function loadSi() {
+        const si = await getSi();
         console.log('Si:', si);
         return si;
     }
-    
-    
-    const accessToken = useToken();
-    const si = loadSi(accessToken);
 
-
-    // const result = loadData();
-
-    console.log(si);    
+    const si = loadSi(); 
 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
@@ -211,8 +197,7 @@ const LandingPage = () => {
                         disabled
                         hidden
                         selected
-                        >
-                            시/군
+                        >시/군
                         </option>
                         <option value="apple">Apple</option>
                         <option value="banana">Banana</option>

@@ -18,6 +18,7 @@ export async function getToken() {
 
         // 액세스 토큰 추출
         let AccessToken = response.data.result.accessToken;
+        sessionStorage.setItem('SGISToken', AccessToken);
        
         return AccessToken;
 
@@ -27,25 +28,39 @@ export async function getToken() {
     }
 }
 
-export async function getSi(AccessToken) {
+export async function getSi() {
     try {
         // axios로 SGIS API에서 토큰을 받아옴
-        console.log("request",AccessToken);
+  
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
             params: {
-                accessToken : AccessToken,
-                cd : 21
+                accessToken : sessionStorage.getItem('SGISToken'),
             },
         });
 
-        // 액세스 토큰 추출
+
         let si = response.data;
-        console.log(si);
+
        
         return si;
 
     } catch (error) {
         console.error('Error fetching the si:', error);
+        
+        async function loadToken() {
+            const token = await getToken();
+            console.log('Token:', token);
+            return token;
+        }
+        
+        const newToken = loadToken();
+        let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
+            params: {
+                accessToken : newToken,
+                cd : 21
+            },
+        });
+
         return null;
     }
 }
