@@ -60,7 +60,7 @@ export async function getSchedules(query, startDate) {
         let response = await axios.get(`${BASE_URL}/home`,{
             params: {
                 userId: 1,
-                dateKey: startDate
+                startDate: startDate
             }
         });
         return response.data;
