@@ -1,0 +1,20 @@
+.login_box{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center; 
+    align-content: center;
+    width: 500px;
+    border: 1px solid gray;
+    margin: auto auto;
+    border-radius: 10px;
+    height: 450px;
+    background-color: white;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+}
+
+.bagel-fat-one-regular {
+    font-family: "Bagel Fat One", system-ui;
+    font-weight: 400;
+    font-style: normal;
+  }

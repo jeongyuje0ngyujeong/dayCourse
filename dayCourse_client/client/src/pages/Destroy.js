@@ -2,7 +2,6 @@ import { redirect } from "react-router-dom";
 // import { deleteSchedule } from "../schedules";
 
 export async function action({ params }) {
-    console.log("Parameters:", params);
 
     // await deleteSchedule(params.eventId);
 
@@ -12,4 +11,5 @@ export async function action({ params }) {
     else{
         return redirect(`/calendar`);
     }
+    return null;
 }

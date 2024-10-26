@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider,} from "react-router-dom";
 import './index.css';
 import Layout from "./Layout";
+import Login from "./pages/Login/login";
+import Register from "./pages/Login/register";
 import Home, { action as homeAction, loader as homeLoader } from "./pages/Home/Home";
 import Calendar from "./pages/Calendar/Calendar";
 import Schedule, {loader as scheduleLoader,} from "./pages/Calendar/Schedule";
@@ -11,6 +13,8 @@ import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 import EmptyPage from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
+import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
+
 // import RecentPlan from './pages/Album/RecentPlan';
 import PlanDetail from './pages/Album/PlanDetail';
 import { action as destroyAction } from "./pages/Destroy";
@@ -19,14 +23,18 @@ import { action as destroyAction } from "./pages/Destroy";
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: "/main",
     element: <Layout />,
     errorElement: <ErrorPage />,
     children: [
       {
         errorElement: <ErrorPage />,
         children: [
-          // { index: true, element: <Home /> },
+          { index: true, 
+            element: <Home /> ,
+            // loader: homeLoader,
+            // action: homeAction,
+          },
           {
             path: "home",
             element: <Home/>,
@@ -46,7 +54,7 @@ const router = createBrowserRouter([
             ]
           },      
           {
-            path: "/schedules/:id",
+            path: "schedules/:id",
             element: <CreateSchedule />,
             loader: createLoader,
             action: createAction,
@@ -57,6 +65,12 @@ const router = createBrowserRouter([
             element: <CreateSchedule />,
             loader: scheduleLoader,
             action: createAction,
+          },
+          {
+            path: "schedules/:dateKey/:planId/town",
+            element: <UpdateTown />,
+            loader: townLoader,
+            action: townAction,
           },
           {
             path: "calendar",
@@ -86,6 +100,16 @@ const router = createBrowserRouter([
         ]
       },
     ]
+  },
+  {
+    path: "/",
+    element: <Login />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
+    errorElement: <ErrorPage />,
   },
 ]);
 

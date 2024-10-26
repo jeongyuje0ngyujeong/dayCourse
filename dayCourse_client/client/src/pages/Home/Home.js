@@ -78,8 +78,7 @@ export default function Home() {
     );
   };
 
-  const [ schedules, setSchedules ] = useState(useLoaderData());
-  // const [selectedDate, setSelectedDate] = useState(null);
+  const [ schedules, setSchedules ] = useState([]);
 
   return (
     <>
@@ -87,7 +86,7 @@ export default function Home() {
     <CalendarContainer>
       <WeekBar>
         <h3>한 주 일정</h3>
-        <Form action="/schedules/create">
+        <Form action="/main/schedules/create">
           <Button type='submit' width='6rem' $background='#90B54C' color='white'>+ 일정추가</Button>
         </Form>
       </WeekBar>
@@ -110,5 +109,5 @@ export default function Home() {
     </CalendarContainer>
 
     </>
-  );
+  )
 }
