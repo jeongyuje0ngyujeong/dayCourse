@@ -14,7 +14,7 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
 
-        # # 2. env 파일 만들기
+        # # 2. env 파일 만들기#
         # - name: Create .env file from Secret
         #   run: |
         #     echo "${{ secrets.ENV_FILE }}" > .env
