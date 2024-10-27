@@ -17,8 +17,7 @@ jobs:
         # 2. env 파일 만들기
         - name: Create .env file from Secret
           run: |
-            echo "${{ secrets.ENV_FILE }}" > /home/ubuntu/dayCourse_server/dayCourse_server/.env
-
+            echo "${{ secrets.ENV_FILE }}" > .env
 
         - name: Crea2te .env file from Secret
           run: |
