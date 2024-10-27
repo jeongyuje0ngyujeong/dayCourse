@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
   res.send('테스트')
 })
 
-const PORT = 3000;
+const PORT = 80;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
 });
