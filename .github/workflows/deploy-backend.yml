@@ -14,19 +14,19 @@ jobs:
         - name: Checkout code
           uses: actions/checkout@v4
 
-        # 2. env 파일 만들기
-        - name: Create .env file from Secret
-          run: |
-            echo "${{ secrets.ENV_FILE }}" > .env
+        # # 2. env 파일 만들기
+        # - name: Create .env file from Secret
+        #   run: |
+        #     echo "${{ secrets.ENV_FILE }}" > .env
   
-        - name: Upload .env file to Server
-          uses: appleboy/scp-action@v0.1.1
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ubuntu
-            key: ${{ secrets.EC2_SSH_KEY }}
-            source: ".env"
-            target: "/home/ubuntu/dayCourse_server/dayCourse_server"
+        # - name: Upload .env file to Server
+        #   uses: appleboy/scp-action@v0.1.1
+        #   with:
+        #     host: ${{ secrets.EC2_HOST }}
+        #     username: ubuntu
+        #     key: ${{ secrets.EC2_SSH_KEY }}
+        #     source: ".env"
+        #     target: "/home/ubuntu/dayCourse_server/dayCourse_server"
   
         # 3. node 다운
         - name: install node
@@ -52,7 +52,10 @@ jobs:
             SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
             REMOTE_HOST: ${{ secrets.EC2_HOST }}
             REMOTE_USER: ubuntu          
-            APP_DIR: '/home/ubuntu/dayCourse_server'          
+            APP_DIR: '/home/ubuntu/dayCourse_server'  
+            JWT_SECRET: 'gowh241017!@'
+            GOOGLE_API_KEY: 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
+            TMAP_APP_KEY: 'XxXWTihaLS9axB3B0rqq84pGH854BTXhhYDtVX10'        
           run: |
             eval "$(ssh-agent -s)"
             echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
