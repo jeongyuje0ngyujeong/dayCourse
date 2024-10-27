@@ -28,40 +28,38 @@ export async function getToken() {
     }
 }
 
-export async function getSi() {
+export async function getDo(props) {
     try {
-        // axios로 SGIS API에서 토큰을 받아옴
-  
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
             params: {
                 accessToken : sessionStorage.getItem('SGISToken'),
+                cd: props
             },
         });
 
-
-        let si = response.data;
-
-       
-        return si;
+        let dos = response.data;
+        return dos;
 
     } catch (error) {
-        console.error('Error fetching the si:', error);
+        console.error('Error fetching the do:', error);
         
-        async function loadToken() {
-            const token = await getToken();
-            console.log('Token:', token);
-            return token;
-        }
+        // async function loadToken() {
+        //     const token = await getToken();
+        //     console.log('Token:', token);
+        //     return token;
+        // }
         
-        const newToken = loadToken();
+        const newToken = await getToken();
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
             params: {
                 accessToken : newToken,
-                cd : 21
+                cd: props
             },
         });
 
-        return null;
+        let dos = response.data;
+
+        return dos;
     }
 }
 

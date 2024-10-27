@@ -2,6 +2,7 @@ import { Form, useLoaderData, redirect,useSubmit, } from "react-router-dom";
 import { createSchedule, updateSchedule, getEvent, getToken, getSi} from "../../schedules";
 import React, { useState, useEffect, useCallback } from 'react';
 import KakaoMap from './InputTown';
+import SelectTown from './SelectTown';
 import styled from "styled-components";
 import {Button} from '../../Button';
 import axios from 'axios';
@@ -104,14 +105,31 @@ const DeleteButton = styled.button`
     }
 `;
 
-const LandingPage = () => {
-    async function loadSi() {
-        const si = await getSi();
-        console.log('Si:', si);
-        return si;
-    }
+// export async function loader() {
+//     const si = await getSi();
+//     console.log('Si:', si);
+//     return si;
+// }
 
-    const si = loadSi(); 
+export default function UpdateTown() {
+    // const sis = useLoaderData();  // 여기서 `await`를 사용해 결과를 기다림
+    // console.log('sis: ',sis);
+
+    const [dos, setDos] = useState(null);
+    const [gus, setGus] = useState(null);
+    const [dong, setDongs] = useState(null);
+
+    // useEffect(() => {
+    //     async function loadSi() {
+    //         try {
+    //             const si = await getSi(); 
+    //             console.log('Si:', si);
+    //             setSis(si.result);  
+    //         } catch (error) {
+    //             console.error('Error loading Si:', error);
+    //     }}
+    //     loadSi();  
+    // }, []);
 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
@@ -190,20 +208,7 @@ const LandingPage = () => {
                     )}
                 </SelectedPlacesContainer>
 
-                <label>
-                    <select name="selectedFruit"  placeholder="">
-                        <option
-                        value={'placeholder'}
-                        disabled
-                        hidden
-                        selected
-                        >시/군
-                        </option>
-                        <option value="apple">Apple</option>
-                        <option value="banana">Banana</option>
-                        <option value="orange">Orange</option>
-                    </select>
-                </label>
+                <SelectTown contextDo={[dos, setDos]} contextGu={[gus, setGus]} contextDong={[dong, setDongs]}/>
                 <Form method="post">
                     <input type="hidden" name="town" value={selectedPlaces.place_name || ''} />
                     <Button type='submit' style={{ position: 'fixed', bottom: '30%', right: '6%' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>
@@ -218,7 +223,7 @@ const LandingPage = () => {
     );
 };
 
-export default LandingPage;
+// export default UpdateTown;
 
 
 
