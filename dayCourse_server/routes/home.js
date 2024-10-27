@@ -454,58 +454,72 @@ router.post('/plan/place/priority', async (req, res) => {
 
 
 
+const getPlaces = (sql, params) => {
+    return new Promise((resolve, reject) => {
+        db.query(sql, params, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+};
+
 router.post('/plan/place_distance', async (req, res) => {
     const { planId } = req.body;
 
-    // Check if required parameters are provided
-    if (!userId) {
-        return res.status(400).json({ error: 'userId is required' });
+    if (!planId) {
+        return res.status(400).json({ error: 'planId is required' });
     }
-
 
     const sql = `
       SELECT CONCAT(ST_Y(coordinates), ',', ST_X(coordinates)) AS coordinates
       FROM Plan_Location
-      WHERE Plan_Location.planId = ?;
-      ORDER BY Plan_Location.l_priority ASC 
-      `;
+      WHERE Plan_Location.planId = ?
+      ORDER BY Plan_Location.l_priority ASC;
+    `;
+
     try {
-        db.query (sql, [planId], (err, places) => {
-            if (err) {
-                console.error('Error inserting data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+        const places = await getPlaces(sql, [planId]);
 
-            if (places.length > 0) {
-                return res.json({ result: 'failure', message: 'planId 오류' });
+        if (places.length === 0) {
+            return res.json({ result: 'failure', message: 'Invalid planId' });
+        }
+
+        places.forEach((place, index) => console.log(`Place ${index}: ${place.coordinates}`));
+
+        const origins = places.slice(0, -1).map(point => point.coordinates).join('|');
+        const destinations = places.slice(1).map(point => point.coordinates).join('|');
+
+        console.log('origins: ' + origins);
+        console.log('destinations: ' + destinations);
+
+        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+            params: {
+                origins,
+                destinations,
+                key: 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
             }
-            
-            const origins = places.slice(0, -1).map(point => point.coordinates).join('|');
-            const destinations = places.slice(1).map(point => point.coordinates).join('|');
-            
-            const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
-                params: {
-                    origins,
-                    destinations,
-                    key: apiKey
-                }
+        });
+
+        console.log("Response Data: ", response.data);
+
+        response.data.rows.forEach((row, rowIndex) => {
+            console.log(`Row ${rowIndex}:`);
+            row.elements.forEach((element, elementIndex) => {
+              console.log(`  Element ${elementIndex}: ${JSON.stringify(element, null, 2)}`);
             });
+          });          
+        
+        const distances = response.data.rows.map(row => 
+            row.elements[0].distance ? row.elements[0].distance.text : 'N/A'
+        );
+        
 
-            const distances = [];
-            for (let i = 0; i < response.data.rows.length; i++) {
-                const element = response.data.rows[i].elements[i];
-                distances.push(element.distance ? element.distance.text : 'N/A');
-            }
+        // const distances = response.data.rows.map((row, i) =>
+        //     row.elements[i].distance ? row.elements[i].distance.text : 'N/A'
+        // );
 
-            // const distances = response.data.rows
-            //     .map(row => row.elements.map(element => element.distance ? element.distance.text : 'N/A'))
-            //     .flat();
-            
-            console.log(distances);
-            return res.status(200).json({ msg: 'success', distances: 'distances' });
-
-        })
-        console.log(response.data);
+        console.log('distances: ' + distances);
+        return res.status(200).json({ msg: 'success', distances });
 
     } catch (error) {
         console.error(error);
