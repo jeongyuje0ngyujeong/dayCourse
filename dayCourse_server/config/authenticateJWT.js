@@ -6,7 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // JWT 인증 미들웨어 함수
-const authenticateJWT = (req, res, next) => {
+const authenticateJWT = async (req, res, next) => {
   // console.log("Request Headers:", JSON.stringify(req.headers, null, 2));
   // console.log('헤더에 담긴 token:', req.headers.authorization);
   const token = req.headers["authorization"]?.split(" ")[1];
