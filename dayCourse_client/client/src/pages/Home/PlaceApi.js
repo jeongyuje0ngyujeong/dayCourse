@@ -1,7 +1,7 @@
 import axios from 'axios';
 //place 장소의 정보
 //placeId 장소 구분하기 위한 ID
-const BASE_URL = 'http://192.168.1.80:5000';
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 // const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
 //기존 장소 불러오기

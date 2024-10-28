@@ -20,6 +20,7 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
+    "socket.io-client": "^4.8.1",
     "sort-by": "^1.2.0",
     "styled-component": "^2.8.0",
     "styled-components": "^6.1.13",

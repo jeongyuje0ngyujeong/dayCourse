@@ -3,10 +3,11 @@ import styled from 'styled-components';
 // import KakaoMap from './KakaoMap';
 // import LandingPage from './LandingPage';
 import { fetchPlace, addPlace } from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+import Chat from '../Chat/Chat';
 
 
 const SidebarContainer = styled.div`
-    width: 250px;
+    width: 20%;
     padding: 20px;
     background-color: #f8f9fa;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -112,7 +113,7 @@ const RightSidebar = ({ onSubmitKeyword, places=[], userId, planId, setSelectedP
             );
 
             case 'chat' :
-                return <div>채팅</div>; //여기에 관련 내용 추가
+                return <Chat userId={userId} planId={planId}/>; //여기에 관련 내용 추가
 
             default :
                 return null;
