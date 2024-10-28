@@ -9,7 +9,7 @@ dotenv.config();
 const authenticateJWT = (req, res, next) => {
   // console.log("Request Headers:", JSON.stringify(req.headers, null, 2));
   // console.log('헤더에 담긴 token:', req.headers.authorization);
-  const token = req.headers.["authorization"]?.split(" ")[1];
+  const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
     return res.json({ result: 'failure', message: '다시 로그인 해주세요.' });
