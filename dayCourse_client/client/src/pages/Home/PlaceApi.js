@@ -3,12 +3,12 @@ import axios from 'axios';
 //placeId 장소 구분하기 위한 ID
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 // const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
-const BASE_URL = process.env.REACT_APP_BASE_URL;  
+// const BASE_URL = process.env.REACT_APP_BASE_URL;  
 
 //기존 장소 불러오기
 export const fetchPlace = async (userId, planId) => {
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/place?userId=1`,
+        const response = await axios.post(`${BASE_URL}/home/plan/place?userId=${userId}`,
          {
             userId,
             planId,

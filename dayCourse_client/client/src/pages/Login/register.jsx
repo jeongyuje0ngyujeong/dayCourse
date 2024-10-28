@@ -8,7 +8,9 @@ import axios from 'axios';
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
 export default function Register() {
-    const [username, setUsername] = useState('');
+    const [userName , setUserName] = useState('');
+    const [userGender , setUserGender] = useState('');
+    const [userId , setUserId] = useState('');
     const [checkId, setCheckId] = useState(false);
     const [message, setMessage] = useState('아이디를 입력해주세요');
     
@@ -25,10 +27,10 @@ export default function Register() {
         try {
             const response = await axios.post(`${BASE_URL}/auth/signup/`, {
                 params: {
-                    userId:username, 
+                    userId:userId, 
                     pw:password, 
-                    userName:'민경', 
-                    userGender:'여', 
+                    userName:userName, 
+                    userGender:userGender, 
                     userAge:25
                 },
                
@@ -44,11 +46,11 @@ export default function Register() {
     };
 
     const doubleCheck = async (event) => {
-        if (username.length>0){
+        if (userId.length>0){
             try {
             const response = await axios.post(`${BASE_URL}/auth/signup/id`, {
                 params: {
-                    userId: username
+                    userId: userId
                 }
             });
             
@@ -76,12 +78,22 @@ export default function Register() {
         <div className="regi_box">
             <h1 className='bagel-fat-one-regular'>회원가입</h1>
             <form onSubmit={handleRegi}>
+                <p>
+                    <input 
+                        type="text" 
+                        placeholder='이름' 
+                        value={userName} 
+                        onChange={(event)=>setUserName(event.target.value)}
+                        className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                        required    
+                    />
+                </p>
                 <div id='info_id' className='mt-5'>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
-                        value={username} 
-                        onChange={(event)=>setUsername(event.target.value)}
+                        value={userId} 
+                        onChange={(event)=>setUserId(event.target.value)}
                         className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
                         required    
                     />
@@ -138,6 +150,16 @@ export default function Register() {
                     required    
                 />
                 <p style={{ color: identPass ? 'green' : 'red', textAlign: 'left', marginLeft:'90px'}}>{passMess}</p>
+                <p>
+                    <input 
+                        type="text" 
+                        placeholder='성별' 
+                        value={userGender} 
+                        onChange={(event)=>setUserGender(event.target.value)}
+                        className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                        required    
+                    />
+                </p>
                 <div>
                     <button 
                         type="submit"

@@ -31,14 +31,13 @@ const DistanceBox = styled.div`
 `;
 
 
-
 const LandingPage = () => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
 
-    const userId = 1; 
+    const userId = sessionStorage.getItem('userId'); 
     const planId = 10; 
 
     const submitKeyword = (newKeyword) => {

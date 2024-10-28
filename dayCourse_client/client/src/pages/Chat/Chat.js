@@ -1,6 +1,8 @@
 import styled from 'styled-components';
 import {Button} from '../../Button';
 import io from 'socket.io-client';
+import Messages from './Messages';
+import Input from './Input';
 import React, { useState, useEffect } from 'react';
 
 export async function action() {
@@ -29,60 +31,34 @@ const ChatName = styled.div`
     align-items: center;
 `;
 
-const ChatContent = styled.div`
-    flex: 1;
-    display: flex;
-    flex-direction: column-reverse;
-    width: auto%;
-    margin: 0.5rem 0;
-   
-    color: white;
-    overflow: auto; 
-    
-    &::-webkit-scrollbar {
-        display: none; 
-    }
-`;
+// const ChatInputBar = styled.div`
+//     flex:0;
+//     display: flex;
+// `
 
-const ChatMessage = styled.div`
-    display: inline-flex;
-    align-items: center;
-    height:auto; 
-    padding: 0.5rem 0.5rem;
-    background: #90B54C;
-    border-radius: 5px;
-    margin: 0.5rem 0;
-    width: fit-content;
-    word-wrap: break-word;
-    position: relative;
-`;
-
-const ChatInputBar = styled.div`
-    flex:0;
-    display: flex;
-`
-
-const ChatInput = styled.input`
-    flex: 1;
-    height: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-`;
+// const ChatInput = styled.input`
+//     flex: 1;
+//     height: 100%;
+//     padding: 10px;
+//     margin-bottom: 10px;
+//     border: 1px solid #ced4da;
+//     border-radius: 4px;
+// `;
 
 const ENDPOINT = 'http://localhost:5000';
 let socket;
 
 export default function Chat({userId, planId}) {
-    const [name, setName] = useState(userId);
-    const [room, setRoom] = useState(planId);
+    const [name, setName] = useState(sessionStorage.getItem('userId'));
+    const [room, setRoom] = useState('hello');
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
 
     useEffect(() => {
         // const {name, room} = queryString.parse(window.location.search);
+        console.log(name, room);
+        
         socket = io(ENDPOINT);
         setName(name);
         setRoom(room);
@@ -99,7 +75,7 @@ export default function Chat({userId, planId}) {
 
     useEffect(() => {
         socket.on('message', (message) => {
-          setMessages([...messages, message]);
+          setMessages((prevMessages) => [message, ...prevMessages]);
         });
         socket.on('roomData', ({users}) => {
           setUsers(users);
@@ -107,24 +83,21 @@ export default function Chat({userId, planId}) {
       }, []);
     
     const sendMessage = (event) => {
-    event.preventDefault();
-    if (message) {
-        socket.emit('sendMessage', message, () => setMessage(''));
-    }
+        event.preventDefault();
+        if (message) {
+            socket.emit('sendMessage', message, () => setMessage(''));
+        }
     }
 
     return (
     <ChatContainer>
-        <ChatName>planId</ChatName>
-        <ChatContent>
-            {Array.from({ length: 20 }, (_, index) => (
-                <ChatMessage key={index}>안녕 {index + 1}</ChatMessage>
-            ))}
-        </ChatContent>
-        <ChatInputBar>
+        <ChatName>채팅방: {planId}</ChatName>
+        <Messages messages={messages} name={name}/>
+        <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
+        {/* <ChatInputBar>
             <ChatInput placeholder="메시지 입력" message={message} setMessage={setMessage} sendMessage={sendMessage}></ChatInput>
             <Button style={{height:'100%',width:'3rem',border:'none'}}>전송</Button>
-        </ChatInputBar>
+        </ChatInputBar> */}
     </ChatContainer>
     )
 }

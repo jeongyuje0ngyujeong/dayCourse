@@ -7,35 +7,34 @@ import axios from 'axios';
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
 export default function Login() {
-    const [username, setUsername] = useState('');
+    
+    const [userId, setUserId] = useState('');
     const [password, setPassword] = useState('');
-    const [userInfo, setUserInfo] = useState(null);
 
     const navigate = useNavigate(); 
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        console.log(username, password)
         try {
             const response = await axios.post(`${BASE_URL}/auth/login`, {
                 params: {
-                    userId: username,
+                    userId: userId,
                     pw: password
                 }
             });
 
-            console.log(response.data.result);
             if (response.data.result === 'success'){
                 const token = response.data.access_token;
+                const id = response.data.id;
                 if (token){
                     sessionStorage.setItem('token', token);
-                    sessionStorage.setItem('userId', response.data.userId);
+                    sessionStorage.setItem('id', id);
+                    sessionStorage.setItem('userId', userId);
                     alert('로그인 성공!');
                     navigate('/main'); 
                 }
             }
             else{
-                console.log("hello");
                 alert(response.data.message);
             }
           
@@ -51,10 +50,10 @@ export default function Login() {
                 <p>
                 <input 
                     type="text" 
-                    id='username'
-                    placeholder='Username' 
-                    value={username} 
-                    onChange={(event)=>setUsername(event.target.value)}
+                    id='userId'
+                    placeholder='UserId' 
+                    value={userId} 
+                    onChange={(event)=>setUserId(event.target.value)}
                     className="w-80 p-2.5 mt-5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none"
                     required
                 />

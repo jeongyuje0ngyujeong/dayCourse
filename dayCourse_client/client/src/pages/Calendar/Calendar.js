@@ -160,7 +160,7 @@ export function GroupDatesByWeek(props){
     e.preventDefault();
     const scheduleData = await getSchedule(params);
     
-    if (location.pathname === "/calendar"){
+    if (location.pathname === "/main/calendar"){
       const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
       setModalContent(content);
       setModalIsOpen(true);
