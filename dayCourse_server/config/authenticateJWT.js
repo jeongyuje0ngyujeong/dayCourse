@@ -6,8 +6,6 @@ const authenticateJWT = (req, res, next) => {
   // console.log('헤더에 담긴 token:', req.headers.authorization);
 
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
-    console.log('user: ' + user);
-    console.log('info: ' + info);
 
     if (err) {
       console.error('Passport error:', err);
