@@ -1,31 +1,50 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {getDo} from "../../schedules";
+import styled from "styled-components";
+
+const InputContainer = styled.div`
+    display: flex;
+   
+`
+
+const SidebarInput = styled.label`
+    flex: 1;
+    width: 100%; 
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    select {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+`;
 
 export default function SelectTown(props) {
-    const [dos, setDos] = props.contextDo;
-    const [gus, setGus] = props.contextGu;
-    const [dongs, setDongs] = props.contextDong;
-    const [selectedDo, setSelectedDo] = useState("");
-    const [selectedGu, setSelectedGu] = useState("");
-    const [selectedDong, setSelectedDong] = useState("");
+    const [dos, setDos] = useState([]);
+    const [gus, setGus] = useState([]);
+    const [dongs, setDongs] = useState([]);
+    const [selectedDo, setSelectedDo] = useState('');
+    const [selectedGu, setSelectedGu] = useState('');
+    const [selectedDong, setSelectedDong] = useState('');
+    const setSelectedTown = props.contextTown;
 
     useEffect(() => {
         async function loadDos() {
             try {
                 const dos = await getDo(); 
-                console.log('Dos:', dos);
+                // console.log('Dos:', dos);
                 setDos(dos.result);  
             } catch (error) {
                 console.error('Error loading Si:', error);
         }}
         loadDos();  
-    }, []);
+    }, [setDos]);
 
     const handleDoChange = (e) => {
         async function loadGus(cd) {
             try {
                 const gus = await getDo(cd); 
-                console.log('Gus:', gus);
+                // console.log('Gus:', gus);
                 setGus(gus.result);  
             } catch (error) {
                 console.error('Error loading Gus:', error);
@@ -34,9 +53,12 @@ export default function SelectTown(props) {
         const selectedItem = dos.find(doItem => doItem.addr_name === e.target.value);
    
         if (selectedItem) {
-            setSelectedGu(selectedItem.cd); 
-            setDongs('')
+            setSelectedDo(selectedItem.addr_name); 
             loadGus(selectedItem.cd);
+            setSelectedGu('');
+            setSelectedDong('');
+            setDongs('');
+            setSelectedTown(selectedItem);
         }
 
     };
@@ -45,7 +67,7 @@ export default function SelectTown(props) {
         async function loadDong(cd) {
             try {
                 const dongs = await getDo(cd); 
-                console.log('Dongs:', dongs);
+                // console.log('Dongs:', dongs);
                 setDongs(dongs.result);  
             } catch (error) {
                 console.error('Error loading Dongs:', error);
@@ -54,57 +76,52 @@ export default function SelectTown(props) {
         const selectedItem = gus.find(guItem => guItem.addr_name === e.target.value);
 
         if (selectedItem) {
-            setSelectedGu(selectedItem.cd); 
+            setSelectedGu(selectedItem.addr_name); 
             loadDong(selectedItem.cd);
+            setSelectedDong('');
+            setSelectedTown(selectedItem);
         }
     };
 
     const handleDongChange = (e) => {
-        async function loadDong(cd) {
-            try {
-                const dongs = await getDo(cd); 
-                console.log('Dongs:', dongs);
-                setDongs(dongs.result);  
-            } catch (error) {
-                console.error('Error loading Dongs:', error);
-        }}
-
         const selectedItem = dongs.find(guItem => guItem.addr_name === e.target.value);
 
-        setSelectedDong(selectedItem.cd)
-
-        console.log((dos.find(doItem => doItem.cd === selectedDo)).addr_name, selectedGu, selectedDong)
+        if (selectedItem) {
+            setSelectedDong(selectedItem.addr_name);
+            setSelectedTown(selectedItem);
+            console.log(selectedItem);
+        }
     };
 
     return (
-        <div>
-            <label>
-                <select name="selectedTown" onChange={handleDoChange}>
-                    <option value="placeholder" disabled hidden selected>시/도</option>
+        <InputContainer>
+            <SidebarInput>
+                <select name="selectedDo" value={selectedDo} onChange={handleDoChange}>
+                    <option value="" disabled hidden>시/도</option>
 
                     {dos ? dos.map((doe, index) => (
                         <option key={index} value={doe.addr_name}>{doe.addr_name}</option>
                     )) : null}
                 </select>
-            </label>
-            <label>
-                <select name="selectedTown" onChange={handleGuChange}>
-                    <option value="placeholder" disabled hidden selected>시/군/구</option>
+            </SidebarInput>
+            <SidebarInput>
+                <select name="selectedGu" value={selectedGu} onChange={handleGuChange} disabled={!selectedDo}>
+                    <option value="" disabled hidden>시/군/구</option>
 
                     {gus ? gus.map((gu, index) => (
                         <option key={index} value={gu.addr_name}>{gu.addr_name}</option>
                     )) : null}
                 </select>
-            </label>
-            <label>
-                <select name="selectedTown" onChange={handleDongChange}>
-                    <option value="placeholder" disabled hidden selected>읍/면/동</option>
+            </SidebarInput>
+            <SidebarInput>
+                <select name="selectedDong" value={selectedDong} onChange={handleDongChange} disabled={!selectedGu}>
+                    <option value="" disabled hidden>읍/면/동</option>
 
                     {dongs ? dongs.map((dong, index) => (
                         <option key={index} value={dong.addr_name}>{dong.addr_name}</option>
                     )) : null}
                 </select>
-            </label>
-        </div>
+            </SidebarInput>
+        </InputContainer>
     )
 }
