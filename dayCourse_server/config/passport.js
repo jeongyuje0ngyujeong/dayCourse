@@ -15,6 +15,7 @@ module.exports = (passport) => {
         new JwtStrategy(opts, async (jwt_payload, done) => {
             const sql = `
                 SELECT User.id
+                FROM User
                 WHERE User.userId = ?
                 `;
             const userId = jwt_payload.userId;

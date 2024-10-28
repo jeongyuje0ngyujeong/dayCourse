@@ -3,23 +3,21 @@ const router = express.Router();
 const express = require('express');
 const router = express.Router();
 const db = require('../db')
-
 const axios = require('axios');
+
+const authenticateJWT = require('../config/authenticateJWT');
 
 const APP_KEY = process.env.TMAP_APP_KEY;
 
 
-const axios = require('axios');
-
-const apiKey = process.env.GOOGLE_API_KEY;
-
-
-router.get('/', async (req, res) => {
+router.get('/', authenticateJWT, async (req, res) => {
     console.log('home');
-    const { userId, startDate } = req.query;
+    const { startDate } = req.query;
+    const userId = req.user.id;
+
 
     // Check if required parameters are provided
-    if (!userId || !startDate) {
+    if (!startDate) {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
 
