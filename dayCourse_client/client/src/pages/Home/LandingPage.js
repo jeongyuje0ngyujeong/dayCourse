@@ -38,8 +38,6 @@ const LandingPage = () => {
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
 
-    const userId = 1; 
-    const planId = 10; 
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
