@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-// import KakaoMap from './KakaoMap';
-// import LandingPage from './LandingPage';
 import { fetchPlace, addPlace } from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+import TabButton from './TabButton';
+import CategoryButton from './CategoryButton';
+import KeywordButton from './KeywordButton';
+
 import Chat from '../Chat/Chat';
 
 
@@ -15,7 +17,7 @@ const SidebarContainer = styled.div`
     right: 0; /* 오른쪽에 위치 */
     top: 0; /* 상단에 위치 */
     height: 100%; /* 전체 높이 */
-    overflow-y:auto;
+    overflow-y: auto;
 `;
 
 const SidebarInput = styled.input`
@@ -39,22 +41,13 @@ const SidebarButton = styled.button`
         background-color: #0056b3;
     } 
 `;
-const TabButton = styled.button`
-    padding: 10px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-weight: ${(props) => (props.isActive ? 'bold' : 'normal')}; // isActive로 이름 변경
-
-    &:hover {
-        text-decoration: underline;
-    }
-`;
 
 
-const RightSidebar = ({ onSubmitKeyword, places=[], userId, planId, setSelectedPlaces}) => {
+const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelectedPlaces }) => {
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
     // 입력값 변화 감지
     const keywordChange = (e) => {
@@ -72,64 +65,77 @@ const RightSidebar = ({ onSubmitKeyword, places=[], userId, planId, setSelectedP
         try {
             await addPlace(userId, planId, place);
             setSelectedPlaces((prevSelected) => [...prevSelected, place]);
-            
         } catch (error) {
             console.error("장소 추가 실패!!!!!", error);
         }
-    }
+    };
 
     const renderTab = () => {
         switch (activeTab) {
-            case 'search' :
+            case 'search':
                 return (
                     <div>
-                    <form onSubmit={submitKeyword}>
-                        <SidebarInput
-                            type="text"
-                            placeholder='검색어를 입력해주세요'
-                            value={value}
-                            onChange={keywordChange}
-                            required
+                        <form onSubmit={submitKeyword}>
+                            <SidebarInput
+                                type="text"
+                                placeholder='검색어를 입력해주세요'
+                                value={value}
+                                onChange={keywordChange}
+                                required
+                            />
+                            <SidebarButton type="submit">검색</SidebarButton>
+                        </form>
+                      
+                        <div>
+                            <CategoryButton 
+                            selectedCategory={selectedCategory} 
+                            setSelectedCategory={setSelectedCategory} 
                         />
-                        <SidebarButton type="submit">검색</SidebarButton>
-                    </form>
-                    <div id="search-result">
-                        {places.length === 0 ? (
-                            <p>검색 결과가 없습니다</p>
-                    ):(
-                    <ul id="places-list">
-                        {places.map((place, index) => (
-                            <li key={index} onClick={() => handlePlaceClick(place)}style={{cursor:'pointer'}}>
-                                <h5>{place.place_name}</h5>
-                                {place.road_address_name && <span>{place.road_address_name}</span>}
-                                <span>{place.address_name}</span>
-                                <span>{place.phone}</span>
-                            </li>
-                        ))}
-                        </ul>
-                    )}
-                </div>
-            </div>
-            );
+                        {selectedCategory && (
+                            <KeywordButton 
+                                selectedCategory={selectedCategory} 
+                                selectedKeyword={selectedKeyword} // 선택된 키워드 전달
+                                setSelectedKeyword={setSelectedKeyword} // 키워드 상태 업데이트 함수 전달
+                            />
+                        )}
+                        </div>
+
+                        <div id="search-result">
+                            {places.length === 0 ? (
+                                <p>검색 결과가 없습니다</p>
+                            ) : (
+                                <ul id="places-list">
+                                    {places.map((place, index) => (
+                                        <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
+                                            <h5>{place.place_name}</h5>
+                                            {place.road_address_name && <span>{place.road_address_name}</span>}
+                                            <span>{place.address_name}</span>
+                                            <span>{place.phone}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+                );
 
             case 'chat' :
                 return <Chat userId={userId} planId={planId}/>; //여기에 관련 내용 추가
 
-            default :
+            default:
                 return null;
         }
     };
 
     return (
         <SidebarContainer>
-            <div>   
-            <TabButton activeTab={activeTab === 'search'} onClick={()=>setActiveTab('search')}>검색</TabButton>
-            <TabButton activeTab={activeTab === 'chat'} onClick={()=>setActiveTab('chat')}>채팅</TabButton> 
+            <div>
+                <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>검색</TabButton>
+                <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')}>채팅</TabButton>
             </div>
             {renderTab()}
         </SidebarContainer>
     );
 };
-
 
 export default RightSidebar;
