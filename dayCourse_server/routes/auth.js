@@ -136,7 +136,7 @@ router.post('/logout', async(req, res) => {
     const token = req.headers["authorization"]?.split(" ")[1];
     console.log(token);
     if (!token) {
-        return.res.status(401).json({ error: 'No token provided' });
+        return res.status(401).json({ error: 'No token provided' });
     }
     try {
         // 토큰 복호화
@@ -150,10 +150,11 @@ router.post('/logout', async(req, res) => {
     
         // redis 블랙리스트에 토큰 추가 
         await setexAsync(token, expireTime, 'blacklisted');
-        res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
+        return res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
+        
     } catch (error) {
         console.error('Logout error:', error);
-        res.status(500).json({ error: 'Logout failed' });
+        return res.status(500).json({ error: 'Logout failed' });
     }
 });
 
