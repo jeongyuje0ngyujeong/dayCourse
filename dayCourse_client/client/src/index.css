@@ -130,14 +130,15 @@ button:active {
   top: 1px;
 } */
 
-/* #sidebar > div {
+#sidebar > div {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e3e3e3;
-} */
+  height: 10%;
+  /* gap: 0.5rem; */
+  /* padding-top: 1rem;
+  padding-bottom: 1rem; */
+  /* border-bottom: 1px solid #e3e3e3; */
+}
 /* 
 #sidebar > div form {
   position: relative;

@@ -19,7 +19,7 @@ export async function action({ request, params }) {
     const planId = params.planId;
     
     await updateSchedule(planId, updates);
-    return redirect(`/main/empty`);
+    return redirect(`/main/empty/${planId}`);
 }
 
 

@@ -61,9 +61,11 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelecte
         setValue(""); // 제출 후 입력 필드 초기화
     };
 
-    const handlePlaceClick = async (place) => {
+    const handlePlaceClick = async (e, place) => {
+        e.preventDefault();
         try {
-            await addPlace(userId, planId, place);
+            await addPlace(planId, place);
+            console.log('hello');
             setSelectedPlaces((prevSelected) => [...prevSelected, place]);
         } catch (error) {
             console.error("장소 추가 실패!!!!!", error);
@@ -106,7 +108,7 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelecte
                             ) : (
                                 <ul id="places-list">
                                     {places.map((place, index) => (
-                                        <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
+                                        <li key={index} onClick={(e) => handlePlaceClick(e, place)} style={{ cursor: 'pointer' }}>
                                             <h5>{place.place_name}</h5>
                                             {place.road_address_name && <span>{place.road_address_name}</span>}
                                             <span>{place.address_name}</span>

@@ -86,6 +86,14 @@ const router = createBrowserRouter([
             path: "mypage",
             element: <Mypage/>,
           },
+          {
+            path: "empty/:planId",
+            element: <EmptyPage />,
+          },
+          {
+            path: "plan/:planId",
+            element: <PlanDetail />
+          },
         ]
       },
     ]

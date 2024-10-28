@@ -151,10 +151,17 @@ export async function updateSchedule(planId, updates) {
     await set(schedules);
 
     const postData = async () => {
-        let response = axios.post(`${BASE_URL}/home/plan/update`, {
-            id: sessionStorage.getItem('id'),
-            schedule: schedule
-        });
+        let response = axios.post(`${BASE_URL}/home/plan/update`, 
+            {
+                id: sessionStorage.getItem('id'),
+                schedule: schedule
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+                },
+            }
+        );
         return response;
     }
     
@@ -169,10 +176,17 @@ export async function deleteSchedule(id) {
     let index = schedules.findIndex(schedule => schedule.planId === id);
     
     const postData = async () => {
-        let response = axios.post(`${BASE_URL}/home/plan/delete`, {
+        let response = axios.post(`${BASE_URL}/home/plan/delete`, 
+        {
             id: sessionStorage.getItem('id'),
             planId: schedule.planId
-        });
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+            },
+        }
+    );
         
 
         return response;
