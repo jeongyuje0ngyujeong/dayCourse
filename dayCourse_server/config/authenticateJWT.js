@@ -2,6 +2,8 @@ const passport = require('passport');
 
 // JWT 인증 미들웨어 함수
 const authenticateJWT = (req, res, next) => {
+  console.log('Authorization Header:', req.headers.authorization);
+  
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err) {
       console.error('Passport error:', err);
