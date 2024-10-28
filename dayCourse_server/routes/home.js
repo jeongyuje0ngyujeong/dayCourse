@@ -4,7 +4,7 @@ const db = require('../db')
 
 const axios = require('axios');
 
-const apiKey = process.env.GOOGLE_API_KEY;
+const APP_KEY = process.env.TMAP_APP_KEY;
 
 
 router.get('/', async (req, res) => {
@@ -420,8 +420,6 @@ router.post('/plan/recommend_place', async (req, res) => {
 router.post('/plan/place/priority', async (req, res) => {
     const { placeId, priority } = req.body;
 
-
-
     console.log('장소순서변경')
     // console.log(req.query)
     // console.log(req.body)
@@ -457,6 +455,7 @@ const getPlaces = (sql, params) => {
 };
 
 router.post('/plan/place_distance', async (req, res) => {
+    console.log("장소 간 거리 계산");
     const { planId } = req.body;
 
     if (!planId) {
@@ -464,7 +463,9 @@ router.post('/plan/place_distance', async (req, res) => {
     }
 
     const sql = `
-      SELECT CONCAT(ST_Y(coordinates), ',', ST_X(coordinates)) AS coordinates
+      SELECT
+        ST_X(coordinates) AS lon,
+        ST_Y(coordinates) AS lat
       FROM Plan_Location
       WHERE Plan_Location.planId = ?
       ORDER BY Plan_Location.l_priority ASC;
@@ -477,39 +478,46 @@ router.post('/plan/place_distance', async (req, res) => {
             return res.json({ result: 'failure', message: 'Invalid planId' });
         }
 
-        places.forEach((place, index) => console.log(`Place ${index}: ${place.coordinates}`));
+        // places.forEach((place, index) => console.log(`Place ${index}: ${place.coordinates}`));
 
-        const origins = places.slice(0, -1).map(point => point.coordinates).join('|');
-        const destinations = places.slice(1).map(point => point.coordinates).join('|');
+        const origins = places.slice(0, -1)
+        const destinations = places.slice(1)
 
         console.log('origins: ' + origins);
         console.log('destinations: ' + destinations);
 
-        const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
-            params: {
-                origins,
-                destinations,
-                key: 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
-            }
-        });
+        const data = {
+            "origins": origins,
+            "destinations": destinations,
+            "transportMode": "pedestrian"
+          };          
+
+        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
+            data, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'appKey': APP_KEY
+              }
+            });
 
         console.log("Response Data: ", response.data);
 
-        response.data.rows.forEach((row, rowIndex) => {
-            console.log(`Row ${rowIndex}:`);
-            row.elements.forEach((element, elementIndex) => {
-              console.log(`  Element ${elementIndex}: ${JSON.stringify(element, null, 2)}`);
-            });
-          });          
-        
-        const distances = response.data.rows.map(row => 
-            row.elements[0].distance ? row.elements[0].distance.text : 'N/A'
-        );
-        
+        const distances = [];
+        let checkIdx = 0;
+        // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크
+        const matrixRoutes = response?.data?.matrixRoutes;
+        for (let i = 0; i < matrixRoutes.length; i++) {
+        // console.log("for문 실행");
+        const originIdx = matrixRoutes[i].originIndex;
+        const destinationIdx = matrixRoutes[i].destinationIndex;
 
-        // const distances = response.data.rows.map((row, i) =>
-        //     row.elements[i].distance ? row.elements[i].distance.text : 'N/A'
-        // );
+        if (originIdx === destinationIdx && destinationIdx == checkIdx) {
+            // console.log("idx 비교문 실행");
+            distances.push(matrixRoutes[i].distance);
+            checkIdx++;
+        }
+        }
 
         console.log('distances: ' + distances);
         return res.status(200).json({ msg: 'success', distances });

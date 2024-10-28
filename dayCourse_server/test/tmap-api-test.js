@@ -42,7 +42,7 @@ app.get('/matrix', async (req, res) => {
       headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'appKey': 'XxXWTihaLS9axB3B0rqq84pGH854BTXhhYDtVX10'
+          'appKey': APP_KEY
         }
       });
 
@@ -50,6 +50,7 @@ app.get('/matrix', async (req, res) => {
 
     const routes = [];
     let checkIdx = 0;
+    // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크
     const matrixRoutes = response?.data?.matrixRoutes;
     for (let i = 0; i < matrixRoutes.length; i++) {
       // console.log("for문 실행");
