@@ -8,7 +8,7 @@ export const fetchPlace = async (planId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/place`, {
+        const response = await axios.get(`${BASE_URL}/home/plan/place`, {
             planId,
         }, {
             headers: {
