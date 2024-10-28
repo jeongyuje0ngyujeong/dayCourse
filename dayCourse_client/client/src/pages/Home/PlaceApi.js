@@ -103,20 +103,25 @@ export const fetchDistance = async (planId) => {
 };
 
 // 장소 우선 순위 업데이트
-export const updatePlacePriority = async (placeId, priority) => {
+export const updatePlacePriority = async (placeId, priority, version) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/place/priority?userId=${userId}`, {
             placeId,
             priority,
+            version,
         }, {
             headers: {
                 Authorization: `Bearer ${token}`, // Authorization 헤더 추가
             },
         });
+
+        if (response.status === 409) {
+            throw new Error('충돌 발생: 데이터가 이미 수정됨');
+        }
         return response.data;
     } catch (error) {
         console.error("우선 순위 업데이트 실패:", error);
-        throw error;
+        throw error; 
     }
 };
