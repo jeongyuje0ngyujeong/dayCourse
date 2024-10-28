@@ -142,7 +142,7 @@ router.post('/logout', async(req, res) => {
         // 토큰 복호화
         const decoded = jwt.decode(token);
         if(!decoded) {
-            return.res.status(403).json({ error: 'Token is not valid' });
+            return res.status(403).json({ error: 'Token is not valid' });
         }
     
         // 토큰 만료시간 확인
@@ -151,7 +151,7 @@ router.post('/logout', async(req, res) => {
         // redis 블랙리스트에 토큰 추가 
         await setexAsync(token, expireTime, 'blacklisted');
         return res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
-        
+
     } catch (error) {
         console.error('Logout error:', error);
         return res.status(500).json({ error: 'Logout failed' });
