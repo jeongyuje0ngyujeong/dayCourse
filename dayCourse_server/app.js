@@ -27,11 +27,15 @@ const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 // 1. 메모리 스토리지 설정 (파일을 메모리에 저장)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
+const authenticateJWT = require('./config/authenticateJWT');
 
 
 // passport 초기화 및 설정
 require('./config/passport')(passport);
 app.use(passport.initialize());
+
+// /home 경로에 있는 모든 라우트에 인증 미들웨어 적용
+app.use('/home', authenticateJWT, apiRoutes);
 
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
