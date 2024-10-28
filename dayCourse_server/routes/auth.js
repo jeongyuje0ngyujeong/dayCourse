@@ -1,6 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
+const redis = require('redis');
+const { promisify } = require('util');
 const bcrypt = require('bcrypt');
 
 const db = require('../db')
@@ -128,21 +130,31 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// // 로그아웃
-// router.post('/logout', async(req, res) => {
-//     // const token = req.headers.authorization;
-//     const token = req.headers.["authorization"]?.split(" ")[1];
-//     console.log(token);
-
-//     if (!token) {
-//         return.res.status(401).json({ error: 'No token provided' });
-//     }
-
-//     const decoded = jwt.decode(token);
-//     if(!decoded) {
-        
-//     }
-
-// })
+// 로그아웃
+router.post('/logout', async(req, res) => {
+    // const token = req.headers.authorization;
+    const token = req.headers.["authorization"]?.split(" ")[1];
+    console.log(token);
+    if (!token) {
+        return.res.status(401).json({ error: 'No token provided' });
+    }
+    try {
+        // 토큰 복호화
+        const decoded = jwt.decode(token);
+        if(!decoded) {
+            return.res.status(403).json({ error: 'Token is not valid' });
+        }
+    
+        // 토큰 만료시간 확인
+        const expireTime = decoded.exp - Math.floor(Date.now().1000);
+    
+        // redis 블랙리스트에 토큰 추가 
+        await setexAsync(token, expireTime, 'blacklisted');
+        res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
+    } catch (error) {
+        console.error('Logout error:', error);
+        res.status(500).json({ error: 'Logout failed' });
+    }
+});
 
 module.exports = router;
