@@ -1,5 +1,9 @@
 const passport = require('passport');
 const redis = require('redis');
+const { promisify } = require('util');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 // JWT 인증 미들웨어 함수
 const authenticateJWT = (req, res, next) => {
@@ -8,31 +12,34 @@ const authenticateJWT = (req, res, next) => {
   const token = req.headers.["authorization"]?.split(" ")[1];
 
   if (!token) {
-    return.res.status(401).json({ error: 'No token provided' });
-  }
-
-  const blacklisted = await getAsync(token);
-  if (blacklisted) {
     return res.json({ result: 'failure', message: '다시 로그인 해주세요.' });
   }
-
-  passport.authenticate('jwt', { session: false }, (err, user, info) => {
-    if (err) {
-      console.error('Passport error:', err);
-      return res.status(500).json({ error: 'Server error' });
-    }
-    if (!user) {
-      // 토큰이 유효하지 않거나 만료된 경우
-      return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+  //blacklisted에 관련해서 예외처리
+  try {
+    // Redis 블랙리스트 확인
+    const blacklisted = await getAsync(token);
+    if (blacklisted) {
+        return res.status(401).json({ error: 'Unauthorized: Token is blacklisted' });
     }
 
-    // console.log("req.user:", JSON.stringify(user, null, 2));
+    // Passport를 이용한 JWT 인증
+    passport.authenticate('jwt', { session: false }, (err, user) => {
+        if (err) {
+            console.error('Passport error:', err);
+            return res.status(500).json({ error: 'Server error' });
+        }
+        if (!user) {
+            return res.status(401).json({ error: 'Unauthorized: Invalid or expired token' });
+        }
 
-    // 인증 성공 시 req.user에 사용자 정보 설정
-    req.user = user;
-    next(); // 다음 미들웨어로 이동
-    
-  })(req, res, next);
+        // 인증 성공 시 사용자 정보를 req.user에 설정
+        req.user = user;
+        next();
+    })(req, res, next);
+  } catch (error) {
+      console.error('Authorization error:', error);
+      res.status(500).json({ error: 'Authorization error' });
+  }
 };
 
 module.exports = authenticateJWT;
