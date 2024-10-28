@@ -4,10 +4,12 @@ const ButtonStyle = styled.button`
   all: unset;
   text-align: center;
   cursor: pointer;
-  border:  ${(props) => props.$border || 'solid 1px'};
+  border:  ${(props) => props.$border || 'solid 1px '};
   border-radius: 8px;
   color: ${(props) => props.color || 'black'};
   background-color:${(props) => props.$background || 'white'};
+  font-weight: ${(props) => props.bold ? 'bold' : 'normal'}; 
+  margin: ${(props) => props.margin || '2px'}; 
   &:hover {
     background-color: #e0e0e0;
     border-color: white;

@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { fetchPlace, addPlace } from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+import TabButton from './TabButton';
+import CategoryButton from './CategoryButton';
+import KeywordButton from './KeywordButton';
+
+
 
 const SidebarContainer = styled.div`
     width: 250px;
@@ -36,26 +41,12 @@ const SidebarButton = styled.button`
     } 
 `;
 
-const TabButton = ({ active, children, onClick }) => {
-    return (
-        <button
-            onClick={onClick} // 클릭 핸들러
-            style={{
-                padding: '10px',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                fontWeight: active ? 'bold' : 'normal', // active에 따라 스타일 조정
-            }}
-        >
-            {children}
-        </button>
-    );
-};
 
 const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelectedPlaces }) => {
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
     // 입력값 변화 감지
     const keywordChange = (e) => {
@@ -93,6 +84,21 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelecte
                             />
                             <SidebarButton type="submit">검색</SidebarButton>
                         </form>
+                      
+                        <div>
+                            <CategoryButton 
+                            selectedCategory={selectedCategory} 
+                            setSelectedCategory={setSelectedCategory} 
+                        />
+                        {selectedCategory && (
+                            <KeywordButton 
+                                selectedCategory={selectedCategory} 
+                                selectedKeyword={selectedKeyword} // 선택된 키워드 전달
+                                setSelectedKeyword={setSelectedKeyword} // 키워드 상태 업데이트 함수 전달
+                            />
+                        )}
+                        </div>
+
                         <div id="search-result">
                             {places.length === 0 ? (
                                 <p>검색 결과가 없습니다</p>

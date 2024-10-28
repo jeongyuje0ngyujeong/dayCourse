@@ -127,6 +127,7 @@ const LandingPage = () => {
         const loadDistance = async () => {
             if (selectedPlaces.length > 1) {
                 const distances = await fetchDistance(planId);
+                console.log("받은 거리 정보:", distances);
                 setDistances(distances);
             }
         };
