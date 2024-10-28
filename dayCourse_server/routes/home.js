@@ -13,7 +13,7 @@ const APP_KEY = process.env.TMAP_APP_KEY;
 router.get('/', authenticateJWT, async (req, res) => {
     console.log('home');
     const { startDate } = req.query;
-    const userId = req.user.id;
+    const userId = req.user.userId;
 
 
     // Check if required parameters are provided
@@ -56,16 +56,18 @@ router.get('/', authenticateJWT, async (req, res) => {
     });
 });
 
+router.post('/plan', authenticateJWT, async (req, res) => {
+    console.log("req.user:", JSON.stringify(req.user, null, 2));
 
-
-router.post('/plan', async (req, res) => {
-    const { userId, dateKey, startDateTime, planName, town, groupId } = req.body;
+    const userId = req.user.userId;
+    const { dateKey, startDateTime, planName, town, groupId } = req.body;
 
     console.log('일정등록요청')
     console.log(req.body)
+    console.log('userId check: ' + userId);
 
     // Check if required parameters are provided
-    if (!userId | !dateKey) {
+    if (!dateKey) {
         return res.status(400).json({ error: 'userId or startDate are required' });
     }
 
@@ -75,12 +77,19 @@ router.post('/plan', async (req, res) => {
         newplanName = dateKey
     }
 
+    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
     const sql = `
-      INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO Plan (start_userId, startDate, endDate, planName, town)
+      VALUES (?, ?, ?, ?, ?)
     `;
+    // const sql = `
+    //   INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
+    //   VALUES (?, ?, ?, ?, ?, ?)
+    // `;
 
-    const values = [userId, dateKey, dateKey, newplanName, town, groupId];
+    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
+    const values = [userId, dateKey, dateKey, newplanName, town];
+    // const values = [userId, dateKey, dateKey, newplanName, town, groupId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -110,14 +119,14 @@ router.post('/plan', async (req, res) => {
 });
 
 
-router.get('/plans/recent', async (req, res) => {
+router.get('/plans/recent', authenticateJWT, async (req, res) => {
     console.log('home/plans/recent');
-    const { userId } = req.query;
+    const userId = req.user.userId;
 
     // Check if required parameters are provided
-    if (!userId) {
-        return res.status(400).json({ error: 'userId are required' });
-    }
+    // if (!userId) {
+    //     return res.status(400).json({ error: 'userId are required' });
+    // }
 
 
     const sql = `
@@ -158,10 +167,12 @@ router.get('/plans/recent', async (req, res) => {
 });
 
 
-router.post('/plan/town_update', async (req, res) => {
-    const { userId, destination, planId } = req.body;
+router.post('/plan/town_update', authenticateJWT, async (req, res) => {
+    const { destination, planId } = req.body;
+    const userId = req.user.userId;
+
     // Check if required parameters are provided
-    if (!userId | !planId) {
+    if (!planId) {
         return res.status(400).json({ error: 'userId or planId are required' });
     }
 
@@ -185,13 +196,16 @@ router.post('/plan/town_update', async (req, res) => {
 });
 
 
-router.post('/plan/update', async (req, res) => {
-    const { userId, schedule } = req.body;
+router.post('/plan/update', authenticateJWT, async (req, res) => {
+    const { schedule } = req.body;
+    const userId = req.user.userId;
+
     const { planId, dateKey, endDate, planName, town } = schedule;
     console.log('계획수정')
     console.log(req.body)
+
     // Check if required parameters are provided
-    if (!userId | !planId) {
+    if (!planId) {
         return res.status(400).json({ error: 'userId or planId are required' });
     }
 
@@ -221,7 +235,7 @@ router.post('/plan/update', async (req, res) => {
 
 
 
-router.post('/plan/place', (req, res) => {
+router.post('/plan/place', authenticateJWT, (req, res) => {
     // SQL INSERT 쿼리
     console.log('place get')
     const { planId } = req.body;
@@ -258,7 +272,7 @@ router.post('/plan/place', (req, res) => {
 });
 
 
-router.delete('/plan/place', (req, res) => {
+router.delete('/plan/place', authenticateJWT, (req, res) => {
     console.log('place delete');
     const { placeId } = req.query;
     console.log(req.body);
@@ -328,14 +342,15 @@ router.delete('/plan/place', (req, res) => {
 });
 
 
-router.post('/plan/delete', async (req, res) => {
-    const { userId, planId } = req.body;
+router.post('/plan/delete', authenticateJWT, async (req, res) => {
+    const { planId } = req.body;
+    const userId = req.user.userId;
 
     console.log('일정삭제')
     console.log(req.body)
 
     // Check if required parameters are provided
-    if (!userId | !planId) {
+    if (!planId) {
         return res.status(400).json({ error: 'userId or planId are required' });
     }
 
@@ -374,8 +389,10 @@ router.post('/plan/delete', async (req, res) => {
 });
 
 
-router.post('/plan/addPlace', async (req, res) => {
-    const { userId, planId, memo, place } = req.body;
+router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
+    const { planId, memo, place } = req.body;
+    const userId = req.user.userId;
+
     console.log("일정장소추가")
     //console.log(place)
 
@@ -383,7 +400,7 @@ router.post('/plan/addPlace', async (req, res) => {
     const y = parseFloat(place.y);
 
     // Check if required parameters are provided
-    if (!userId | !planId) {
+    if (!planId) {
         return res.status(400).json({ error: 'userId or planId are required' });
     }
 
@@ -408,8 +425,9 @@ router.post('/plan/addPlace', async (req, res) => {
 
 
 
-router.post('/plan/recommend_place', async (req, res) => {
-    const { userId, planId, memo, place } = req.body;
+router.post('/plan/recommend_place', authenticateJWT, async (req, res) => {
+    const { planId, memo, place } = req.body;
+    const userId = req.user.userId;
 
     console.log('장소추천요청')
     console.log(req.body)
@@ -422,7 +440,7 @@ router.post('/plan/recommend_place', async (req, res) => {
 
 });
 
-router.post('/plan/place/priority', async (req, res) => {
+router.post('/plan/place/priority', authenticateJWT, async (req, res) => {
     const { placeId, priority } = req.body;
 
     console.log('장소순서변경')
@@ -459,7 +477,7 @@ const getPlaces = (sql, params) => {
     });
 };
 
-router.post('/plan/place_distance', async (req, res) => {
+router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
     console.log("장소 간 거리 계산");
     const { planId } = req.body;
 
@@ -483,52 +501,64 @@ router.post('/plan/place_distance', async (req, res) => {
             return res.json({ result: 'failure', message: 'Invalid planId' });
         }
 
-        // places.forEach((place, index) => console.log(`Place ${index}: ${place.coordinates}`));
+        // place의 값 문자열 형태로 수정
+        const stringifiedPlaces = places.map(place => ({
+            lon: place.lon.toString(),
+            lat: place.lat.toString()
+        }));
 
         const origins = places.slice(0, -1)
         const destinations = places.slice(1)
 
-        console.log('origins: ' + origins);
-        console.log('destinations: ' + destinations);
-
+        console.log('origins:', JSON.stringify(origins, null, 2));
+        console.log('destinations:', JSON.stringify(destinations, null, 2));
+        
         const data = {
             "origins": origins,
             "destinations": destinations,
             "transportMode": "pedestrian"
           };          
+        // 요청 초과 예외처리용
+        const response = null;
+        // const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
+        //     data, {
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'appKey': APP_KEY
+        //       }
+        //     });
 
-        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
-            data, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'appKey': APP_KEY
-              }
-            });
-
-        console.log("Response Data: ", response.data);
-
-        const distances = [];
-        let checkIdx = 0;
-        // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크
-        const matrixRoutes = response?.data?.matrixRoutes;
-        for (let i = 0; i < matrixRoutes.length; i++) {
-        // console.log("for문 실행");
-        const originIdx = matrixRoutes[i].originIndex;
-        const destinationIdx = matrixRoutes[i].destinationIndex;
-
-        if (originIdx === destinationIdx && destinationIdx == checkIdx) {
-            // console.log("idx 비교문 실행");
-            distances.push(matrixRoutes[i].distance);
-            checkIdx++;
+        // 요청 초과 예외처리용
+        if (response != null) {
+            console.log("Response Data: ", response.data);
+    
+            const distances = [];
+            let checkIdx = 0;
+            // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크 하게 (open api 한계)
+            const matrixRoutes = response?.data?.matrixRoutes;
+            for (let i = 0; i < matrixRoutes.length; i++) {
+                // console.log("for문 실행");
+                const originIdx = matrixRoutes[i].originIndex;
+                const destinationIdx = matrixRoutes[i].destinationIndex;
+    
+                if (originIdx === destinationIdx && destinationIdx == checkIdx) {
+                    // console.log("idx 비교문 실행");
+                    distances.push(matrixRoutes[i].distance);
+                    checkIdx++;
+                }
+            }
+    
+            console.log('distances: ' + distances);
+            return res.status(200).json({ msg: 'success', distances });
+            
+        // 요청 초과 예외처리용
+        } else {
+            return res.status(429).json({ msg: 'api 요청 초과', distances });
         }
-        }
-
-        console.log('distances: ' + distances);
-        return res.status(200).json({ msg: 'success', distances });
 
     } catch (error) {
-        console.error(error);
+        console.error('오류 응답 데이터:', error.response?.data);
         res.status(500).send('API 요청에 실패했습니다.');
     }
 });
