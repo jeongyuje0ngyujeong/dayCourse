@@ -42,13 +42,7 @@ export async function getDo(props) {
 
     } catch (error) {
         console.error('Error fetching the do:', error);
-        
-        // async function loadToken() {
-        //     const token = await getToken();
-        //     console.log('Token:', token);
-        //     return token;
-        // }
-        
+             
         const newToken = await getToken();
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
             params: {
@@ -71,8 +65,11 @@ export async function getSchedules(query, startDate) {
 
     const getData = async () => {
         let response = await axios.get(`${BASE_URL}/home`,{
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+            },
             params: {
-                userId: 1,
+                id: sessionStorage.getItem('id'),
                 startDate: startDate
             }
         });
@@ -96,12 +93,19 @@ export async function createSchedule(dateKey, formData) {
     let schedules = await localforage.getItem("schedules");
 
     const postData = async () => {
-        let response = axios.post(`${BASE_URL}/home/plan`, {
-            userId: 1,
-            dateKey: dateKey,
-            groupId: formData.get("groupId"),
-            planName: formData.get("planName")
-        });
+        let response = axios.post(`${BASE_URL}/home/plan`, 
+            {
+                id: sessionStorage.getItem('id'),
+                dateKey: dateKey,
+                groupId: formData.get("groupId"),
+                planName: formData.get("planName")
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+                },
+            }
+        );
         return response;
     }
     
@@ -112,12 +116,6 @@ export async function createSchedule(dateKey, formData) {
 
     return result.data;
 
-    // let id = Math.random().toString(36).substring(2, 9);
-    // let schedule = { id, dateKey, createdAt: Date.now() };
-    // let schedules = await getSchedules();
-    // schedules.unshift(schedule);
-    // await set(schedules);
-    // return schedule;
 }
 
 export async function getSchedule(dateKey) {
@@ -152,7 +150,7 @@ export async function updateSchedule(planId, updates) {
 
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan/update`, {
-            userId: 1,
+            id: sessionStorage.getItem('id'),
             schedule: schedule
         });
         return response;
@@ -161,14 +159,6 @@ export async function updateSchedule(planId, updates) {
     let result = await postData();
 
     return result.data.msg;
-
-
-    // let schedules = await localforage.getItem("schedules");
-    // let schedule = schedules.find(schedule => String(schedule.dateKey) === dateKey);
-    // if (!schedule) throw new Error("No schedule found for", dateKey);
-    // Object.assign(schedule, updates);
-    // await set(schedules);
-    // return schedule;
 }
 
 export async function deleteSchedule(id) {
@@ -178,7 +168,7 @@ export async function deleteSchedule(id) {
     
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan/delete`, {
-            userId: 1,
+            id: sessionStorage.getItem('id'),
             planId: schedule.planId
         });
         
@@ -202,20 +192,3 @@ export async function deleteSchedule(id) {
 function set(schedules) {
     return localforage.setItem("schedules", schedules);
 }
-
-// let fakeCache = {};
-
-// async function fakeNetwork(key) {
-//     if (!key) {
-//         fakeCache = {};
-//     }
-
-//     if (fakeCache[key]) {
-//         return;
-//     }
-
-//     fakeCache[key] = true;
-//     return new Promise(res => {
-//         setTimeout(res, Math.random() * 800);
-//     });
-// }
