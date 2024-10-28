@@ -1,8 +1,9 @@
 import axios from 'axios';
 //place 장소의 정보
 //placeId 장소 구분하기 위한 ID
-const BASE_URL = 'http://192.168.1.80:5000';
+// const BASE_URL = 'http://192.168.1.80:5000';
 // const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
+const BASE_URL = process.env.REACT_APP_BASE_URL;  
 
 //기존 장소 불러오기
 export const fetchPlace = async (userId, planId) => {
@@ -75,8 +76,10 @@ export const recommendPlace = async (category, keyword) => {
 
 export const fetchDistance = async (planId) => {
     try {
+        console.log("플랜 ID:", planId); // planId 로그 추가
         const response = await axios.post(`${BASE_URL}/home/plan/place_distance?userId=1`, {
-            planId
+            planId,
+
     });
         return response.data;
     } catch (error) {
