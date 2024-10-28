@@ -90,7 +90,7 @@ const router = createBrowserRouter([
             element: <Mypage/>,
           },
           {
-            path: "empty",
+            path: "empty/:planId",
             element: <EmptyPage />,
           },
           {

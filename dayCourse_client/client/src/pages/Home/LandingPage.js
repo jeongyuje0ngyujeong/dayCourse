@@ -4,6 +4,7 @@ import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance } from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { useParams } from 'react-router-dom';
 
 const SelectedPlacesContainer = styled.div`
     display: flex; 
@@ -30,6 +31,7 @@ const DistanceBox = styled.div`
     font-weight: bold;
 `;
 
+
 const LandingPage = () => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
@@ -38,7 +40,8 @@ const LandingPage = () => {
     
     // userId와 planId 가져오기
     const userId = sessionStorage.getItem('userId');
-    const planId = sessionStorage.getItem('planId'); // planId도 세션 스토리지에서 가져옵니다.
+    const { planId } = useParams(); // planId도 세션 스토리지에서 가져옵니다.
+    // console.log('planId: ',planId);
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -75,6 +78,7 @@ const LandingPage = () => {
                     l_priority: index + 1, // 인덱스를 기반으로 우선 순위 설정
                 }));
             });
+            console.log(selectedPlaces);
 
         } catch (error) {
             console.error("장소 추가 실패!!:", error);
@@ -82,6 +86,8 @@ const LandingPage = () => {
     };
 
     const removePlace = async (placeId) => {
+        console.log('delete from', selectedPlaces);
+        console.log('delete: ', placeId);
         try {
             await deletePlace(placeId); // userId를 전달하지 않음
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
@@ -110,7 +116,7 @@ const LandingPage = () => {
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
-                updatePlacePriority(place.placeId || place.id, place.l_priority, place.version) // placeId 또는 id 사용
+                updatePlacePriority(place.placeId||place.id, place.l_priority, place.version) // placeId 또는 id 사용
             ));
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
