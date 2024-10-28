@@ -1,15 +1,18 @@
 import axios from 'axios';
-// const BASE_URL = 'http://192.168.1.80:5000';
-const BASE_URL = process.env.REACT_APP_BASE_URL;  
-// 하혜민 바보
 
-// const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
+const BASE_URL = process.env.REACT_APP_BASE_URL; // API 기본 URL
 
-
-//모든 플랜 가져오기
-export async function getPlan() {
+// 모든 플랜 가져오기
+export async function getPlan(userId) {
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
-        const response = await fetch(`${BASE_URL}/home/plans/recent`); // 서버에서 모든 플랜 요청
+        // URL에 userId를 쿼리 매개변수로 포함
+        const response = await fetch(`${BASE_URL}/home/plans/recent?userId=${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}` 
+            }
+        }); // 서버에서 모든 플랜 요청
+
         if (!response.ok) {
             throw new Error('플랜 가져오기 실패');
         }
@@ -21,18 +24,18 @@ export async function getPlan() {
     }
 }
 
-
-//이미지 업로드
+// 이미지 업로드
 export const uploadImage = async (userId, selectedFile) => {
-    const formData= new FormData();
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
+    const formData = new FormData();
     formData.append("userId", userId);      // 사용자 ID 추가
     formData.append("image", selectedFile); // 이미지 파일 추가
 
-
     try {
-        const response = await axios.post(`${BASE_URL}/images`, formData, {
-            hearders: {
-                "Content-Type" : "multipart/form-data",
+        const response = await axios.post(`${BASE_URL}/home/plan/${planId}/images`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${token}`
             },
         });
         return response.data;
@@ -42,15 +45,18 @@ export const uploadImage = async (userId, selectedFile) => {
     }
 };
 
-// 이미지 가져오기
-export const fetchImage = async(userId) => {
+// 특정 플랜에 있는 이미지 가져오기
+export const fetchImage = async (planId) => {
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
-        const response = await axios.get(`${BASE_URL}/images`, {
-            params: { name : userId},
+        const response = await axios.get(`${BASE_URL}/home/plan/${planId}/images`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         });
         return response.data;
-    } catch (error)  {
-        console.error("Error fetching images:", error);
+    } catch (error) {
+        console.error("Error fetching plan images:", error);
         throw error;
     }
-}
+};
