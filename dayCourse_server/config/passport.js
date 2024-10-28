@@ -14,7 +14,7 @@ module.exports = (passport) => {
     passport.use(
         new JwtStrategy(opts, async (jwt_payload, done) => {
             const sql = `
-                SELECT User.id
+                SELECT User.userId
                 FROM User
                 WHERE User.userId = ?
                 `;
@@ -25,8 +25,10 @@ module.exports = (passport) => {
                     return done(err, false);
                 }
                 if (result.length > 0) {
-                    return done(null, result);
+                    console.log('db userIdd와 비교 결과 성공')
+                    return done(null, result[0]);
                 } else {
+                    console.log('db userIdd와 비교 결과 실패')
                     return done(null, false);
                 }
             });

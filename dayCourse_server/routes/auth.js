@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
 
     // WHERE에서 ㅑ
     const sql = `
-        SELECT User.id, User.pw
+        SELECT User.id, User.pw, User.userId
         FROM User
         WHERE User.id = ?
         `;
@@ -107,16 +107,16 @@ router.post('/login', async (req, res) => {
             }
             // 사용자 아이디 기반 정보 확인
             const user = result[0];
-            console.log(user);
+            // console.log(user);
 
             // 비밀번호 확인
             const isMatch = await bcrypt.compare(pw, user.pw);
 
 
             if (isMatch) {
-                console.log("isit success?");
-                const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-                return res.json({ result: 'success', access_token: token });
+                const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
+                // console.log("로그인 시 주어진 token: " + token);
+                return res.json({ result: 'success', access_token: token, id: user.userId });
             } else {
                 return res.json({ result: 'failure', message: '비밀번호가 틀렸습니다. 다시 입력해 주세요' });
             }
