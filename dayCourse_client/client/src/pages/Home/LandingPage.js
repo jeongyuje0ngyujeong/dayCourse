@@ -67,15 +67,18 @@ const LandingPage = () => {
         try {
             const addedPlace = await addPlace(planId, place); // planId와 place만 전달
             console.log("Added place:", addedPlace); // 추가된 장소 로그 확인
-         
+            
+            // 이전 선택된 장소 상태에 추가
             setSelectedPlaces(prevSelected => {
-                const updatedPlaces = [...prevSelected, { addedPlace, version: 1 }];
+                // 새 장소를 추가한 배열을 생성
+                const updatedPlaces = [...prevSelected, { ...addedPlace, l_priority: prevSelected.length + 1 }];
+                // l_priority를 인덱스 기반으로 설정
                 return updatedPlaces.map((p, index) => ({
                     ...p,
                     l_priority: index + 1, // 인덱스를 기반으로 우선 순위 설정
                 }));
             });
-
+    
         } catch (error) {
             console.error("장소 추가 실패!!:", error);
         }
@@ -118,8 +121,10 @@ const LandingPage = () => {
     };
 
     useEffect(() => {
-        fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
-    }, [planId]); // planId가 변경될 때마다 fetch
+        if (planId) {
+            fetchExistPlace(); // planId가 존재할 때만 기존 장소를 가져옴
+        }
+    }, [planId]);
 
     useEffect(() => {
         const loadDistance = async () => {
