@@ -22,7 +22,7 @@ export async function action({ request, params }) {
 }
 
 export async function loader({ params }) {
-  // console.log(params);
+  console.log(params);
   const { id } = params;
   const event = await getEvent(id);
 

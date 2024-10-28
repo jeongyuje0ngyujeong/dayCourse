@@ -1,14 +1,18 @@
 import axios from 'axios';
-
-// 기본 URL
+//place 장소의 정보
+//placeId 장소 구분하기 위한 ID
 const BASE_URL = process.env.REACT_APP_BASE_URL;
+// const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
+// const BASE_URL = process.env.REACT_APP_BASE_URL;  
 
 // 기존 장소 불러오기
 export const fetchPlace = async (planId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/place`, {
+        const response = await axios.post(`${BASE_URL}/home/plan/place?userId=${userId}`,
+         {
+            userId,
             planId,
         }, {
             headers: {

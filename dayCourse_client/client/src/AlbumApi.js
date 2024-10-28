@@ -1,84 +1,57 @@
 import axios from 'axios';
+// const BASE_URL = 'http://192.168.1.80:5000';
+const BASE_URL = process.env.REACT_APP_BASE_URL;  
+// 하혜민 바보
 
-const BASE_URL = process.env.REACT_APP_BASE_URL; // API 기본 URL
+// const BASE_URL = 'http://localhost:3000'; // 변경된 포트 사용
 
-// 모든 플랜 가져오기
+
+//모든 플랜 가져오기
 export async function getPlan() {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
-
-    // userId가 없는 경우 에러 처리
-    if (!userId) {
-        throw new Error('사용자 ID가 정의되지 않았습니다.');
-    }
-
     try {
-        // URL에 userId를 쿼리 매개변수로 포함
-        const response = await axios.get(`${BASE_URL}/home/plans/recent`, {
-            headers: {
-                Authorization: `Bearer ${token}`, 
-            },
-            params: {
-                userId, // userId를 쿼리 매개변수로 포함
-            }
-        }); // 서버에서 모든 플랜 요청
-
-        return response.data; // axios는 자동으로 JSON 변환
-
+        const response = await fetch(`${BASE_URL}/home/plans/recent?userId=1`); // 서버에서 모든 플랜 요청
+        console.log(response);
+        if (!response.ok) {
+            throw new Error('플랜 가져오기 실패');
+        }
+        const plans = await response.json();
+        return plans;
     } catch (error) {
-        console.error('Error fetching plans:', error.response ? error.response.data : error);
+        console.error('Error fetching plans:', error);
         throw error;
     }
 }
 
-// 이미지 업로드
-export const uploadImage = async (selectedFile, planId) => {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
 
-    if (!userId) {
-        throw new Error('사용자 ID가 정의되지 않았습니다.');
-    }
-
-    const formData = new FormData();
+//이미지 업로드
+export const uploadImage = async (userId, selectedFile) => {
+    const formData= new FormData();
     formData.append("userId", userId);      // 사용자 ID 추가
     formData.append("image", selectedFile); // 이미지 파일 추가
 
+
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/${planId}/images`, formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-                Authorization: `Bearer ${token}`
+        const response = await axios.post(`${BASE_URL}/images`, formData, {
+            hearders: {
+                "Content-Type" : "multipart/form-data",
             },
         });
         return response.data;
     } catch (error) {
-        console.error("업로드 실패:", error.response ? error.response.data : error);
+        console.error("업로드 실패:", error);
         throw error;
     }
 };
 
-// 특정 플랜에 있는 이미지 가져오기
-export const fetchImage = async (planId) => {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
-
-    if (!userId) {
-        throw new Error('사용자 ID가 정의되지 않았습니다.');
-    }
-
+// 이미지 가져오기
+export const fetchImage = async(userId) => {
     try {
-        const response = await axios.get(`${BASE_URL}/home/plan/${planId}/images`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            params: {
-                userId, // userId를 쿼리 매개변수로 포함
-            }
+        const response = await axios.get(`${BASE_URL}/images`, {
+            params: { name : userId},
         });
         return response.data;
-    } catch (error) {
-        console.error("Error fetching plan images:", error.response ? error.response.data : error);
+    } catch (error)  {
+        console.error("Error fetching images:", error);
         throw error;
     }
-};
+}

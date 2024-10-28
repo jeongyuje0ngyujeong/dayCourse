@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority , fetchDistance} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const SelectedPlacesContainer = styled.div`
@@ -30,15 +30,15 @@ const DistanceBox = styled.div`
     font-weight: bold;
 `;
 
+
 const LandingPage = () => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
-    
-    // userId와 planId 가져오기
-    const userId = sessionStorage.getItem('userId');
-    const planId = sessionStorage.getItem('planId'); // planId도 세션 스토리지에서 가져옵니다.
+
+    const userId = sessionStorage.getItem('userId'); 
+    const planId = 10; 
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -46,13 +46,12 @@ const LandingPage = () => {
 
     const fetchExistPlace = async () => {
         try {
-            const existPlace = await fetchPlace(planId); // planId만 전달
+            const existPlace = await fetchPlace(userId, planId);
             console.log("Fetched places:", existPlace); // 데이터 로그 확인
             if (Array.isArray(existPlace)) {
                 setSelectedPlaces(existPlace.map((place, index) => ({
                     ...place,
                     l_priority: index + 1, // 초기 우선 순위 설정
-                    version: place.version || 1 //버전이 존재하고 유효한 값이라면 해당값을 사용하고, 아니면 버전정보=>1
                 })));
             } else {
                 console.error("Invalid data format:", existPlace);
@@ -65,16 +64,16 @@ const LandingPage = () => {
 
     const addSelectedPlace = async (place) => {
         try {
-            const addedPlace = await addPlace(planId, place); // planId와 place만 전달
+            const addedPlace = await addPlace(userId, planId, place);
             console.log("Added place:", addedPlace); // 추가된 장소 로그 확인
          
-            setSelectedPlaces(prevSelected => {
-                const updatedPlaces = [...prevSelected, { addedPlace, version: 1 }];
-                return updatedPlaces.map((p, index) => ({
-                    ...p,
-                    l_priority: index + 1, // 인덱스를 기반으로 우선 순위 설정
-                }));
-            });
+                setSelectedPlaces(prevSelected => {
+                    const updatedPlaces = [...prevSelected, addedPlace];
+                    return updatedPlaces.map((p, index) => ({
+                        ...p,
+                        l_priority: index + 1, // 인덱스를 기반으로 우선 순위 설정
+                    }));
+                });
 
         } catch (error) {
             console.error("장소 추가 실패!!:", error);
@@ -83,7 +82,7 @@ const LandingPage = () => {
 
     const removePlace = async (placeId) => {
         try {
-            await deletePlace(placeId); // userId를 전달하지 않음
+            await deletePlace(placeId, userId);
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
         } catch (error) {
             console.error("장소 삭제 실패!", error);
@@ -110,7 +109,7 @@ const LandingPage = () => {
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
-                updatePlacePriority(place.placeId || place.id, place.l_priority, place.version) // placeId 또는 id 사용
+                updatePlacePriority(place.placeId || place.id, place.l_priority) // placeId 또는 id 사용
             ));
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
@@ -119,7 +118,9 @@ const LandingPage = () => {
 
     useEffect(() => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
-    }, [planId]); // planId가 변경될 때마다 fetch
+    }, [userId, planId]);
+
+
 
     useEffect(() => {
         const loadDistance = async () => {
@@ -135,8 +136,8 @@ const LandingPage = () => {
     return (
         <div className="landing-page">
             <RightSidebar 
-                userId={userId} // userId를 사용
-                planId={planId} // planId를 사용
+                userId={userId} 
+                planId={planId} 
                 places={places} 
                 setPlaces={setPlaces} 
                 addPlace={addSelectedPlace} 
@@ -152,48 +153,48 @@ const LandingPage = () => {
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                         >
-                            {selectedPlaces.map((place, index) => {
-                                // 유효한 place 객체인지 확인
-                                if (!place || !place.placeId && !place.id || !place.place_name) {
-                                    console.warn("Invalid place object:", place);
-                                    return null; // 유효하지 않은 객체는 렌더링하지 않음
-                                }
-                                return (
-                                    <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
-                                        <Draggable
-                                            draggableId={place.placeId?.toString() || place.id?.toString()} 
-                                            index={index}
+                                            {selectedPlaces.map((place, index) => {
+                        // 유효한 place 객체인지 확인
+                        if (!place || !place.placeId && !place.id || !place.place_name) {
+                            console.warn("Invalid place object:", place);
+                            return null; // 유효하지 않은 객체는 렌더링하지 않음
+                        }
+                        return (
+                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
+                                <Draggable
+                                    draggableId={place.placeId?.toString() || place.id?.toString()} 
+                                    index={index}
+                                >
+                                    {(provided) => (
+                                        <PlaceBox 
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
                                         >
-                                            {(provided) => (
-                                                <PlaceBox 
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                >
-                                                    <h5>{selectedPlaces.indexOf(place) + 1}. {place.place_name}</h5>
-                                                    {place.place && <span>{place.place}</span>}
-                                                    <span>{place.address_name}</span>
-                                                    <span>{place.phone}</span>
-                                                    <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
-                                                </PlaceBox>
-                                            )}
-                                        </Draggable>
+                                        <h5>{selectedPlaces.indexOf(place) + 1}. {place.place_name}</h5>
+                                            {place.place && <span>{place.place}</span>}
+                                            <span>{place.address_name}</span>
+                                            <span>{place.phone}</span>
+                                            <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
+                                        </PlaceBox>
+                                    )}
+                                </Draggable>
 
-                                        {index < selectedPlaces.length - 1 && distances[index] && (
-                                            <DistanceBox>
-                                                {`거리 : ${distances[index]}`} 
-                                            </DistanceBox>
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                            {provided.placeholder}
-                        </SelectedPlacesContainer>
-                    )}
-                </Droppable>
-            </DragDropContext>
-        </div>
-    );
+                                {index < selectedPlaces.length - 1 && distances[index] && (
+                                <DistanceBox>
+                                    {`거리 : ${distances[index]}`} 
+                                </DistanceBox>
+                                )}
+                            </React.Fragment>
+                        );
+                    })}
+                    {provided.placeholder}
+                </SelectedPlacesContainer>
+            )}
+        </Droppable>
+    </DragDropContext>
+</div>
+);
 };
 
 export default LandingPage;
