@@ -149,44 +149,81 @@ router.post('/add', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     const { groupName, groupMembers } = req.body;
 
-    console.log('그룹 추가')
-    console.log(groupName)
-    console.log(groupMembers)
+    console.log('그룹 추가');
+    console.log(groupName);
+    console.log(groupMembers);
 
-
-    const sql = `
+    const sqlInsertGroup = `
       INSERT INTO day_Group (groupName)
       VALUES (?)
     `;
 
-    const sql_GM = `
+    const sqlSelectUserId = `
+      SELECT userId
+      FROM User
+      WHERE id = ?
+    `;
+
+    const sqlInsertGroupMember = `
       INSERT INTO groupMembers (groupId, userId)
       VALUES (?, ?)
     `;
 
-    db.query(sql, [groupName], (err, result_groupId) => {
+    // 그룹을 먼저 삽입합니다.
+    db.query(sqlInsertGroup, [groupName], (err, result_groupId) => {
         if (err) {
-            console.error('Error inserting data:', err);
-            return res.status(500).json({ error: 'Database error' });
+            console.error('데이터 삽입 오류:', err);
+            return res.status(500).json({ error: '데이터베이스 오류' });
         }
 
-        console.log(result_groupId.insertId)
+        const groupId = result_groupId.insertId; // 삽입한 그룹의 ID
 
-        for (const member of groupMembers) {
-            db.query(sql_GM, [result_groupId.insertId, member.friendId])
-        }
+        // 친구를 그룹에 추가
+        const memberQueries = groupMembers.map(member => {
+            return new Promise((resolve, reject) => {
+                db.query(sqlSelectUserId, [member.friendId], (err, results) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    if (results.length > 0) {
+                        const friendUserId = results[0].userId; // 친구의 userId
+                        // 그룹 멤버로 추가
+                        db.query(sqlInsertGroupMember, [groupId, friendUserId], (err) => {
+                            if (err) {
+                                return reject(err);
+                            }
+                            resolve();
+                        });
+                    } else {
+                        // 친구가 존재하지 않는 경우
+                        resolve(); // 처리 완료
+                    }
+                });
+            });
+        });
 
-        db.query(sql_GM, [result_groupId.insertId, userId], (err, result_Gf) => {
-            if (err) {
-                console.error('Error inserting data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+        // 자신을 그룹에 추가
+        memberQueries.push(new Promise((resolve, reject) => {
+            db.query(sqlInsertGroupMember, [groupId, userId], (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        }));
 
-            return res.status(200).json({msg: "그룹 생성 성공"})
-        })
+        // 모든 쿼리가 완료될 때까지 기다립니다.
+        Promise.all(memberQueries)
+            .then(() => {
+                return res.status(200).json({ msg: "그룹 생성 성공" });
+            })
+            .catch(err => {
+                console.error('그룹 멤버 추가 오류:', err);
+                return res.status(500).json({ error: '데이터베이스 오류' });
+            });
     });
-
 });
+
 
 
 
