@@ -191,21 +191,21 @@ router.post('/add', authenticateJWT, async (req, res) => {
         console.log("친구찾기")
         console.log(friendIds)
         
-        // // 친구들의 userId를 조회합니다.
-        // const results = await new Promise((resolve, reject) => {
-        //     db.query(sqlSelectUserIds, [friendIds], (err, result) => {
-        //         if (err) return reject(err);
-        //         resolve(result);
-        //     });
-        // });
-
+        // 친구들의 userId를 조회합니다.
         const results = await new Promise((resolve, reject) => {
-            // 배열을 쿼리 인자로 전달할 때, 연결된 문자열을 사용하여 쿼리를 구성
-            db.query(sqlSelectUserIds.replace('(?)', friendIds.map(() => '?').join(',')), friendIds, (err, result) => {
+            db.query(sqlSelectUserIds, [friendIds], (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
+
+        // const results = await new Promise((resolve, reject) => {
+        //     // 배열을 쿼리 인자로 전달할 때, 연결된 문자열을 사용하여 쿼리를 구성
+        //     db.query(sqlSelectUserIds.replace('(?)', friendIds.map(() => '?').join(',')), friendIds, (err, result) => {
+        //         if (err) return reject(err);
+        //         resolve(result);
+        //     });
+        // });
 
         const friendUserIds = results.map(result => result.userId);
         const allUserIds = [...new Set([...friendUserIds, userId])]; // 중복 제거 후 모든 사용자 ID 배열 생성
