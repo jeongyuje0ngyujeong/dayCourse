@@ -532,7 +532,9 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             "transportMode": "pedestrian"
           };          
         // 요청 초과 예외처리용
-        const response = null;
+        // const response = null;
+
+        // 오픈 api 요청
         const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
             data, {
             headers: {
