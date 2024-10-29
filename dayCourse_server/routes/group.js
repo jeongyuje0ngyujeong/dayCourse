@@ -199,14 +199,6 @@ router.post('/add', authenticateJWT, async (req, res) => {
             });
         });
 
-        // const results = await new Promise((resolve, reject) => {
-        //     // 배열을 쿼리 인자로 전달할 때, 연결된 문자열을 사용하여 쿼리를 구성
-        //     db.query(sqlSelectUserIds.replace('(?)', friendIds.map(() => '?').join(',')), friendIds, (err, result) => {
-        //         if (err) return reject(err);
-        //         resolve(result);
-        //     });
-        // });
-
         const friendUserIds = results.map(result => result.userId);
         const allUserIds = [...new Set([...friendUserIds, userId])]; // 중복 제거 후 모든 사용자 ID 배열 생성
 
@@ -232,6 +224,13 @@ router.post('/add', authenticateJWT, async (req, res) => {
                 });
             }
         }
+
+        await new Promise((resolve, reject) => {
+            db.query(sqlInsertGroupMember, [groupId, userId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        })
 
         // 모든 작업이 완료되면 성공 메시지를 반환합니다.
         return res.status(200).json({ msg: "그룹 생성 성공" });
