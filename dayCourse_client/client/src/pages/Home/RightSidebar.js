@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { fetchPlace, addPlace } from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+import { fetchPlace} from './PlaceApi'; // addPlace를 포함하여 API 가져오기
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
@@ -43,7 +43,7 @@ const SidebarButton = styled.button`
 `;
 
 
-const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelectedPlaces }) => {
+const RightSidebar = ({ onSubmitKeyword, places = [], onPlaceClick, planId, userId }) => {
     console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
@@ -62,15 +62,9 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelecte
         setValue(""); // 제출 후 입력 필드 초기화
     };
 
-    const handlePlaceClick = async (place) => {
-        console.log("userId:", userId, "planId:", planId, "placeId:", place.placeId); // placeId 로그 추가
-        try {
-            await addPlace(userId, planId, place); // userId와 planId 전달
-            setSelectedPlaces((prevSelected) => [...prevSelected, place]);
-        } catch (error) {
-            console.error("장소 추가 실패!!!!!", error.response?.data || error.message); // 추가된 로그
-        }
-    };
+    const handlePlaceClick = (place) => {
+            onPlaceClick(place); // 부모 컴포넌트로 장소 정보를 전달
+        };
 
     const renderTab = () => {
         switch (activeTab) {
