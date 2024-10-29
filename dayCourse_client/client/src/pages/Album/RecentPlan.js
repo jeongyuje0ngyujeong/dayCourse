@@ -53,7 +53,7 @@ const RecentPlan = () => {
     const handleBoxClick = (item) => { // item으로 통일
         console.log('Selected plan:', item);
         setSelectedPlan(item); // 선택된 플랜 설정
-        navigate(`/plan/${item.planId}`); // 플랜 상세 페이지로 이동
+        navigate(`/main/plan/${item.planId}`); // 플랜 상세 페이지로 이동
     };
 
     return (

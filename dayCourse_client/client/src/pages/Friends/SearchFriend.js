@@ -59,3 +59,26 @@ export async function getFriends() {
       console.error('친구 조회 실패');
     }
 }
+
+
+export async function addGroup(groupName, groupMembers) {
+    try {
+        const response = await axios.post(`${BASE_URL}/group/add`, 
+            {
+                groupName: groupName,
+                groupMembers: groupMembers
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+                },
+            }
+        );
+        // console.log('addFriend: ',response.data)
+   
+        return response.data.message;
+     
+    } catch (error) {
+      console.error('친구 추가 실패');
+    }
+}

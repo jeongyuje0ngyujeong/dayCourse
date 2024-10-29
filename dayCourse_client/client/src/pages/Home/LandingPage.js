@@ -32,14 +32,14 @@ const DistanceBox = styled.div`
 
 
 
-const LandingPage = ({userId, planId}) => {
-
-
+const LandingPage = ({userId, planId, place, context}) => {
+    console.log('context: ',context);
     console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
+    const planInfo = context;
 
 
     const submitKeyword = (newKeyword) => {
@@ -127,25 +127,26 @@ const LandingPage = ({userId, planId}) => {
     }, [userId, planId]);
 
 
-
-    useEffect(() => {
-        const loadDistance = async () => {
-            if (selectedPlaces.length > 1) {
-                const distances = await fetchDistance(planId, userId);
-                console.log("받은 거리 정보:", distances);
-                setDistances(distances.distances);
-            }  else {
-                setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-            }
-        };
-        loadDistance();
-    }, [selectedPlaces]);
+    // TMAP 거리 계산 API
+    // useEffect(() => {
+    //     const loadDistance = async () => {
+    //         if (selectedPlaces.length > 1) {
+    //             const distances = await fetchDistance(planId, userId);
+    //             console.log("받은 거리 정보:", distances);
+    //             setDistances(distances.distances);
+    //         }  else {
+    //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
+    //         }
+    //     };
+    //     loadDistance();
+    // }, [selectedPlaces]);
 
     return (
         <div className="landing-page">
             <RightSidebar 
                 userId={userId} 
                 planId={planId} 
+                planInfo={context}
                 places={places} 
                 setPlaces={setPlaces} 
                // addPlace={addSelectedPlace} 
