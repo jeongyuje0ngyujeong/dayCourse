@@ -150,6 +150,8 @@ router.post('/add', authenticateJWT, async (req, res) => {
     const { groupName, groupMembers } = req.body;
 
     console.log('그룹 추가')
+    console.log(groupName)
+    console.log(groupMembers)
 
 
     const sql = `
@@ -168,10 +170,20 @@ router.post('/add', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
+        console.log(g)
+
         for (const member of groupMembers) {
             db.query(sql_GM, [result_groupId.groupId, member.friendId])
         }
-        return res.status(200).json({msg: "success"})
+
+        db.query(sql_GM, [result_groupId.groupId, userId], (err, result_groupId) => {
+            if (err) {
+                console.error('Error inserting data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            return res.status(200).json({msg: "그룹 생성 성공"})
+        })
     });
 
 });
