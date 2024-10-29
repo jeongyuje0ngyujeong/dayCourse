@@ -146,7 +146,7 @@ router.post('/logout', async(req, res) => {
         }
     
         // 토큰 만료시간 확인
-        const expireTime = decoded.exp - Math.floor(Date.now().1000);
+        const expireTime = decoded.exp - Math.floor(Date.now()/1000);
     
         // redis 블랙리스트에 토큰 추가 
         await setexAsync(token, expireTime, 'blacklisted');
