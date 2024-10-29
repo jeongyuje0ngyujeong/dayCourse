@@ -13,7 +13,8 @@ import CreateSchedule, {action as createAction,} from "./pages/Create/create";
 import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
-import EmptyPage from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
+import Friends from "./pages/Friends/Friends";
+import EmptyPage, { loader as emptyLoader } from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
 import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
 
 // import RecentPlan from './pages/Album/RecentPlan';
@@ -89,10 +90,15 @@ const router = createBrowserRouter([
           {
             path: "empty/:planId",
             element: <EmptyPage />,
+            loader: emptyLoader,
           },
           {
             path: "plan/:planId",
             element: <PlanDetail />
+          },
+          {
+            path: "friends",
+            element: <Friends />
           },
         ]
       },

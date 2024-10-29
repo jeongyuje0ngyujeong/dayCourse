@@ -1,5 +1,7 @@
-import { Outlet, NavLink, useNavigation} from "react-router-dom";
+import { Outlet, NavLink, useNavigate} from "react-router-dom";
 import { Button } from './Button';
+import { Logout } from './pages/Login/auth'
+import localforage from "localforage";
 
 function Nav(props){
     return(
@@ -20,7 +22,22 @@ function Nav(props){
 }
 
 export default function Layout() {
-    const navigation = useNavigation();
+    const navigation = useNavigate();
+
+    const handleFriend = (e) => {
+        e.preventDefault();
+        navigation('/main/friends'); 
+    };
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        // Logout(navigation);
+        sessionStorage.clear();
+        localforage.clear();
+
+        navigation('/');
+    };
+
     return (
     <>
     <div id="sidebar">
@@ -34,8 +51,8 @@ export default function Layout() {
             </ul>
         </nav>
         <div>
-            <Button style={{flex:'1'}} type='submit' $background='#90B54C' color='white'>+ 친구추가</Button>
-            <Button style={{flex:'1'}} type='submit' $background='#90B54C' color='white'>+ 로그아웃</Button>
+            <Button style={{flex:'1'}} onClick={handleFriend}>친구추가</Button>
+            <Button style={{flex:'1'}} onClick={handleLogout}>로그아웃</Button>
         </div>
     </div>
     <div 

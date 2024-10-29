@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 
     socket.emit('message', {
       user: 'admin',
-      text: `${user.name}님, ${user.room}에 오신 것을 환영합니다.`,
+      text: `${user.name}님, 환영합니다.`,
     })
 
     io.to(user.room).emit('roomData', {
