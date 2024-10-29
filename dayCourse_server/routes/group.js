@@ -114,6 +114,34 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
 });
 
 // 친구 리스트
+router.get('/friend/list', authenticateJWT, async (req, res) => {
+    const userId = req.user.userId;
+    console.log('usderId: ' + userId);
 
+    console.log('친구 추가')
+
+    const sql = `
+      SELECT friendName, friendId
+      FROM friend
+      WHERE friend.userId
+      ORDER BY friend.friendName ASC
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (result.length > 0) {
+            console.log("find friend result: ", JSON.stringify(result, null, 2));
+            console.log("find friend result[0]: ", JSON.stringify(result[0], null, 2));
+            res.status(200).json({ success: true, friendList: result[0] });
+
+        } else {
+            return res.status(404).json({ success: false });
+        }
+    });
+});
 
 module.exports = router;
