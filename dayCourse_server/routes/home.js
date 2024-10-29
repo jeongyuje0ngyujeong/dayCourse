@@ -455,7 +455,7 @@ router.post('/plan/place/priority', async (req, res) => {
       WHERE placeId = ?;
     `;
 
-    const values = [priority, placeId, version + 1]
+    const values = [priority, version + 1, placeId]
 
     db.query(sql_select, placeId, (err, place_ver) => {
         if (version < place_ver) {
