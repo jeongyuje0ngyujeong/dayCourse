@@ -46,7 +46,7 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends, setS
                 >그룹 생성
                 </button>
             </TextButton>
-            <input  name="groupName" placeholder='그룹명을 입력해주세요'/>
+            <input name="groupName" placeholder='그룹명을 입력해주세요'/>
             <h4>선택한 친구</h4>
             <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
         </GroupContainer>

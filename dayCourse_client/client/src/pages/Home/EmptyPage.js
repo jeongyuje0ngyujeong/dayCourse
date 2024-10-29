@@ -34,7 +34,7 @@ const EmptyPage = () => {
     const userId = sessionStorage.getItem('userId');
     const planId = loaderData.planId; // loaderData에서 planId를 가져옴
     const place = loaderData.place;
-    // const place = 
+
     return (
         <div>
             <h2>{loaderData.planName}</h2>

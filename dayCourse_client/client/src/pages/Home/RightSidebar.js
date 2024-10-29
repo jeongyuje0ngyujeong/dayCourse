@@ -42,9 +42,9 @@ const SidebarButton = styled.button`
     } 
 `;
 
-
-const RightSidebar = ({ onSubmitKeyword, places = [], onPlaceClick, planId, userId }) => {
+const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
     console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인
+    console.log('planInfo: ',planInfo);
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -116,7 +116,7 @@ const RightSidebar = ({ onSubmitKeyword, places = [], onPlaceClick, planId, user
                 );
 
             case 'chat' :
-                return <Chat userId={userId} planId={planId}/>; //여기에 관련 내용 추가
+                return <Chat userId={userId} planInfo={planInfo}/>; //여기에 관련 내용 추가
 
             default:
                 return null;
