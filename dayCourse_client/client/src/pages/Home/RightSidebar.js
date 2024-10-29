@@ -43,7 +43,7 @@ const SidebarButton = styled.button`
 `;
 
 
-const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelectedPlaces }) => {
+const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, planInfo, setSelectedPlaces }) => {
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -122,7 +122,7 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelecte
                 );
 
             case 'chat' :
-                return <Chat userId={userId} planId={planId}/>; //여기에 관련 내용 추가
+                return <Chat userId={userId} planInfo={planInfo}/>; //여기에 관련 내용 추가
 
             default:
                 return null;

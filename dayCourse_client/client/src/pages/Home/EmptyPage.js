@@ -1,7 +1,8 @@
-import React from 'react';
+import {useLoaderData,} from "react-router-dom";
 import KakaoMap from './KakaoMap';
 // import styled from "styled-components";
 import LandingPage from './LandingPage';
+import { getEvent } from "../../schedules";
 
 
 // const Box = styled.div`
@@ -19,13 +20,22 @@ import LandingPage from './LandingPage';
 //         background-color: darkgray;
 //     }
 // `;
-
-
-
+export async function loader({ params }) {
+    const { planId } = params;
+  
+    const plan = await getEvent(planId);
+    console.log(plan);
+    return { plan };
+}
+  
 const EmptyPage = () => {
+    const loaderData = useLoaderData().plan;
+    console.log('loadData: ', loaderData);
     return (
         <div>
-            <LandingPage></LandingPage>
+            <h2>{loaderData.planName}</h2>
+            <h1>{loaderData.town}</h1>
+            <LandingPage context={loaderData}></LandingPage>
             <KakaoMap></KakaoMap>
             {/* <Box>일정칸입니다</Box> */}
          {/* <RightSidebar></RightSidebar> */}

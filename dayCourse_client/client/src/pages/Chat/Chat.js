@@ -48,9 +48,10 @@ const ChatName = styled.div`
 const ENDPOINT = 'http://localhost:5000';
 let socket;
 
-export default function Chat({userId, planId}) {
+export default function Chat({userId, planInfo}) {
+    const planId = planInfo.planId;
     const [name, setName] = useState(sessionStorage.getItem('userId'));
-    const [room, setRoom] = useState('hello');
+    const [room, setRoom] = useState(planInfo.planId);
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
@@ -91,7 +92,7 @@ export default function Chat({userId, planId}) {
 
     return (
     <ChatContainer>
-        <ChatName>채팅방: {planId}</ChatName>
+        <ChatName>채팅방: {planInfo.planName}</ChatName>
         <Messages messages={messages} name={name}/>
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         {/* <ChatInputBar>

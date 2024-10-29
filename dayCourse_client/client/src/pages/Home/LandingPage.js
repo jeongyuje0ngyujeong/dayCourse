@@ -4,7 +4,6 @@ import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance } from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { useParams } from 'react-router-dom';
 
 const SelectedPlacesContainer = styled.div`
     display: flex; 
@@ -32,15 +31,16 @@ const DistanceBox = styled.div`
 `;
 
 
-const LandingPage = () => {
+const LandingPage = (props) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
+    const planInfo = props.context;
     
     // userId와 planId 가져오기
     const userId = sessionStorage.getItem('userId');
-    const { planId } = useParams(); // planId도 세션 스토리지에서 가져옵니다.
+    const planId = planInfo.planId // planId도 세션 스토리지에서 가져옵니다.
     // console.log('planId: ',planId);
 
     const submitKeyword = (newKeyword) => {
@@ -148,6 +148,7 @@ const LandingPage = () => {
             <RightSidebar 
                 userId={userId} // userId를 사용
                 planId={planId} // planId를 사용
+                planInfo={planInfo}
                 places={places} 
                 setPlaces={setPlaces} 
                 addPlace={addSelectedPlace} 
