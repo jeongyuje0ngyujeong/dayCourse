@@ -135,8 +135,7 @@ router.get('/friend/list', authenticateJWT, async (req, res) => {
 
         if (result.length > 0) {
             console.log("find friend result: ", JSON.stringify(result, null, 2));
-            console.log("find friend result[0]: ", JSON.stringify(result[0], null, 2));
-            res.status(200).json({ success: true, friendList: result[0] });
+            res.status(200).json({ success: true, friendList: result });
 
         } else {
             return res.status(404).json({ success: false });
