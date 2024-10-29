@@ -4,13 +4,10 @@ import { PageTitle, Footer } from '../../commonStyles';
 import {DayTable} from '../Calendar/Calendar'
 // import Schedule from '../Calendar/Schedule'
 import { Button } from '../../Button';
-import { Outlet, useLoaderData, Link, Form, redirect, } from "react-router-dom";
-import { getSchedules, createSchedule} from "../../schedules";
-
-export async function action() {
-  const schedule = await createSchedule();
-  return redirect(`/schedules/${schedule.id}/create`);
-}
+import { Outlet, Form} from "react-router-dom";
+import { getSchedules } from "../../schedules";
+// import { Link } from 'react-router-dom'; 
+// import RightSidebar from './RightSidebar'; 
 
 const WeekBar = styled.div`
   display: flex;

@@ -80,6 +80,7 @@ export default function CreateSchedule() {
       </p>
       <p>
       <span>그룹</span>
+      {selectedGroup.length > 0?<div>{selectedGroup}</div>:<div>선택한 그룹이 없습니다.</div>}
       {/* <p>
       <label>
         <input

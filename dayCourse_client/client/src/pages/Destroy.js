@@ -9,5 +9,4 @@ export async function action({ params }) {
     else{
         return redirect(`/main/calendar`);
     }
-    return null;
 }

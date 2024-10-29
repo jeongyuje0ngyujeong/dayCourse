@@ -1,9 +1,8 @@
-import {Form} from "react-router-dom";
+// import {Form} from "react-router-dom";
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './register.css';
 import axios from 'axios';
-// import $ from 'jquery';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
@@ -19,7 +18,6 @@ export default function Register() {
     const [identPass, setIdentPass] = useState(false);
     const [passMess, setPassMess] = useState('비밀번호를 다시 한 번 입력해주세요');
 
-    const result = 'success';
     const navigate = useNavigate(); 
 
     const handleRegi = async (event) => {

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
-import {Button} from '../../Button';
+// import {Button} from '../../Button';
 import {ExistGroup, NewGroup} from './tapcontents'
 import {getFriends} from '../Friends/SearchFriend';
 
@@ -63,8 +63,8 @@ export default function Group({setSelectedGroup}) {
             </TabContainer>
             
             <Content>
-                {activeTab === 'Tab1' && <ExistGroup/>}
-                {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} setSelectedGroup={setSelectedGroup}/>}
+                {activeTab === 'Tab1' && <ExistGroup setSelectedGroup={setSelectedGroup}/>}
+                {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} />}
             </Content>
         </div>
     );

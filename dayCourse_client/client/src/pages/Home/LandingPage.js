@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority , fetchDistance} from './PlaceApi'; 
+// TMAP 거리 계산 API
+// import { fetchPlace, addPlace, deletePlace, updatePlacePriority , fetchDistance} from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority ,} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const SelectedPlacesContainer = styled.div`
@@ -32,15 +34,15 @@ const DistanceBox = styled.div`
 
 
 
-const LandingPage = ({userId, planId}) => {
-
-
+const LandingPage = ({userId, planId, place, context}) => {
+    console.log('context: ',context);
     console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [distances, setDistances] = useState([]);
-
+    // TMAP 거리 계산 API
+    // const [distances, setDistances] = useState([]);
+    const distances = [];
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -147,10 +149,10 @@ const LandingPage = ({userId, planId}) => {
 
     useEffect(() => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
-    }, [userId, planId]);
+    }, [userId, planId, fetchExistPlace]);
 
 
-
+    // TMAP 거리 계산 API
     // useEffect(() => {
     //     const loadDistance = async () => {
     //         if (selectedPlaces.length > 1) {
@@ -169,6 +171,7 @@ const LandingPage = ({userId, planId}) => {
             <RightSidebar 
                 userId={userId} 
                 planId={planId} 
+                planInfo={context}
                 places={places} 
                 setPlaces={setPlaces} 
                // addPlace={addSelectedPlace} 
@@ -186,7 +189,7 @@ const LandingPage = ({userId, planId}) => {
                         >
                                             {selectedPlaces.map((place, index) => {
                         // 유효한 place 객체인지 확인
-                        if (!place || !place.placeId && !place.id || !place.place_name) {
+                        if (!place || (!place.placeId && !place.id) || !place.place_name) {
                             console.warn("Invalid place object:", place);
                             return null; // 유효하지 않은 객체는 렌더링하지 않음
                         }
