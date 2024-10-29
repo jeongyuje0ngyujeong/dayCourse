@@ -13,10 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Check current directory and list files
-        run: |
-          pwd
-          ls -R  # 모든 파일을 출력하여 gunicorn.service 위치 확인
+      # - name: Check current directory and list files
+      #   run: |
+      #     pwd
+      #     ls -R  # 모든 파일을 출력하여 gunicorn.service 위치 확인
   
       # 1. SSH 설정 및 Python 설치
       - name: Install Python on EC2 if missing
@@ -87,7 +87,7 @@ jobs:
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
           # gunicorn.service 파일을 EC2로 복사
-          scp -o StrictHostKeyChecking=no ./dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
+          scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
             sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
             sudo systemctl daemon-reload &&
