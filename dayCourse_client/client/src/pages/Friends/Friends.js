@@ -35,7 +35,11 @@ export default function Friends() {
             try {
                 const result = await getSearchFriend(keyword);
                 console.log(result);
-                setFriend(result);
+                if (result === 'true')
+                    setFriend(keyword);
+                else {
+                    setFriend('');
+                }
             } catch (error) {
                 console.error("Error fetching friends:", error);
             }

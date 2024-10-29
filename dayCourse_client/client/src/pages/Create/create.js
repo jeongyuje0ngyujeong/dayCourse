@@ -11,8 +11,8 @@ export async function action({ request, params }) {
   const dateKey = `${year}-${month}-${date}`;
   
   if (params.id){
-    await updateSchedule(dateKey, updates);
-    return redirect(`/home/schedules/${dateKey}`);
+    await updateSchedule(params.id, updates);
+    return redirect(`/main/home/schedules/${dateKey}`);
   }
   else{
     const planId = (await createSchedule(dateKey, formData)).planId;

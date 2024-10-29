@@ -7,7 +7,7 @@ export async function action({ params }) {
         return redirect(`/main/home/schedules/${params.dateKey}`);
     }
     else{
-        return redirect(`/calendar`);
+        return redirect(`/main/calendar`);
     }
     return null;
 }

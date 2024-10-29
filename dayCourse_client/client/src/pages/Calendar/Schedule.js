@@ -14,7 +14,7 @@ export async function loader({ params }) {
 export async function action(params) {
   const schedule = getSchedule(params.year,params.month,params.date);
   // return redirect(`/schedules/${schedule.id}/edit`);
-  return redirect(`/home`);
+  return redirect(`/main/home`);
 }
 
 const EventContainer = styled.div `
@@ -66,7 +66,7 @@ export default function Schedule(props) {
             {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
-              <Link to={`/schedules/${event.planId}`}>
+              <Link to={`/main/schedules/${event.planId}`}>
                 <button type="submit">Edit</button>
               </Link>
               <Form
