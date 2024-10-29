@@ -65,21 +65,20 @@ const LandingPage = ({userId, planId}) => {
         }
     };
 
-    const addSelectedPlace = async (place) => {
+
+    const handlePlaceClick = async (place) => {
         try {
             const addedPlace = await addPlace(userId, planId, place);
-            console.log("Added place:", addedPlace); // 추가된 장소 로그 확인
-         
-                setSelectedPlaces(prevSelected => {
-                    const updatedPlaces = [...prevSelected, addedPlace];
-                    return updatedPlaces.map((p, index) => ({
-                        ...p,
-                        l_priority: index + 1, // 인덱스를 기반으로 우선 순위 설정
-                    }));
-                });
-
+            await fetchExistPlace(); // 상태를 갱신하기 위해 전체 장소 목록을 다시 가져옵니다.
+            setSelectedPlaces(prevSelected => {
+                const updatedPlaces = [...prevSelected, addedPlace];
+                return updatedPlaces.map((p, index) => ({
+                    ...p,
+                    l_priority: index + 1,
+                }));
+            });
         } catch (error) {
-            console.error("장소 추가 실패!!:", error);
+            console.error("장소 추가 실패:", error);
         }
     };
 
@@ -143,9 +142,9 @@ const LandingPage = ({userId, planId}) => {
                 planId={planId} 
                 places={places} 
                 setPlaces={setPlaces} 
-                addPlace={addSelectedPlace} 
+               // addPlace={addSelectedPlace} 
                 onSubmitKeyword={submitKeyword} 
-                setSelectedPlaces={setSelectedPlaces} 
+                onPlaceClick={handlePlaceClick} // 함수 전달
             />
             <KakaoMap searchKeyword={keyword} setPlaces={setPlaces} />
 
