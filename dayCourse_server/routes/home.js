@@ -129,8 +129,7 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
       FROM Plan_User
       JOIN Plan ON Plan_User.planId = Plan.planId
       WHERE Plan_User.userId = ? AND Plan.startDate <= NOW()
-      ORDER BY Plan.startDate DESC 
-      LIMIT 3
+      ORDER BY Plan.startDate DESC
     `;
 
     const values = [userId];
@@ -574,6 +573,9 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
         res.status(500).send('API 요청에 실패했습니다.');
     }
 });
+
+
+
 
 
 module.exports = router;
