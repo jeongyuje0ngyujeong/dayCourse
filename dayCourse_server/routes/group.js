@@ -161,7 +161,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
     const sqlSelectUserIds = `
       SELECT userId
       FROM User
-      WHERE id = (?)
+      WHERE id IN (?)
     `;
 
     const sqlInsertGroupMember = `
@@ -187,10 +187,21 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         // 모든 친구의 userId를 가져옵니다.
         const friendIds = groupMembers.map(member => member.friendId);
+
+        console.log("친구찾기")
+        console.log(friendIds)
         
-        // 친구들의 userId를 조회합니다.
+        // // 친구들의 userId를 조회합니다.
+        // const results = await new Promise((resolve, reject) => {
+        //     db.query(sqlSelectUserIds, [friendIds], (err, result) => {
+        //         if (err) return reject(err);
+        //         resolve(result);
+        //     });
+        // });
+
         const results = await new Promise((resolve, reject) => {
-            db.query(sqlSelectUserIds, [friendIds], (err, result) => {
+            // 배열을 쿼리 인자로 전달할 때, 연결된 문자열을 사용하여 쿼리를 구성
+            db.query(sqlSelectUserIds.replace('(?)', friendIds.map(() => '?').join(',')), friendIds, (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
