@@ -4,143 +4,104 @@ import axios from 'axios';
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // 기존 장소 불러오기
-export const fetchPlace = async (planId) => {
+export const fetchPlace = async (userId, planId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
     try {
-        const response = await axios.get(`${BASE_URL}/home/plan/place`, {
+        const response = await axios.post(`${BASE_URL}/home/plan/place`, {
             planId,
+            userId, // userId를 본문에 포함
         }, {
             headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+                Authorization: `Bearer ${token}`,
             },
-            params: {
-                userId,
-            }
         });
 
         return response.data;
 
     } catch (error) {
-        console.error("기존 장소 불러오기 실패:", error);
+        console.error("기존 장소 불러오기 실패:", error.response?.data || error.message); // 에러 메시지 추가
         throw error;
     }
 };
 
 // 장소 추가
-export const addPlace = async (planId, place) => {
+export const addPlace = async (userId, planId, place) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/addPlace`, {
             planId,
             place,
+            userId, // userId를 본문에 포함
         }, {
             headers: {
                 Authorization: `Bearer ${token}`, // Authorization 헤더 추가
             },
-            params : {
-                userId,
-            }
         });
         return response.data;
 
     } catch (error) {
-        console.error("장소 추가 실패:", error);
+        console.error("장소 추가 실패:", error.response?.data || error.message); // 에러 메시지 추가
         throw error;
     }
 };
 
 // 장소 삭제
-export const deletePlace = async (placeId) => {
+export const deletePlace = async (placeId, userId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
     try {
         const response = await axios.delete(`${BASE_URL}/home/plan/place`, {
-            params: { placeId, userId },
             headers: {
                 Authorization: `Bearer ${token}`, // Authorization 헤더 추가
             },
-        });
-        return response.data;
-
-    } catch (error) {
-        console.error("장소 삭제 실패:", error);
-        throw error;
-    }
-};
-
-// 장소 추천
-export const recommendPlace = async (category, keyword) => {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
-    try {
-        const response = await axios.post(`${BASE_URL}/home/plan/recommend_place`, {
-            category,
-            keyword,
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
-            },
-            params:{
+            params: { // params에 placeId와 userId를 포함
+                placeId,
                 userId,
-            }
+            },
         });
         return response.data;
 
     } catch (error) {
-        console.error("장소 추천 실패:", error);
+        console.error("장소 삭제 실패:", error.response?.data || error.message); // 에러 메시지 추가
         throw error;
     }
 };
 
 // 거리 정보 가져오기
-export const fetchDistance = async (planId) => {
+export const fetchDistance = async (planId, userId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
     try {
-        console.log("플랜 ID:", planId); // planId 로그 추가
+        console.log("플랜 ID:", planId);
         const response = await axios.post(`${BASE_URL}/home/plan/place_distance`, {
             planId,
+            userId, // userId를 본문에 포함
         }, {
             headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+                Authorization: `Bearer ${token}`,
             },
-            params:{
-                userId,
-            }
         });
         return response.data;
     } catch (error) {
-        console.error("거리 정보 에러:", error);
+        console.error("거리 정보 에러:", error.response?.data || error.message); // 에러 메시지 추가
         throw error;
     }
 };
 
-// 장소 우선 순위 업데이트
-export const updatePlacePriority = async (placeId, priority, version) => {
+// 우선 순위 업데이트
+export const updatePlacePriority = async (placeId, priority, userId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/place/priority`, {
             placeId,
             priority,
-            version,
+            userId, // userId를 본문에 포함
         }, {
             headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+                Authorization: `Bearer ${token}`,
             },
-            params: {
-                userId,
-            }
         });
-
-        if (response.status === 409) {
-            throw new Error('충돌 발생: 데이터가 이미 수정됨');
-        }
         return response.data;
     } catch (error) {
-        console.error("우선 순위 업데이트 실패:", error);
-        throw error; 
+        console.error("우선 순위 업데이트 실패:", error.response?.data || error.message); // 에러 메시지 추가
+        throw error;
     }
 };
