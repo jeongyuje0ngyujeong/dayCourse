@@ -444,6 +444,7 @@ router.post('/plan/place/priority', async (req, res) => {
     const { placeId, priority, version } = req.body;
 
     console.log('장소순서변경 :' + version)
+    console.log(req.body)
 
     const sql_select = `
       SELECT version
