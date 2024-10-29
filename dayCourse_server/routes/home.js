@@ -403,13 +403,13 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     }
 
     const sql = `
-        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates)
+        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates, version)
         SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})')
         FROM Plan_Location
         WHERE planId = ?;
     `;
 
-    const values = [planId, memo, place.address_name, place.place_name, planId];
+    const values = [planId, memo, place.address_name, place.place_name, 1, planId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
@@ -456,6 +456,8 @@ router.post('/plan/place/priority', async (req, res) => {
     `;
 
     const values = [priority, version + 1, placeId]
+
+    console.log(values)
 
     db.query(sql_select, placeId, (err, place_ver) => {
         if (version < place_ver) {
