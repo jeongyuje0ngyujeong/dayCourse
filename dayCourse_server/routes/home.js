@@ -82,7 +82,9 @@ router.post('/plan', authenticateJWT, async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-    // const values = [userId, dateKey, dateKey, newplanName, town, groupId];
+    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
+    //const values = [userId, dateKey, dateKey, newplanName, town];
+    const values = [userId, dateKey, dateKey, newplanName, town, groupId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
