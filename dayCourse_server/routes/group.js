@@ -13,7 +13,6 @@ router.post('/friend', authenticateJWT, async (req, res) => {
     console.log('usderId: ' + userId);
 
     const { searchId } = req.body;
-    console.log('req.body: ' + req.body);
 
     console.log('친구 검색')
     // console.log(req.body)
@@ -37,8 +36,12 @@ router.post('/friend', authenticateJWT, async (req, res) => {
         }
 
         if (find_result.length > 0) {
-            const friendUserId = find_result[0];
+            console.log("find friend", JSON.stringify(find_result, null, 2));
             
+            const friendUserId = find_result[0];
+            const friendUserName = find_result[1];
+            console.log('찾은 친구의 userId: ' + friendUserId);
+
             const inser_sql = `
               INSERT INTO friend (userId, friendUserId)
               VALUES (?, ?)
@@ -51,9 +54,15 @@ router.post('/friend', authenticateJWT, async (req, res) => {
                     console.error('Error inserting data:', err);
                     return res.status(500).json({ error: 'Database error' });
                 }
-    
-                return res.status(201).json({ success: true, friendName: insert_result[1] });
+                
+                if (insert_result.length > 0) { 
+                    return res.status(201).json({ success: true, friendName: find_result[1] });
+                    
+                } else {
+                    return res.status(404).json({ success: false, error: 'No user found with the provided searchId' });
+                }
             });
+
         } else {
             return res.status(404).json({ success: false, error: 'No user found with the provided searchId' });
         }
