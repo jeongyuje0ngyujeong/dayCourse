@@ -242,7 +242,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
 
 // 그룹 조회
-router.get('/add123441121', authenticateJWT, async (req, res) => {
+router.get('/get', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     try {
@@ -252,7 +252,7 @@ router.get('/add123441121', authenticateJWT, async (req, res) => {
           FROM groupMembers
           WHERE id = ?
         `;
-        
+
         const G_id_result = await new Promise((resolve, reject) => {
             db.query(sql_G_id, [userId], (err, result) => {
                 if (err) return reject(err);
