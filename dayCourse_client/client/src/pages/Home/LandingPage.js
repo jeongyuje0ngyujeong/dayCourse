@@ -89,15 +89,27 @@ const LandingPage = (props) => {
     };
 
     const removePlace = async (placeId) => {
-        console.log('delete from', selectedPlaces);
-        console.log('delete: ', placeId);
+        if (!placeId) {
+            console.error("삭제할 장소의 ID가 유효하지 않습니다.");
+           // setErrorMessage("삭제할 장소의 ID가 유효하지 않습니다.");
+            return;
+        }
+        console.log('삭제할 장소 ID:', placeId);
+       // setIsDeleting(true);
         try {
-            await deletePlace(placeId); // userId를 전달하지 않음
-            fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
+            await deletePlace(placeId); // deletePlace 함수는 placeId만 받음
+            fetchExistPlace(); // 삭제 후 장소 목록 다시 불러오기
+           // setErrorMessage("");
+            alert("장소가 성공적으로 삭제되었습니다."); // 성공 메시지 추가
         } catch (error) {
             console.error("장소 삭제 실패!", error);
+           // setErrorMessage("장소 삭제에 실패했습니다. 다시 시도해주세요.");
+        } finally {
+          // setIsDeleting(false);
         }
     };
+
+
 
     const onDragEnd = async (result) => {
         if (!result.destination) {
