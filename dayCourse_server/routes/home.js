@@ -406,7 +406,7 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
 
     const sql = `
         INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates, version)
-        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})')
+        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})'), ?
         FROM Plan_Location
         WHERE planId = ?;
     `;
