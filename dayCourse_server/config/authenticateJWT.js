@@ -5,6 +5,11 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+const redisClient = redis.createClient();
+
+// Promisify Redis get and setex functions
+const getAsync = promisify(redisClient.get).bind(redis);
+
 // JWT 인증 미들웨어 함수
 const authenticateJWT = async (req, res, next) => {
   // console.log("Request Headers:", JSON.stringify(req.headers, null, 2));

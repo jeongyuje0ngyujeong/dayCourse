@@ -4,10 +4,10 @@ const passport = require('passport');
 const redis = require('redis');
 const { promisify } = require('util');
 const bcrypt = require('bcrypt');
-
 const db = require('../db')
 
 const router = express.Router();
+const setexAsync = promisify(redisClient.setex).bind(redis);
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
