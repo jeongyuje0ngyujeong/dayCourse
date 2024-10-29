@@ -37,9 +37,9 @@ router.post('/friend', authenticateJWT, async (req, res) => {
 
         if (find_result.length > 0) {
             console.log("find friend", JSON.stringify(find_result, null, 2));
-            
-            const friendUserId = find_result[0];
-            const friendUserName = find_result[1];
+
+            const friendUserId = find_result.userId;
+            const friendUserName = find_result.userName;
             console.log('찾은 친구의 userId: ' + friendUserId);
 
             const inser_sql = `
