@@ -51,7 +51,7 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
                     return res.status(500).json({ error: 'Database error' });
                 }
                 
-                if (insert_result.length > 0) { 
+                if (insert_result.affectedRows > 0) { 
                     console.log("친구 추가 성공!")
                     return res.status(201).json({ success: true, message: '성공적으로 친구 추가 되었습니다.' });
                     
