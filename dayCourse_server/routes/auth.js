@@ -1,16 +1,24 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-const redis = require('redis');
+// const redis = require('redis');
 const { promisify } = require('util');
+const { createClient } = require('redis');
 const bcrypt = require('bcrypt');
 const db = require('../db')
 
 const router = express.Router();
 
 // redis 설정
-const redisClient = redis.createClient();
-const setAsync = promisify(redisClient.set).bind(redis); 
+const redisClient = createClient();
+redisClient.on('error', (err) => console.log('Redis Client Error', err));
+
+// Redis 클라이언트 연결
+(async () => {
+    await redisClient.connect();
+})();
+
+const setAsync = promisify(redisClient.set).bind(redisClient); 
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
@@ -142,7 +150,7 @@ router.post('/logout', async(req, res) => {
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
-    
+
     try {
         // 토큰 복호화
         const decoded = jwt.decode(token);
