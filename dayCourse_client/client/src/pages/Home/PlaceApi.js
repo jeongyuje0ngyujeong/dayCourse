@@ -87,13 +87,14 @@ export const fetchDistance = async (planId, userId) => {
 };
 
 // 우선 순위 업데이트
-export const updatePlacePriority = async (placeId, priority, userId) => {
+export const updatePlacePriority = async (placeId, priority, userId, version) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/place/priority`, {
             placeId,
             priority,
-            userId, // userId를 본문에 포함
+            userId, 
+            version,
         }, {
             headers: {
                 Authorization: `Bearer ${token}`,

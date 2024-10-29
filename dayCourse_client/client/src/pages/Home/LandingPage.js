@@ -54,6 +54,7 @@ const LandingPage = ({userId, planId}) => {
                 setSelectedPlaces(existPlace.map((place, index) => ({
                     ...place,
                     l_priority: index + 1, // 초기 우선 순위 설정
+                    version: place.version || 1 //버전이 존재하고 유효한 값이라면 해당값을 사용하고, 아니면 버전정보=>1
                 })));
             } else {
                 console.error("Invalid data format:", existPlace);
@@ -111,7 +112,7 @@ const LandingPage = ({userId, planId}) => {
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
-                updatePlacePriority(place.placeId || place.id, place.l_priority) // placeId 또는 id 사용
+                updatePlacePriority(place.placeId || place.id, place.l_priority, place.version) // placeId 또는 id 사용
             ));
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
