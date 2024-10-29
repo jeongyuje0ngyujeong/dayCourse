@@ -32,8 +32,10 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
         }
 
         if (find_result.length > 0) {
-            console.log("find friend", JSON.stringify(find_result, null, 2));
+            console.log("find friend: ", JSON.stringify(find_result, null, 2));
             const friendUserId = find_result[0].userId;
+
+            console.log("friendUserId: ", friendUserId);
 
             const inser_sql = `
                 INSERT INTO friend (userId, friendUserId)
