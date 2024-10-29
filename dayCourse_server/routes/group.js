@@ -241,6 +241,56 @@ router.post('/add', authenticateJWT, async (req, res) => {
 });
 
 
+// 그룹 조회
+router.get('/add123441121', authenticateJWT, async (req, res) => {
+    const userId = req.user.userId;
+
+    try {
+        // 1. 사용자에 대한 그룹 ID 조회
+        const sql_G_id = `
+          SELECT groupId
+          FROM groupMembers
+          WHERE id = ?
+        `;
+        
+        const G_id_result = await new Promise((resolve, reject) => {
+            db.query(sql_G_id, [userId], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        // 사용자가 속한 그룹이 없는 경우 처리
+        if (G_id_result.length === 0) {
+            return res.status(404).json({ message: '이 사용자에게 속한 그룹이 없습니다.' });
+        }
+
+        // 2. 그룹 ID를 사용하여 그룹 이름 조회 준비
+        const groupIds = G_id_result.map(group => group.groupId);
+        const sql_G_name = `
+          SELECT groupName, groupId
+          FROM day_Group
+          WHERE groupId IN (?)
+        `;
+
+        // 3. 조회한 그룹 ID를 기반으로 그룹 이름을 조회
+        const groupNames_result = await new Promise((resolve, reject) => {
+            db.query(sql_G_name, [groupIds], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        // 4. 그룹 ID와 이름을 응답으로 반환
+        return res.json(groupNames_result);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: '내부 서버 오류' });
+    }
+});
+
+
+
 
 
 module.exports = router;
