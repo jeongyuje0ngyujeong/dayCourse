@@ -5,6 +5,8 @@ import {Button} from '../../Button';
 
 const ChatInputBar = styled.form`
     display: flex;
+    width: 100%;
+    height: 3rem;
     align-items: center;
 `
 
@@ -33,7 +35,7 @@ export default function FriendInput({value, setValue, setKeyword}) {
                 onChange={({ target: { value } }) => setValue(value)}
             >
             </ChatInput>
-            <Button type='submit' onClick={e => {handleOnClick(e)}} style={{height:'2.7rem',width:'3rem'}}>검색</Button>
+            <Button type='submit' onClick={e => {handleOnClick(e)}} style={{height:'100%', width:'3rem'}}>검색</Button>
         </ChatInputBar>
     )
 }
