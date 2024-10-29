@@ -250,7 +250,7 @@ router.get('/get', authenticateJWT, async (req, res) => {
         const sql_G_id = `
           SELECT groupId
           FROM groupMembers
-          WHERE id = ?
+          WHERE userId = ?
         `;
 
         const G_id_result = await new Promise((resolve, reject) => {
