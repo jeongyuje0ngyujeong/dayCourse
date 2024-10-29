@@ -13,6 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Check current directory and list files
+        run: |
+          pwd
+          ls -R  # 모든 파일을 출력하여 gunicorn.service 위치 확인
+  
       # 1. SSH 설정 및 Python 설치
       - name: Install Python on EC2 if missing
         env:
