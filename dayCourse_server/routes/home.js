@@ -520,8 +520,8 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             lat: place.lat.toString()
         }));
 
-        const origins = places.slice(0, -1)
-        const destinations = places.slice(1)
+        const origins = stringifiedPlaces.slice(0, -1)
+        const destinations = stringifiedPlaces.slice(1)
 
         console.log('origins:', JSON.stringify(origins, null, 2));
         console.log('destinations:', JSON.stringify(destinations, null, 2));
