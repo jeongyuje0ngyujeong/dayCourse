@@ -264,7 +264,7 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
                 return res.status(500).json({ error: 'Database error' });
             }
 
-            console.log("place get :" + result_location)
+            console.log("place get :" + JSON.stringify(result_location));
 
             res.status(201).json( result_location );
         });
