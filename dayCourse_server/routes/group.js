@@ -118,7 +118,7 @@ router.get('/friend/list', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     console.log('usderId: ' + userId);
 
-    console.log('친구 추가')
+    console.log('친구 리스트')
 
     const sql = `
       SELECT friendName, friendId
