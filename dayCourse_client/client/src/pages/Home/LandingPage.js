@@ -111,7 +111,11 @@ const LandingPage = ({userId, planId}) => {
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
-                updatePlacePriority(place.placeId || place.id, place.l_priority, place.version) // placeId 또는 id 사용
+                updatePlacePriority(
+                    place.placeId || place.id,
+                    place.l_priority,
+                    userId,
+                    place.version) // placeId 또는 id 사용
             ));
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
@@ -127,9 +131,11 @@ const LandingPage = ({userId, planId}) => {
     useEffect(() => {
         const loadDistance = async () => {
             if (selectedPlaces.length > 1) {
-                const distances = await fetchDistance(planId);
+                const distances = await fetchDistance(planId, userId);
                 console.log("받은 거리 정보:", distances);
-                setDistances(distances);
+                setDistances(distances.distances);
+            }  else {
+                setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
             }
         };
         loadDistance();
@@ -182,9 +188,9 @@ const LandingPage = ({userId, planId}) => {
                                     )}
                                 </Draggable>
 
-                                {index < selectedPlaces.length - 1 && distances[index] && (
+                                {index < selectedPlaces.length - 1 && distances[index] !== undefined && (
                                 <DistanceBox>
-                                    {`거리 : ${distances[index]}`} 
+                                        {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
                                 </DistanceBox>
                                 )}
                             </React.Fragment>
