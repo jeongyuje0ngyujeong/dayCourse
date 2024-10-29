@@ -64,10 +64,10 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'searchId is required' });
     }
 
-    const find_sql = `
-      SELECT User.userId, User.id, User.userName
-      FROM User
-      WHERE User.id = ?
+    const sql = `
+      UPDATE Plan_Location
+      SET l_priority = ?, version = ?
+      WHERE placeId = ?;
     `;
 
     db.query(find_sql, [friendId], (err, find_result) => {
@@ -142,5 +142,40 @@ router.get('/friend/list', authenticateJWT, async (req, res) => {
         }
     });
 });
+
+
+// 그룹 추가
+router.post('/friend/add', authenticateJWT, async (req, res) => {
+    const userId = req.user.userId;
+    const { groupName, groupMembers } = req.body;
+
+    console.log('그룹 추가')
+
+
+    const sql = `
+      INSERT INTO day_Group (groupName)
+      VALUES (?)
+    `;
+
+    const sql_GM = `
+      INSERT INTO groupMembers (groupId, userId)
+      VALUES (?, ?)
+    `;
+
+    db.query(sql, [groupName], (err, result_groupId) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        
+        for (const member of groupMembers) {
+            db.query(sql_GM, [result_groupId.groupId, member.friendId])
+        }
+        return res.status(200).json({msg: "success"})
+    });
+
+});
+
+
 
 module.exports = router;
