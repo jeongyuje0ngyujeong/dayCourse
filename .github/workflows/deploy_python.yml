@@ -87,5 +87,5 @@ jobs:
             if ! command -v pm2 &> /dev/null; then
               sudo npm install -g pm2;
             fi &&
-            (pm2 delete ai_flask_server || true) &&  # 기존 프로세스 종료
-            FLASK_ENV=production pm2 start gunicorn -n ai_flask_server --interpreter python3 -- 'app:app -w 4 --bind 0.0.0.0:5000'"
+            (pm2 delete dayCourseAi || true) &&  # 기존 프로세스 종료
+            FLASK_ENV=production pm2 start gunicorn -n dayCourseAi --interpreter python3 -- 'app:app -w 4 --bind 0.0.0.0:5000'"
