@@ -175,6 +175,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
     try {
         // 그룹을 먼저 삽입합니다.
+        console.log('그룹 삽입');
         const result_groupId = await new Promise((resolve, reject) => {
             db.query(sqlInsertGroup, [groupName], (err, result) => {
                 if (err) return reject(err);
@@ -209,6 +210,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
         const existingUserIds = new Set(existsResults.map(row => row.userId)); // 이미 존재하는 사용자 ID 세트
 
         // 멤버 추가 쿼리 실행
+        console.log('멤버추가');
         for (const uid of allUserIds) {
             if (!existingUserIds.has(uid)) {
                 await new Promise((resolve, reject) => {
