@@ -1,0 +1,4 @@
+Flask 3.0.3
+scikit-learn 1.5.2
+azure-ai-vision-imageanalysis 1.0.0
+azure-core 1.31.0

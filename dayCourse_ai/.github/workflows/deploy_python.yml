@@ -1,0 +1,113 @@
+name: Deploy Ai Server
+
+on:
+  push:
+    branches:
+      - AiServer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Deploy to EC2
+        env:
+          HOST: ${{ secrets.AI_EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+          KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          scp -i $KEY -r . $USER@$HOST:dayCourseAi  # 파일 전송
+          ssh -i $KEY $USER@$HOST "cd /path/to/your/deployment && pkill -f flask && nohup python app.py &"
+
+           # SSH로 서버에 연결하여 패키지 설치 및 애플리케이션 실행
+          ssh -i $KEY $USER@$HOST << EOF
+            cd /home/ubuntu/dayCourseAi  # 애플리케이션 경로로 이동
+            python3 -m venv venv  # 가상환경 생성
+            source venv/bin/activate  # 가상환경 활성화
+            pip install -r requirements.txt  # requirements.txt 기반으로 의존성 설치
+            nohup python app.py &  # 애플리케이션 실행
+          EOF
+
+      # 1. SSH 설정 및 Python 설치
+      - name: Install Python on EC2 if missing
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if ! command -v python3 &> /dev/null; then
+              echo 'Installing Python 3.x'
+              sudo apt-get update &&
+              sudo apt-get install -y python3 python3-venv python3-pip
+            fi"
+
+      # 2. 코드 배포 및 환경 설정
+      - name: Deploy code to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}          
+          APP_DIR: '/home/ubuntu/ai_flask_server'  # 서버의 애플리케이션 경로
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if [ -d \"$APP_DIR/.git\" ]; then
+              cd $APP_DIR &&
+              git config pull.rebase true &&
+              git reset --hard origin/AiServer &&
+              git pull origin AiServer;
+            else
+              git clone -b AiServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
+            fi"
+
+      # 3. 가상 환경 설정 및 의존성 설치
+      - name: Set up virtual environment and install dependencies
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}            
+          APP_DIR: '/home/ubuntu/ai_flask_server'
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            cd $APP_DIR &&
+            python3 -m venv venv &&
+            source venv/bin/activate &&
+            pip install -r requirements.txt"
+
+      # 4. 애플리케이션 실행 (pm2 + gunicorn)
+      - name: Run Flask AI Application
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: '/home/ubuntu/ai_flask_server'
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            cd $APP_DIR &&
+            source venv/bin/activate &&
+            if ! command -v pm2 &> /dev/null; then
+              sudo npm install -g pm2;
+            fi &&
+            (pm2 delete ai_flask_server || true) &&  # 기존 프로세스 종료
+            FLASK_ENV=production pm2 start gunicorn -n ai_flask_server --interpreter python3 -- 'app:app -w 4 --bind 0.0.0.0:5000'"
