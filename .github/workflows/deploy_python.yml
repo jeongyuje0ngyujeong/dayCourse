@@ -12,10 +12,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: AiServer
-          fetch-depth: 0
-  
+
       # 1. SSH 설정 및 Python 설치
       - name: Install Python on EC2 if missing
         env:
@@ -74,9 +71,17 @@ jobs:
             source venv/bin/activate &&
             pip install -r requirements.txt"
       
-      - name: Ensure file permissions
+      - name: Debugging - List all files
         run: |
-          chmod 644 $GITHUB_WORKSPACE/dayCourse_ai/deploy/gunicorn.service  
+          echo "Current directory:"
+          pwd
+          echo "Root directory files:"
+          ls -al
+          echo "dayCourse_ai directory files:"
+          ls -al ./dayCourse_ai
+          echo "deploy directory files:"
+          ls -al ./dayCourse_ai/deploy
+
 
       # 4. systemd 서비스를 구성하고 애플리케이션을 시작합니다
       - name: Configure and Start Flask AI Application via systemd
@@ -89,8 +94,7 @@ jobs:
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
           # gunicorn.service 파일을 EC2로 복사
-          scp -o StrictHostKeyChecking=no $GITHUB_WORKSPACE/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
-          # scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
+          scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
             sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
             sudo systemctl daemon-reload &&
