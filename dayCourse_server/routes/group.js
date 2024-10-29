@@ -59,3 +59,5 @@ router.post('/friend', authenticateJWT, async (req, res) => {
         }
     });
 });
+
+module.exports = router;
