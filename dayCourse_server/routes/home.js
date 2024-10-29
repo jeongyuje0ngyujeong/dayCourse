@@ -77,18 +77,11 @@ router.post('/plan', authenticateJWT, async (req, res) => {
         newplanName = dateKey
     }
 
-    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
     const sql = `
-      INSERT INTO Plan (start_userId, startDate, endDate, planName, town)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
-    // const sql = `
-    //   INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
-    //   VALUES (?, ?, ?, ?, ?, ?)
-    // `;
 
-    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
-    const values = [userId, dateKey, dateKey, newplanName, town];
     // const values = [userId, dateKey, dateKey, newplanName, town, groupId];
 
     db.query(sql, values, (err, result) => {

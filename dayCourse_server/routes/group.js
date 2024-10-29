@@ -123,7 +123,7 @@ router.get('/friend/list', authenticateJWT, async (req, res) => {
     const sql = `
       SELECT friendName, friendId
       FROM friend
-      WHERE friend.userId
+      WHERE friend.userId = ?
       ORDER BY friend.friendName ASC
     `;
 
