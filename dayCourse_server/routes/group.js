@@ -145,7 +145,7 @@ router.get('/friend/list', authenticateJWT, async (req, res) => {
 
 
 // 그룹 추가
-router.post('/friend/add', authenticateJWT, async (req, res) => {
+router.post('/add', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     const { groupName, groupMembers } = req.body;
 
@@ -167,7 +167,7 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
             console.error('Error inserting data:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-        
+
         for (const member of groupMembers) {
             db.query(sql_GM, [result_groupId.groupId, member.friendId])
         }
