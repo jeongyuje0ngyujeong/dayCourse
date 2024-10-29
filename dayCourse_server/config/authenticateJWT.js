@@ -1,14 +1,14 @@
 const passport = require('passport');
-const redis = require('redis');
+const { createClient } = require('redis');
 const { promisify } = require('util');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const redisClient = redis.createClient();
+const redisClient = createClient();
 
 // Promisify Redis get and setex functions
-const getAsync = promisify(redisClient.get).bind(redis);
+const getAsync = promisify(redisClient.get).bind(redisClient);
 
 // JWT 인증 미들웨어 함수
 const authenticateJWT = async (req, res, next) => {
