@@ -9,7 +9,7 @@ const ButtonStyle = styled.button`
   color: ${(props) => props.color || 'black'};
   background-color:${(props) => props.$background || 'white'};
   font-weight: ${(props) => props.bold ? 'bold' : 'normal'}; 
-  margin: ${(props) => props.margin || '2px'}; 
+  margin: ${(props) => props.margin || '0'}; 
   &:hover {
     background-color: #e0e0e0;
     border-color: white;
