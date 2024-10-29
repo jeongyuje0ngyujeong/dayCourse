@@ -64,10 +64,10 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'searchId is required' });
     }
 
-    const sql = `
-      UPDATE Plan_Location
-      SET l_priority = ?, version = ?
-      WHERE placeId = ?;
+    const find_sql = `
+      SELECT User.userId, User.id, User.userName
+      FROM User
+      WHERE User.id = ?
     `;
 
     db.query(find_sql, [friendId], (err, find_result) => {
@@ -223,7 +223,6 @@ router.post('/add', authenticateJWT, async (req, res) => {
             });
     });
 });
-
 
 
 
