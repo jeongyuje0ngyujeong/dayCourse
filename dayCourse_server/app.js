@@ -1,6 +1,7 @@
 const express = require('express');
 const db = require('./db.js');
 const apiHome = require('./routes/home.js');
+const groupRoutes = require('./routes/group.js');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
@@ -40,6 +41,7 @@ app.use('/home', authenticateJWT, apiHome);
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
 app.use("/home", apiHome);
+app.use("/group", groupRoutes);
 
 // 이미지 목록을 가져오는 엔드포인트
 app.get('/images', async (req, res) => {

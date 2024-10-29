@@ -10,7 +10,10 @@ router.post('/friend', authenticateJWT, async (req, res) => {
     console.log("req.user:", JSON.stringify(req.user, null, 2));
 
     const userId = req.user.userId;
+    console.log('usderId: ' + userId);
+
     const { searchId } = req.body;
+    console.log('req.body: ' + req.body);
 
     console.log('친구 검색')
     // console.log(req.body)
