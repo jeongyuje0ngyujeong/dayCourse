@@ -36,7 +36,8 @@ export async function loader({ params }) {
 }
 
 export default function CreateSchedule() {
-  const [selectedGroup, setSelectedGroup] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(['Group1','Group2']);
+
 
   const { event } = useLoaderData();
 
@@ -80,7 +81,14 @@ export default function CreateSchedule() {
       </p>
       <p>
       <span>그룹</span>
-      {selectedGroup.length > 0?<div>{selectedGroup}</div>:<div>선택한 그룹이 없습니다.</div>}
+      {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
+      {selectedGroup.length > 0 ? (
+          selectedGroup.map((item) => (
+              <div key={item}>{item}</div>
+          ))
+      ) : (
+          <div>선택한 그룹이 없습니다.</div>
+      )}
       {/* <p>
       <label>
         <input
