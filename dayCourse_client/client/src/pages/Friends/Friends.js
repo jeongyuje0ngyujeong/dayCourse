@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {useState, useEffect} from 'react';
-import { PageTitle, Footer } from '../../commonStyles';
+import { PageTitle } from '../../commonStyles';
 import { Button } from '../../Button';
 // import FriendList from './FriendList';
 import FriendInput from './FriendInput';

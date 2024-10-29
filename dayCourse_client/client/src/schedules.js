@@ -90,7 +90,7 @@ export async function getSchedules(query, startDate) {
 }
 
 export async function createSchedule(dateKey, formData) {
-    let schedules = await localforage.getItem("schedules");
+    // let schedules = await localforage.getItem("schedules");
 
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan`, 

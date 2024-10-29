@@ -4,7 +4,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import {DayTable, GroupDatesByWeek} from '../Calendar/Calendar'
 // import Schedule from '../Calendar/Schedule'
 import { Button } from '../../Button';
-import { Outlet, Form, useLoaderData,} from "react-router-dom";
+import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
 // import { Link } from 'react-router-dom'; 
 // import RightSidebar from './RightSidebar'; 

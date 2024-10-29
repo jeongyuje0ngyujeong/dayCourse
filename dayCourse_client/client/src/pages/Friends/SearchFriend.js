@@ -62,6 +62,7 @@ export async function getFriends() {
 
 
 export async function addGroup(groupName, groupMembers) {
+    // console.log('???',groupName, groupMembers);
     try {
         const response = await axios.post(`${BASE_URL}/group/add`, 
             {
@@ -74,11 +75,11 @@ export async function addGroup(groupName, groupMembers) {
                 },
             }
         );
-        // console.log('addFriend: ',response.data)
+        console.log('addFriend: ',response.data)
    
-        return response.data.message;
+        return response.data.msg;
      
     } catch (error) {
-      console.error('친구 추가 실패');
+        throw new Error('그룹 생성 실패');
     }
 }

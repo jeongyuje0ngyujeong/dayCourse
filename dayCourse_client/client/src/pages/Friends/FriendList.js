@@ -1,6 +1,6 @@
-import {useState} from 'react';
+// import {useState} from 'react';
 import styled from 'styled-components';
-import {getFriends} from './SearchFriend';
+// import {getFriends} from './SearchFriend';
 import {Button} from '../../Button';
 
 const ResultContainer = styled.div`
@@ -43,7 +43,6 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
             prevSelectedFriends.filter((selectedFriend) => selectedFriend !== friend)
         );
     };
-    console.log('here: ', friendsList);
 
     return(
         <>

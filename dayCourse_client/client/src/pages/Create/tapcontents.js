@@ -1,7 +1,9 @@
-import axios from 'axios';
+// import axios from 'axios';
 import styled from 'styled-components';
 import FriendList from '../Friends/FriendList';
-const BASE_URL = process.env.REACT_APP_BASE_URL; 
+import {addGroup} from '../Friends/SearchFriend';
+import React, {useState} from 'react';
+// const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
 const FriendsContainer = styled.div`
     flex: 1;
@@ -26,7 +28,22 @@ const TextButton = styled.div`
     align-items: center;
 `;
 
-export function NewGroup({friendsList, selectedFriends ,setSelectedFriends, setSelectedGroup}) {
+export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
+    const [groupName, setGroupName] = useState('');
+
+    const handleOnClick = async (e) => {
+        try{
+            e.preventDefault();
+            // setSelectedGroup(selectedFriends);
+            console.log('여기: ',groupName, selectedFriends);
+            const result = await addGroup(groupName, selectedFriends);
+            alert(result);
+        }
+        catch (error){
+            alert(error.message);
+        }
+    };
+
     return(
         <>
         <FriendsContainer>
@@ -39,22 +56,22 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends, setS
                 <h4>그룹명</h4>
                 <button 
                     style={{ height: '2.5rem' }} 
-                    onClick={(e) => {
-                        e.preventDefault();
-                        setSelectedGroup(selectedFriends);
-                    }}
+                    onClick={(e) => {handleOnClick(e)}}
                 >그룹 생성
                 </button>
             </TextButton>
-            <input name="groupName" placeholder='그룹명을 입력해주세요'/>
-            <h4>선택한 친구</h4>
+            <input name="groupName" value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
+            <TextButton>
+                <h4>선택한 친구</h4>
+                <h4>{selectedFriends.length}명</h4>
+            </TextButton>            
             <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
         </GroupContainer>
         </>
     )
 }
 
-export function ExistGroup() {
+export function ExistGroup({setSelectedGroup}) {
     return(
         <>
         {/* <FriendList/> */}

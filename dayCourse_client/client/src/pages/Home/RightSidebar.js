@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { fetchPlace} from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+// import { fetchPlace} from './PlaceApi';
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
