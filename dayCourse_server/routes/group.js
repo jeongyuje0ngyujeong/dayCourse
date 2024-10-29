@@ -158,10 +158,10 @@ router.post('/add', authenticateJWT, async (req, res) => {
       VALUES (?)
     `;
 
-    const sqlSelectUserId = `
+    const sqlSelectUserIds = `
       SELECT userId
       FROM User
-      WHERE id = ?
+      WHERE id = (?)
     `;
 
     const sqlInsertGroupMember = `
@@ -170,88 +170,64 @@ router.post('/add', authenticateJWT, async (req, res) => {
     `;
 
     const sqlCheckMemberExists = `
-      SELECT * FROM groupMembers WHERE groupId = ? AND userId = ?
+      SELECT * FROM groupMembers WHERE groupId = ? AND userId IN (?)
     `;
 
-    // 그룹을 먼저 삽입합니다.
-    db.query(sqlInsertGroup, [groupName], (err, result_groupId) => {
-        if (err) {
-            console.error('데이터 삽입 오류:', err);
-            return res.status(500).json({ error: '데이터베이스 오류' });
-        }
-
-        const groupId = result_groupId.insertId; // 삽입한 그룹의 ID
-
-        // 친구를 그룹에 추가
-        const memberQueries = groupMembers.map(member => {
-            return new Promise((resolve, reject) => {
-                db.query(sqlSelectUserId, [member.friendId], (err, results) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    if (results.length > 0) {
-                        const friendUserId = results[0].userId; // 친구의 userId
-
-                        // 중복 여부 확인
-                        db.query(sqlCheckMemberExists, [groupId, friendUserId], (err, exists) => {
-                            if (err) {
-                                return reject(err);
-                            }
-                            if (exists.length === 0) {
-                                // 그룹 멤버로 추가
-                                db.query(sqlInsertGroupMember, [groupId, friendUserId], (err) => {
-                                    if (err) {
-                                        return reject(err);
-                                    }
-                                    resolve();
-                                });
-                            } else {
-                                // 이미 존재하는 경우
-                                console.log(`Friend with userId ${friendUserId} is already in the group.`);
-                                resolve(); // 처리 완료
-                            }
-                        });
-                    } else {
-                        // 친구가 존재하지 않는 경우
-                        resolve(); // 처리 완료
-                    }
-                });
+    try {
+        // 그룹을 먼저 삽입합니다.
+        const result_groupId = await new Promise((resolve, reject) => {
+            db.query(sqlInsertGroup, [groupName], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
             });
         });
 
-        // 자신을 그룹에 추가 (중복 확인 추가)
-        memberQueries.push(new Promise((resolve, reject) => {
-            db.query(sqlCheckMemberExists, [groupId, userId], (err, exists) => {
-                if (err) {
-                    return reject(err);
-                }
-                if (exists.length === 0) {
-                    // 그룹 멤버로 추가
-                    db.query(sqlInsertGroupMember, [groupId, userId], (err) => {
-                        if (err) {
-                            return reject(err);
-                        }
+        const groupId = result_groupId.insertId; // 삽입한 그룹의 ID
+
+        // 모든 친구의 userId를 가져옵니다.
+        const friendIds = groupMembers.map(member => member.friendId);
+        
+        // 친구들의 userId를 조회합니다.
+        const results = await new Promise((resolve, reject) => {
+            db.query(sqlSelectUserIds, [friendIds], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        const friendUserIds = results.map(result => result.userId);
+        const allUserIds = [...new Set([...friendUserIds, userId])]; // 중복 제거 후 모든 사용자 ID 배열 생성
+
+        // 중복 여부 확인
+        const existsResults = await new Promise((resolve, reject) => {
+            db.query(sqlCheckMemberExists, [groupId, allUserIds], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        const existingUserIds = new Set(existsResults.map(row => row.userId)); // 이미 존재하는 사용자 ID 세트
+
+        // 멤버 추가 쿼리 실행
+        for (const uid of allUserIds) {
+            if (!existingUserIds.has(uid)) {
+                await new Promise((resolve, reject) => {
+                    db.query(sqlInsertGroupMember, [groupId, uid], (err) => {
+                        if (err) return reject(err);
                         resolve();
                     });
-                } else {
-                    // 이미 존재하는 경우
-                    console.log(`User with userId ${userId} is already in the group.`);
-                    resolve(); // 처리 완료
-                }
-            });
-        }));
+                });
+            }
+        }
 
-        // 모든 쿼리가 완료될 때까지 기다립니다.
-        Promise.all(memberQueries)
-            .then(() => {
-                return res.status(200).json({ msg: "그룹 생성 성공" });
-            })
-            .catch(err => {
-                console.error('그룹 멤버 추가 오류:', err);
-                return res.status(500).json({ error: '데이터베이스 오류' });
-            });
-    });
+        // 모든 작업이 완료되면 성공 메시지를 반환합니다.
+        return res.status(200).json({ msg: "그룹 생성 성공" });
+    } catch (err) {
+        console.error('오류 발생:', err);
+        return res.status(500).json({ error: '데이터베이스 오류' });
+    }
 });
+
 
 
 
