@@ -10,7 +10,7 @@ const router = express.Router();
 
 // redis 설정
 const redisClient = redis.createClient();
-const setexAsync = promisify(redisClient.setex).bind(redis);
+const setAsync = promisify(redisClient.set).bind(redis); 
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
@@ -138,9 +138,11 @@ router.post('/logout', async(req, res) => {
     // const token = req.headers.authorization;
     const token = req.headers["authorization"]?.split(" ")[1];
     console.log(token);
+
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
+    
     try {
         // 토큰 복호화
         const decoded = jwt.decode(token);
@@ -152,7 +154,7 @@ router.post('/logout', async(req, res) => {
         const expireTime = decoded.exp - Math.floor(Date.now()/1000);
     
         // redis 블랙리스트에 토큰 추가 
-        await setexAsync(token, expireTime, 'blacklisted');
+        await setAsync(token, 'blacklisted', { EX: expireTime });
         return res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
 
     } catch (error) {
