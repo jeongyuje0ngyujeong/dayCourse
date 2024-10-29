@@ -443,7 +443,7 @@ router.post('/plan/recommend_place', authenticateJWT, async (req, res) => {
 router.post('/plan/place/priority', async (req, res) => {
     const { placeId, priority, version } = req.body;
 
-    console.log('장소순서변경')
+    console.log('장소순서변경 :' + version)
 
     const sql_select = `
       SELECT version
@@ -457,7 +457,7 @@ router.post('/plan/place/priority', async (req, res) => {
       WHERE placeId = ?;
     `;
 
-    const values = [priority, version + 1, placeId]
+    const values = [priority, (version + 1), placeId]
 
     console.log(values)
 
