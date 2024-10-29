@@ -56,7 +56,7 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
                     return res.status(201).json({ success: true, message: '성공적으로 친구 추가 되었습니다.' });
                     
                 } else {
-                    return res.status(409).json({ success: false, message: '이미 친구로 추가된 사용자입니다.' });
+                    return res.json({ success: false, message: '이미 친구로 추가된 사용자입니다.' });
                 }
             });
 
