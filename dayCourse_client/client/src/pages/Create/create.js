@@ -1,6 +1,10 @@
 import { Form, useLoaderData, redirect, } from "react-router-dom";
 import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
 import { Link } from 'react-router-dom'; 
+import Group from './group';
+import { PageTitle } from '../../commonStyles';
+import React, {useState} from 'react';
+
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -10,6 +14,7 @@ export async function action({ request, params }) {
   const month= formData.get("month");
   const date= formData.get("date");
   const dateKey = `${year}-${month}-${date}`;
+  console.log(updates);
   
   if (params.id){
     await updateSchedule(params.id, updates);
@@ -31,6 +36,8 @@ export async function loader({ params }) {
 }
 
 export default function CreateSchedule() {
+  const [selectedGroup, setSelectedGroup] = useState([]);
+
   const { event } = useLoaderData();
 
   let year, month, date;
@@ -38,13 +45,14 @@ export default function CreateSchedule() {
 
   if (event) {
     [year, month, date] = event.dateKey.split('-');
-    group = event.groupName;
+    group = event.groupId;
     planName = event.planName;
     town = event.town;
   }
 
   return (
     <>
+    <PageTitle>일정</PageTitle>
     <Form method="post" id="schedule-form">
       <span>약속 날짜</span>
       <p>
@@ -83,7 +91,7 @@ export default function CreateSchedule() {
       </p>
       
       <span>그룹</span>
-      <p>
+      {/* <p>
       <label>
         <input
           type="text"
@@ -92,7 +100,10 @@ export default function CreateSchedule() {
           defaultValue={group}
         />
       </label>
-      </p>
+      </p> */}
+      <Group setSelectedGroup={setSelectedGroup}/>
+      {/* <input type="hidden" name="groupName" value={selectedGroup} /> */}
+      <input type="hidden" name="groupMembers" value={selectedGroup} />
 
       <p>
         <button type="submit">Save</button>

@@ -1,42 +1,74 @@
 import {useState} from 'react';
 import styled from 'styled-components';
-
+import {getFriends} from './SearchFriend';
+import {Button} from '../../Button';
 
 const ResultContainer = styled.div`
-position: relative;
-max-height: 15rem;  
-overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 15rem;  
+    ${'' /* overflow-y: auto; */}
+    overflow: auto; 
+    
+    &::-webkit-scrollbar {
+        display: none; 
+    }
+    gap: 0.5rem;
 `
 
-export default function FriendList({showResult, setShowResult}) {
-    const [friends, setFriends] = useState("");
-    const [keyword, setKeyword] = useState(""); // 제출한 검색어
-    const [value, setValue] = useState(""); // 입력 값 상태
-    const [selectedFriend, setSelectedFriend] = useState("");
+const ItemContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    padding: 0 0 0 5px;
+    background: white;
+    border-radius: 5px;
+    align-items: center;
+`
 
+export default function FriendList({friendsList, setSelectedFriends, flag}) {
+    const handleAdd = (e, friend) => {
+        e.preventDefault();
+        setSelectedFriends((prevSelectedFriends) => {
+            if (prevSelectedFriends.some((selectedFriend) => selectedFriend === friend)) {
+                return prevSelectedFriends; 
+            }
+            return [...prevSelectedFriends, friend]; 
+        });
+    };
+  
+    const handleDelete = (e, friend) => {
+        e.preventDefault();
+        setSelectedFriends((prevSelectedFriends) =>
+            prevSelectedFriends.filter((selectedFriend) => selectedFriend !== friend)
+        );
+    };
+    console.log('here: ', friendsList);
 
     return(
         <>
-        {showResult && (
         <ResultContainer id="search-result">
-            {friends.length === 0 && value && ( // 검색 결과가 없을 때
-                <p className="result-text">검색 결과가 없습니다.</p>
-            )}
-            <ul>
-                {friends.length >0? (friends.map((friend, index) => (
-                    <li 
-                        key={index} 
-                        onClick={() => {
-                            selectedFriend(friend);
-                        }} 
-                        style={{ cursor: 'pointer' }}
-                    >
-                        <h5>{friend}</h5>
-                    </li>
-                ))):(<div>없습니다.</div>)}
-            </ul>
+            {friendsList.length === 0 ? (   
+                    flag ? (<p className="result-text">친구를 추가해보세요.</p>):(<p className="result-text">그룹을 생성할 친구를 추가해보세요.</p>) 
+            ):
+            <>
+            {friendsList.map((friend, index) => (
+                <ItemContainer
+                    key={index} 
+                    onClick={() => {
+                        // selectedFriend(friend);
+                    }} 
+                    style={{ cursor: 'pointer' }}
+                >
+                    <p>{friend.friendName} | {friend.friendId}</p>
+                    {flag ? 
+                    <button onClick={(e) => handleAdd(e, friend)}>추가</button>
+                    :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>}
+                </ItemContainer>
+            ))}
+            </>
+            }
         </ResultContainer>
-        )}
         </>
     )
 }
