@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-// TMAP 거리 계산 API
-// import { fetchPlace, addPlace, deletePlace, updatePlacePriority , fetchDistance} from './PlaceApi'; 
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority ,} from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const SelectedPlacesContainer = styled.div`

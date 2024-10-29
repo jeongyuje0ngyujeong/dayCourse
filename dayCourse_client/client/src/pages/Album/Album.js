@@ -1,10 +1,11 @@
 // import { Outlet} from "react-router-dom";
 // import styled from 'styled-components';
 
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
+import { getPlan } from './AlbumApi'; // 플랜 가져오는 API 함수
 
 // export default function Album() {
 //   return (
@@ -19,13 +20,32 @@ import RecentPlan from './RecentPlan.js';
 // }
 
 
-const Album = () => {
+const Album = ({userId}) => {
   const [activeTab, setActiveTab] = useState('posts');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [plans, setPlans] = useState([]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const data = await getPlan(userId);
+        setPlans(data);
+      } catch (error) {
+        console.error('앨범에서 플랜 가져오던 중 오류', error);
+      }
+    };
+    fetchPlans();
+  }, [userId]);
+
+  const filteredPlans = plans.filter(plan =>
+    plan.planName.toLowerCase().includes(searchTerm.toLowerCase()))
+
+
 
   const renderContent = () => {
     switch (activeTab) {
       case 'posts' :
-        return <RecentPlan />;
+        return <RecentPlan plans={filteredPlans} />;
 
       case 'moments':
         return <Moment />;
@@ -34,13 +54,13 @@ const Album = () => {
         return <div>동영상</div>;
 
       default:
-        return <RecentPlan />;
+        return <RecentPlan plans={filteredPlans} />;
     }
   };
   
   return (
     <div>
-      <Search />
+      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       <div>
         <button onClick={() => setActiveTab('posts')}>포스팅</button>
         <button onClick={() => setActiveTab('moments')}>모먼트</button>

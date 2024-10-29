@@ -24,10 +24,9 @@ const Image = styled.img`
     border-radius: 5px;
 `;
 
-const PlanDetail = () => {
+const PlanDetail = ({userId}) => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
     const [selectedFile, setSelectedFile] = useState(null);
-    const [userId, setUserId] = useState("1");
     const [imageUrls, setImageUrls] = useState([]);
 
     // 이미지 목록 가져오기
@@ -53,7 +52,7 @@ const PlanDetail = () => {
         }
 
         try {
-            await uploadImage(userId, selectedFile);
+            await uploadImage(userId, planId, selectedFile);
             fetchImageUrls(); // 이미지 목록 새로고침
         } catch (error) {
             console.error('업로드 실패:', error);
@@ -61,10 +60,10 @@ const PlanDetail = () => {
     };
 
     useEffect(() => {
-        if (userId) {
-            fetchImageUrls(); // 사용자 ID가 설정되면 이미지 목록 가져오기
+        if (userId && planId) {
+            fetchImageUrls(); // 사용자 ID와 플랜 ID가 설정되면 이미지 목록 가져오기
         }
-    }, [userId, fetchImageUrls]);
+    }, [userId, planId, fetchImageUrls]);
 
     return (
         <Container>
@@ -72,13 +71,8 @@ const PlanDetail = () => {
             <UploadContainer>
                 <form onSubmit={onSubmit}>
                     <div>
-                        <label>사용자 ID:</label>
-                        <input  
-                            type="text"
-                            value={userId}
-                            onChange={(e) => setUserId(e.target.value)}
-                            required
-                        />
+
+
                     </div>
                     <div>
                         <label>이미지 선택:</label>
