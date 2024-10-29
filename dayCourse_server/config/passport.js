@@ -25,10 +25,10 @@ module.exports = (passport) => {
                     return done(err, false);
                 }
                 if (result.length > 0) {
-                    console.log('db userIdd와 비교 결과 성공')
+                    // console.log('db userId와 비교 결과 성공')
                     return done(null, result[0]);
                 } else {
-                    console.log('db userIdd와 비교 결과 실패')
+                    // console.log('db userId와 비교 결과 실패')
                     return done(null, false);
                 }
             });
