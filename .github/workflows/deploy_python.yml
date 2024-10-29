@@ -71,6 +71,7 @@ jobs:
             source venv/bin/activate &&
             pip install -r requirements.txt"
 
+      # 4. systemd 서비스를 구성하고 애플리케이션을 시작합니다
       - name: Configure and Start Flask AI Application via systemd
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -80,14 +81,8 @@ jobs:
         run: |
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          echo "Current working directory:"
-          pwd
-          echo "Listing files in current directory:"
-          ls -al
-          echo "Listing files in ./dayCourse_ai/deploy/:"
-          ls -al ./dayCourse_ai/deploy/
           # gunicorn.service 파일을 EC2로 복사
-          scp -o StrictHostKeyChecking=no ./dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
+          scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
             sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
             sudo systemctl daemon-reload &&
