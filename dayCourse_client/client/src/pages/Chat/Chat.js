@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import {Button} from '../../Button';
+// import {Button} from '../../Button';
 import io from 'socket.io-client';
 import Messages from './Messages';
 import Input from './Input';
@@ -51,14 +51,14 @@ let socket;
 export default function Chat({userId, planInfo}) {
     const planId = planInfo.planId;
     const [name, setName] = useState(sessionStorage.getItem('userId'));
-    const [room, setRoom] = useState(planInfo.planId);
+    const [room, setRoom] = useState(planId);
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
+    const [userNames, setUserNames] = useState('');
 
     useEffect(() => {
         // const {name, room} = queryString.parse(window.location.search);
-        console.log(name, room);
         
         socket = io(ENDPOINT);
         setName(name);
@@ -72,7 +72,8 @@ export default function Chat({userId, planInfo}) {
           socket.emit();
           socket.off();
         }
-    }, [ENDPOINT, window.location.search]);
+    }, [name, room]);
+    // [ENDPOINT, window.location.search]
 
     useEffect(() => {
         socket.on('message', (message) => {
@@ -81,7 +82,12 @@ export default function Chat({userId, planInfo}) {
         socket.on('roomData', ({users}) => {
           setUsers(users);
         });
+        setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
       }, []);
+
+    useEffect(() => {
+      setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
+    }, [users]);
     
     const sendMessage = (event) => {
         event.preventDefault();
@@ -92,7 +98,7 @@ export default function Chat({userId, planInfo}) {
 
     return (
     <ChatContainer>
-        <ChatName>채팅방: {planInfo.planName}</ChatName>
+        <ChatName>접속중: {userNames}</ChatName>
         <Messages messages={messages} name={name}/>
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         {/* <ChatInputBar>
