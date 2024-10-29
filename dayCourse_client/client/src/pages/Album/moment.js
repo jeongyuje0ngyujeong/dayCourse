@@ -4,36 +4,47 @@ import styled from 'styled-components';
 
 const Container = styled.div`
     display: flex;
-    justify-content: center; /* 수평 중앙 정렬 */
+    
+    flex-wrap: wrap;
+    padding:20px;
    
 `;
 
 const Box = styled.div`
-    width: 15vw;
-    height: 22vh;
-    background-color: gray;
-    border-radius: 5px;
-    margin: 2%;
-    `;
+    width: 150px; /* 너비 조정 */
+    height: 200px; /* 높이 조정 */
+    background-color: white; /* 배경색을 흰색으로 설정 */
+    border: 1px solid #ccc; /* 경계선 추가 */
+    border-radius: 10px; /* 둥근 모서리 */
+    margin: 10px; /* 여백 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    cursor: pointer;
+    transition: transform 0.2s; /* 애니메이션 효과 */
+    
+    &:hover {
+        transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
+    }
+`;
 
-const StyledModal = styled(Modal) `
+const StyledModal = styled(Modal)`
     width: 60%;
-    height: 90vh;
-    background-color:gray;
-    border-radius:5px;
+    height: 70vh; /* 높이를 줄여서 내용이 잘 보이도록 설정 */
+    background-color: white; /* 모달 배경색 흰색으로 변경 */
+    border-radius: 10px; /* 둥근 모서리 */
+    padding: 20px; /* 패딩 추가 */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
-    position:fixed;
-    top:50%;
-    left:50%;
+    position: fixed;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
-
-// `
-
+    border: none; /* 모달 경계선 제거 */
+`;
     
 
 const MomentModal = ({ isOpen, onRequestClose, content }) => {

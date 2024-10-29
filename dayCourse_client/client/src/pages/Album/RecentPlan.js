@@ -1,54 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { getPlan } from './AlbumApi'; // API 함수 가져오기
+
+
 
 const Container = styled.div`
-    justify-content: center;
-    padding-left: 20%;
-    padding-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+
+    padding: 20px;
 `;
 
 const Box = styled.div`
-    width: 30vw;
-    height: 13vh;
-    background-color: gray;
-    border-radius: 5px;
-    margin: 2%;
+    width: 150px; /* 너비 조정 */
+    height: 200px; /* 높이 조정 */
+    background-color: white; /* 배경색을 흰색으로 설정 */
+    border: 1px solid #ccc; /* 경계선 추가 */
+    border-radius: 10px; /* 둥근 모서리 */
+    margin: 10px; /* 여백 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
+    transition: transform 0.2s; /* 애니메이션 효과 */
+    
     &:hover {
-        background-color: darkgray;
+        transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
     }
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
 
-const SelectedPlanContainer = styled.div`
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-`;
 
-const RecentPlan = () => {
+
+const RecentPlan = ({plans}) => {
     const navigate = useNavigate();
-    const [plans, setPlans] = useState([]); // 플랜을 저장할 상태
+  //  const [plans, setPlans] = useState([]); // 플랜을 저장할 상태
 
-    // 플랜 가져오기
-    const fetchPlans = async () => {
-        const allPlans = await getPlan(); // 모든 플랜 가져오기
-        setPlans(allPlans);
-    };
 
-    useEffect(() => {
-        fetchPlans();
-    }, []);
 
     const handleBoxClick = (item) => { // item으로 통일
-        console.log('Selected plan:', item);
-        // setSelectedPlan(item); // 선택된 플랜 설정
+        console.log('선택된플랜:', item);
         navigate(`/main/plan/${item.planId}`); // 플랜 상세 페이지로 이동
     };
 
@@ -60,7 +53,7 @@ const RecentPlan = () => {
                     <Box key={item.planId} onClick={() => handleBoxClick(item)}>
                         <div>
                             <h3>{item.planName}</h3>
-                            <p>{new Date(item.createdAt).toLocaleDateString()}</p>
+                            <p>{new Date(item.dateKey).toLocaleDateString()}</p>
                         </div>
                     </Box>
                 ))}
