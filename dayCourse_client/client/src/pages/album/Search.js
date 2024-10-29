@@ -2,7 +2,9 @@ import React, {useState} from 'react';
 import { SlCalender } from "react-icons/sl";
 import {data} from './data';
 import styled from 'styled-components';
-import { PageTitle } from '../../commonStyles';
+import { getPlan } from './AlbumApi'; // 수정된 import 경로
+// import { PageTitle } from '../../commonStyles';
+import React, { useState, useEffect } from 'react';
 
 const Container = styled.div `
     display: flex;

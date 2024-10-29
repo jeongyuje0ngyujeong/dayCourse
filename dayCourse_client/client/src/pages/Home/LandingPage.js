@@ -32,14 +32,14 @@ const DistanceBox = styled.div`
 
 
 
-const LandingPage = ({userId, planId, place, context}) => {
-    console.log('context: ',context);
+const LandingPage = ({userId, planId}) => {
+
+
     console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
-    const planInfo = context;
 
 
     const submitKeyword = (newKeyword) => {
@@ -51,9 +51,10 @@ const LandingPage = ({userId, planId, place, context}) => {
             const existPlace = await fetchPlace(userId, planId);
             console.log("Fetched places:", existPlace); // 데이터 로그 확인
             if (Array.isArray(existPlace)) {
-                setSelectedPlaces(existPlace.map((place, index) => ({
+                const sortedPlaces = existPlace.sort((a, b) => a.l_priority - b.l_priority);
+                setSelectedPlaces(sortedPlaces.map((place) => ({
                     ...place,
-                    l_priority: index + 1, // 초기 우선 순위 설정
+                    // l_priority: index + 1, // 초기 우선 순위 설정
                     version: place.version || 1 //버전이 존재하고 유효한 값이라면 해당값을 사용하고, 아니면 버전정보=>1
                 })));
             } else {
@@ -66,21 +67,34 @@ const LandingPage = ({userId, planId, place, context}) => {
     };
 
 
+    // const handlePlaceClick = async (place) => {
+    //     try {
+    //         const addedPlace = await addPlace(userId, planId, place);
+    //         await fetchExistPlace(); // 상태를 갱신하기 위해 전체 장소 목록을 다시 가져옵니다.
+    //         setSelectedPlaces(prevSelected => {
+    //             const updatedPlaces = [...prevSelected, addedPlace];
+    //             return updatedPlaces.map((p, index) => ({
+    //                 ...p,
+    //                 l_priority: index + 1,
+    //             }));
+    //         });
+    //     } catch (error) {
+    //         console.error("장소 추가 실패:", error);
+    //     }
+    // };
+
+
     const handlePlaceClick = async (place) => {
         try {
-            const addedPlace = await addPlace(userId, planId, place);
-            await fetchExistPlace(); // 상태를 갱신하기 위해 전체 장소 목록을 다시 가져옵니다.
-            setSelectedPlaces(prevSelected => {
-                const updatedPlaces = [...prevSelected, addedPlace];
-                return updatedPlaces.map((p, index) => ({
-                    ...p,
-                    l_priority: index + 1,
-                }));
-            });
+            await addPlace(userId, planId, place);
+            await fetchExistPlace(); // 상태 갱신
         } catch (error) {
             console.error("장소 추가 실패:", error);
         }
     };
+
+
+
 
     const removePlace = async (placeId) => {
         try {
@@ -91,23 +105,24 @@ const LandingPage = ({userId, planId, place, context}) => {
         }
     };
 
+
+
+
     const onDragEnd = async (result) => {
         if (!result.destination) {
             return; // 목적지가 없으면 아무 작업도 하지 않음
         }
-
+    
         const reorderedPlaces = Array.from(selectedPlaces);
         const [movedPlace] = reorderedPlaces.splice(result.source.index, 1);
         reorderedPlaces.splice(result.destination.index, 0, movedPlace);
-
-        // 우선 순위 업데이트 및 데이터베이스에 반영
+    
+        // 우선 순위 업데이트
         const updatedPlaces = reorderedPlaces.map((place, index) => ({
             ...place,
             l_priority: index + 1,
         }));
-
-        setSelectedPlaces(updatedPlaces); // 상태 업데이트
-
+    
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
@@ -115,19 +130,27 @@ const LandingPage = ({userId, planId, place, context}) => {
                     place.placeId || place.id,
                     place.l_priority,
                     userId,
-                    place.version) // placeId 또는 id 사용
-            ));
+                    place.version // 여전히 유효한 version 값 사용
+                ))
+            );
+    
+            // 상태 업데이트
+            setSelectedPlaces(updatedPlaces);
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
+
+
+
+
 
     useEffect(() => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
     }, [userId, planId]);
 
 
-    // TMAP 거리 계산 API
+
     // useEffect(() => {
     //     const loadDistance = async () => {
     //         if (selectedPlaces.length > 1) {
@@ -146,7 +169,6 @@ const LandingPage = ({userId, planId, place, context}) => {
             <RightSidebar 
                 userId={userId} 
                 planId={planId} 
-                planInfo={context}
                 places={places} 
                 setPlaces={setPlaces} 
                // addPlace={addSelectedPlace} 
