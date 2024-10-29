@@ -1,24 +1,11 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const passport = require('passport');
-// const redis = require('redis');
-const { promisify } = require('util');
-const { createClient } = require('redis');
 const bcrypt = require('bcrypt');
 const db = require('../db')
+const redisClient = require('../config/redisClient'); 
 
 const router = express.Router();
-
-// redis 설정
-const redisClient = createClient();
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
-
-// Redis 클라이언트 연결
-(async () => {
-    await redisClient.connect();
-})();
-
-const setAsync = promisify(redisClient.set).bind(redisClient); 
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
@@ -162,8 +149,8 @@ router.post('/logout', async(req, res) => {
         const expireTime = decoded.exp - Math.floor(Date.now()/1000);
     
         // redis 블랙리스트에 토큰 추가 
-        await setAsync(token, 'blacklisted', { EX: expireTime });
-        return res.status(200).json({ result: 'success', message: '성공적으로 로그아웃 되었습니다.' });
+        await redisClient.set(token, 'blacklisted', { EX: expireTime });
+        return res.status(200).json({ success: true });
 
     } catch (error) {
         console.error('Logout error:', error);
