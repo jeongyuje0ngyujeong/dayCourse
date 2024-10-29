@@ -10,34 +10,55 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
     console.log('usderId: ' + userId);
 
     // 요청 받은 것
-    const { friendUserId } = req.body;
+    const { friendId } = req.body;
 
     console.log('친구 추가')
 
     // Check if required parameters are provided
-    if (!friendUserId) {
+    if (!friendId) {
         return res.status(400).json({ error: 'searchId is required' });
     }
 
-    const inser_sql = `
-        INSERT INTO friend (userId, friendUserId)
-        VALUES (?, ?)
+    const find_sql = `
+      SELECT User.userId
+      FROM User
+      WHERE User.id = ?
     `;
-    
-    const values = [userId, friendUserId];
 
-    db.query(inser_sql, values, (err, insert_result) => {
+    db.query(find_sql, [friendId], (err, find_result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-        
-        if (insert_result.length > 0) { 
-            console.log("친구 추가 성공!")
-            return res.status(201).json({ success: true });
+
+        if (find_result.length > 0) {
+            console.log("find friend", JSON.stringify(find_result, null, 2));
+            const friendUserId = find_result[0].userId;
+
+            const inser_sql = `
+                INSERT INTO friend (userId, friendUserId)
+                VALUES (?, ?)
+            `;
             
+            const values = [userId, friendUserId];
+
+            db.query(inser_sql, values, (err, insert_result) => {
+                if (err) {
+                    console.error('Error inserting data:', err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+                
+                if (insert_result.length > 0) { 
+                    console.log("친구 추가 성공!")
+                    return res.status(201).json({ success: true, message: '성공적으로 친구 추가 되었습니다.' });
+                    
+                } else {
+                    return res.status(404).json({ success: false, message: '친구 추가를 실패하였습니다.' });
+                }
+            });
+
         } else {
-            return res.status(404).json({ success: false, error: 'No user found with the provided searchId' });
+            return res.status(404).json({ success: false,  message: '해당 ID와 일치하는 회원이 존재하지 않습니다.' });
         }
     });
 });
