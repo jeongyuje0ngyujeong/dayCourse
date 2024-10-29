@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
-import { uploadImage, fetchImage } from '../../AlbumApi.js';
+import { uploadImage, fetchImage } from './AlbumApi.js';
 
 const Container = styled.div`
     padding: 20px;
@@ -26,11 +26,9 @@ const Image = styled.img`
 
 const PlanDetail = () => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
-
     const [selectedFile, setSelectedFile] = useState(null);
-    const [userId, setUserId] = useState("1")
+    const [userId, setUserId] = useState("1");
     const [imageUrls, setImageUrls] = useState([]);
-
 
     // 이미지 목록 가져오기
     const fetchImageUrls = useCallback(async () => {
@@ -40,13 +38,11 @@ const PlanDetail = () => {
         } catch (error) {
             console.error("이미지 목록 가져오기 에러:", error);
         }
-    }, [userId]); // userId를 의존성으로 추가
-
+    }, [userId]);
 
     const onFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
     }
-
 
     const onSubmit = async (event) => {
         event.preventDefault();
@@ -57,19 +53,18 @@ const PlanDetail = () => {
         }
 
         try {
-            const response = await uploadImage(userId, selectedFile);
-            console.log('서버 응답:', response);
-            fetchImageUrls(null);
-        } catch(error) {
+            await uploadImage(userId, selectedFile);
+            fetchImageUrls(); // 이미지 목록 새로고침
+        } catch (error) {
             console.error('업로드 실패:', error);
         }
     };
+
     useEffect(() => {
         if (userId) {
             fetchImageUrls(); // 사용자 ID가 설정되면 이미지 목록 가져오기
         }
-    }, [userId, fetchImageUrls]); // fetchImageUrls를 의존성으로 추가
-
+    }, [userId, fetchImageUrls]);
 
     return (
         <Container>
@@ -81,7 +76,7 @@ const PlanDetail = () => {
                         <input  
                             type="text"
                             value={userId}
-                            onChange={(e)=> setUserId(e.target.value)}
+                            onChange={(e) => setUserId(e.target.value)}
                             required
                         />
                     </div>
@@ -97,16 +92,14 @@ const PlanDetail = () => {
             <ImageContainer>
                 {imageUrls.length > 0 ? (
                     imageUrls.map((url, index) => (
-                        <Image key={index} src={url} alt = {`S3 이미지 ${index}`} />
+                        <Image key={index} src={url} alt={`S3 이미지 ${index}`} />
                     ))
                 ) : (
                     <p>이미지 파일 없음</p>
-                
                 )}
             </ImageContainer>
         </Container>
-    )
+    );
 };
 
 export default PlanDetail;
-

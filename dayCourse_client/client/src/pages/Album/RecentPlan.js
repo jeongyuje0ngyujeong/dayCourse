@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { getPlan } from '../../AlbumApi'; // API 함수 가져오기
+import { getPlan } from './AlbumApi'; // API 함수 가져오기
 
 const Container = styled.div`
     justify-content: center;
@@ -35,15 +35,11 @@ const SelectedPlanContainer = styled.div`
 const RecentPlan = () => {
     const navigate = useNavigate();
     const [plans, setPlans] = useState([]); // 플랜을 저장할 상태
-    const [selectedPlan, setSelectedPlan] = useState(null); // 선택된 플랜 상태
 
     // 플랜 가져오기
     const fetchPlans = async () => {
         const allPlans = await getPlan(); // 모든 플랜 가져오기
-        const recentPlans = allPlans
-            .sort((a, b) => b.createdAt - a.createdAt) // createdAt 기준으로 내림차순 정렬
-            .slice(0, 3); // 상위 3개 선택
-        setPlans(recentPlans);
+        setPlans(allPlans);
     };
 
     useEffect(() => {
@@ -58,7 +54,7 @@ const RecentPlan = () => {
 
     return (
         <div>
-            <h2>최근 플랜</h2>
+            <h5>모든 플랜</h5>
             <Container>
                 {plans.map(item => ( // item으로 통일
                     <Box key={item.planId} onClick={() => handleBoxClick(item)}>
@@ -69,12 +65,6 @@ const RecentPlan = () => {
                     </Box>
                 ))}
             </Container>
-            {selectedPlan && (
-                <SelectedPlanContainer>
-                    <h3>선택된 플랜:</h3>
-                    <p>{selectedPlan.planName}</p> {/* item.planName으로 통일 */}
-                </SelectedPlanContainer>
-            )}
         </div>
     );
 };
