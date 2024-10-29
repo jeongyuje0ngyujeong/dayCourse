@@ -43,7 +43,8 @@ const SidebarButton = styled.button`
 `;
 
 
-const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, planInfo, setSelectedPlaces }) => {
+const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, setSelectedPlaces }) => {
+    console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -61,14 +62,13 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, planInfo, 
         setValue(""); // 제출 후 입력 필드 초기화
     };
 
-    const handlePlaceClick = async (e, place) => {
-        e.preventDefault();
+    const handlePlaceClick = async (place) => {
+        console.log("userId:", userId, "planId:", planId, "placeId:", place.placeId); // placeId 로그 추가
         try {
-            await addPlace(planId, place);
-            console.log('hello');
+            await addPlace(userId, planId, place); // userId와 planId 전달
             setSelectedPlaces((prevSelected) => [...prevSelected, place]);
         } catch (error) {
-            console.error("장소 추가 실패!!!!!", error);
+            console.error("장소 추가 실패!!!!!", error.response?.data || error.message); // 추가된 로그
         }
     };
 
@@ -108,7 +108,7 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, planInfo, 
                             ) : (
                                 <ul id="places-list">
                                     {places.map((place, index) => (
-                                        <li key={index} onClick={(e) => handlePlaceClick(e, place)} style={{ cursor: 'pointer' }}>
+                                        <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
                                             <h5>{place.place_name}</h5>
                                             {place.road_address_name && <span>{place.road_address_name}</span>}
                                             <span>{place.address_name}</span>
@@ -122,7 +122,7 @@ const RightSidebar = ({ onSubmitKeyword, places = [], userId, planId, planInfo, 
                 );
 
             case 'chat' :
-                return <Chat userId={userId} planInfo={planInfo}/>; //여기에 관련 내용 추가
+                return <Chat userId={userId} planId={planId}/>; //여기에 관련 내용 추가
 
             default:
                 return null;

@@ -31,11 +31,15 @@ export async function loader({ params }) {
 const EmptyPage = () => {
     const loaderData = useLoaderData().plan;
     console.log('loadData: ', loaderData);
+    const userId = sessionStorage.getItem('userId');
+    const planId = loaderData.planId; // loaderData에서 planId를 가져옴
+    const place = loaderData.place;
+    // const place = 
     return (
         <div>
             <h2>{loaderData.planName}</h2>
             <h1>{loaderData.town}</h1>
-            <LandingPage context={loaderData}></LandingPage>
+            <LandingPage userId={userId} planId={planId} place={place} context={loaderData}></LandingPage>
             <KakaoMap></KakaoMap>
             {/* <Box>일정칸입니다</Box> */}
          {/* <RightSidebar></RightSidebar> */}
