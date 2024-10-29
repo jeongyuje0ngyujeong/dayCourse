@@ -7,6 +7,9 @@ const bcrypt = require('bcrypt');
 const db = require('../db')
 
 const router = express.Router();
+
+// redis 설정
+const redisClient = redis.createClient();
 const setexAsync = promisify(redisClient.setex).bind(redis);
 
 // 회원가입 여부 확인
