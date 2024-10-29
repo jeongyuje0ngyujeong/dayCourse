@@ -170,13 +170,13 @@ router.post('/add', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        console.log(result_groupId)
+        console.log(result_groupId.insertId)
 
         for (const member of groupMembers) {
-            db.query(sql_GM, [result_groupId.groupId, member.friendId])
+            db.query(sql_GM, [result_groupId.insertId, member.friendId])
         }
 
-        db.query(sql_GM, [result_groupId.groupId, userId], (err, result_Gf) => {
+        db.query(sql_GM, [result_groupId.insertId, userId], (err, result_Gf) => {
             if (err) {
                 console.error('Error inserting data:', err);
                 return res.status(500).json({ error: 'Database error' });
