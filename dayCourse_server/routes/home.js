@@ -438,20 +438,30 @@ router.post('/plan/recommend_place', authenticateJWT, async (req, res) => {
 
 });
 
-router.post('/plan/place/priority', authenticateJWT, async (req, res) => {
-    const { placeId, priority } = req.body;
+router.post('/plan/place/priority', async (req, res) => {
+    const { placeId, priority, version } = req.body;
 
     console.log('장소순서변경')
-    // console.log(req.query)
-    // console.log(req.body)
+
+    const sql_select = `
+      SELECT version
+      FROM Plan_Location
+      WHERE placeId = ?
+    `;
 
     const sql = `
       UPDATE Plan_Location
-      SET l_priority = ?
+      SET l_priority = ?, version = ?
       WHERE placeId = ?;
     `;
 
-    const values = [priority, placeId]
+    const values = [priority, placeId, version + 1]
+
+    db.query(sql_select, placeId, (err, place_ver) => {
+        if (version < place_ver) {
+            return res.status(200).json({ msg: '버전이 더 낮음' });
+        }
+    })
 
     db.query(sql, values, (err, result) => {
         if (err) {
