@@ -21,21 +21,23 @@ router.get('/', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
 
-    const sql = `
-      SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
-      FROM Plan_User
-      JOIN Plan ON Plan_User.planId = Plan.planId
-      WHERE Plan_User.userId = ?
-      AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
-    `;
-    
     // const sql = `
     //   SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
     //   FROM Plan_User
     //   JOIN Plan ON Plan_User.planId = Plan.planId
     //   WHERE Plan_User.userId = ?
-    //   AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+    //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
     // `;
+
+    console.log("기준날짜 :", startDate)
+
+    const sql = `
+      SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
+      FROM Plan_User
+      JOIN Plan ON Plan_User.planId = Plan.planId
+      WHERE Plan_User.userId = ?
+      AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+    `;
 
     // const sql_2 = `
     //   SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId
@@ -110,9 +112,9 @@ router.post('/plan', authenticateJWT, async (req, res) => {
         }
 
         const sql_pu = `
-      INSERT INTO Plan_User (userId, planId)
-      VALUES (?, ?)
-      `;
+            INSERT INTO Plan_User (userId, planId)
+            VALUES (?, ?)
+        `;
 
         const values_pu = [userId, result.insertId];
 
