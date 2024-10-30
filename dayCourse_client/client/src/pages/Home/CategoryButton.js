@@ -9,7 +9,7 @@ const CategoryContainer = styled.div`
 `;
 
 const CategoryButton = ({ selectedCategory, setSelectedCategory }) => {
-    const categories = ['음식점', '카페', '문화생활'];
+    const categories = ['랜덤', '음식점', '카페', '문화생활'];
 
     return (
         <CategoryContainer>

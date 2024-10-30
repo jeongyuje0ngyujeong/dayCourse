@@ -125,6 +125,7 @@ const LandingPage = ({userId, planId, place, context}) => {
             l_priority: index + 1,
         }));
     
+        setSelectedPlaces(updatedPlaces);
         // 우선 순위를 데이터베이스에 업데이트
         try {
             await Promise.all(updatedPlaces.map(place => 
@@ -137,7 +138,6 @@ const LandingPage = ({userId, planId, place, context}) => {
             );
     
             // 상태 업데이트
-            setSelectedPlaces(updatedPlaces);
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
         }

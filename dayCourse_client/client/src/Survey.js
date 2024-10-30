@@ -28,14 +28,14 @@ const KeywordItem = styled.div `
     transition: all 0.3s;
     
     &:hover {
-        background-color: #f0f0f0;
+        background-color: #90B54C;
     }
 
     input {
         margin-top:5px;
         width: 20px; // 체크박스 크기
         height: 20px;
-        border: 2px solid #007bff;
+        border: 2px solid: #90B54C;
         border-radius: 4px;
         align-items:center;
         cursor: pointer;
