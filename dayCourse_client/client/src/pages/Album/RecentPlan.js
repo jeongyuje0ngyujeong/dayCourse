@@ -1,65 +1,104 @@
-import React from 'react';
+// PlanDetail.js
+
+import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-
-
+import { useParams } from 'react-router-dom';
+import { uploadImage, fetchImage } from './AlbumApi.js';
 
 const Container = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-
     padding: 20px;
 `;
 
-const Box = styled.div`
-    width: 150px; /* 너비 조정 */
-    height: 200px; /* 높이 조정 */
-    background-color: white; /* 배경색을 흰색으로 설정 */
-    border: 1px solid #ccc; /* 경계선 추가 */
-    border-radius: 10px; /* 둥근 모서리 */
-    margin: 10px; /* 여백 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    cursor: pointer;
-    transition: transform 0.2s; /* 애니메이션 효과 */
-    
-    &:hover {
-        transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
-    }
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+const UploadContainer = styled.div`
+    margin-top: 20px;
 `;
 
+const ImageContainer = styled.div`
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+`;
 
+const Image = styled.img`
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border-radius: 5px;
+`;
 
-const RecentPlan = ({plans}) => {
-    const navigate = useNavigate();
-  //  const [plans, setPlans] = useState([]); // 플랜을 저장할 상태
+const PlanDetail = ({ userId }) => {
+    const { planId } = useParams(); // URL에서 플랜 ID 가져오기
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [imageUrls, setImageUrls] = useState([]);
 
+    // 이미지 목록 가져오기
+    const fetchImageUrls = useCallback(async () => {
+        try {
+            const data = await fetchImage(planId); // 올바른 매개변수 전달
+            console.log('Fetched image data:', data); // 응답 데이터 확인
+            setImageUrls(data.imageUrls || []); // 서버 응답 형식에 맞게 조정
+        } catch (error) {
+            console.error("이미지 목록 가져오기 에러:", error);
+        }
+    }, [planId]);
 
+    const onFileChange = (event) => {
+        setSelectedFile(event.target.files[0]);
+    }
 
-    const handleBoxClick = (item) => { // item으로 통일
-        console.log('선택된플랜:', item);
-        navigate(`/main/plan/${item.planId}`); // 플랜 상세 페이지로 이동
+    const onSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!selectedFile) {
+            alert('파일을 선택해줘');
+            return;
+        }
+
+        console.log('Selected file:', selectedFile); // 파일 확인
+
+        try {
+            await uploadImage(selectedFile, planId); // 올바른 매개변수 전달
+            fetchImageUrls(); // 이미지 목록 새로고침
+        } catch (error) {
+            console.error('업로드 실패:', error);
+            alert(`업로드 실패: ${error.response?.data?.message || error.message}`);
+        }
     };
 
+    useEffect(() => {
+        if (userId && planId) {
+            fetchImageUrls(); // 사용자 ID와 플랜 ID가 설정되면 이미지 목록 가져오기
+        }
+    }, [userId, planId, fetchImageUrls]);
+
     return (
-        <div>
-            <h5>모든 플랜</h5>
-            <Container>
-                {plans.map(item => ( // item으로 통일
-                    <Box key={item.planId} onClick={() => handleBoxClick(item)}>
-                        <div>
-                            <h3>{item.planName}</h3>
-                            <p>{new Date(item.dateKey).toLocaleDateString()}</p>
-                        </div>
-                    </Box>
-                ))}
-            </Container>
-        </div>
+        <Container>
+            <h2>플랜 ID: {planId}</h2>
+            <UploadContainer>
+                <form onSubmit={onSubmit}>
+                    <div>
+                        {/* 필요 시 추가 필드 */}
+                    </div>
+                    <div>
+                        <label>이미지 선택:</label>
+                        <input type="file" onChange={onFileChange} required/>
+                    </div>
+                    <button type="submit">업로드</button>
+                </form>
+            </UploadContainer>
+
+            <h3>사진 목록</h3>
+            <ImageContainer>
+                {imageUrls.length > 0 ? (
+                    imageUrls.map((url, index) => (
+                        <Image key={index} src={url} alt={`S3 이미지 ${index}`} />
+                    ))
+                ) : (
+                    <p>이미지 파일 없음</p>
+                )}
+            </ImageContainer>
+        </Container>
     );
 };
 
-export default RecentPlan;
+export default PlanDetail;

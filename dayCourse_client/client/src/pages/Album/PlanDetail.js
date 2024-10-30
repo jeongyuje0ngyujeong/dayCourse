@@ -1,3 +1,5 @@
+// PlanDetail.js
+
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
@@ -24,7 +26,7 @@ const Image = styled.img`
     border-radius: 5px;
 `;
 
-const PlanDetail = ({userId}) => {
+const PlanDetail = ({ userId }) => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
     const [selectedFile, setSelectedFile] = useState(null);
     const [imageUrls, setImageUrls] = useState([]);
@@ -32,12 +34,13 @@ const PlanDetail = ({userId}) => {
     // 이미지 목록 가져오기
     const fetchImageUrls = useCallback(async () => {
         try {
-            const data = await fetchImage(userId);
-            setImageUrls(data);
+            const data = await fetchImage(planId); // 올바른 매개변수 전달
+            console.log('Fetched image data:', data); // 응답 데이터 확인
+            setImageUrls(data.imageUrls || []); // 서버 응답 형식에 맞게 조정
         } catch (error) {
             console.error("이미지 목록 가져오기 에러:", error);
         }
-    }, [userId]);
+    }, [planId]);
 
     const onFileChange = (event) => {
         setSelectedFile(event.target.files[0]);
@@ -51,11 +54,14 @@ const PlanDetail = ({userId}) => {
             return;
         }
 
+        console.log('Selected file:', selectedFile); // 파일 확인
+
         try {
-            await uploadImage(userId, planId, selectedFile);
+            await uploadImage(selectedFile, planId); // 올바른 매개변수 전달
             fetchImageUrls(); // 이미지 목록 새로고침
         } catch (error) {
             console.error('업로드 실패:', error);
+            alert(`업로드 실패: ${error.response?.data?.message || error.message}`);
         }
     };
 
@@ -71,8 +77,7 @@ const PlanDetail = ({userId}) => {
             <UploadContainer>
                 <form onSubmit={onSubmit}>
                     <div>
-
-
+                        {/* 필요 시 추가 필드 */}
                     </div>
                     <div>
                         <label>이미지 선택:</label>
