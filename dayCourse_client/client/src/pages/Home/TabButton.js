@@ -10,6 +10,8 @@ const TabButton = ({ active, children, onClick }) => {
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: active ? 'bold' : 'normal', // active에 따라 스타일 조정
+                color:' #36451c',
+                margin:'5px'
             }}
         >
             {children}

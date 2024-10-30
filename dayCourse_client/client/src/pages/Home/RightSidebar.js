@@ -23,6 +23,7 @@ const SidebarContainer = styled.div`
 const SidebarInput = styled.input`
     width: 100%; /* 전체 폭을 사용 */
     padding: 10px;
+    margin-top: 10px;
     margin-bottom: 10px;
     border: 1px solid #ced4da;
     border-radius: 4px;
@@ -43,9 +44,7 @@ const SidebarButton = styled.button`
 `;
 
 
-const TabButton = styled.button `
-    background-color: #90B54C;
-`
+
 
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {

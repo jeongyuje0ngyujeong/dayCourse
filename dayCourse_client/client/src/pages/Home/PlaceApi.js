@@ -111,28 +111,28 @@ export const updatePlacePriority = async (placeId, priority, userId, version) =>
 
 
 
-// 장소 추천
-export const recommendPlace = async (category, keyword) => {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    const userId = sessionStorage.getItem('userId');
+// // 장소 추천
+// export const recommendPlace = async (category, keyword) => {
+//     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
+//     const userId = sessionStorage.getItem('userId');
 
-    const category = encodeURIComponet(category);
-    const keyword = encodeURIComponent(keyword);
-    try {
-        const response = await axios.post(`${BASE_URL}/home/plan/${category}/${keyword}`, 
-        {},
-        {
-            headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
-            },
-            params:{
-                userId,
-            }
-        });
-        return response.data;
+//     const category = encodeURIComponet(category);
+//     const keyword = encodeURIComponent(keyword);
+//     try {
+//         const response = await axios.post(`${BASE_URL}/home/plan/${category}/${keyword}`, 
+//         {},
+//         {
+//             headers: {
+//                 Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+//             },
+//             params:{
+//                 userId,
+//             }
+//         });
+//         return response.data;
 
-    } catch (error) {
-        console.error("장소 추천 실패:", error);
-        throw error;
-    }
-};
+//     } catch (error) {
+//         console.error("장소 추천 실패:", error);
+//         throw error;
+//     }
+// };
