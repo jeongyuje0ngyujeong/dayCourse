@@ -42,6 +42,7 @@ export async function getDo(props) {
     } catch (error) {
         console.error('Error fetching the do:', error);
         try {  
+        try {  
         const newToken = await getToken();
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/stage.json`, {
             params: {
@@ -57,12 +58,18 @@ export async function getDo(props) {
             console.error('Error fetching the do with refreshed token:', error);
             return null; // 최종 실패 시 null 반환
         }
+        } catch (error) {
+            console.error('Error fetching the do with refreshed token:', error);
+            return null; // 최종 실패 시 null 반환
+        }
     }
 }
 
 
 export async function getSchedules(query, startDate) {
     // let schedules = await localforage.getItem("schedules");
+
+    console.log(startDate);
 
     console.log(startDate);
     if (!startDate)
@@ -83,6 +90,7 @@ export async function getSchedules(query, startDate) {
 
     let schedules = await getData();
     console.log('fetched: ',schedules);
+    console.log('fetched: ',schedules);
     await set(schedules);
 
     if (!Array.isArray(schedules)) {
@@ -96,7 +104,7 @@ export async function getSchedules(query, startDate) {
 
 export async function createSchedule(dateKey, formData) {
     // let schedules = await localforage.getItem("schedules");
-    console.log('create: ', formData.get("groupId"))
+    console.log('create: ', dateKey)
 
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan`, 
@@ -117,6 +125,7 @@ export async function createSchedule(dateKey, formData) {
     
     let result = await postData();
 
+    getSchedules(dateKey);
     getSchedules(dateKey);
     // set(result);
 
