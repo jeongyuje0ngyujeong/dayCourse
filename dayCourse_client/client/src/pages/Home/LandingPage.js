@@ -7,12 +7,23 @@ import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority ,} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+
+
 const SelectedPlacesContainer = styled.div`
     display: flex; 
     flex-direction: column; 
 `;
 const PlaceBox = styled.div`
-    margin: 10px;
+    margin: 5px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0.1 ,0.1, 0.1, 0.1);
+    transition: box-shadow 0.3s ease; /* 호버 시 부드러운 전환 효과 */
+    &:hover {
+        box-shadow: 0 6px 10px rgba(0.15, 0.15, 0.15, 0.15); /* 호버 시 그림자 강화 */
+    }
+
 `;
 const DeleteButton = styled.button`
     margin-top: 5px;

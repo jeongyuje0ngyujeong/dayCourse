@@ -44,6 +44,11 @@ export const uploadImage = async (selectedFile, planId) => {
     formData.append("userId", userId);      // 사용자 ID 추가
     formData.append("image", selectedFile); // 이미지 파일 추가
 
+    // 디버깅: FormData 내용 확인
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+    }
+
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/${planId}/images`, formData, {
             headers: {
