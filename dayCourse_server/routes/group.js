@@ -167,7 +167,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
     const sql_SelectFIds = `
       SELECT userId, userName
       FROM User
-      WHERE userId IN (?)
+      WHERE id IN (?)
     `;
 
     const sqlInsertGroupMember = `
@@ -211,6 +211,12 @@ router.post('/add', authenticateJWT, async (req, res) => {
                 resolve(result);
             });
         });
+
+
+        console.log("ㅜㅜㅜㅜㅝㅜㅜㅜ");
+        console.log(userResults);
+        console.log(friendResults);
+
 
         // 사용자 정보 저장
         const allUserData = userResults.map(result => ({ userId: result.userId, userName: result.userName }))
