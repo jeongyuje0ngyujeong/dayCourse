@@ -50,8 +50,8 @@ const Album = ({userId}) => {
       case 'moments':
         return <Moment />;
 
-      case 'videos':
-        return <div>동영상</div>;
+      // case 'videos':
+      //   return <div>동영상</div>;
 
       default:
         return <RecentPlan plans={filteredPlans} />;
@@ -64,7 +64,7 @@ const Album = ({userId}) => {
       <div>
         <button onClick={() => setActiveTab('posts')}>포스팅</button>
         <button onClick={() => setActiveTab('moments')}>모먼트</button>
-        <button onClick={() => setActiveTab('videos')}>동영상</button>
+        {/* <button onClick={() => setActiveTab('videos')}>동영상</button> */}
       </div>
       {renderContent()}
     </div>
