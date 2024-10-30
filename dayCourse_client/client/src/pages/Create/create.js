@@ -4,31 +4,46 @@ import { Link } from 'react-router-dom';
 import Group from './group';
 import { PageTitle } from '../../commonStyles';
 import React, {useState} from 'react';
+import styled from 'styled-components';
+import {Button} from '../../Button';
 
+const ResultContainer = styled.div`
+    display: flex;
+    width: 100%;
+    height: 15%;
+    padding: 5px 50px;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 3rem;
+    margin-top: 1rem;
+`
 
 export async function action({ request, params }) {
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
 
-  const year= formData.get("year");
-  const month= formData.get("month");
   const date= formData.get("date");
-  const dateKey = `${year}-${month}-${date}`;
-  console.log(updates);
-  
-  if (params.id){
-    await updateSchedule(params.id, updates);
-    return redirect(`/main/home/schedules/${dateKey}`);
-  }
-  else{
-    const planId = (await createSchedule(dateKey, formData)).planId;
-    // await updateSchedule(dateKey, updates);
-    return redirect(`/main/schedules/${dateKey}/${planId}/town`);
-  }
+
+  if (date) {
+    const dateObject = new Date(date); 
+    const dateKey = dateObject.toISOString().split('T')[0]; 
+    
+    if (params.id){
+      await updateSchedule(params.id, updates);
+      return redirect(`/main/home/schedules/${dateKey}`);
+    }
+    else{
+      const planId = (await createSchedule(dateKey, formData)).planId;
+      // await updateSchedule(dateKey, updates);
+      return redirect(`/main/schedules/${dateKey}/${planId}/town`);
+    }
+  } 
 }
 
 export async function loader({ params }) {
-  console.log(params);
+  // console.log(params);
   const { id } = params;
   const event = await getEvent(id);
 
@@ -36,20 +51,28 @@ export async function loader({ params }) {
 }
 
 export default function CreateSchedule() {
-  const [selectedGroup, setSelectedGroup] = useState(['Group1','Group2']);
-
+  const [selectedGroup, setSelectedGroup] = useState('');
+  // console.log(selectedGroup);
 
   const { event } = useLoaderData();
+  // console.log('event: ', event);
 
-  let year, month, date;
+  let date;
   let group, planName, town;
 
   if (event) {
-    [year, month, date] = event.dateKey.split('-');
+    date = new Date(event.dateKey);
     group = event.groupId;
     planName = event.planName;
     town = event.town;
   }
+
+  // console.log(date);
+
+  const handleDelete = (e) => {
+    e.preventDefault(); 
+    setSelectedGroup('');
+};
 
   return (
     <>
@@ -60,23 +83,10 @@ export default function CreateSchedule() {
         <input
           placeholder="년"
           aria-label="년"
-          type="text"
-          name="year"
-          defaultValue={year}
-        />
-        <input
-          placeholder="월"
-          aria-label="월"
-          type="text"
-          name="month"
-          defaultValue={month}
-        />
-        <input
-          placeholder="일"
-          aria-label="일"
-          type="text"
+          type="date"
           name="date"
           defaultValue={date}
+          required
         />
       </p>
       <span>약속 이름</span>
@@ -93,12 +103,15 @@ export default function CreateSchedule() {
       
       <span>그룹</span>
       {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
-      {selectedGroup.length > 0 ? (
-          selectedGroup.map((item) => (
-              <div key={item}>{item}</div>
-          ))
+      {selectedGroup? (  
+        <ResultContainer>
+          <h4>{selectedGroup.groupName}</h4>
+          <p>{selectedGroup.groupId}</p>
+          {/* <p>{selectedGroup.groupMembers.map((item) => item).join(', ')}</p>   */}
+          <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+        </ResultContainer>
       ) : (
-          <div>선택한 그룹이 없습니다.</div>
+        <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
       )}
       {/* <p>
       <label>

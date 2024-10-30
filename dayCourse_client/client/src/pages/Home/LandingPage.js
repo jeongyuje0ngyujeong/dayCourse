@@ -149,7 +149,7 @@ const LandingPage = ({userId, planId, place, context}) => {
 
     useEffect(() => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
-    }, [userId, planId, fetchExistPlace]);
+    }, [userId, planId]);
 
 
     // TMAP 거리 계산 API
