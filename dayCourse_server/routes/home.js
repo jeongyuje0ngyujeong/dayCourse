@@ -710,7 +710,7 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
 
 
 
-app.get('/plan/moment', authenticateJWT, async (req, res) => {
+router.get('/plan/moment', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     const sql = `
