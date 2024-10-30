@@ -3,6 +3,7 @@ import styled from 'styled-components';
 // import {Button} from '../../Button';
 import {ExistGroup, NewGroup} from './tapcontents'
 import {getFriends, getGroups} from '../Friends/SearchFriend';
+import {Button} from '../../Button';
 
 const TabContainer = styled.div`
     margin-top: 1rem;
@@ -34,24 +35,41 @@ const Content = styled.div`
     max-height: 20rem;
 `;
 
-export default function Group({setSelectedGroup}) {
+const ResultContainer = styled.div`
+    display: flex;
+    width: 100%;
+    height: 15%;
+    padding: 5px 50px;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    min-height: 3rem;
+    margin-top: 1rem;
+`
+
+export default function Group({group}) {
     const [activeTab, setActiveTab] = useState('Tab1');
     const [friendsList, setFriendsList ] = useState([]);
     const [groupsList, setGroupsList ] = useState([]);
     const [selectedFriends, setSelectedFriends] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState('');
 
     useEffect(() => {
         const fetchGroups = async () => {
             try {
                 const response = await getGroups(); 
                 setGroupsList(response);
-                console.log('GroupsList: ',response);
+                if (group) {
+                    setSelectedGroup(response.find(g => g.groupId === group));
+                }
+                
             } catch (error) {
                 console.error('그룹 목록을 불러오는 데 실패했습니다:', error);
             }
         };
 
-        fetchGroups(); // Call the function when the component mounts
+        fetchGroups(); 
     }, []);
 
     const handleTab1Click = async (e,tab) => {
@@ -76,7 +94,24 @@ export default function Group({setSelectedGroup}) {
         }
     };
 
+    const handleDelete = (e) => {
+        e.preventDefault(); 
+        setSelectedGroup('');
+    };
+
     return (
+        <>
+        <span>그룹</span>
+        {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
+        {selectedGroup? (  
+            <ResultContainer>
+            <h4>{selectedGroup.groupName}</h4>
+            <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
+            <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+            </ResultContainer>
+        ) : (
+            <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
+        )}
         <div>
             <TabContainer>
                 <Tab isActive={activeTab === 'Tab1'} onClick={(e) => handleTab1Click(e,'Tab1')}>기존 그룹</Tab>
@@ -88,6 +123,8 @@ export default function Group({setSelectedGroup}) {
                 {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} />}
             </Content>
         </div>
+        <input type="hidden" name="groupId" value={selectedGroup.groupId} />
+        </>
     );
 }
 

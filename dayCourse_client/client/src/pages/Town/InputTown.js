@@ -12,18 +12,7 @@ function KakaoMap({ searchKeyword, setPlaces }) {
 
         const map = new kakao.maps.Map(mapContainer, mapOptions);
         const ps = new kakao.maps.services.Places();
-
-        if (searchKeyword) {
-            ps.keywordSearch(searchKeyword, (data, status) => {
-                if (status === kakao.maps.services.Status.OK) {
-                    displayPlaces(data);}
-                // } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
-                //     alert('검색 결과가 존재하지 않음');
-                // } else {
-                //     alert('검색 중 오류 발생!');
-                // }
-            });
-        }
+        let markers = [];
 
         const displayPlaces = (places) => {
             const bounds = new kakao.maps.LatLngBounds();
@@ -41,6 +30,19 @@ function KakaoMap({ searchKeyword, setPlaces }) {
             map.setBounds(bounds);
             setPlaces(markers); // 검색 결과를 상태로 설정
         };
+        
+        if (searchKeyword) {
+            ps.keywordSearch(searchKeyword, (data, status) => {
+                if (status === kakao.maps.services.Status.OK) {
+                    displayPlaces(data);}
+                // } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
+                //     alert('검색 결과가 존재하지 않음');
+                // } else {
+                //     alert('검색 중 오류 발생!');
+                // }
+            });
+        }
+
     }, [searchKeyword, setPlaces]);
 
     return (

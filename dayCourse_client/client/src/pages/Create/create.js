@@ -7,19 +7,6 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Button} from '../../Button';
 
-const ResultContainer = styled.div`
-    display: flex;
-    width: 100%;
-    height: 15%;
-    padding: 5px 50px;
-    align-items: center;
-    justify-content: space-between;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    min-height: 3rem;
-    margin-top: 1rem;
-`
-
 export async function action({ request, params }) {
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
@@ -51,28 +38,18 @@ export async function loader({ params }) {
 }
 
 export default function CreateSchedule() {
-  const [selectedGroup, setSelectedGroup] = useState('');
-  // console.log(selectedGroup);
-
   const { event } = useLoaderData();
-  // console.log('event: ', event);
+  console.log('event: ', event);
 
   let date;
   let group, planName, town;
 
   if (event) {
-    date = new Date(event.dateKey);
+    date = event.dateKey;
     group = event.groupId;
     planName = event.planName;
     town = event.town;
   }
-
-  console.log(selectedGroup);
-
-  const handleDelete = (e) => {
-    e.preventDefault(); 
-    setSelectedGroup('');
-};
 
   return (
     <>
@@ -102,31 +79,8 @@ export default function CreateSchedule() {
         />
       </label>
       </p>
-      
-      <span>그룹</span>
-      {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
-      {selectedGroup? (  
-        <ResultContainer>
-          <h4>{selectedGroup.groupName}</h4>
-          <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
-          <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
-        </ResultContainer>
-      ) : (
-        <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
-      )}
-      {/* <p>
-      <label>
-        <input
-          type="text"
-          name="groupId"
-          placeholder="누구와의 약속인가요?"
-          defaultValue={group}
-        />
-      </label>
-      </p> */}
-      <Group setSelectedGroup={setSelectedGroup}/>
-      {/* <input type="hidden" name="groupName" value={selectedGroup} /> */}
-      <input type="hidden" name="groupMembers" value={selectedGroup} />
+
+      <Group group={group}/>
 
       <p>
         <button type="submit">Save</button>
@@ -135,10 +89,6 @@ export default function CreateSchedule() {
         </Link>
       </p>
     </Form>
-
-    {/* <Link to="/empty">
-      <button>새 페이지</button>
-    </Link> */}
     </>
   );
 }
