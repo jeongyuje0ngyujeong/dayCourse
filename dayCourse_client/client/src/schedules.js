@@ -96,7 +96,7 @@ export async function getSchedules(query, startDate) {
 
 export async function createSchedule(dateKey, formData) {
     // let schedules = await localforage.getItem("schedules");
-    console.log('create: ', dateKey)
+    console.log('create: ', formData.get("groupId"))
 
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan`, 
@@ -146,7 +146,7 @@ export async function getEvent(id) {
 }
 
 export async function updateSchedule(planId, updates) {
-    console.log(updates);
+    console.log('updates: ',updates);
     let schedules = await localforage.getItem("schedules");
     let schedule = schedules.find(schedule => String(schedule.planId) === planId);
     if (!schedule) throw new Error("No schedule found for", planId);
