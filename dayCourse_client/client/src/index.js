@@ -13,7 +13,7 @@ import Album from "./pages/Album/Album";
 import Mypage from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 import Friends from "./pages/Friends/Friends";
-import EmptyPage, { loader as emptyLoader } from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
+import PlacePage, { loader as emptyLoader } from "./pages/Home/PlacePage"; // 빈 페이지 컴포넌트 가져오기
 import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
 import Survey from './Survey';
 
@@ -92,8 +92,8 @@ const router = createBrowserRouter([
             element: <Mypage/>,
           },
           {
-            path: "empty/:planId",
-            element: <EmptyPage />,
+            path: "PlacePage/:planId",
+            element: <PlacePage />,
             loader: emptyLoader,
           },
           {

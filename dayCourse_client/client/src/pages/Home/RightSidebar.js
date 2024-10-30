@@ -31,16 +31,22 @@ const SidebarInput = styled.input`
 const SidebarButton = styled.button`
     width: 100%;
     padding: 10px;
-    background-color: #007bff;
+    background-color: #90B54C;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
 
     &:hover {
-        background-color: #0056b3;
+        background-color: #90B54C;
     } 
 `;
+
+
+const TabButton = styled.button `
+    background-color: #90B54C;
+`
+
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
     console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인

@@ -28,7 +28,7 @@ export async function loader({ params }) {
     return { plan };
 }
   
-const EmptyPage = () => {
+const PlacePage = () => {
     const loaderData = useLoaderData().plan;
     console.log('loadData: ', loaderData);
     const userId = sessionStorage.getItem('userId');
@@ -48,4 +48,4 @@ const EmptyPage = () => {
     );
 };
 
-export default EmptyPage;
+export default PlacePage;
