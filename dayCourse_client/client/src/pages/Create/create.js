@@ -67,7 +67,7 @@ export default function CreateSchedule() {
     town = event.town;
   }
 
-  // console.log(date);
+  console.log(selectedGroup);
 
   const handleDelete = (e) => {
     e.preventDefault(); 
@@ -86,17 +86,28 @@ export default function CreateSchedule() {
           type="date"
           name="date"
           defaultValue={date}
+          style={{width:'15rem'}}
           required
         />
       </p>
       <p>
+      <label>
+        <input
+          type="text"
+          name="planName"
+          style={{width:'15rem'}}
+          placeholder={'약속의 이름을 입력해주세요.'}
+          defaultValue={planName}
+        />
+      </label>
+      </p>
+      
       <span>그룹</span>
       {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
       {selectedGroup? (  
         <ResultContainer>
           <h4>{selectedGroup.groupName}</h4>
-          <p>{selectedGroup.groupId}</p>
-          {/* <p>{selectedGroup.groupMembers.map((item) => item).join(', ')}</p>   */}
+          <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
           <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
         </ResultContainer>
       ) : (

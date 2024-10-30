@@ -105,11 +105,11 @@ const router = createBrowserRouter([
       },
     ]
   },
-  {
-    path: '/Survey',
-    element:<Survey />,
-    errorElement: <ErrorPage />,
-  },
+  // {
+  //   path: '/Survey',
+  //   element:<Survey />,
+  //   errorElement: <ErrorPage />,
+  // },
 
   {
     path: "/",
