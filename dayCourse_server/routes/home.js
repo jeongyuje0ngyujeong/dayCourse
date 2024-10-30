@@ -745,7 +745,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
 
             const imagesData = [];
 
-            console.log("분석시작")
+            console.log("메타데이터 가져옴")
 
             // 각 항목에 대한 메타데이터 가져오기
             for (const item of data.Contents) {
@@ -764,9 +764,13 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
                 });
             }
 
+            console.log("분석 폼 데이터 준비")
+
             // Axios 요청을 위한 폼 데이터 준비
             const form = new FormData();
             form.append('metadata', JSON.stringify(imagesData));
+
+            console.log("분석시작")
 
             // 이미지 데이터를 분석 서비스로 전송
             const response = await axios.post('http://13.124.135.96:5001/tt', form, {
