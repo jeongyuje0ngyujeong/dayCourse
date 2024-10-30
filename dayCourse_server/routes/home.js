@@ -669,6 +669,8 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
                 console.log("Upload Success", data.Location);
             }
         });
+
+        return res.status(200).json({ msg: 'success'});
     } catch (err) {
         console.error('Error retrieving images', err);
         res.status(500).send('Error retrieving images');
