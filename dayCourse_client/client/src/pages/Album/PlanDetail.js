@@ -20,14 +20,14 @@ const ImageContainer = styled.div`
 `;
 
 const Image = styled.img`
-    width: 100px;
-    height: 100px;
+    width: 200px;
+    height: 200px;
     margin: 5px;
     border-radius: 5px;
     object-fit: cover; /* 이미지 비율을 유지하면서 영역에 맞게 조절 */
 `;
 
-const PlanDetail = ({ userId }) => {
+const PlanDetail = ({ }) => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
     const [selectedFile, setSelectedFile] = useState(null);
     const [imageUrls, setImageUrls] = useState([]);
@@ -72,6 +72,10 @@ const PlanDetail = ({ userId }) => {
             fetchImageUrls(); // 사용자 ID와 플랜 ID가 설정되면 이미지 목록 가져오기
         }
     }, [planId, fetchImageUrls]);
+
+
+
+
 
     return (
         <Container>
