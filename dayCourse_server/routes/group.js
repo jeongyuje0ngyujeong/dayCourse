@@ -224,14 +224,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
                 });
             }
         }
-
-        await new Promise((resolve, reject) => {
-            db.query(sqlInsertGroupMember, [groupId, userId], (err, result) => {
-                if (err) return reject(err);
-                resolve(result);
-            });
-        })
-
+        
         // 모든 작업이 완료되면 성공 메시지를 반환합니다.
         return res.status(200).json({ msg: "그룹 생성 성공" });
     } catch (err) {
