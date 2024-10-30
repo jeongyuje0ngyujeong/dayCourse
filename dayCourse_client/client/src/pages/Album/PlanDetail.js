@@ -74,6 +74,10 @@ const PlanDetail = ({ }) => {
         }
     }, [planId, fetchImageUrls]);
 
+
+
+
+
     return (
         <Container>
             <h2>플랜 ID: {planId}</h2>
