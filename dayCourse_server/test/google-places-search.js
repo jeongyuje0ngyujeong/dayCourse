@@ -5,8 +5,8 @@ const app = express();
 const API_KEY = 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
 
 app.get('/search', async (req, res) => {
-    const region = '광교';
-    const keyWord = '베이커리';
+    const region = '강남역';
+    const keyWord = '한식';
     const placeName = region + " " + keyWord; // 검색할 장소
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json`;
 
@@ -19,6 +19,16 @@ app.get('/search', async (req, res) => {
                 language: 'ko' // 응답을 한글로 받기 위해 language 파라미터 설정
             }
         });
+        let result = response.data.results;
+        for (let i = 0; i < result.length; i++) {
+            console.log((i + 1) + '번 장소 주소: ' + result[i].formatted_address);
+            console.log((i + 1) + '번 장소 이름: ' + result[i].name);
+            console.log((i + 1) + '번 장소 별점: ' + result[i].rating);
+            console.log((i + 1) + '번 장소 타입: ' + result[i].types);
+            console.log((i + 1) + '번 장소 위도: ' + result[i].geometry.location.lat)
+            console.log((i + 1) + '번 장소 경도: ' + result[i].geometry.location.lng)
+            console.log(" ");
+        }
 
         // 요청이 성공했을 때 응답
         if (response.data.status === 'OK') {
