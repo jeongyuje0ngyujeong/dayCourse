@@ -163,12 +163,11 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
     //     return res.status(400).json({ error: 'userId are required' });
     // }
 
-
     const sql = `
       SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
-      FROM Plan_User
-      JOIN Plan ON Plan_User.planId = Plan.planId
-      WHERE Plan_User.userId = ? AND Plan.startDate <= NOW()
+      FROM groupMembers
+      JOIN Plan ON groupMembers.groupId = Plan.groupId
+      WHERE groupMembers.userId = ? AND Plan.startDate <= NOW()
       ORDER BY Plan.startDate DESC
     `;
 
@@ -709,6 +708,87 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
         res.status(500).send('Error retrieving images');
     }
 });
+
+
+
+
+app.get('/plan/moment', authenticateJWT, async (req, res) => {
+    const userId = req.user.userId;
+
+    const sql = `
+      SELECT Plan.planId
+      FROM groupMembers
+      JOIN Plan ON groupMembers.groupId = Plan.groupId
+      WHERE groupMembers.userId = ? AND Plan.startDate <= NOW()
+      ORDER BY Plan.startDate DESC
+    `;
+
+    db.query(sql, [userId], async (err, result) => {
+        if (err) {
+            console.error('데이터 가져오기 오류:', err);
+            return res.status(500).json({ error: '데이터베이스 오류' });
+        }
+
+        // 결과가 비어 있지 않은지 확인
+        if (result.length === 0) {
+            return res.status(404).send('플랜이 없습니다');
+        }
+
+        const planId = result[0].planId; // 가장 최근의 플랜을 가져옵니다
+        const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+
+        try {
+            // S3에서 객체 목록 가져오기
+            const data = await s3.listObjectsV2(params).promise();
+
+            if (!data.Contents || data.Contents.length === 0) {
+                return res.status(404).send('이미지가 없습니다');
+            }
+
+            const imagesData = [];
+
+            // 각 항목에 대한 메타데이터 가져오기
+            for (const item of data.Contents) {
+                const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
+
+                // 객체의 메타데이터 가져오기
+                const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
+
+                // 메타데이터 태그값만 남기기
+                const newMetadata = Object.values(metadata.Metadata);
+
+                // URL과 메타데이터를 배열에 저장
+                imagesData.push({
+                    url: imageUrl,
+                    metadata: newMetadata
+                });
+            }
+
+            // Axios 요청을 위한 폼 데이터 준비
+            const form = new FormData();
+            form.append('metadata', JSON.stringify(imagesData));
+
+            // 이미지 데이터를 분석 서비스로 전송
+            const response = await axios.post('http://13.124.135.96:5001/tt', form, {
+                headers: {
+                    'Accept': 'application/json',
+                    ...form.getHeaders() // FormData의 헤더 추가
+                },
+            });
+
+            console.log(response.data);
+            const limitedResponseData = response.data.slice(0, 3);
+
+            // 이미지 URL과 메타데이터를 응답으로 전송
+            res.json(limitedResponseData);
+        } catch (err) {
+            console.error('이미지 가져오기 오류:', err);
+            res.status(500).send('이미지 가져오기 오류');
+        }
+    });
+});
+
+
 
 
 
