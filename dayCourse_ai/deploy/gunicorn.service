@@ -7,7 +7,7 @@ User=ubuntu
 Group=ubuntu
 WorkingDirectory=/home/ubuntu/dayCourseAi/dayCourse_ai
 Environment="PATH=/home/ubuntu/dayCourseAi/dayCourse_ai/venv/bin"
-ExecStart=/home/ubuntu/dayCourseAi/dayCourse_ai/venv/bin/gunicorn --workers 4 --bind 0.0.0.0:5000 app:app
+ExecStart=/home/ubuntu/dayCourseAi/dayCourse_ai/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:5000 app:app
 
 [Install]
 WantedBy=multi-user.target
