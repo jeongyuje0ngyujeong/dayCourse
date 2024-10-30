@@ -82,9 +82,9 @@ jobs:
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
           # gunicorn.service 파일을 EC2로 복사
-          scp -o StrictHostKeyChecking=no \home\runner\work\dayCourse\dayCourse\dayCourse_ai\deploy\gunicorn.service $REMOTE_USER@$REMOTE_HOST:\home\ubuntu\gunicorn.service
+          # scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-            sudo mv \home\ubuntu\gunicorn.service \etc\systemd\system\gunicorn.service &&
+            # sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
             sudo systemctl daemon-reload &&
             sudo systemctl restart gunicorn &&
             sudo systemctl enable gunicorn"
