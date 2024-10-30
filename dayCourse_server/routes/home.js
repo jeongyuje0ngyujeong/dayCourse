@@ -709,11 +709,9 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
     }
 });
 
-
-
-
 router.get('/plan/moment', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
+    console.log("모먼트 가져옴")
 
     const sql = `
       SELECT Plan.planId
@@ -737,6 +735,8 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
         const planId = result[0].planId; // 가장 최근의 플랜을 가져옵니다
         const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
 
+        console.log("S3 에서 가져올거임")
+
         try {
             // S3에서 객체 목록 가져오기
             const data = await s3.listObjectsV2(params).promise();
@@ -746,6 +746,8 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             }
 
             const imagesData = [];
+
+            console.log("분석시작")
 
             // 각 항목에 대한 메타데이터 가져오기
             for (const item of data.Contents) {
@@ -775,6 +777,8 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
                     ...form.getHeaders() // FormData의 헤더 추가
                 },
             });
+
+            console.log("돌려줌")
 
             console.log(response.data);
             const limitedResponseData = response.data.slice(0, 3);
