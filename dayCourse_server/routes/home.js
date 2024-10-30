@@ -613,6 +613,59 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
     }
 });
 
+
+router.get('/plan/:category/:keyword?', (req, res) => {
+    const { category, keyword } = req.params;
+
+    const sql_category = `
+        SELECT placeAddr, placeName, placeRate
+        FROM place_data
+        WHERE placeType = ?
+        ORDER BY placeRate DESC;
+    `;
+
+    const sql_keyword = `
+        SELECT placeAddr, placeName, placeRate
+        FROM place_data
+        WHERE placeKeyWord = ?
+        ORDER BY placeRate DESC;
+    `;
+
+    if (keyword) {
+        // keyword가 있을 때의 처리
+        db.query(sql_keyword, [keyword], (err, result) => {
+            if (err) {
+                console.error('Error querying data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            console.log(result);
+            return res.status(200).json({ msg: 'success', data: result });
+        });
+    } else {
+        // keyword가 없을 때의 처리
+        let values = "";
+
+        if (category === "음식점") {
+            values = "restaurant";
+        } else if (category === "카페") {
+            values = "cafe";
+        } else {
+            values = "point_of_interest";
+        }
+
+        db.query(sql_category, [values], (err, result) => {
+            if (err) {
+                console.error('Error querying data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            console.log(result);
+            return res.status(200).json({ msg: 'success', data: result });
+        });
+    }
+});
+
 // 이미지 목록을 가져오는 엔드포인트
 router.get('/plan/:planId/images', async (req, res) => {
     console.log("사진가져옴")
