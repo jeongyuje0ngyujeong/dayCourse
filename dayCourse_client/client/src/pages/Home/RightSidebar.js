@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// import { fetchPlace} from './PlaceApi'; // addPlace를 포함하여 API 가져오기
+import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
@@ -55,6 +55,23 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
+    const [recommendPlaces, setRecommendPlaces] = useState([]) 
+
+
+    useEffect(() => {
+        const fetchRecommend = async () => {
+            if (selectedCategory && selectedKeyword) {
+                try {
+                    const data = await recommendPlace(selectedCategory, selectedKeyword);
+                    setRecommendPlaces(data);
+                } catch(error) {
+                    console.error('추천 장소 가져오기 실패', error)
+                }
+            }
+        };
+        fetchRecommend();
+    }, [selectedCategory, selectedKeyword]);
+
     // 입력값 변화 감지
     const keywordChange = (e) => {
         setValue(e.target.value);
@@ -70,6 +87,23 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const handlePlaceClick = (place) => {
             onPlaceClick(place); // 부모 컴포넌트로 장소 정보를 전달
         };
+
+
+    const renderPlaceList = (placeList) => {
+        return (
+            <ul id="places-list">
+                {places.map((place, index) => (
+                    <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
+                        <h5>{place.place_name}</h5>
+                        {place.road_address_name && <span>{place.road_address_name}</span>}
+                        <span>{place.address_name}</span>
+                        <span>{place.phone}</span>
+                    </li>
+                ))}
+        </ul>
+        );
+    };
+
 
     const renderTab = () => {
         switch (activeTab) {
@@ -101,20 +135,23 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                         )}
                         </div>
 
+                        {selectedCategory && selectedKeyword && (
+                            <div id="recommend-result">
+                                <h5>추천장소</h5>
+                                {recommendPlaces.length === 0 ? (
+                                    <p>추천 결과 없음</p>
+                                ) : (
+                                    renderPlaceList(recommendPlaces)
+                                )}
+                                </div>
+                        )}
+
+
                         <div id="search-result">
                             {places.length === 0 ? (
                                 <p>검색 결과가 없습니다</p>
                             ) : (
-                                <ul id="places-list">
-                                    {places.map((place, index) => (
-                                        <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
-                                            <h5>{place.place_name}</h5>
-                                            {place.road_address_name && <span>{place.road_address_name}</span>}
-                                            <span>{place.address_name}</span>
-                                            <span>{place.phone}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+                                renderPlaceList(places)
                             )}
                         </div>
                     </div>
