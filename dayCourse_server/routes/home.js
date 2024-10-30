@@ -785,11 +785,12 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             console.log(response.data);
             const limitedResponseData = response.data.slice(0, 3);
 
+            console.log(limitedResponseData);
             // 이미지 URL과 메타데이터를 응답으로 전송
-            res.json(limitedResponseData);
+            return res.json(limitedResponseData);
         } catch (err) {
             console.error('이미지 가져오기 오류:', err);
-            res.status(500).send('이미지 가져오기 오류');
+            return res.status(500).send('이미지 가져오기 오류');
         }
     });
 });
