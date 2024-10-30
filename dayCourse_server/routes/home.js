@@ -524,7 +524,8 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             "origins": origins,
             "destinations": destinations,
             "transportMode": "pedestrian"
-          };          
+          };
+                    
         // 요청 초과 예외처리용
         // const response = null;
 
