@@ -5,6 +5,7 @@ const router = express.Router();
 const db = require('../db')
 const axios = require('axios');
 const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
+const FormData = require('form-data');
 
 
 const fs = require('fs'); //파일 저장용
