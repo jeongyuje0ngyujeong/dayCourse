@@ -83,3 +83,20 @@ export async function addGroup(groupName, groupMembers) {
         throw new Error('그룹 생성 실패');
     }
 }
+
+export async function getGroups() {
+    try {
+        const response = await axios.get(`${BASE_URL}/group/get`, {
+            headers: {
+                Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+            },
+        }
+        );
+        console.log('getGroups: ',response.data)
+   
+        return response.data;
+     
+    } catch (error) {
+      console.error('그룹 조회 실패');
+    }
+}

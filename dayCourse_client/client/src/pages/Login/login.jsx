@@ -31,7 +31,7 @@ export default function Login() {
                     sessionStorage.setItem('id', id);
                     sessionStorage.setItem('userId', userId);
                     alert('로그인 성공!');
-                    navigate('/Survey'); 
+                    navigate('/main/home'); 
                 }
             }
             else{

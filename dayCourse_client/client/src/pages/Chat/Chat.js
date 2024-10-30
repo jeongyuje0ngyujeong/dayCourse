@@ -98,7 +98,7 @@ export default function Chat({userId, planInfo}) {
 
     return (
     <ChatContainer>
-        <ChatName>접속중: {userNames}</ChatName>
+        <ChatName>채팅방: {userNames}</ChatName>
         <Messages messages={messages} name={name}/>
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         {/* <ChatInputBar>

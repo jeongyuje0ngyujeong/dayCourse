@@ -4,7 +4,7 @@ const ButtonStyle = styled.button`
   all: unset;
   text-align: center;
   cursor: pointer;
-  border:  ${(props) => props.$border || 'solid 1px '};
+  border:  ${(props) => props.$border || 'solid 1px #ccc'};
   border-radius: 8px;
   color: ${(props) => props.color || 'black'};
   background-color:${(props) => props.$background || 'white'};
@@ -16,6 +16,10 @@ const ButtonStyle = styled.button`
     color: inherit; 
     transform: none; 
   }
+  margin:1px;
+  white-space: nowrap; /* 텍스트 줄바꿈 방지 */
+  overflow: hidden; /* 넘치는 텍스트 숨김 */
+  font-size: clamp(4px, 2.5vw, 14px); /* 반응형 글씨 크기 */
   width: ${(props) => props.width || '2rem'}; 
   height: ${(props) => props.height || '2rem'}; 
 `
