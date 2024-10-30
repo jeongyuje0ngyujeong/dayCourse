@@ -612,9 +612,9 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 });
 
 
-router.get('/plan/:category/:keyword?', (req, res) => {
+router.get('/plan/:enCategory/:enKeyword?', (req, res) => {
     console.log("카테고리조회")
-    const { category, keyword } = req.params;
+    const { enCategory, enKeyword } = req.params;
 
     const sql_category = `
         SELECT placeAddr, placeName, placeRate
@@ -630,10 +630,10 @@ router.get('/plan/:category/:keyword?', (req, res) => {
         ORDER BY placeRate DESC;
     `;
 
-    if (keyword) {
+    if (enKeyword) {
         // keyword가 있을 때의 처리
         console.log("키워드있음")
-        db.query(sql_keyword, [keyword], (err, result) => {
+        db.query(sql_keyword, [enKeyword], (err, result) => {
             if (err) {
                 console.error('Error querying data:', err);
                 return res.status(500).json({ error: 'Database error' });
@@ -648,9 +648,9 @@ router.get('/plan/:category/:keyword?', (req, res) => {
         console.log("키워드없음")
         let values = "";
 
-        if (category === "음식점") {
+        if (enCategory === "음식점") {
             values = "restaurant";
-        } else if (category === "카페") {
+        } else if (enCategory === "카페") {
             values = "cafe";
         } else {
             values = "point_of_interest";
