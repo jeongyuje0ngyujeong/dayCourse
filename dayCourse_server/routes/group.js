@@ -215,8 +215,6 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         const existingUserIds = new Set(existsResults.map(row => row.userId)); // 이미 존재하는 사용자 ID 세트
 
-
-
         // 멤버 추가 쿼리 실행
         console.log('멤버추가');
         console.log(allUserData);
