@@ -73,8 +73,9 @@ app.get('/images', async (req, res) => {
 
 app.post('/images', upload.single('image'), async (req, res) => {
   try {
+    console.log("사진등록");
     console.log(req.body);
-    const userId = req.body.userId;
+    const userId = req.body;
 
     if (!req.file) {
       return res.status(400).send('No file uploaded');
