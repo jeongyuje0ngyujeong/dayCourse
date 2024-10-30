@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import styled from 'styled-components';
 // import {Button} from '../../Button';
 import {ExistGroup, NewGroup} from './tapcontents'
-import {getFriends} from '../Friends/SearchFriend';
+import {getFriends, getGroups} from '../Friends/SearchFriend';
 
 const TabContainer = styled.div`
     margin-top: 1rem;
@@ -37,11 +37,32 @@ const Content = styled.div`
 export default function Group({setSelectedGroup}) {
     const [activeTab, setActiveTab] = useState('Tab1');
     const [friendsList, setFriendsList ] = useState([]);
+    const [groupsList, setGroupsList ] = useState([]);
     const [selectedFriends, setSelectedFriends] = useState([]);
 
-    const handleTab1Click = (e,tab) => {
+    useEffect(() => {
+        const fetchGroups = async () => {
+            try {
+                const response = await getGroups(); 
+                setGroupsList(response);
+                console.log('GroupsList: ',response);
+            } catch (error) {
+                console.error('그룹 목록을 불러오는 데 실패했습니다:', error);
+            }
+        };
+
+        fetchGroups(); // Call the function when the component mounts
+    }, []);
+
+    const handleTab1Click = async (e,tab) => {
         e.preventDefault();
         setActiveTab(tab);
+        try {
+            const response = await getGroups(); 
+            setGroupsList(response); 
+        } catch (error) {
+            console.error('친구 목록을 불러오는 데 실패했습니다:', error);
+        }
     };
 
     const handleTab2Click = async (e,tab) => {
@@ -63,7 +84,7 @@ export default function Group({setSelectedGroup}) {
             </TabContainer>
             
             <Content>
-                {activeTab === 'Tab1' && <ExistGroup setSelectedGroup={setSelectedGroup}/>}
+                {activeTab === 'Tab1' && <ExistGroup groupsList={groupsList} setSelectedGroup={setSelectedGroup}/>}
                 {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} />}
             </Content>
         </div>

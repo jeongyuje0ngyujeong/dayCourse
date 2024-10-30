@@ -1,6 +1,6 @@
 // import axios from 'axios';
 import styled from 'styled-components';
-import FriendList from '../Friends/FriendList';
+import FriendList, {GroupList} from '../Friends/FriendList';
 import {addGroup} from '../Friends/SearchFriend';
 import React, {useState} from 'react';
 // const BASE_URL = process.env.REACT_APP_BASE_URL; 
@@ -34,8 +34,6 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
     const handleOnClick = async (e) => {
         try{
             e.preventDefault();
-            // setSelectedGroup(selectedFriends);
-            console.log('여기: ',groupName, selectedFriends);
             const result = await addGroup(groupName, selectedFriends);
             alert(result);
         }
@@ -71,10 +69,13 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
     )
 }
 
-export function ExistGroup({setSelectedGroup}) {
+export function ExistGroup({groupsList, setSelectedGroup}) {
+    console.log('ExistGroup: ',groupsList);
     return(
         <>
-        {/* <FriendList/> */}
+        <GroupContainer>
+            <GroupList groupsList={groupsList} setSelectedGroup={setSelectedGroup} flag={true}/>
+        </GroupContainer>
         </>
     )
 }

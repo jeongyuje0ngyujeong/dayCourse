@@ -79,7 +79,7 @@ export default function Register() {
                 <p>
                     <input 
                         type="text" 
-                        placeholder='이름' 
+                        placeholder='이름 입력' 
                         value={userName} 
                         onChange={(event)=>setUserName(event.target.value)}
                         className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
@@ -158,6 +158,8 @@ export default function Register() {
                         required    
                     />
                 </p>
+               
+                
                 <div>
                     <button 
                         type="submit"
