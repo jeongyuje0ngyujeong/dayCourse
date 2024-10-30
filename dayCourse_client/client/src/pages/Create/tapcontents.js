@@ -34,6 +34,7 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
     const handleOnClick = async (e) => {
         try{
             e.preventDefault();
+            setGroupName()
             const result = await addGroup(groupName, selectedFriends);
             alert(result);
         }
@@ -58,6 +59,7 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
                 >그룹 생성
                 </button>
             </TextButton>
+            {/* <input name="groupName" value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/> */}
             <input name="groupName" value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
             <TextButton>
                 <h4>선택한 친구</h4>
