@@ -15,6 +15,7 @@ import ErrorPage from "./error-page";
 import Friends from "./pages/Friends/Friends";
 import EmptyPage, { loader as emptyLoader } from "./pages/Home/EmptyPage"; // 빈 페이지 컴포넌트 가져오기
 import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
+import Survey from './Survey';
 
 // import RecentPlan from './pages/Album/RecentPlan';
 import PlanDetail from './pages/Album/PlanDetail';
@@ -107,6 +108,12 @@ const router = createBrowserRouter([
       },
     ]
   },
+  {
+    path: '/Survey',
+    element:<Survey />,
+    errorElement: <ErrorPage />,
+  },
+
   {
     path: "/",
     element: <Login />,
