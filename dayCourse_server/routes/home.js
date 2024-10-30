@@ -613,6 +613,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 
 
 router.get('/plan/:category/:keyword?', (req, res) => {
+    console.log("카테고리조회")
     const { category, keyword } = req.params;
 
     const sql_category = `
@@ -631,6 +632,7 @@ router.get('/plan/:category/:keyword?', (req, res) => {
 
     if (keyword) {
         // keyword가 있을 때의 처리
+        console.log("키워드있음")
         db.query(sql_keyword, [keyword], (err, result) => {
             if (err) {
                 console.error('Error querying data:', err);
@@ -638,10 +640,12 @@ router.get('/plan/:category/:keyword?', (req, res) => {
             }
 
             console.log(result);
+            console.log("돌려줌")
             return res.status(200).json({ msg: 'success', data: result });
         });
     } else {
         // keyword가 없을 때의 처리
+        console.log("키워드없음")
         let values = "";
 
         if (category === "음식점") {
@@ -651,7 +655,7 @@ router.get('/plan/:category/:keyword?', (req, res) => {
         } else {
             values = "point_of_interest";
         }
-
+        console.log("쿼리")
         db.query(sql_category, [values], (err, result) => {
             if (err) {
                 console.error('Error querying data:', err);
@@ -659,6 +663,7 @@ router.get('/plan/:category/:keyword?', (req, res) => {
             }
 
             console.log(result);
+            console.log("돌려줌")
             return res.status(200).json({ msg: 'success', data: result });
         });
     }
