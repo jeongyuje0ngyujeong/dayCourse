@@ -643,7 +643,7 @@ router.get('/plan/:planId/images', async (req, res) => {
     }
 });
 
-
+// 이미지 등록 엔드포인트
 router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
     try {
         console.log("사진등록");
@@ -656,8 +656,8 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
         const file = req.file;
         const imgNAME = path.basename(file.originalname);
 
-        // S3에서 객체 목록 가져오기
-        var uploadParams = {
+        // S3에서 객체 업로드 파라미터 설정
+        const uploadParams = {
             Bucket: bucketName,
             Key: `plans/${planId}/${imgNAME}`,
             Body: file.buffer,
@@ -665,14 +665,13 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             Metadata: {}
         };
 
-
-        // 이미지 분석을 위한 파일 확장자 파악
+        // 이미지 파일 확장자 확인
         const ext = path.extname(file.originalname).toLowerCase();
         const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
         const isImage = allowedImageExtensions.includes(ext);
 
         if (isImage) {
-            // 이미지 파일인 경우, Axios 요청을 통해 이미지 분석
+            // 이미지 분석을 위한 요청
             const form = new FormData();
             form.append('file', file.buffer, { filename: file.originalname });
 
@@ -692,7 +691,7 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             console.log(uploadParams);
         }
 
-        // call S3 to retrieve upload
+        // S3 업로드
         s3.upload(uploadParams, function (err, data) {
             if (err) {
                 console.log("Error", err);
@@ -700,16 +699,17 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             }
             if (data) {
                 console.log("Upload Success", data.Location);
-                return res.json({ msg: "성공" });
+                return res.json({ msg: "성공", location: data.Location });
             }
         });
 
-        return res.status(200).json({ msg: 'success' });
+        // 여기에 return 문을 추가하지 않도록 주의하세요.
     } catch (err) {
         console.error('Error retrieving images', err);
         res.status(500).send('Error retrieving images');
     }
 });
+
 
 
 module.exports = router;
