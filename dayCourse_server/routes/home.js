@@ -636,7 +636,7 @@ router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
         ORDER BY placeRate DESC;
     `;
 
-    if (!enKeyword && enKeyword!="랜덤") {
+    if (!enKeyword || enKeyword!="랜덤") {
         // keyword가 있을 때의 처리
         console.log("키워드있음")
         var key = enKeyword
@@ -672,7 +672,7 @@ router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
             sql = sql_all
             values = ""
         }
-        
+
         console.log("쿼리")
         db.query(sql, [values], (err, result) => {
             if (err) {
