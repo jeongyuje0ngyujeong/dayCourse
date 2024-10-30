@@ -46,7 +46,7 @@ router.get('/', authenticateJWT, async (req, res) => {
     //     WHERE groupMembers.userId = ?
     //     AND Plan.startDate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
     // `;
-    
+
 
     const values = [userId, startDate, startDate];
 
@@ -281,7 +281,7 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
 
             console.log("place get :" + JSON.stringify(result_location));
 
-            res.status(201).json( result_location );
+            res.status(201).json(result_location);
         });
     });
 });
@@ -540,29 +540,29 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 
         console.log('origins:', JSON.stringify(origins, null, 2));
         console.log('destinations:', JSON.stringify(destinations, null, 2));
-        
+
         const data = {
             "origins": origins,
             "destinations": destinations,
             "transportMode": "pedestrian"
-          };          
+        };
         // 요청 초과 예외처리용
         // const response = null;
 
         // 오픈 api 요청
-        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
+        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1',
             data, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'appKey': APP_KEY
-              }
-            });
+            }
+        });
 
         // 요청 초과 예외처리용
         if (response != null) {
             console.log("Response Data: ", response.data);
-    
+
             const distances = [];
             let checkIdx = 0;
             // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크 하게 (open api 한계)
@@ -571,18 +571,18 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
                 // console.log("for문 실행");
                 const originIdx = matrixRoutes[i].originIndex;
                 const destinationIdx = matrixRoutes[i].destinationIndex;
-    
+
                 if (originIdx === destinationIdx && destinationIdx == checkIdx) {
                     // console.log("idx 비교문 실행");
                     distances.push(matrixRoutes[i].distance);
                     checkIdx++;
                 }
             }
-    
+
             console.log('distances: ' + distances);
             return res.status(200).json({ msg: 'success', distances });
-            
-        // 요청 초과 예외처리용
+
+            // 요청 초과 예외처리용
         } else {
             return res.status(429).json({ msg: 'api 요청 초과', distances });
         }
@@ -593,8 +593,69 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
     }
 });
 
+// 이미지 목록을 가져오는 엔드포인트
+app.get('/plan/:planId/images', async (req, res) => {
+    const planId = req.params.planId;
+  
+    try {
+      const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+  
+      // S3에서 객체 목록 가져오기
+      s3.listObjects(params, (err, data) => {
+        if (err) {
+          console.error('Error retrieving images', err);
+          return res.status(500).send('Error retrieving images');
+        }
+  
+        // 이미지 URL을 반환하기 위해 S3 URL 생성
+        const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
+  
+        // 이미지 URL 목록을 JSON 형식으로 전송
+        console.log("전달");
+        console.log(imageUrls);
+        res.json(imageUrls);
+      });
+    } catch (err) {
+      console.error('Error retrieving images', err);
+      res.status(500).send('Error retrieving images');
+    }
+  });
 
 
+app.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
+    try {
+        console.log("사진등록");
+        const planId = req.params.planId;
+
+        if (!req.file) {
+            return res.status(400).send('No file uploaded');
+        }
+
+        const file = req.file;
+        const imgNAME = path.basename(file.originalname);
+
+        // S3에서 객체 목록 가져오기
+        var uploadParams = {
+            Bucket: bucketName,
+            Key: `plans/${planId}/${imgNAME}`,
+            Body: file.buffer,
+            ContentType: file.mimetype
+        };
+
+        // call S3 to retrieve upload
+        s3.upload(uploadParams, function (err, data) {
+            if (err) {
+                console.log("Error", err);
+            }
+            if (data) {
+                console.log("Upload Success", data.Location);
+            }
+        });
+    } catch (err) {
+        console.error('Error retrieving images', err);
+        res.status(500).send('Error retrieving images');
+    }
+});
 
 
 module.exports = router;
