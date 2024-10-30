@@ -265,7 +265,7 @@ router.get('/get', authenticateJWT, async (req, res) => {
         // 2. 그룹 ID를 사용하여 그룹 이름 조회 준비
         const groupIds = G_id_result.map(group => group.groupId);
         const sql_G_name = `
-          SELECT groupName, groupId, userName
+          SELECT groupName, groupId
           FROM day_Group
           WHERE groupId IN (?)
         `;
@@ -278,8 +278,22 @@ router.get('/get', authenticateJWT, async (req, res) => {
             });
         });
 
-        // 4. 그룹 ID와 이름을 응답으로 반환
-        return res.json(groupNames_result);
+        const sql_M_name = `
+          SELECT groupId, userName
+          FROM groupMembers
+          WHERE groupId IN (?)
+        `;
+
+        //4. 조회한 그룹 ID를 기반으로 그룹원 조회
+        const groupM_Names_result = await new Promise((resolve, reject) => {
+            db.query(sql_M_name, [groupIds], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        //5. 그룹 ID와 이름을 응답으로 반환
+        return res.json(groupNames_result, groupM_Names_result);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: '내부 서버 오류' });
