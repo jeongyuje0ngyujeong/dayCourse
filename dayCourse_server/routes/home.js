@@ -74,6 +74,7 @@ router.get('/', authenticateJWT, async (req, res) => {
         };
 
         //결과 두개합치기
+        //테스트
         const formattedResult1 = formatResult(result1);
         const formattedResult2 = formatResult(result2);
         const combinedResults = [...formattedResult1, ...formattedResult2];
