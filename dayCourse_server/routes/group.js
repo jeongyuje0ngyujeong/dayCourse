@@ -161,6 +161,12 @@ router.post('/add', authenticateJWT, async (req, res) => {
     const sqlSelectUserIds = `
       SELECT userId, userName
       FROM User
+      WHERE userId = ?
+    `;
+
+    const sql_SelectFIds = `
+      SELECT userId, userName
+      FROM User
       WHERE userId IN (?)
     `;
 
@@ -187,27 +193,32 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         // 모든 친구의 userId를 가져옵니다.
         const friendIds = groupMembers.map(member => member.friendId);
+        
+        console.log("친구찾기");
 
-        console.log("친구찾기")
-        console.log(friendIds)
-        
-        // 현재 사용자와 친구들의 userId를 조회합니다.
-        const allUserIds = [...friendIds, userId];
-        
-        // 사용자들의 userId와 userName을 조회합니다.
-        const results = await new Promise((resolve, reject) => {
-            db.query(sqlSelectUserIds, [allUserIds], (err, result) => {
+        // 현재 사용자 userId를 조회합니다.
+        const userResults = await new Promise((resolve, reject) => {
+            db.query(sqlSelectUserIds, [userId], (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
 
-        // 조회한 사용자 정보 (userId와 userName)를 매핑하여 저장합니다.
-        const allUserData = results.map(result => ({ userId: result.userId, userName: result.userName }));
+        // 친구들의 userId와 userName을 조회합니다.
+        const friendResults = await new Promise((resolve, reject) => {
+            db.query(sql_SelectFIds, [friendIds], (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        // 사용자 정보 저장
+        const allUserData = userResults.map(result => ({ userId: result.userId, userName: result.userName }))
+            .concat(friendResults.map(result => ({ userId: result.userId, userName: result.userName })));
 
         // 중복 여부 확인
         const existsResults = await new Promise((resolve, reject) => {
-            db.query(sqlCheckMemberExists, [groupId, allUserIds], (err, result) => {
+            db.query(sqlCheckMemberExists, [groupId, allUserData.map(user => user.userId)], (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
@@ -215,12 +226,10 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         const existingUserIds = new Set(existsResults.map(row => row.userId)); // 이미 존재하는 사용자 ID 세트
 
-
-
         // 멤버 추가 쿼리 실행
-        console.log('멤버추가');
+        console.log('멤버 추가');
         console.log(allUserData);
-        
+
         for (const user of allUserData) {
             if (!existingUserIds.has(user.userId)) {
                 await new Promise((resolve, reject) => {
@@ -239,6 +248,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
         return res.status(500).json({ error: '데이터베이스 오류' });
     }
 });
+
 
 
 
