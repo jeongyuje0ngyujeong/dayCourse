@@ -68,10 +68,10 @@ const PlanDetail = ({ userId }) => {
     };
 
     useEffect(() => {
-        if (userId && planId) {
+        if (planId) {
             fetchImageUrls(); // 사용자 ID와 플랜 ID가 설정되면 이미지 목록 가져오기
         }
-    }, [userId, planId, fetchImageUrls]);
+    }, [planId, fetchImageUrls]);
 
     return (
         <Container>
