@@ -49,21 +49,21 @@ router.get('/', authenticateJWT, async (req, res) => {
 
     console.log("기준날짜 :", startDate)
 
-    const sql = `
-      SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
-      FROM Plan_User
-      JOIN Plan ON Plan_User.planId = Plan.planId
-      WHERE Plan_User.userId = ?
-      AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
-    `;
-
-    // const sql_2 = `
-    //   SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId
-    //     FROM groupMembers
-    //     JOIN Plan ON groupMembers.groupId = Plan.groupId
-    //     WHERE groupMembers.userId = ?
-    //     AND Plan.startDate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
+    // const sql = `
+    //   SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
+    //   FROM Plan_User
+    //   JOIN Plan ON Plan_User.planId = Plan.planId
+    //   WHERE Plan_User.userId = ?
+    //   AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
     // `;
+
+    const sql = `
+        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId
+        FROM groupMembers
+        JOIN Plan ON groupMembers.groupId = Plan.groupId
+        WHERE groupMembers.userId = ?
+        AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+    `;
 
 
     const values = [userId, startDate, startDate];
@@ -615,30 +615,30 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 router.get('/plan/:planId/images', async (req, res) => {
     console.log("사진가져옴")
     const planId = req.params.planId;
-  
+
     try {
-      const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
-  
-      // S3에서 객체 목록 가져오기
-      s3.listObjects(params, (err, data) => {
-        if (err) {
-          console.error('Error retrieving images', err);
-          return res.status(500).send('Error retrieving images');
-        }
-  
-        // 이미지 URL을 반환하기 위해 S3 URL 생성
-        const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
-  
-        // 이미지 URL 목록을 JSON 형식으로 전송
-        console.log("전달");
-        console.log(imageUrls);
-        res.json(imageUrls);
-      });
+        const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+
+        // S3에서 객체 목록 가져오기
+        s3.listObjects(params, (err, data) => {
+            if (err) {
+                console.error('Error retrieving images', err);
+                return res.status(500).send('Error retrieving images');
+            }
+
+            // 이미지 URL을 반환하기 위해 S3 URL 생성
+            const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
+
+            // 이미지 URL 목록을 JSON 형식으로 전송
+            console.log("전달");
+            console.log(imageUrls);
+            res.json(imageUrls);
+        });
     } catch (err) {
-      console.error('Error retrieving images', err);
-      res.status(500).send('Error retrieving images');
+        console.error('Error retrieving images', err);
+        res.status(500).send('Error retrieving images');
     }
-  });
+});
 
 
 router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
@@ -671,7 +671,7 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             }
         });
 
-        return res.status(200).json({ msg: 'success'});
+        return res.status(200).json({ msg: 'success' });
     } catch (err) {
         console.error('Error retrieving images', err);
         res.status(500).send('Error retrieving images');
