@@ -7,6 +7,7 @@ const SurveyPage = styled.div `
     display:flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center; /* 수직 중앙 정렬 */
 `
 
 const KeywordList = styled.div `
@@ -15,6 +16,14 @@ const KeywordList = styled.div `
     gap: 10px;
     margin: 20px 0;
 `
+// 버튼들을 감쌀 컨테이너 스타일 정의
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: center; /* 버튼들을 중앙에 정렬 */
+    gap: 10px; /* 버튼 사이의 간격 설정 */
+    
+`;
+
 
 const KeywordItem = styled.div `
     display:flex;
@@ -27,9 +36,7 @@ const KeywordItem = styled.div `
     text-align:center;
     transition: all 0.3s;
     
-    &:hover {
-        background-color: #90B54C;
-    }
+   
 
     input {
         margin-top:5px;
@@ -48,12 +55,12 @@ const SubmitButton = styled.div `
     font-size: 16px;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color: #90B54C;
     color: white;
     cursor: pointer;
 
     &:hover {
-        background-color: #0056b3;
+        transform: scale(1.05); /* 약간 확대되는 효과 */
     }
 `;
 
@@ -65,7 +72,7 @@ const Survey = () => {
 
     const keywords = [
         '한식', '중식', '일식', '양식', '아시안',
-        '로스팅', '디저트', '감성카페', '카공', 
+        '로스팅 카페', '디저트', '감성카페', '카공', 
         '베이커리', '애견카페', '공방', '명소', 
         '방탈출', '만화카페', '영화관', '공원', 
         '쇼핑몰', '전시회'
@@ -99,7 +106,10 @@ const Survey = () => {
                     </KeywordItem>
                 ))}
             </KeywordList>
-            <SubmitButton onClick={goMain}>확인</SubmitButton>
+            <ButtonContainer>
+                <SubmitButton onClick={goMain}>다음에 하기</SubmitButton>
+                <SubmitButton onClick={goMain}>확인</SubmitButton>
+            </ButtonContainer>
         </SurveyPage>
     );
 };

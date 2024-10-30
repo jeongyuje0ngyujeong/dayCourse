@@ -24,6 +24,7 @@ const Image = styled.img`
     height: 100px;
     margin: 5px;
     border-radius: 5px;
+    object-fit: cover; /* 이미지 비율을 유지하면서 영역에 맞게 조절 */
 `;
 
 const PlanDetail = ({ userId }) => {
@@ -36,7 +37,7 @@ const PlanDetail = ({ userId }) => {
         try {
             const data = await fetchImage(planId); // 올바른 매개변수 전달
             console.log('Fetched image data:', data); // 응답 데이터 확인
-            setImageUrls(data.imageUrls || []); // 서버 응답 형식에 맞게 조정
+            setImageUrls(data || []); // 서버 응답 형식에 맞게 조정
         } catch (error) {
             console.error("이미지 목록 가져오기 에러:", error);
         }
@@ -59,6 +60,7 @@ const PlanDetail = ({ userId }) => {
         try {
             await uploadImage(selectedFile, planId); // 올바른 매개변수 전달
             fetchImageUrls(); // 이미지 목록 새로고침
+            setSelectedFile(null); // 업로드 후 파일 선택 초기화
         } catch (error) {
             console.error('업로드 실패:', error);
             alert(`업로드 실패: ${error.response?.data?.message || error.message}`);
