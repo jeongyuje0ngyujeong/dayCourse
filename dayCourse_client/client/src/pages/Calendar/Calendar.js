@@ -2,7 +2,7 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
-import { getSchedule} from "../../schedules";
+import { getSchedule, getSchedules} from "../../schedules";
 import Modal from 'react-modal';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Schedule from "./Schedule";
@@ -128,23 +128,24 @@ async function fetchSchedules(props, setSchedules) {
   let scheduleMap = {};
   let currentDate = new Date(props.startDay);
   
-  // const dateKey = `${currentDate.getFullYear()}${String(currentDate.getMonth() + 1).padStart(2,'0')}${String(currentDate.getDate()).padStart(2,'0')}`
-  // console.log(dateKey);
-  // let schedules = await getSchedules(null, dateKey);
+  const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2,'0')}`
+  let schedules = await getSchedules(null, dateKey);
 
   while (currentDate <= props.endDay) {
-    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
+    // const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
     const schedule = await getSchedule(dateKey);
     scheduleMap[dateKey] = schedule;
     currentDate.setDate(currentDate.getDate() + 1);
   }
   setSchedules(scheduleMap); 
+  console.log('fetchSchedules: ', schedules);
 }
 
 // 시작 날짜, 끝 날짜를 인자로 호출
 // 시작, 끝 날짜 바뀔 때 해당 기간 데이터 재요청 
 export function GroupDatesByWeek(props){
   const [schedules, setSchedules] = useState([]); 
+  console.log('GroupDatesByWeek: ',props)
   
   useEffect(() => {
     fetchSchedules(props, setSchedules); 
