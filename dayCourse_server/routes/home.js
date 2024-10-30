@@ -632,10 +632,24 @@ router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
         ORDER BY placeRate DESC;
     `;
 
-    if (enKeyword) {
+    const sql_all = `
+        SELECT placeAddr, placeName, placeRate
+        FROM place_data
+        ORDER BY placeRate DESC;
+    `;
+
+    if (!enKeyword && enKeyword!="랜덤") {
         // keyword가 있을 때의 처리
         console.log("키워드있음")
-        db.query(sql_keyword, [enKeyword], (err, result) => {
+        var key = enKeyword
+
+        if (enKeyword === "쇼핑몰") {
+            key = "쇼핑";
+        } else if (enKeyword === "전시회") {
+            key = "전시";
+        }
+
+        db.query(sql_keyword, [key], (err, result) => {
             if (err) {
                 console.error('Error querying data:', err);
                 return res.status(500).json({ error: 'Database error' });
@@ -650,15 +664,19 @@ router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
         console.log("키워드없음")
         let values = "";
 
+        var sql = sql_category
+
         if (enCategory === "음식점") {
             values = "restaurant";
         } else if (enCategory === "카페") {
             values = "cafe";
         } else {
-            values = "point_of_interest";
+            sql = sql_all
+            values = ""
         }
+        
         console.log("쿼리")
-        db.query(sql_category, [values], (err, result) => {
+        db.query(sql, [values], (err, result) => {
             if (err) {
                 console.error('Error querying data:', err);
                 return res.status(500).json({ error: 'Database error' });
