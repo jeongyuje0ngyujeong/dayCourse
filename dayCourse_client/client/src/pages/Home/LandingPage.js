@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
@@ -47,7 +47,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const distances = [];
+    const [distances, setDistances] = useState([]);
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -128,7 +128,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     }, [fetchExistPlace]);
 
     // TMAP 거리 계산 API (현재 주석 처리됨)
-    /*
+
     useEffect(() => {
         const loadDistance = async () => {
             if (selectedPlaces.length > 1) {
@@ -141,7 +141,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         };
         loadDistance();
     }, [selectedPlaces]);
-    */
+
 
     return (
         <div className="landing-page">
@@ -190,7 +190,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                             )}
                                         </Draggable>
 
-                                        {index < selectedPlaces.length - 1 && distances[index] !== undefined && (
+                                        {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && distances[index] !== undefined && (
                                             <DistanceBox>
                                                 {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
                                             </DistanceBox>
