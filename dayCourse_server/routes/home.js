@@ -21,39 +21,68 @@ router.get('/', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
 
-    const sql = `
+    const sql_1 = `
       SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
       FROM Plan_User
       JOIN Plan ON Plan_User.planId = Plan.planId
       WHERE Plan_User.userId = ?
-      AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+      AND Plan.startDate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
+    `;
+
+    const sql_2 = `
+      SELECT p.planId, p.startDate, p.planName, gm.groupId
+        FROM groupMembers gm
+        JOIN Plan p ON gm.groupId = p.groupId
+        WHERE gm.userId = ?
+        AND p.startDate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
     `;
 
     const values = [userId, startDate, startDate];
 
-    db.query(sql, values, (err, result) => {
-        if (err) {
-            console.error('Error fetching data:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
-
-        // Convert each result's startDate to KST (UTC + 9)
-        const formattedResult = result.map(plan => {
-            const utcDate = new Date(plan.startDate); // Parse the original UTC date
-            const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // Convert to KST
-            const formattedStartDate = koreaTime.toISOString().split('T')[0]; // Extract YYYY-MM-DD
-
-            const { startDate, ...rest } = plan;
-
-            // Return the modified object with the KST startDate
-            return {
-                ...rest,
-                dateKey: formattedStartDate // Replace original startDate with the KST formatted date
-            };
+    try {
+        // Execute first query
+        const [result1] = await new Promise((resolve, reject) => {
+            db.query(sql_1, values, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
         });
 
-        return res.status(200).json(formattedResult); // Return the modified result
-    });
+        // Execute second query
+        const [result2] = await new Promise((resolve, reject) => {
+            db.query(sql_2, values, (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            });
+        });
+
+        // Format results to KST
+        const formatResult = (result) => {
+            return result.map(plan => {
+                const utcDate = new Date(plan.startDate); // Parse the original UTC date
+                const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // Convert to KST
+                const formattedStartDate = koreaTime.toISOString().split('T')[0]; // Extract YYYY-MM-DD
+
+                const { startDate, ...rest } = plan;
+
+                // Return the modified object with the KST startDate
+                return {
+                    ...rest,
+                    dateKey: formattedStartDate // Replace original startDate with the KST formatted date
+                };
+            });
+        };
+
+        //결과 두개합치기
+        const formattedResult1 = formatResult(result1);
+        const formattedResult2 = formatResult(result2);
+        const combinedResults = [...formattedResult1, ...formattedResult2];
+
+        return res.status(200).json(combinedResults);
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        return res.status(500).json({ error: 'Database error' });
+    }
 });
 
 router.post('/plan', authenticateJWT, async (req, res) => {
@@ -262,7 +291,7 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
 
             console.log("place get :" + JSON.stringify(result_location));
 
-            res.status(201).json( result_location );
+            res.status(201).json(result_location);
         });
     });
 });
@@ -521,30 +550,29 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 
         console.log('origins:', JSON.stringify(origins, null, 2));
         console.log('destinations:', JSON.stringify(destinations, null, 2));
-        
+
         const data = {
             "origins": origins,
             "destinations": destinations,
             "transportMode": "pedestrian"
-          };
-                    
+        };
         // 요청 초과 예외처리용
         // const response = null;
 
         // 오픈 api 요청
-        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1', 
+        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1',
             data, {
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'appKey': APP_KEY
-              }
-            });
+            }
+        });
 
         // 요청 초과 예외처리용
         if (response != null) {
             console.log("Response Data: ", response.data);
-    
+
             const distances = [];
             let checkIdx = 0;
             // 계속 api 요청하지말고 그냥 테스트용으로 한번 받은 데이터를 가지고 체크 하게 (open api 한계)
@@ -553,18 +581,18 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
                 // console.log("for문 실행");
                 const originIdx = matrixRoutes[i].originIndex;
                 const destinationIdx = matrixRoutes[i].destinationIndex;
-    
+
                 if (originIdx === destinationIdx && destinationIdx == checkIdx) {
                     // console.log("idx 비교문 실행");
                     distances.push(matrixRoutes[i].distance);
                     checkIdx++;
                 }
             }
-    
+
             console.log('distances: ' + distances);
             return res.status(200).json({ msg: 'success', distances });
-            
-        // 요청 초과 예외처리용
+
+            // 요청 초과 예외처리용
         } else {
             return res.status(429).json({ msg: 'api 요청 초과', distances });
         }
