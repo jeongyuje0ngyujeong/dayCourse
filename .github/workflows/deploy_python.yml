@@ -53,6 +53,9 @@ jobs:
               echo 'not exist + clone'
               git clone -b AiServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
               cd $APP_DIR/dayCourse_ai
+              # 디버깅을 위한 파일 목록 출력
+              echo 'Files in APP_DIR after clone:'
+              ls -al $APP_DIR
             fi"
 
       # 3. 가상 환경 설정 및 의존성 설치
