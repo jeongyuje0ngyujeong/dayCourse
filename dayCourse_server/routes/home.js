@@ -39,6 +39,9 @@ router.get('/', authenticateJWT, async (req, res) => {
 
     const values = [userId, startDate, startDate];
 
+    var formattedResult1 = []
+    var formattedResult2 = []
+
     try {
         // Execute first query
         const [result1] = await new Promise((resolve, reject) => {
@@ -76,16 +79,13 @@ router.get('/', authenticateJWT, async (req, res) => {
         //결과 두개합치기
         //테스트
 
-        var formattedResult1 = []
-        var formattedResult2 = []
-
         console.log("조회1 : ", result1)
         console.log("조회2 : ", result2)
 
-        if(result1){
+        if (result1) {
             formattedResult1 = formatResult(result1);
         }
-        if(result2){
+        if (result2) {
             formattedResult2 = formatResult(result2);
         }
 
@@ -94,7 +94,7 @@ router.get('/', authenticateJWT, async (req, res) => {
         return res.status(200).json(combinedResults);
     } catch (err) {
         console.error('Error fetching data:', err);
-        return res.status(500).json({ error: 'Database error' });
+        return res.status(500).json({ error: 'Database error' , formattedResult1, formattedResult2});
     }
 });
 
@@ -568,8 +568,8 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             "origins": origins,
             "destinations": destinations,
             "transportMode": "pedestrian"
-          };
-                    
+        };
+
         // 요청 초과 예외처리용
         // const response = null;
 
