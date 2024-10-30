@@ -613,6 +613,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 
 // 이미지 목록을 가져오는 엔드포인트
 router.get('/plan/:planId/images', async (req, res) => {
+    console.log("사진가져옴")
     const planId = req.params.planId;
   
     try {
