@@ -26,8 +26,24 @@ router.get('/', authenticateJWT, async (req, res) => {
       FROM Plan_User
       JOIN Plan ON Plan_User.planId = Plan.planId
       WHERE Plan_User.userId = ?
-      AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+      AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
     `;
+    
+    // const sql = `
+    //   SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
+    //   FROM Plan_User
+    //   JOIN Plan ON Plan_User.planId = Plan.planId
+    //   WHERE Plan_User.userId = ?
+    //   AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
+    // `;
+
+    // const sql_2 = `
+    //   SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId
+    //     FROM groupMembers
+    //     JOIN Plan ON groupMembers.groupId = Plan.groupId
+    //     WHERE groupMembers.userId = ?
+    //     AND Plan.startDate BETWEEN DATE_FORMAT(NOW(), '%Y-%m-01') AND LAST_DAY(NOW())
+    // `;
     
 
     const values = [userId, startDate, startDate];
