@@ -118,6 +118,8 @@ const FormData = require('form-data');
 app.get('/123/456', async (req, res) => {
   const userId = 404;
 
+  console.log("테스트 시작")
+
   try {
     const params = { Bucket: bucketName, Prefix: `users/${userId}/` };
 
@@ -129,6 +131,8 @@ app.get('/123/456', async (req, res) => {
     }
 
     const imagesData = [];
+
+    console.log("s3 시작")
 
     //해당 리스트들의 키 조회하여 메타데이터 가져옴.
     for (const item of data.Contents) {
@@ -146,6 +150,8 @@ app.get('/123/456', async (req, res) => {
         metadata: newMetadata
       });
     }
+
+    console.log("이미지 분석")
 
     // Axios 요청을 통해 이미지 분석
     const form = new FormData();
