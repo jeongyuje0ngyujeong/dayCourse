@@ -8,41 +8,41 @@ const authenticateJWT = require('../config/authenticateJWT');
 // 친구 찾기
 router.post('/friend', authenticateJWT, async (req, res) => {
     console.log("req.user:", JSON.stringify(req.user, null, 2));
-    
+
     const userId = req.user.userId;
     console.log('usderId: ' + userId);
-    
+
     const { searchId } = req.body;
-    
+
     console.log('친구 검색')
-    
+
     // Check if required parameters are provided
     if (!searchId) {
         return res.status(400).json({ error: 'searchId is required' });
     }
-    
+
     const find_sql = `
     SELECT User.userId, User.userName
     FROM User
     WHERE User.id = ?
     `;
-    
+
     db.query(find_sql, [searchId], (err, find_result) => {
         if (err) {
             console.error('Error inserting data:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-        
+
         if (find_result.length > 0) {
             console.log("find friend", JSON.stringify(find_result, null, 2));
-            
+
             const friendUserId = find_result[0].userId;
             const friendUserName = find_result[0].userName;
             console.log('찾은 친구의 userId: ' + friendUserId);
-            
+
             console.log("친구 찾기 성공!")
             return res.status(201).json({ success: true, friendName: friendUserName });
-            
+
         } else {
             return res.status(404).json({ success: false, error: 'No user found with the provided searchId' });
         }
@@ -88,7 +88,7 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
                 INSERT IGNORE INTO friend (userId, friendUserId, friendName, friendId)
                 VALUES (?, ?, ?, ?)
             `;
-            
+
             const values = [userId, friendUserId, friendName, friendId];
 
             db.query(inser_sql, values, (err, insert_result) => {
@@ -97,18 +97,18 @@ router.post('/friend/add', authenticateJWT, async (req, res) => {
                     console.error('Error inserting data:', err);
                     return res.status(500).json({ error: 'Database error' });
                 }
-                
-                if (insert_result.affectedRows > 0) { 
+
+                if (insert_result.affectedRows > 0) {
                     console.log("친구 추가 성공!")
                     return res.status(201).json({ success: true, message: '성공적으로 친구 추가 되었습니다.' });
-                    
+
                 } else {
                     return res.json({ success: false, message: '이미 친구로 추가된 사용자입니다.' });
                 }
             });
 
         } else {
-            return res.status(404).json({ success: false,  message: '해당 ID와 일치하는 회원이 존재하지 않습니다.' });
+            return res.status(404).json({ success: false, message: '해당 ID와 일치하는 회원이 존재하지 않습니다.' });
         }
     });
 });
@@ -190,10 +190,10 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         console.log("친구찾기")
         console.log(friendIds)
-        
+
         // 현재 사용자와 친구들의 userId를 조회합니다.
         const allUserIds = [...friendIds, userId];
-        
+
         // 사용자들의 userId와 userName을 조회합니다.
         const results = await new Promise((resolve, reject) => {
             db.query(sqlSelectUserIds, [allUserIds], (err, result) => {
@@ -264,36 +264,29 @@ router.get('/get', authenticateJWT, async (req, res) => {
 
         // 2. 그룹 ID를 사용하여 그룹 이름 조회 준비
         const groupIds = G_id_result.map(group => group.groupId);
-        const sql_G_name = `
-          SELECT groupName, groupId
-          FROM day_Group
-          WHERE groupId IN (?)
-        `;
+        const sql_combined = `
+            SELECT 
+                day_Group.groupId,
+                day_Group.groupName,
+                groupMembers.userName
+            FROM 
+                day_Group
+            LEFT JOIN 
+                groupMembers ON day_Group.groupId = groupMembers.groupId
+            WHERE 
+                day_Group.groupId IN (?)
+            `;
 
-        // 3. 조회한 그룹 ID를 기반으로 그룹 이름을 조회
-        const groupNames_result = await new Promise((resolve, reject) => {
-            db.query(sql_G_name, [groupIds], (err, result) => {
+        // 통합된 쿼리 실행
+        const groupData = await new Promise((resolve, reject) => {
+            db.query(sql_combined, [groupIds], (err, result) => {
                 if (err) return reject(err);
                 resolve(result);
             });
         });
-
-        const sql_M_name = `
-          SELECT groupId, userName
-          FROM groupMembers
-          WHERE groupId IN (?)
-        `;
-
-        //4. 조회한 그룹 ID를 기반으로 그룹원 조회
-        const groupM_Names_result = await new Promise((resolve, reject) => {
-            db.query(sql_M_name, [groupIds], (err, result) => {
-                if (err) return reject(err);
-                resolve(result);
-            });
-        });
-
+        
         //5. 그룹 ID와 이름을 응답으로 반환
-        return res.json(groupNames_result, groupM_Names_result);
+        return res.json(groupData);
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: '내부 서버 오류' });
