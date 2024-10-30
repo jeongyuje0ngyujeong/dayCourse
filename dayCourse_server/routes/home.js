@@ -614,7 +614,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 });
 
 // 이미지 목록을 가져오는 엔드포인트
-app.get('/plan/:planId/images', async (req, res) => {
+router.get('/plan/:planId/images', async (req, res) => {
     const planId = req.params.planId;
   
     try {
@@ -642,7 +642,7 @@ app.get('/plan/:planId/images', async (req, res) => {
   });
 
 
-app.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
+router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
     try {
         console.log("사진등록");
         const planId = req.params.planId;
