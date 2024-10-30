@@ -129,7 +129,9 @@ export default function CreateSchedule() {
 
       <p>
         <button type="submit">Save</button>
-        <button type="button">Cancel</button>
+        <Link to="/main/home">
+          <button type="button">Cancel</button>
+        </Link>
       </p>
     </Form>
   );

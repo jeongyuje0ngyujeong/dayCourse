@@ -1,6 +1,8 @@
 import { Form, redirect, } from "react-router-dom";
 import { updateSchedule, getEvent,} from "../../schedules";
 import React, { useState, } from 'react';
+import KakaoMap from './InputTown';
+import SearchKeyword from './SearchKeyword';
 
 import SelectTown from './SelectTown';
 import styled from "styled-components";
@@ -9,6 +11,7 @@ import {Button} from '../../Button';
 
 export async function loader({ params }) {
       const { planId } = params;
+      console.log(planId);
       const event = await getEvent(planId);
       return { event };
     }
@@ -56,7 +59,7 @@ const ScrollContainer = styled.div`
     flex-grow: 1; 
     display: flex;
     flex-direction: column;
-    min-height: 14rem;  
+    min-height: 11rem;  
     overflow: auto; 
     &::-webkit-scrollbar {
         display: none; 
@@ -78,7 +81,8 @@ const ResultContainer = styled.div`
 const MapContainer = styled.div`
     display: flex;
     width: 100%;
-    border: 1px solid;
+    ${'' /* border: 1px solid; */}
+    border-radius: 10px;
     justify-content: center;
     align-items: center;
 `
@@ -86,7 +90,7 @@ const MapContainer = styled.div`
 const Container = styled.div`
     flex: 1;
     display: flex;
-    ${'' /* gap: 5px; */}
+    gap: 5px;
     margin-top: auto;
 `;
 
@@ -114,29 +118,13 @@ const Box = styled.div`
 
 export default function UpdateTown() {
     const [selectedTown, setSelectedTown] = useState("");
-    const [departurePoints, setDeparturePoints] = useState([""]); 
-
-    const addDeparturePoint = () => {
-        // 최대 10개의 출발지 입력창만 추가할 수 있게 제한
-        if (departurePoints.length < 10) {
-            setDeparturePoints([...departurePoints, ""]);
-        }
-    };
+    const [departurePoints, setDeparturePoints] = useState([]); 
+    const [keyword, setKeyword] = useState(""); // 제출한 검색어
+    const [places, setPlaces] = useState([]); // 검색 결과 상태
 
     const removeDeparturePoint = (index) => {
-        // 최소 하나의 입력창은 항상 유지
-        if (departurePoints.length > 1) {
-            setDeparturePoints(departurePoints.filter((_, i) => i !== index));
-        }
+        setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
-
-    const handleDepartureChange = (index, value) => {
-        // 특정 입력창의 값을 업데이트
-        const updatedPoints = [...departurePoints];
-        updatedPoints[index] = value;
-        setDeparturePoints(updatedPoints);
-    }
-
 
     return (
         <div>
@@ -149,26 +137,19 @@ export default function UpdateTown() {
                 </Form>  
                 <RecommendContainer>
                     <DepartureContainer>
-                        <h3 style={{marginTop: '1rem'}}>출발지</h3>
+                        
+                        <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
                         <ScrollContainer>
-                        {departurePoints.map((point, index) => (
-                            <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px'}}>
-                                <input
-                                    type="text"
-                                    placeholder={`출발지 ${index + 1}`}
-                                    value={point}
-                                    onChange={(e) => handleDepartureChange(index, e.target.value)}
-                                    style={{ border: '1px solid #ccc', padding: '5px', width:'100%'}}
-                                />
-                                {index === 0 && departurePoints.length <= 10 && ( departurePoints.length !== 10 ?
-                                    <Button onClick={addDeparturePoint}>+</Button> : <Button disable onClick={addDeparturePoint}>+</Button>
-                                )}
-                                {index > 0 && (
-                                    <Button onClick={() => removeDeparturePoint(index)}>-</Button>
-                                )}
-                            </div>
-                        ))}
+                            {departurePoints.map((point, index) => (
+                                <div key={index} style={{ display: 'flex', alignItems: 'center',justifyContent: 'space-between', gap: '5px', marginBottom: '10px'}}>
+                                    <div style={{ border: '1px solid #ccc', padding: '5px', width:'100%', borderRadius: '8px',height:'2.5rem'}}>
+                                        {point.place_name}
+                                    </div>
+                                    <Button onClick={() => removeDeparturePoint(index)} width='3rem' height='2.5rem'>-</Button>
+                                </div>
+                            ))}
                         </ScrollContainer>
+
                         <h3 style={{marginTop: '1rem'}}>추천지역</h3>
                         <Container>
                             <Box>추천지역1</Box>
@@ -179,7 +160,7 @@ export default function UpdateTown() {
 
                     <RecommendResult>
                         <MapContainer>
-                            지도
+                            <KakaoMap searchKeyword={keyword} setPlaces={setPlaces}/>
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
