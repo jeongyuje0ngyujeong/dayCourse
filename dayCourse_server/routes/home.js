@@ -4,10 +4,30 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db')
 const axios = require('axios');
+const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
+
+
+const fs = require('fs'); //파일 저장용
+const path = require('path');
 
 const authenticateJWT = require('../config/authenticateJWT');
 
 const APP_KEY = process.env.TMAP_APP_KEY;
+
+
+//s3연결
+const AWS = require('aws-sdk');
+AWS.config.update({ region: 'ap-northeast-2' });
+const s3 = new AWS.S3();
+const bucketName = 'daycourseimage';
+
+
+
+
+// 1. 메모리 스토리지 설정 (파일을 메모리에 저장)
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
+
 
 
 router.get('/', authenticateJWT, async (req, res) => {
