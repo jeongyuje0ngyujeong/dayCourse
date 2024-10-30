@@ -12,13 +12,16 @@ const CategoryButton = ({ selectedCategory, setSelectedCategory }) => {
     const categories = ['랜덤', '음식점', '카페', '문화생활'];
 
     return (
+        <div>
+        <h5>카테고리</h5>
         <CategoryContainer>
             {categories.map((category) => (
+                
                 <Button 
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    width="30%" // 원하는 너비를 지정
-                    height="40px" // 원하는 높이를 지정
+                    width="4vw" // 원하는 너비를 지정
+                    height="4vh" // 원하는 높이를 지정
                     color={selectedCategory === category ? 'white' : 'black'}
                     $background={selectedCategory === category ? '#90B54C' : 'transparent'} 
                     $border={selectedCategory === category ? 'none' : 'solid 1px darkgray'} // 선택된 경우 테두리 없음, 아니면 검은색 테두리
@@ -27,6 +30,7 @@ const CategoryButton = ({ selectedCategory, setSelectedCategory }) => {
                 </Button>
              ))}
         </CategoryContainer>
+        </div>
     );
 };
 

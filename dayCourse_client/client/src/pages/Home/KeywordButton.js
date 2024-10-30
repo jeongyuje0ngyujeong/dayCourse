@@ -10,12 +10,14 @@ const KeywordButton = ({ selectedCategory, selectedKeyword, setSelectedKeyword }
 
     return (
         <div>
+            <h5>키워드</h5>
             {keywords[selectedCategory] && keywords[selectedCategory].map((keyword) => (
                 <Button 
                     key={keyword}
                     onClick={() => setSelectedKeyword(keyword)} 
-                    width="28%" // 버튼 너비 설정
-                    height="30px" // 버튼 높이 설정
+                    width="4vw" // 원하는 너비를 지정
+                    height="4vh" // 원하는 높이를 지정
+                    
                     color={selectedKeyword === keyword ? 'white' : 'black'}
                     $background={selectedKeyword === keyword ? '#90B54C' : 'transparent'} 
                     $border={selectedKeyword === keyword ? 'none' : 'solid 1px darkgray'} // 선택된 경우 테두리 없음, 아니면 검은색 테두리
