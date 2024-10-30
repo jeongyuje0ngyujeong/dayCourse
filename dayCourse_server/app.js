@@ -21,7 +21,7 @@ const s3 = new AWS.S3();
 const bucketName = 'daycourseimage';
 
 //파일 저장용
-//const fs = require('fs');
+const fs = require('fs');
 const path = require('path');
 
 const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
@@ -71,7 +71,7 @@ app.get('/images', async (req, res) => {
   }
 });
 
-app.post('/images', upload.single('image') , async (req, res) => {
+app.post('/images', upload.single('image'), async (req, res) => {
   try {
     console.log(req.body);
     const userId = req.body.userId;
@@ -84,11 +84,11 @@ app.post('/images', upload.single('image') , async (req, res) => {
     const imgNAME = path.basename(file.originalname);
 
     // S3에서 객체 목록 가져오기
-    var uploadParams = { 
-      Bucket: bucketName, 
-      Key: `users/${userId}/${imgNAME}`, 
+    var uploadParams = {
+      Bucket: bucketName,
+      Key: `users/${userId}/${imgNAME}`,
       Body: file.buffer,
-      ContentType: file.mimetype 
+      ContentType: file.mimetype
     };
 
     // call S3 to retrieve upload
@@ -110,7 +110,65 @@ app.get('/', (req, res) => {
   res.send('테스트')
 })
 
+
+
+const axios = require('axios');
+const FormData = require('form-data');
+
+app.get('/123/456', async (req, res) => {
+  const userId = 404;
+
+  try {
+    const params = { Bucket: bucketName, Prefix: `users/${userId}/` };
+
+    // S3에서 객체 목록 가져오기 (await와 Promise 사용하여 비동기 처리)
+    const data = await s3.listObjectsV2(params).promise();
+
+    if (!data.Contents || data.Contents.length === 0) {
+      return res.status(404).send('No images found');
+    }
+
+    const imagesData = [];
+
+    //해당 리스트들의 키 조회하여 메타데이터 가져옴.
+    for (const item of data.Contents) {
+      const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
+
+      // 객체의 메타데이터 가져오기
+      const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
+
+      //메타데이터 태그값만 남기기.
+      const newMetadata = Object.values(metadata.Metadata);
+
+      // URL과 메타데이터를 배열에 저장
+      imagesData.push({
+        url: imageUrl,
+        metadata: newMetadata
+      });
+    }
+
+    // Axios 요청을 통해 이미지 분석
+    const form = new FormData();
+    form.append('metadata', JSON.stringify(imagesData));
+
+    const response = await axios.post('http://13.124.135.96:5000/tt', form, {
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    console.log(response.data)
+
+    // 이미지 URL과 메타데이터를 함께 응답으로 전송
+    res.json(response.data);
+
+  } catch (err) {
+    console.error('Error retrieving images', err);
+    res.status(500).send('Error retrieving images');
+  }
+});
+
 const PORT = 3000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
+  console.log(`서버가 ${PORT}번 포트에서 실행 중입니다.`);
 });
