@@ -65,6 +65,9 @@ export default function Friends() {
         e.preventDefault(); 
         try {
             const result = await addFriend(keyword);
+            setSelectedFriend([])
+            setShowResult(false);
+            setValue('')
             alert(result)
         } catch (error) {
             console.error('Error adding friend:', error);

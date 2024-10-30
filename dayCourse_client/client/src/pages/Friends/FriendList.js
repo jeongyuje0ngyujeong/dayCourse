@@ -24,6 +24,8 @@ const ItemContainer = styled.div`
     background: white;
     border-radius: 5px;
     align-items: center;
+    border: 1px solid #eee;
+    ${'' /* background: #eee; */}
 `
 
 export default function FriendList({friendsList, setSelectedFriends, flag}) {
@@ -44,12 +46,13 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
         );
     };
 
+    // console.log(friendsList);
     return(
         <>
         <ResultContainer id="search-result">
-            {friendsList.length === 0 ? (   
+            {friendsList && friendsList.length === 0 ? (   
                     flag ? (<p className="result-text">친구를 추가해보세요.</p>):(<p className="result-text">그룹을 생성할 친구를 추가해보세요.</p>) 
-            ):
+            ):(friendsList &&
             <>
             {friendsList.map((friend, index) => (
                 <ItemContainer
@@ -65,7 +68,45 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
                     :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>}
                 </ItemContainer>
             ))}
-            </>
+            </>)
+            }
+        </ResultContainer>
+        </>
+    )
+}
+
+export function GroupList({groupsList, setSelectedGroup, flag}) {
+    const handleSelect = (e, group) => {
+        e.preventDefault();
+        setSelectedGroup(group);
+    };
+  
+    console.log(groupsList);
+    return(
+        <>
+        <ResultContainer id="search-result">
+            {groupsList && groupsList.length === 0 ? (   
+                    <p className="result-text">그룹을 추가해보세요.</p> 
+            ):(groupsList &&
+            <>
+            {groupsList.map((group, index) => (
+                <ItemContainer
+                    key={index} 
+                    onClick={() => {
+                        // selectedFriend(friend);
+                    }} 
+                    style={{ cursor: 'pointer' }}
+                >
+                    <h4>{group.groupName}</h4>
+                    {/* <p>{group.userNames}</p> */}
+                    <p>{group.userNames.map((item) => item).join(', ')}</p>
+                    <button onClick={(e) => handleSelect(e, group)}>선택</button>
+                    {/* {flag ? 
+                    <button onClick={(e) => handleAdd(e, friend)}>추가</button>
+                    :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>} */}
+                </ItemContainer>
+            ))}
+            </>)
             }
         </ResultContainer>
         </>
