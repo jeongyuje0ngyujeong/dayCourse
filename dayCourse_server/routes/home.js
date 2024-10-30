@@ -58,7 +58,7 @@ router.get('/', authenticateJWT, async (req, res) => {
     // `;
 
     const sql = `
-        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId
+        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId
         FROM groupMembers
         JOIN Plan ON groupMembers.groupId = Plan.groupId
         WHERE groupMembers.userId = ?
