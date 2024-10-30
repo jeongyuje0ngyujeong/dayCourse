@@ -7,7 +7,7 @@ function KakaoMap({ searchKeyword, setPlaces }) {
     useEffect(() => {
         const mapContainer = document.getElementById("map");
         const mapOptions = {
-            center: new kakao.maps.LatLng(37.566826, 126.9786567), // 서울의 중심 좌표
+            center: new kakao.maps.LatLng(37.496486063, 127.028361548), // 서울의 중심 좌표
             level: 3 // 초기 줌 레벨
         };
 
