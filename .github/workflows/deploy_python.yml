@@ -70,7 +70,7 @@ jobs:
             python3 -m venv venv &&
             source venv/bin/activate &&
             pip install -r requirements.txt &&
-            pip install gunicorn""
+            pip install gunicorn"
 
       # 4. systemd 서비스를 구성하고 애플리케이션을 시작합니다
       - name: Configure and Start Flask AI Application via systemd
