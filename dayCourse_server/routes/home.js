@@ -614,7 +614,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 });
 
 
-router.get('/plan/:enCategory/:enKeyword?', (req, res) => {
+router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
     console.log("카테고리조회")
     const { enCategory, enKeyword } = req.params;
 
