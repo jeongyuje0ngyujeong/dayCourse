@@ -647,7 +647,7 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
         const planId = req.params.planId;
 
         if (!req.file) {
-            return res.status(400).send('No file uploaded');
+            return res.status(400).send('파일이 없습니다');
         }
 
         const file = req.file;
@@ -658,16 +658,46 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             Bucket: bucketName,
             Key: `plans/${planId}/${imgNAME}`,
             Body: file.buffer,
-            ContentType: file.mimetype
+            ContentType: file.mimetype,
+            Metadata: {}
         };
+
+
+        // 이미지 분석을 위한 파일 확장자 파악
+        const ext = path.extname(file.originalname).toLowerCase();
+        const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
+        const isImage = allowedImageExtensions.includes(ext);
+
+        if (isImage) {
+            // 이미지 파일인 경우, Axios 요청을 통해 이미지 분석
+            const form = new FormData();
+            form.append('file', file.buffer, { filename: file.originalname });
+
+            const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
+                headers: {
+                    ...form.getHeaders(),
+                },
+            });
+
+            const tags = response.data.Tags;
+
+            // 태그 메타데이터 추가
+            tags.forEach((tag, index) => {
+                uploadParams.Metadata[`tag${index + 1}`] = tag.name; // 태그 이름 추가
+            });
+
+            console.log(uploadParams);
+        }
 
         // call S3 to retrieve upload
         s3.upload(uploadParams, function (err, data) {
             if (err) {
                 console.log("Error", err);
+                return res.status(500).send('S3 업로드 중 오류 발생');
             }
             if (data) {
                 console.log("Upload Success", data.Location);
+                return res.json({ msg: "성공" });
             }
         });
 
