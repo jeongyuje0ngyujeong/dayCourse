@@ -53,9 +53,6 @@ jobs:
               echo 'not exist + clone'
               git clone -b AiServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
               cd $APP_DIR/dayCourse_ai
-              # 디버깅을 위한 파일 목록 출력
-              echo 'Files in APP_DIR after clone:'
-              ls -al $APP_DIR
             fi"
 
       # 3. 가상 환경 설정 및 의존성 설치
@@ -88,7 +85,7 @@ jobs:
           # gunicorn.service 파일을 EC2로 복사
           # scp -o StrictHostKeyChecking=no /home/runner/work/dayCourse/dayCourse/dayCourse_ai/deploy/gunicorn.service $REMOTE_USER@$REMOTE_HOST:/home/ubuntu/gunicorn.service
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-            # sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
+            sudo mv /home/ubuntu/gunicorn.service /etc/systemd/system/gunicorn.service &&
             sudo systemctl daemon-reload &&
             sudo systemctl restart gunicorn &&
             sudo systemctl enable gunicorn"
