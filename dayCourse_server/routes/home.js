@@ -75,8 +75,20 @@ router.get('/', authenticateJWT, async (req, res) => {
 
         //결과 두개합치기
         //테스트
-        const formattedResult1 = formatResult(result1);
-        const formattedResult2 = formatResult(result2);
+
+        var formattedResult1 = []
+        var formattedResult2 = []
+
+        console.log("조회1 : ", result1)
+        console.log("조회2 : ", result2)
+
+        if(result1){
+            formattedResult1 = formatResult(result1);
+        }
+        if(result2){
+            formattedResult2 = formatResult(result2);
+        }
+
         const combinedResults = [...formattedResult1, ...formattedResult2];
 
         return res.status(200).json(combinedResults);
