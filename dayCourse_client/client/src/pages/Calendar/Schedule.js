@@ -67,7 +67,7 @@ export default function Schedule(props) {
             {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
-              <Link to={`/main/PlacePages/${event.planId}`}>
+              <Link to={`/main/PlacePage/${event.planId}`}>
                 <button type="submit">Edit</button>
               </Link>
               <Form
