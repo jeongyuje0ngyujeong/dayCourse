@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('새로운 유저가 접속했습니다.')
 
-  socket.on('join', ({ name, room }, callback) => {
+  socket.on('join', ({userId, name, room }, callback) => {
     console.log('userId', userId, 'name:', name, 'room:', room);
     const { error, user } = addUser({ id: socket.id, userId, name, room })
     if (error) callback({ error: '에러가 발생했습니다.' })
