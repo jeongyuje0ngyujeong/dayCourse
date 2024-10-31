@@ -56,7 +56,7 @@ const router = createBrowserRouter([
             ]
           },      
           {
-            path: "schedules/:id",
+            path: "schedules/create/:id",
             element: <CreateSchedule />,
             loader: createLoader,
             action: createAction,
