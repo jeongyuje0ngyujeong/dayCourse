@@ -361,7 +361,7 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
       DELETE FROM Plan_Location 
       WHERE planId = ?;
     `;
-    
+
     const sql = `
       DELETE FROM Plan 
       WHERE planId = ? AND start_userId = ?;
@@ -691,9 +691,15 @@ router.get('/plan/:planId/images', async (req, res) => {
 });
 
 
+// 이미지 등록 엔드포인트
 router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
-    console.log("사진등록?");
+    const planId = req.params.planId;
+    if (!req.file) {
+        return res.status(400).send('파일이 없습니다');
+    }
+
     try {
+
         console.log("사진등록");
         const planId = req.params.planId;
 
@@ -739,21 +745,25 @@ router.post('/plan/:planId/images', upload.single('image'), async (req, res) => 
             console.log(uploadParams);
         }
 
-        // S3 업로드 (Promise 사용)
-        try {
-            const data = await s3.upload(uploadParams).promise();
-            console.log("Upload Success", data.Location);
-            return res.json({ msg: "성공", location: data.Location });
-        } catch (err) {
-            console.log("Error", err);
-            return res.status(500).send('S3 업로드 중 오류 발생');
-        }
-
+        // S3 업로드
+        return new Promise((resolve, reject) => {
+            s3.upload(uploadParams, function (err, data) {
+                if (err) {
+                    console.error("S3 업로드 오류", err);
+                    return reject(res.status(500).send('S3 업로드 중 오류 발생'));
+                }
+                if (data) {
+                    console.log("이미지 업로드 성공", data.Location);
+                    return resolve(res.json({ msg: "성공", location: data.Location }));
+                }
+            });
+        });
     } catch (err) {
-        console.error('Error during image upload', err);
-        res.status(500).send('Error during image upload');
+        console.error('이미지 처리 중 오류', err);
+        return res.status(500).send('이미지 처리 중 오류 발생');
     }
 });
+
 
 // // 이미지 등록 엔드포인트
 // router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
