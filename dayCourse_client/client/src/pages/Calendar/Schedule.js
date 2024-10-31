@@ -51,7 +51,7 @@ export default function Schedule(props) {
   
   const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
 
-  console.log(selectedSchedules);
+  // console.log(selectedSchedules);
 
   function updateSchedulesForDate(dateKey, planId) {
     setGroupedSchedules(prevSchedules => {
@@ -87,7 +87,7 @@ export default function Schedule(props) {
 
                   if (`${event.start_userId}` === sessionStorage.getItem('id')){
                     const result = await deleteSchedule(event.planId);
-                    console.log(result);
+                    // console.log(result);
                     if (result === 'success'){
                       updateSchedulesForDate(event.dateKey, event.planId)
                     
