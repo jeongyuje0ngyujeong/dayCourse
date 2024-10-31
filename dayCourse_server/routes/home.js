@@ -679,7 +679,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         phone: "01000000000" //필드없음
     }));
 
-    onsole.log(renamedUsers);
+    console.log(renamedUsers);
     return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
 
