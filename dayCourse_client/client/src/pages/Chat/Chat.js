@@ -46,11 +46,12 @@ const ChatName = styled.div`
 // `;
 
 const ENDPOINT = 'http://13.125.236.177:3030';
+// const ENDPOINT = 'http://localhost:5000';
 let socket;
 
 export default function Chat({userId, planInfo}) {
     const planId = planInfo.planId;
-    const [name, setName] = useState(sessionStorage.getItem('userId'));
+    const [name, setName] = useState(userId);
     const [room, setRoom] = useState(planId);
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
@@ -63,11 +64,16 @@ export default function Chat({userId, planInfo}) {
         socket = io(ENDPOINT);
         setName(name);
         setRoom(room);
-        socket.emit('join', {name, room}, (err) => {
+        socket.emit('join', {
+          userId: sessionStorage.getItem('id'), 
+          name: name, 
+          room: room
+        }, (err) => {
           if (err) {
             alert(err);
           }
         });
+
         return () => {
           socket.emit();
           socket.off();
@@ -76,14 +82,32 @@ export default function Chat({userId, planInfo}) {
     // [ENDPOINT, window.location.search]
 
     useEffect(() => {
-        socket.on('message', (message) => {
-          setMessages((prevMessages) => [message, ...prevMessages]);
-        });
-        socket.on('roomData', ({users}) => {
+      socket.on('message', (incomingMessages) => {
+        console.log('받은 메시지:', incomingMessages); // 수신된 메시지 로그
+        
+        // 수신된 메시지가 배열인 경우
+        if (Array.isArray(incomingMessages)) {
+            setMessages(incomingMessages.reverse()); // 기존 메시지와 합침
+        } 
+        // 수신된 메시지가 객체인 경우
+        else if (typeof incomingMessages === 'object') {
+            setMessages((prevMessages) => [incomingMessages, ...prevMessages, ]); // 기존 메시지에 추가
+        } 
+        else {
+            console.error('수신된 메시지가 배열이나 객체가 아닙니다:', incomingMessages); // 오류 로그
+        }
+      });
+  
+      socket.on('roomData', ({ users }) => {
           setUsers(users);
-        });
-        setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
-      }, []);
+          setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
+      });
+
+      return () => {
+          socket.off('message'); 
+          socket.off('roomData'); 
+      };
+  }, []); 
 
     useEffect(() => {
       setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');

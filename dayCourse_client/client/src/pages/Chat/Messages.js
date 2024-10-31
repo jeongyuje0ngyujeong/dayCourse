@@ -21,14 +21,16 @@ const ChatContent = styled.div`
 
 export default function Messages({ messages, name }) {
     useEffect(() => {
-        console.log('전체 메세지: ', messages);
+        if (messages) {
+            console.log('전체 메세지: ', messages);
+        }
       }, [messages]);
 
     return (
         <ChatContent>
-            {messages.map((message, i) => {
-                return <div key={i}><Message message={message} name={name}/></div>
-            })}
+            {messages.length>0 && messages.map((message, i) => (
+                <div key={i}><Message user={message.user} text={message.text} name={name}/></div>
+            ))}
         </ChatContent>
     );
 }

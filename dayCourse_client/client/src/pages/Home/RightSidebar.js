@@ -64,9 +64,9 @@ const PlaceAddress = styled.span`
 `;
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
-    console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인
-    console.log('planInfo: ', planInfo);
-    console.log('places prop:', places); // places가 올바르게 전달되는지 확인
+    // console.log("RightSidebar Props - userId:", userId, "planId:", planId); 
+    // console.log('planInfo: ', planInfo);
+    // console.log('places prop:', places); 
 
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
