@@ -7,7 +7,6 @@ const axios = require('axios');
 const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 const FormData = require('form-data');
 
-
 const fs = require('fs'); //파일 저장용
 const path = require('path');
 
@@ -22,43 +21,21 @@ AWS.config.update({ region: 'ap-northeast-2' });
 const s3 = new AWS.S3();
 const bucketName = 'daycourseimage';
 
-
-
-
 // 1. 메모리 스토리지 설정 (파일을 메모리에 저장)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
-
-
 router.get('/', authenticateJWT, async (req, res) => {
-    console.log('home');
+    console.log('home 일정 가져옴');
     const { startDate } = req.query;
     const userId = req.user.userId;
-
 
     // Check if required parameters are provided
     if (!startDate) {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
 
-    // const sql = `
-    //   SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
-    //   FROM Plan_User
-    //   JOIN Plan ON Plan_User.planId = Plan.planId
-    //   WHERE Plan_User.userId = ?
     //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
-    // `;
-
-    console.log("기준날짜 :", startDate)
-
-    // const sql = `
-    //   SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
-    //   FROM Plan_User
-    //   JOIN Plan ON Plan_User.planId = Plan.planId
-    //   WHERE Plan_User.userId = ?
-    //   AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
-    // `;
 
     const sql = `
         SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town
@@ -67,7 +44,6 @@ router.get('/', authenticateJWT, async (req, res) => {
         WHERE groupMembers.userId = ?
         AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
     `;
-
 
     const values = [userId, startDate, startDate];
 
@@ -103,8 +79,6 @@ router.post('/plan', authenticateJWT, async (req, res) => {
     const { dateKey, startDateTime, planName, town, groupId } = req.body;
 
     console.log('일정등록요청')
-    console.log(req.body)
-    console.log('userId check: ' + userId);
 
     // Check if required parameters are provided
     if (!dateKey) {
@@ -145,10 +119,8 @@ router.post('/plan', authenticateJWT, async (req, res) => {
                 return res.status(500).json({ error: 'Database error' });
             }
 
-            // Successful insertion response
         });
 
-        console.log(values)
         return res.status(201).json({ msg: 'success', planId: result.insertId });
     });
 });
@@ -157,11 +129,6 @@ router.post('/plan', authenticateJWT, async (req, res) => {
 router.get('/plans/recent', authenticateJWT, async (req, res) => {
     console.log('home/plans/recent');
     const userId = req.user.userId;
-
-    // Check if required parameters are provided
-    // if (!userId) {
-    //     return res.status(400).json({ error: 'userId are required' });
-    // }
 
     const sql = `
       SELECT Plan.planId, Plan.startDate, Plan.planName, Plan.groupId
@@ -178,7 +145,6 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
             console.error('Error fetching data:', err);
             return res.status(500).json({ error: 'Database error' });
         }
-
 
         // Convert each result's startDate to KST (UTC + 9)
         const formattedResult = result.map(plan => {
@@ -203,6 +169,7 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
 router.post('/plan/town_update', authenticateJWT, async (req, res) => {
     const { destination, planId } = req.body;
     const userId = req.user.userId;
+    console.log("지역 업데이트")
 
     // Check if required parameters are provided
     if (!planId) {
@@ -235,7 +202,6 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
 
     const { planId, dateKey, endDate, planName, town } = schedule;
     console.log('계획수정')
-    console.log(req.body)
 
     // Check if required parameters are provided
     if (!planId) {
@@ -310,8 +276,6 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
 router.delete('/plan/place', authenticateJWT, (req, res) => {
     console.log('place delete');
     const { placeId } = req.query;
-    console.log(req.body);
-    console.log(req.query);
 
     if (!placeId) {
         return res.status(400).json({ error: 'placeId 없음!' });
@@ -382,7 +346,6 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     console.log('일정 삭제');
-    console.log(req.body);
 
     // 필수 파라미터 확인
     if (!planId) {
@@ -428,7 +391,6 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     console.log("일정장소추가")
-    //console.log(place)
 
     const x = parseFloat(place.x);
     const y = parseFloat(place.y);
@@ -457,28 +419,10 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     });
 });
 
-
-
-router.post('/plan/recommend_place', authenticateJWT, async (req, res) => {
-    const { planId, memo, place } = req.body;
-    const userId = req.user.userId;
-
-    console.log('장소추천요청')
-    console.log(req.body)
-
-    const values = ['갈라파꼬치']
-
-    return res.status(200).json({ msg: 'success', recommend: values });
-
-
-
-});
-
 router.post('/plan/place/priority', async (req, res) => {
     const { placeId, priority, version } = req.body;
 
     console.log('장소순서변경 :' + version)
-    console.log(req.body)
 
     const sql_select = `
       SELECT version
@@ -494,8 +438,6 @@ router.post('/plan/place/priority', async (req, res) => {
 
     const values = [priority, (version + 1), placeId]
 
-    console.log(values)
-
     db.query(sql_select, placeId, (err, place_ver) => {
         if (version < place_ver) {
             return res.status(200).json({ msg: '버전이 더 낮음' });
@@ -508,7 +450,6 @@ router.post('/plan/place/priority', async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        console.log(result)
         return res.status(200).json({ msg: 'success' });
     });
 });
