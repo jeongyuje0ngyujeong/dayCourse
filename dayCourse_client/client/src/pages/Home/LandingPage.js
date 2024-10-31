@@ -150,18 +150,18 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
     // TMAP 거리 계산 API (현재 주석 처리됨)
 
-    useEffect(() => {
-        const loadDistance = async () => {
-            if (selectedPlaces.length > 1) {
-                const distances = await fetchDistance(planId, userId);
-                console.log("받은 거리 정보:", distances);
-                setDistances(distances.distances);
-            } else {
-                setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-            }
-        };
-        loadDistance();
-    }, [selectedPlaces]);
+    // useEffect(() => {
+    //     const loadDistance = async () => {
+    //         if (selectedPlaces.length > 1) {
+    //             const distances = await fetchDistance(planId, userId);
+    //             console.log("받은 거리 정보:", distances);
+    //             setDistances(distances.distances);
+    //         } else {
+    //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
+    //         }
+    //     };
+    //     loadDistance();
+    // }, [selectedPlaces]);
 
 
     return (

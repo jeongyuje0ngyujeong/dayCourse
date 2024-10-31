@@ -45,7 +45,7 @@ const ChatName = styled.div`
 //     border-radius: 4px;
 // `;
 
-const ENDPOINT = 'http://localhost:5000';
+const ENDPOINT = 'http://13.125.236.177:3030';
 let socket;
 
 export default function Chat({userId, planInfo}) {
