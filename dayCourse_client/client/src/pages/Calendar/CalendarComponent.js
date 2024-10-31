@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {useState,useEffect } from 'react';
 import Modal from 'react-modal';
+import Schedule from './Schedule';
 
 const Cell = styled.td`
   color: #818181;
@@ -41,27 +42,25 @@ export const getDayName = (day)=> {
 
 export function DayTable(){
   return (
-  <StyleDayT>
-    <tbody>
-      <tr>
-        {daysOfWeek.map((day, index) => (
-          <th key={index} title={day}>{day}</th>
-        ))}
-      </tr>
-    </tbody>
-  </StyleDayT>
+    <StyleDayT>
+      <tbody>
+        <tr>
+          {daysOfWeek.map((day, index) => (
+            <th key={index} title={day}>{day}</th>
+          ))}
+        </tr>
+      </tbody>
+    </StyleDayT>
   )
 }
 
-export const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
+export const ScheduleModal = ({ isOpen, OnRequestClose, content, dateKey }) => {
   try {
     return (
       <Modal style={customModalStyles} isOpen={isOpen} onRequestClose={OnRequestClose}>
-        {content && content.props && content.props.schedule && content.props.schedule.length > 0 ? (
-          <h2>
-            {new Date(content.props.schedule[0].dateKey).getDate()} {getDayName(new Date(content.props.schedule[0].dateKey).getDay())}
-          </h2>
-        ) : null}
+        <h2>
+          {new Date(dateKey).getDate()} {getDayName(new Date(dateKey).getDay())}
+        </h2>
         <p>{content}</p>
         <button onClick={OnRequestClose}>닫기</button>
       </Modal>
@@ -100,12 +99,13 @@ const customModalStyles: ReactModal.Styles = {
   },
 };
 
-export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, setSelectedDate}){
+export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, selectedDate, setSelectedDate}){
     const weeks = []; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('');
+    const [content, setContent] = useState('');
     // console.log(startDay, endDay); 
     // console.log(groupedSchedules);
 
@@ -118,9 +118,9 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
       setSelectedDate(params);
       
       if (location.pathname === "/main/calendar"){
-        // setModalIsOpen(true);
-        // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
-        // setModalContent(content);
+        console.log(groupedSchedules[params]);
+        const content = <Schedule selectedSchedules={groupedSchedules[params]} groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} setModalContent={setModalContent}/>;
+        setModalContent(content);
         setModalIsOpen(true);
       }
       else{
@@ -176,7 +176,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
 
     return (
         <>{weeks}
-        <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>
+        <ScheduleModal isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent} dateKey={selectedDate}/>
         </>
     )
 }

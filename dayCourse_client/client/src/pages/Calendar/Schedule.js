@@ -49,7 +49,7 @@ export default function Schedule(props) {
   
   // const loaderData = useLoaderData();
   
-  const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [null, () => {}];
+  const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
 
   console.log(selectedSchedules);
 
@@ -84,27 +84,23 @@ export default function Schedule(props) {
                 action={`${event.planId}/destroy`}
                 onSubmit={async(e) => {
                   e.preventDefault()
-                  const result = await deleteSchedule(event.planId);
-                  if (result === 'success' && `${event.start_userId}` === sessionStorage.getItem('id'))
-                    updateSchedulesForDate(event.dateKey, event.planId)
 
                   if (`${event.start_userId}` === sessionStorage.getItem('id')){
                     const result = await deleteSchedule(event.planId);
-                    // console.log(result);
-                    if (result === 'success') {
-                        updateSchedulesForDate(event.dateKey, event.planId, (newSchedules) => {
-                            if (props.setModalContent) {
-                                const newSchedule = newSchedules[event.dateKey];
-                                props.setModalContent(
-                                    <Schedule 
-                                        selectedSchedules={newSchedule} 
-                                        groupedSchedules={newSchedules} 
-                                        setGroupedSchedules={setGroupedSchedules} 
-                                        setModalContent={props.setModalContent}
-                                    />
-                                );
-                            }
-                        });
+                    console.log(result);
+                    if (result === 'success'){
+                      updateSchedulesForDate(event.dateKey, event.planId)
+                    
+                      if (props.setModalContent)
+                      {
+                        const newSchedule = groupedSchedules[event.dateKey];
+                        props.setModalContent(
+                          <Schedule 
+                            schedule = {newSchedule} 
+                            setModalContent = {props.setModalContent} 
+                          />
+                        );
+                      }
                     }
                     
                   }

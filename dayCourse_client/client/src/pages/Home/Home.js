@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {useState, useEffect} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import {DayTable, GroupDatesByWeek} from '../Calendar/CalendarComponent'
+import {DayTable, GroupDatesByWeek, getDayName} from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
@@ -140,7 +140,7 @@ export default function Home() {
 
         <DayTable/> 
         {/* 주단위 달력 */}
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate}/>
+        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
 
         <ScheduleContainer>
           <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
