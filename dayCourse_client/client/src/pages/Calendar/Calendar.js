@@ -118,7 +118,7 @@ export default function Calendar() {
 
       <CalendarContainer>
         <DayTable/>
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate}/>
+        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate} selectedDate={selectedDate}/>
         {/* <GroupDatesByWeek startDay={startDay} endDay={endDay}/> */}
         <Footer/>
       </CalendarContainer> 
