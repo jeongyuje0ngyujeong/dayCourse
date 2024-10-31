@@ -6,14 +6,28 @@ const ChatMessage = styled.div`
     align-items: center;
     height:auto; 
     padding: 0.5rem 0.5rem;
-    background: #90B54C;
+    background: #ccc;
+    color: black;
     border-radius: 5px;
-    ${'' /* margin: 0.5rem 0; */}
-    ${'' /* margin-top: 0; */}
     width: fit-content;
     word-wrap: break-word;
     position: relative;
+    margin-left: 0;
 `;
+
+const ChatMessage2 = styled.div`
+    display: inline-flex;
+    align-items: center;
+    height:auto; 
+    padding: 0.5rem 0.5rem;
+    background: #90B54C;
+    border-radius: 5px;
+    width: fit-content;
+    word-wrap: break-word;
+    position: relative;
+    margin-left: 0;
+`;
+
 
 function Message({  user, text, name  }) {
   // console.log(text);
@@ -26,32 +40,19 @@ function Message({  user, text, name  }) {
   }
 
   return isSentByCurrentUser ? (
-    <div>
+    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
         <p style={{color: 'black'}}>{trimmedName}</p>
         <ChatMessage>
             {text}
         </ChatMessage>
     </div>
-    
-    // <div className='messageContainer justifyEnd'>
-    //   <p className='sentText pr-10'>{trimmedName}</p>
-    //   <div className='messageBox backgroundBlue'>
-    //     <p className='messageText colorWhite'>{text}</p>
-    //   </div>
-    // </div>
   ) : (
-    <div>
-        <p style={{color: 'red'}}>{user}</p>
-        <ChatMessage>
+    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
+        <p style={{color: 'black'}}>{user}</p>
+        <ChatMessage2>
             {text}
-        </ChatMessage>
+        </ChatMessage2>
     </div>
-    /* <div className='messageContainer justifyStart'>
-      <div className='messageBox backgroundLight'>
-        <p className='messageText colorDark'>{text}</p>
-      </div>
-      <p className='sentText pl-10 '>{user}</p>
-    </div> */
   )
 }
 
