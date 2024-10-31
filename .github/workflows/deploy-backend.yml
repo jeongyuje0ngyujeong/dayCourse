@@ -83,4 +83,6 @@ jobs:
               fi &&
               
               sudo setcap 'cap_net_bind_service=+ep' $(which node) 
-              (pm2 delete all || true) && JWT_SECRET=$JWT_SECRET GOOGLE_API_KEY=$GOOGLE_API_KEY TMAP_APP_KEY=$TMAP_APP_KEY pm2 start app.js"
+              (pm2 delete all || true) && 
+              JWT_SECRET=$JWT_SECRET GOOGLE_API_KEY=$GOOGLE_API_KEY TMAP_APP_KEY=$TMAP_APP_KEY pm2 start app.js &&
+              pm2 start socket.js"
