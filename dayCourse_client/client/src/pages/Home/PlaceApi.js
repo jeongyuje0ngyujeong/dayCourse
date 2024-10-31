@@ -130,13 +130,14 @@ export const recommendPlace = async (category, keyword=null) => {
         {},
         {
             headers: {
+                'Content-Type': 'application/json',
                 Authorization: `Bearer ${token}`, // Authorization 헤더 추가
             },
             params:{
                 userId,
             }
         });
-        return response.data;
+        return response.data.place;
 
     } catch (error) {
         console.error("장소 추천 실패:", error);

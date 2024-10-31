@@ -1,3 +1,4 @@
+
 import axios from 'axios';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL; // API 기본 URL
@@ -87,3 +88,30 @@ export const fetchImage = async (planId) => {
         throw error;
     }
 };
+
+
+
+// 모먼트 가져오기
+export async function getMoment() {
+    const userId = sessionStorage.getItem('userId');
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
+    if (!userId) {
+        throw new Error('사용자 ID가 정의되지 않았습니다.');
+    }
+
+    try {
+        const response = await axios.get(`${BASE_URL}/home/plan/moment`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            params: {
+                userId 
+            },
+        });
+        console.log('응답', response.data);
+        return response.data; // 서버 응답 구조에 따라 수정 필요
+    } catch (error) {
+        console.error('Error fetching moments:', error.response ? error.response.data : error);
+        throw error;
+    }
+}
