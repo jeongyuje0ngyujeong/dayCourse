@@ -55,15 +55,20 @@ export default function Schedule(props) {
 
   // console.log(selectedSchedules);
 
-  function updateSchedulesForDate(dateKey, planId) {
+  function updateSchedulesForDate(dateKey, planId, callback) {
     setGroupedSchedules(prevSchedules => {
-      const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
-      return {
-          ...prevSchedules,
-          [dateKey]: filteredEvents
-      };
+        const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
+        const newSchedules = {
+            ...prevSchedules,
+            [dateKey]: filteredEvents
+        };
+        
+        if (callback) callback(newSchedules);
+        
+        return newSchedules;
     });
-}
+
+  }
 
   return (
     <div>
@@ -91,19 +96,20 @@ export default function Schedule(props) {
                   if (`${event.start_userId}` === sessionStorage.getItem('id')){
                     const result = await deleteSchedule(event.planId);
                     // console.log(result);
-                    if (result === 'success'){
-                      updateSchedulesForDate(event.dateKey, event.planId)
-                    
-                      if (props.setModalContent)
-                      {
-                        const newSchedule = groupedSchedules[event.dateKey];
-                        props.setModalContent(
-                          <Schedule 
-                            schedule = {newSchedule} 
-                            setModalContent = {props.setModalContent} 
-                          />
-                        );
-                      }
+                    if (result === 'success') {
+                        updateSchedulesForDate(event.dateKey, event.planId, (newSchedules) => {
+                            if (props.setModalContent) {
+                                const newSchedule = newSchedules[event.dateKey];
+                                props.setModalContent(
+                                    <Schedule 
+                                        selectedSchedules={newSchedule} 
+                                        groupedSchedules={[]} 
+                                        setGroupedSchedules={setGroupedSchedules} 
+                                        setModalContent={props.setModalContent}
+                                    />
+                                );
+                            }
+                        });
                     }
                     
                   }
