@@ -419,6 +419,41 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     });
 });
 
+
+
+router.post('/plan/addRecommendedPlace', authenticateJWT, async (req, res) => {
+    const { planId, memo, place_name, address_name, l_priority, x, y } = req.body;
+    const userId = req.user.userId;
+
+    console.log("일정장소추가/추천장소")
+
+    const xx = parseFloat(x);
+    const yy = parseFloat(y);
+
+    // Check if required parameters are provided
+    if (!planId) {
+        return res.status(400).json({ error: 'userId or planId are required' });
+    }
+
+    const sql = `
+        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates, version)
+        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${xx} ${yy})'), ?
+        FROM Plan_Location
+        WHERE planId = ?;
+    `;
+
+    const values = [planId, memo, address_name, place_name, 1, planId];
+
+    db.query(sql, values, (err, result) => {
+        if (err) {
+            console.error('Error inserting data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        return res.status(200).json({ msg: 'success' });
+    });
+});
+
 router.post('/plan/place/priority', async (req, res) => {
     const { placeId, priority, version } = req.body;
 
@@ -559,20 +594,20 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
     const { enCategory, enKeyword } = req.params;
 
     const sql_category = `
-        SELECT placeAddr, placeName, placeId
+        SELECT placeAddr, placeName, placeId, placeLat, placeLng
         WHERE placeType = ?
         ORDER BY placeRate DESC;
     `;
 
     const sql_keyword = `
-        SELECT placeAddr, placeName, placeId
+        SELECT placeAddr, placeName, placeId, placeLat, placeLng
         FROM place_data
         WHERE placeKeyWord = ?
         ORDER BY placeRate DESC;
     `;
 
     const sql_all = `
-        SELECT placeAddr, placeName, placeId
+        SELECT placeAddr, placeName, placeId, placeLat, placeLng
         FROM place_data
         ORDER BY placeRate DESC;
     `;
@@ -615,6 +650,8 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         id: "0000",
         place_name: row.placeName,
         address_name: row.placeAddr,
+        x: row.placeLat,
+        y: row.placeLng,
         road_address_name: "12345", // 임시값
         phone: "01000000000" //필드없음
     }));
