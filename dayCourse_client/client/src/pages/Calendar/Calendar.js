@@ -3,10 +3,10 @@ import { Button } from '../../Button';
 import {useState} from 'react';
 import styled from 'styled-components';
 import { getSchedule, getSchedules} from "../../schedules";
-import Modal from 'react-modal';
+
 import { useNavigate, useLocation } from 'react-router-dom';
 import Schedule from "./Schedule";
-import {DayTable, GroupDatesByWeek} from './CalendarComponent'
+import {DayTable, GroupDatesByWeek, ScheduleModal} from './CalendarComponent'
 
 const MonthContainer = styled.div `
   display: flex;
@@ -230,6 +230,7 @@ export default function Calendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState([]);
+    
   
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
@@ -294,8 +295,8 @@ export default function Calendar() {
         {/* <GroupDatesByWeek startDay={startDay} endDay={endDay}/> */}
         <Footer/>
       </CalendarContainer> 
-     
-        
+
+      {/* <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>   */}
       </>
     );
   }
