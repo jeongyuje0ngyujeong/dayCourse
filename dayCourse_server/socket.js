@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
     const user = getUser(socket.id);
 
     // 메시지를 DB에 저장
-    const query = `INSERT INTO Chat (planID, userID, userName, message) VALUES (?, ?, ?)`;
+    const query = `INSERT INTO Chat (planID, userID, userName, message) VALUES (?, ?, ?, ?)`;
     const values = [user.room, user.userId, user.userName, message]; // planID를 room으로, userID를 user.id로 가정
 
     db.query(query, values, (error, results) => {
