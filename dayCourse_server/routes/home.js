@@ -665,7 +665,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         }
 
         console.log("쿼리 실행");
-        const [result] = await db.query(sql, Array.isArray(values) ? values : [values]);
+        const [result] = await db.query(sql, [values]);
         rows = result;
     }
 
