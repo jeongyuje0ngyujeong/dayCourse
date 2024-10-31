@@ -20,6 +20,20 @@ const ChatMessage2 = styled.div`
     align-items: center;
     height:auto; 
     padding: 0.5rem 0.5rem;
+    background: #ccc;
+    color: black;
+    border-radius: 5px;
+    width: fit-content;
+    word-wrap: break-word;
+    position: relative;
+    margin-left: 0;
+`;
+
+const ChatMessage2 = styled.div`
+    display: inline-flex;
+    align-items: center;
+    height:auto; 
+    padding: 0.5rem 0.5rem;
     background: #90B54C;
     border-radius: 5px;
     width: fit-content;
@@ -27,6 +41,7 @@ const ChatMessage2 = styled.div`
     position: relative;
     margin-left: 0;
 `;
+
 
 function Message({  user, text, name  }) {
   // console.log(text);
@@ -40,15 +55,16 @@ function Message({  user, text, name  }) {
 
   return isSentByCurrentUser ? (
     <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
+    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
         <p style={{color: 'black'}}>{trimmedName}</p>
         <ChatMessage>
             {text}
         </ChatMessage>
     </div>
   ) : (
-    <div>
-        <p style={{color: 'red'}}>{user}</p>
-        <ChatMessage>
+    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
+        <p style={{color: 'black'}}>{user}</p>
+        <ChatMessage2>
             {text}
         </ChatMessage2>
     </div>
