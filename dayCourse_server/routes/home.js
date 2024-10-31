@@ -381,19 +381,19 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
     const { planId } = req.body;
     const userId = req.user.userId;
 
-    console.log('일정삭제')
-    console.log(req.body)
+    console.log('일정 삭제');
+    console.log(req.body);
 
-    // Check if required parameters are provided
+    // 필수 파라미터 확인
     if (!planId) {
-        return res.status(400).json({ error: 'userId or planId are required' });
+        return res.status(400).json({ error: 'planId는 필수입니다.' });
     }
 
     const sql_pu = `
       DELETE FROM Plan_User 
       WHERE planId = ? AND userId = ?;
-      `;
-
+    `;
+    
     const sql = `
       DELETE FROM Plan 
       WHERE planId = ? AND start_userId = ?;
@@ -401,26 +401,19 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
 
     const values = [planId, userId];
 
-    db.query(sql_pu, values, (err, result_pu) => {
-        if (err) {
-            console.error('Error inserting data:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
+    try {
+        // 첫 번째 쿼리 실행
+        await db.promise().query(sql_pu, values);
 
+        // 두 번째 쿼리 실행
+        await db.promise().query(sql, values);
 
-
-        db.query(sql, values, (err, result) => {
-            if (err) {
-                console.error('Error inserting data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            // Successful insertion response
-        });
-
-
-        return res.status(200).json({ msg: 'success' });
-    });
+        // 성공적인 응답 전송
+        return res.status(200).json({ msg: '성공적으로 삭제되었습니다.' });
+    } catch (err) {
+        console.error('데이터베이스 오류:', err);
+        return res.status(500).json({ error: '데이터베이스 오류' });
+    }
 });
 
 
