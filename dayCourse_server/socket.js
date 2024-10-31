@@ -3,7 +3,6 @@ const socketio = require('socket.io')
 const http = require('http')
 
 const cors = require('cors')
-const router = require('./router')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users')
 
 const PORT = 3030
@@ -19,7 +18,11 @@ const io = socketio(server, {
   });
 
 app.use(cors())
-app.use(router)
+
+app.get('/', (req, res) => {
+  res.send({ response: "접속 테스트" }).status(200)
+})
+
 io.on('connection', (socket) => {
   console.log('새로운 유저가 접속했습니다.')
   
