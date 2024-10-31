@@ -13,12 +13,12 @@ const PORT = process.env.PORT || 5001
 const app = express();
 const server = http.createServer(app)
 const io = socketio(server, {
-  cors: {
-    origin: '*',  // React 클라이언트 허용
-    methods: ['GET', 'POST'],         // 허용할 메서드
-    credentials: true                 // 쿠키 사용 허용
-  }
-});
+    cors: {
+      origin: '*',  // React 클라이언트 허용
+      methods: ['GET', 'POST'],         // 허용할 메서드
+      credentials: true                 // 쿠키 사용 허용
+    }
+  });
 
 app.use(cors())
 
