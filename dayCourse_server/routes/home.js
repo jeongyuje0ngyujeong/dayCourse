@@ -610,7 +610,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
 
     // 필드 재명명하기
     const renamedUsers = rows.map(row => ({
-        placeId: "0000",
+        id: "0000",
         place_name: row.placeName,
         address_name: row.placeAddr,
         road_address_name: "12345", // 임시값
