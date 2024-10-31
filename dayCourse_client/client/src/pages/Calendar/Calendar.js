@@ -2,6 +2,11 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
+import { getSchedule, getSchedules} from "../../schedules";
+
+import { useNavigate, useLocation } from 'react-router-dom';
+import Schedule from "./Schedule";
+import {DayTable, GroupDatesByWeek, ScheduleModal} from './CalendarComponent'
 import { getSchedules} from "../../schedules";
 import {GroupDatesByWeek} from './CalendarComponent'
 import {DayTable, GroupDatesByWeek} from './CalendarComponent'
@@ -29,8 +34,6 @@ const CalendarContainer = styled.div `
 export default function Calendar() {
       const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState([]);
-      const [groupedSchedules, setGroupedSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState([]);
     
   
@@ -119,8 +122,8 @@ export default function Calendar() {
         {/* <GroupDatesByWeek startDay={startDay} endDay={endDay}/> */}
         <Footer/>
       </CalendarContainer> 
-     
-        
+
+      {/* <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>   */}
       </>
     );
   }
