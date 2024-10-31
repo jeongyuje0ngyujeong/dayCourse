@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance} from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance, addRecommendedPlace} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
@@ -93,14 +93,19 @@ const LandingPage = ({ userId, planId, place, context }) => {
     // };
 
 
-    const handlePlaceClick = async (place) => {
+    const handlePlaceClick = async (place, isRecommended = false) => {
+        console.log('추가할 장소:', place);
         try {
+          if (isRecommended) {
+            await addRecommendedPlace(userId, planId, place);
+          } else {
             await addPlace(userId, planId, place);
-            await fetchExistPlace(); // 상태 갱신
+          }
+          await fetchExistPlace(); // 상태 갱신
         } catch (error) {
-            console.error("장소 추가 실패:", error);
+          console.error("장소 추가 실패:", error);
         }
-    };
+      };
 
     const removePlace = async (placeId) => {
         try {
@@ -148,7 +153,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         fetchExistPlace(); // 초기 렌더링 시 기존 장소를 가져옴
     }, [userId, planId]);
 
-    // TMAP 거리 계산 API (현재 주석 처리됨)
+  //  TMAP 거리 계산 API (현재 주석 처리됨)
 
     // useEffect(() => {
     //     const loadDistance = async () => {
@@ -206,7 +211,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                                     <h5>{selectedPlaces.indexOf(place) + 1}. {place.place_name}</h5>
                                                     {place.place && <span>{place.place}</span>}
                                                     <span>{place.address_name}</span>
-                                                    <span>{place.phone}</span>
+                                                    {/* <span>{place.phone}</span> */}
                                                     <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
                                                 </PlaceBox>
                                             )}

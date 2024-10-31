@@ -144,3 +144,25 @@ export const recommendPlace = async (category, keyword=null) => {
         throw error;
     }
 };
+
+
+
+
+
+// 추천 장소 추가 시 사용
+export const addRecommendedPlace = async (userId, planId, place) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/home/plan/addRecommendedPlace`, {
+            userId,
+            planId,
+            place_name: place.place_name,
+            address_name: place.address_name,
+            l_priority: place.l_priority || 1
+
+        });
+        return response.data;
+    } catch (error) {
+        console.error('추천 장소 추가 실패: ', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
