@@ -51,12 +51,14 @@ export const uploadImage = async (selectedFile, planId) => {
     }
 
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/${planId}/images`, formData, {
+        const response = await axios.post(`${BASE_URL}/home/plan/upload/${planId}/images`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
                 Authorization: `Bearer ${token}`
             },
         });
+        const result = response.data
+        console.log(result);
         return response.data;
     } catch (error) {
         console.error("업로드 실패:", error.response ? error.response.data : error);
