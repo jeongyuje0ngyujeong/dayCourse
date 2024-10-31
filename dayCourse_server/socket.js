@@ -34,6 +34,7 @@ io.on('connection', (socket) => {
 
     const query = `
       SELECT userName, message
+      FROM Chat
       WHERE planID = ?
       ORDER BY timestamp ASC;
     `;
@@ -43,8 +44,6 @@ io.on('connection', (socket) => {
         console.error('메시지 조회 중 오류 발생:', error);
         return callback(error);
       }
-
-
 
       console.log("메세지 :", results)
       const messages = results.map(result => ({
