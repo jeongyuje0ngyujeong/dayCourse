@@ -1,13 +1,13 @@
+// RightSidebar.js
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
-
 import Chat from '../Chat/Chat';
 
-
+// Styled Components
 const SidebarContainer = styled.div`
     width: 20%;
     padding: 20px;
@@ -39,33 +39,65 @@ const SidebarButton = styled.button`
     cursor: pointer;
 
     &:hover {
-        background-color: #90B54C;
+        background-color: #78A743; /* hover 색상 변경 */
     } 
 `;
 
+const ListItem = styled.li`
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-bottom: 1px solid #ced4da;
+    color: #000; /* 텍스트 색상 설정 */
+    &:hover {
+        background-color: #e6e6e6;
+    }
+`;
 
+const PlaceTitle = styled.h5`
+    color: #000;
+    margin: 0 0 5px 0;
+`;
 
-
+const PlaceAddress = styled.span`
+    color: #000;
+`;
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
     console.log("RightSidebar Props - userId:", userId, "planId:", planId); // 로그 확인
-    console.log('planInfo: ',planInfo);
+    console.log('planInfo: ', planInfo);
+    console.log('places prop:', places); // places가 올바르게 전달되는지 확인
+
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
-    const [recommendPlaces, setRecommendPlaces] = useState([]) 
-
+    const [recommendPlaces, setRecommendPlaces] = useState([]); 
+    const [error, setError] = useState(null); // 에러 상태 추가
 
     useEffect(() => {
         const fetchRecommend = async () => {
             if (selectedCategory && selectedKeyword) {
                 try {
                     const data = await recommendPlace(selectedCategory, selectedKeyword);
-                    setRecommendPlaces(data);
+                    console.log('recommendPlace data:', data); // 데이터 확인
+
+                    // 추가 로그: Array.isArray(data)
+                    console.log('Is data an array?', Array.isArray(data));
+
+                    // 데이터 구조에 따라 설정
+                    if (Array.isArray(data)) {
+                        setRecommendPlaces(data);
+                    } else {
+                        console.error('Unexpected data format:', data);
+                        setRecommendPlaces([]);
+                        setError('추천 장소 데이터 형식이 올바르지 않습니다.');
+                    }
                 } catch(error) {
-                    console.error('추천 장소 가져오기 실패', error)
+                    console.error('추천 장소 가져오기 실패', error);
+                    setRecommendPlaces([]); // 에러 발생 시 빈 배열 설정
+                    setError('추천 장소를 가져오는 데 실패했습니다.');
                 }
             }
         };
@@ -85,25 +117,32 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     };
 
     const handlePlaceClick = (place) => {
-            onPlaceClick(place); // 부모 컴포넌트로 장소 정보를 전달
-        };
-
-
-    const renderPlaceList = (placeList) => {
-        return (
-            <ul id="places-list">
-                {places.map((place, index) => (
-                    <li key={index} onClick={() => handlePlaceClick(place)} style={{ cursor: 'pointer' }}>
-                        <h5>{place.place_name}</h5>
-                        {place.road_address_name && <span>{place.road_address_name}</span>}
-                        <span>{place.address_name}</span>
-                        <span>{place.phone}</span>
-                    </li>
-                ))}
-        </ul>
-        );
+        onPlaceClick(place); // 부모 컴포넌트로 장소 정보를 전달
     };
 
+    const renderPlaceList = (placeList) => {
+        console.log('Rendering place list:', placeList); // 디버깅을 위한 로그 추가
+
+        if (!Array.isArray(placeList)) {
+            console.error('placeList is not an array:', placeList);
+            return <p>데이터 형식 오류</p>; // 사용자에게 오류 메시지 표시
+        }
+        return (
+            <ul id="places-list" style={{ listStyle: "none", padding:0 }}>
+                {placeList.map((place, index) => (
+                    <ListItem 
+                        key={index} 
+                        onClick={() => handlePlaceClick(place)} 
+                    >
+                        <PlaceTitle>{place.place_name}</PlaceTitle>
+                        <PlaceAddress>{place.address_name}</PlaceAddress><br />
+                        {/* 필요에 따라 평점 표시 */}
+                        {/* {place.placeRate && <span>평점: {place.placeRate}</span>} */}
+                    </ListItem>
+                ))}
+            </ul>
+        );
+    };
 
     const renderTab = () => {
         switch (activeTab) {
@@ -123,42 +162,42 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                       
                         <div>
                             <CategoryButton 
-                            selectedCategory={selectedCategory} 
-                            setSelectedCategory={setSelectedCategory} 
-                        />
-                        {selectedCategory && (
-                            <KeywordButton 
                                 selectedCategory={selectedCategory} 
-                                selectedKeyword={selectedKeyword} // 선택된 키워드 전달
-                                setSelectedKeyword={setSelectedKeyword} // 키워드 상태 업데이트 함수 전달
+                                setSelectedCategory={setSelectedCategory} 
                             />
-                        )}
+                            {selectedCategory && (
+                                <KeywordButton 
+                                    selectedCategory={selectedCategory} 
+                                    selectedKeyword={selectedKeyword} // 선택된 키워드 전달
+                                    setSelectedKeyword={setSelectedKeyword} // 키워드 상태 업데이트 함수 전달
+                                />
+                            )}
                         </div>
 
-                        {selectedCategory && selectedKeyword && (
+                        {selectedCategory && selectedKeyword ? (
                             <div id="recommend-result">
                                 <h5>추천장소</h5>
-                                {recommendPlaces.length === 0 ? (
+                                {error && <p style={{ color: 'red' }}>{error}</p>}
+                                {recommendPlaces.length === 0 && !error ? (
                                     <p>추천 결과 없음</p>
                                 ) : (
                                     renderPlaceList(recommendPlaces)
                                 )}
-                                </div>
+                            </div>
+                        ) : (
+                            <div id="search-result">
+                                {places.length === 0 ? (
+                                    <p>검색 결과가 없습니다</p>
+                                ) : (
+                                    renderPlaceList(places)
+                                )}
+                            </div>
                         )}
-
-
-                        <div id="search-result">
-                            {places.length === 0 ? (
-                                <p>검색 결과가 없습니다</p>
-                            ) : (
-                                renderPlaceList(places)
-                            )}
-                        </div>
                     </div>
                 );
 
-            case 'chat' :
-                return <Chat userId={userId} planInfo={planInfo}/>; //여기에 관련 내용 추가
+            case 'chat':
+                return <Chat userId={userId} planInfo={planInfo}/>; // 채팅 컴포넌트 추가
 
             default:
                 return null;
@@ -167,7 +206,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
 
     return (
         <SidebarContainer>
-            <div>
+            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
                 <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>검색</TabButton>
                 <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')}>채팅</TabButton>
             </div>
