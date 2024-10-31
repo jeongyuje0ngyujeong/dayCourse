@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
       ORDER BY timestamp ASC;
     `;
 
-    db.query(query, [userId], (error, results) => {
+    db.query(query, [room], (error, results) => {
       if (error) {
         console.error('메시지 조회 중 오류 발생:', error);
         return callback(error);
