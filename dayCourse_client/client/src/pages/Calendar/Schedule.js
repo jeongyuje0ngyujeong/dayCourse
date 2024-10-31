@@ -1,6 +1,7 @@
 import { Form, useLoaderData, redirect, Link, useOutletContext } from "react-router-dom";
 import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
+import {useState, useEffect} from 'react';
 // import {useState,useEffect } from 'react';
 
 // import { Button } from '../../Button';
@@ -48,14 +49,23 @@ export default function Schedule(props) {
   
   const loaderData = useLoaderData();
   
-  const [schedules, setSchedules] = useOutletContext() || [null, () => {}];
-  const scheduleData = props.schedule || loaderData.schedule;
+  const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [null, () => {}];
 
-  console.log(loaderData, schedules, {schedules: [scheduleData]});
+  console.log(selectedSchedules);
+
+  function updateSchedulesForDate(dateKey, planId) {
+    setGroupedSchedules(prevSchedules => {
+      const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
+      return {
+          ...prevSchedules,
+          [dateKey]: filteredEvents
+      };
+    });
+}
 
   return (
     <div>
-      {scheduleData && scheduleData.length > 0 ? scheduleData.map((event, index) => (
+      {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
           <div>
             <h3>
@@ -73,9 +83,10 @@ export default function Schedule(props) {
                 method="post"
                 action={`${event.planId}/destroy`}
                 onSubmit={async(e) => {
-                  const newSchedules = await deleteSchedule(event.planId);
-                  
-                  await setSchedules(newSchedules);
+                  e.preventDefault()
+                  const result = await deleteSchedule(event.planId);
+                  if (result === 'success' && `${event.start_userId}` === sessionStorage.getItem('id'))
+                    updateSchedulesForDate(event.dateKey, event.planId)
 
                   if (props.setModalContent)
                   {
