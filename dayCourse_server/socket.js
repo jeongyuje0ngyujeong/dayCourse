@@ -27,23 +27,48 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
   console.log('새로운 유저가 접속했습니다.')
 
-  socket.on('join', ({userId, name, room }, callback) => {
+  socket.on('join', ({ userId, name, room }, callback) => {
     console.log('userId', userId, 'name:', name, 'room:', room);
     const { error, user } = addUser({ id: socket.id, userId, name, room })
     if (error) callback({ error: '에러가 발생했습니다.' })
 
-    socket.emit('message', {
-      user: 'admin',
-      text: `${user.name}님, 환영합니다.`,
-    })
+    const query = `
+      SELECT userName, message
+      WHERE planID = ?
+      ORDER BY timestamp ASC;
+    `;
 
-    io.to(user.room).emit('roomData', {
-      room: user.room,
-      users: getUsersInRoom(user.room),
-    })
+    db.query(query, [userId], (error, results) => {
+      if (error) {
+        console.error('메시지 조회 중 오류 발생:', error);
+        return callback(error);
+      }
 
-    socket.join(user.room)
-    callback()
+
+
+      console.log("메세지 :", results)
+      const messages = results.map(result => ({
+        userName: result.userName,
+        message: result.message
+      }));
+
+      // 사용자 환영 메시지를 추가합니다.
+      messages.push({
+        userName: 'admin',
+        message: `${user.name}님, 환영합니다.`
+      });
+
+      socket.emit('message', messages);
+
+      io.to(user.room).emit('roomData', {
+        room: user.room,
+        users: getUsersInRoom(user.room),
+      })
+
+      socket.join(user.room)
+      callback(); // 콜백 호출
+    });
+
   })
 
   socket.on('sendMessage', (message, callback) => {
