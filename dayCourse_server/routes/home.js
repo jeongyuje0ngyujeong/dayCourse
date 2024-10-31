@@ -800,7 +800,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
 
         // 결과가 비어 있지 않은지 확인
         if (result.length === 0) {
-            return res.status(404).send('플랜이 없습니다');
+            return res.status(200).send('플랜이 없습니다');
         }
 
         const planId = result[0].planId; // 가장 최근의 플랜을 가져옵니다
@@ -813,7 +813,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             const data = await s3.listObjectsV2(params).promise();
 
             if (!data.Contents || data.Contents.length === 0) {
-                return res.status(404).send('이미지가 없습니다');
+                return res.status(200).send('이미지가 없습니다');
             }
 
             const imagesData = [];
