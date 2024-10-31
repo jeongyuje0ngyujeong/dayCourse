@@ -168,7 +168,7 @@ export function GroupDatesByWeek(props){
     }
     else{
       // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
-      navigate(`schedules/${params}`);
+      navigate(`/main/home/schedules/${params}`);
     }
   };
 
