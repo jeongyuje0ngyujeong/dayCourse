@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import {useState, useEffect} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
+import {DayTable, GroupDatesByWeek} from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
@@ -75,10 +75,11 @@ const ScheduleContainer = styled.div `
 `
 
 
+
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2,'0')}`);
+    const [selectedDate, setSelectedDate] = useState([]);
     const selectedSchedules = groupedSchedules[selectedDate];
 
     useEffect(() => {
@@ -137,17 +138,15 @@ export default function Home() {
             <Button onClick={() => handleNextWeek()} $border='none'>{'>'}</Button>
         </MonthContainer>
 
+        <DayTable/> 
         {/* 주단위 달력 */}
-        <CalendarContainer>
-          {/* <DayTable/>  */}
-          <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-          <ScheduleContainer>
-            <Outlet context={[selectedSchedules, setGroupedSchedules]}/>
-          </ScheduleContainer>
-          <Footer/>
-        </CalendarContainer>
+        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate}/>
 
+        <ScheduleContainer>
+          <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
+        </ScheduleContainer>
 
+        <Footer/>
         </>
     )
 
