@@ -20,6 +20,7 @@ const WeekBar = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
+  
   justify-content: space-between;
 `
 
@@ -55,25 +56,29 @@ const MonthContainer = styled.div `
   align-items: center; 
 `
 const CalendarContainer = styled.div `
+  
   display: flex;
   flex-direction: column;
   margin: 0 auto; 
   width: 100%;
-  height: 100%;
+  height: 20%;
+  padding: 0 3rem;
 `
 
 const ScheduleContainer = styled.div `
+
   display: flex;
   flex-direction: column;
-  margin: 1rem auto; 
+  border-top: 2px solid #eee;
+  ${'' /* margin: 1rem auto;  */}
+  clear: left;
 `
-
 
 
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(String(currentDate));
     const selectedSchedules = groupedSchedules[selectedDate];
 
     useEffect(() => {
@@ -132,15 +137,17 @@ export default function Home() {
             <Button onClick={() => handleNextWeek()} $border='none'>{'>'}</Button>
         </MonthContainer>
 
-        <DayTable/> 
         {/* 주단위 달력 */}
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+        <CalendarContainer>
+          {/* <DayTable/>  */}
+          <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          <ScheduleContainer>
+            <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
+          </ScheduleContainer>
+          <Footer/>
+        </CalendarContainer>
 
-        <ScheduleContainer>
-          <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
-        </ScheduleContainer>
 
-        <Footer/>
         </>
     )
 

@@ -19,7 +19,7 @@ export async function action(params) {
 }
 
 const EventContainer = styled.div `
-  border: 1px, solid;
+  border: 2px solid #ccc;
   border-radius: 1rem;
   padding: 1rem;
   ${'' /* margin-bottom: 1rem; */}

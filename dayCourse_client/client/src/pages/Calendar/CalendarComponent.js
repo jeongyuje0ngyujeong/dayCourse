@@ -5,34 +5,42 @@ import Modal from 'react-modal';
 import Schedule from './Schedule';
 
 const Cell = styled.td`
+  flex: 1;
   color: #818181;
   vertical-align: baseline;
   text-align: center;
   ${'' /* border: 1px solid; */}
   padding: 0.5rem;
-  font-weight: 600;
+  ${'' /* font-weight: 600; */}
   ${'' /* max-height: 5rem;
   overflow: hidden; */}
   &:hover {
-    background-color: #e0e0e0; 
+    background-color: #eee; 
   }
 `
-const DateTable = styled.table`
+const DateTable = styled.tr`
+  display: flex;
   width: 100%;
-  ${'' /* height: 100%; */}
-  max-height: 7rem;
-  border-top: 1px solid;
-  border-color: green;
+  height: 100%;
+  min-height: 9rem;
+  border-top: 2px solid #eee;
+  ${'' /* border-color: #90B54C; */}
   border-collapse: collapse;
   table-layout: fixed;
+  overflow: hidden;
 `
 
-const StyleDayT = styled.table`
-  height: 5%;
+const StyleDayT = styled.tr`
+  display: flex;
+  height: 20%;
   width: 100%;
-  table-layout: fixed;
-  color: #818181;
-  margin-top: 1rem;
+  ${'' /* table-layout: fixed; */}
+  margin-bottom: 1rem;
+  ${'' /* color: #818181; */}
+  ${'' /* margin-top: 1rem; */}
+  justify-content: space-between;
+  color: black;
+  text-align:center;
 `
 const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -43,13 +51,33 @@ export const getDayName = (day)=> {
 export function DayTable(){
   return (
     <StyleDayT>
-      <tbody>
-        <tr>
+        {/* <tr> */}
           {daysOfWeek.map((day, index) => (
-            <th key={index} title={day}>{day}</th>
+            <th
+      key={index}
+      title={day}
+      style={{
+        flex: '1',
+        padding: '0.5rem',
+        textAlign: 'center',
+        verticalAlign: 'middle',
+      }}
+    >
+      <div style={{
+        border: '2px solid #90B54C',
+        borderRadius: '50%',
+        width: '2rem',
+        height: '2rem',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        margin: '0 auto' // 중앙 정렬
+      }}>
+        {day}
+      </div>
+    </th>
           ))}
-        </tr>
-      </tbody>
+        {/* </tr> */}
     </StyleDayT>
   )
 }
@@ -100,7 +128,7 @@ const customModalStyles: ReactModal.Styles = {
 };
 
 export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, selectedDate, setSelectedDate}){
-    const weeks = []; 
+    const weeks = [<DayTable/>]; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -125,7 +153,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
       }
       else{
         // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
-        navigate(`schedules/${params}`);
+        navigate(`/main/home/schedules/${params}`)
       }
     };
     
@@ -137,15 +165,25 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
             <Cell 
                 key={dateKey} 
                 onClick={(e)=>handleCellClick(dateKey, e)}
+                style={{
+                  border: dateKey === selectedDate ? "2px solid #90B54C" : "none",
+                  // borderLeft: dateKey === selectedDate ? "2px solid #90B54C" : "none",
+                  borderRadius: '10px'
+                }}
             >
-                <div>{new Date(currentDate).getDate().toString()}</div>
+                <div style={{color:'black', fontWeight: '500'}}>{new Date(currentDate).getDate().toString()}</div>
                 
-                <div>
-                    {events && events.length > 0 ? 
-                    events.map((event, index) => (
-                        <div key={index}> {event.planName}</div>
-                        ))
-                    :null}
+                <div style={{ fontWeight: '500' }}>
+                  {events && events.length > 0 ? (
+                    <>
+                      {events.slice(0, 3).map((event, index) => (
+                        <div key={index}>{event.planName}</div>
+                      ))}
+                      {events.length > 3 && (
+                        <div>+{events.length - 3}</div>
+                      )}
+                    </>
+                  ) : null}
                 </div>
             </Cell>
         );
@@ -153,9 +191,11 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
         if (currentWeek.length === 7 || currentDate.getDay() === 6) {
           weeks.push(
             <DateTable key={currentDate.toISOString().slice(0, 10)}>
-              <tbody>
-                <tr>{currentWeek}</tr>
-              </tbody>
+              {/* <tbody> */}
+                
+                  {currentWeek}
+                
+              {/* </tbody> */}
             </DateTable>
           )
           currentWeek = []; 
@@ -167,9 +207,9 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     if (currentWeek.length > 0) {
     weeks.push(
         <DateTable key={currentDate.toISOString().slice(0, 10)}>
-        <tbody>
-            <tr>{currentWeek}</tr>
-        </tbody>
+            <tr>
+              {currentWeek}
+            </tr>
         </DateTable>
     );
     }
