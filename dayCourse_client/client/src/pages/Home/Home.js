@@ -54,7 +54,7 @@ const ScheduleContainer = styled.div `
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState(String(currentDate));
+    const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2,'0')}`);
     const selectedSchedules = groupedSchedules[selectedDate];
 
     useEffect(() => {

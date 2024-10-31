@@ -52,7 +52,7 @@ export default function Schedule(props) {
   
   const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
 
-  console.log(selectedSchedules);
+  // console.log(selectedSchedules);
 
   function updateSchedulesForDate(dateKey, planId) {
     setGroupedSchedules(prevSchedules => {
@@ -78,7 +78,7 @@ export default function Schedule(props) {
             
             <ButtonContainer>
               <Link to={`/main/PlacePage/${event.planId}`}>
-                <button type="submit">Edit</button>
+                <button type="submit">상세일정</button>
               </Link>
               <Form
                 method="post"
@@ -88,7 +88,7 @@ export default function Schedule(props) {
 
                   if (`${event.start_userId}` === sessionStorage.getItem('id')){
                     const result = await deleteSchedule(event.planId);
-                    console.log(result);
+                    // console.log(result);
                     if (result === 'success'){
                       updateSchedulesForDate(event.dateKey, event.planId)
                     
@@ -108,7 +108,8 @@ export default function Schedule(props) {
                   
                 }}
               >
-                <button type="submit">Delete</button>
+              {String(event.start_userId) === sessionStorage.getItem('id') ?
+                <button type="submit">Delete</button>:null}
               </Form>
             </ButtonContainer>
           </div>
