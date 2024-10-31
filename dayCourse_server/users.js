@@ -7,7 +7,8 @@ const addUser = ({id, name, room}) => {
 //   room = room.trim().toLowerCase();
 
   // Check for existing user
-  const existingUser = users.find((user) => user.room === room && user.name === name);
+  
+  const existingUser = users.find((user) => user.room === room && user.name === name && user.userId === userId)
 
   // Validate name and room
   if (!name || !room) return {error: '이름과 방이 필요해요.'};
@@ -18,7 +19,7 @@ const addUser = ({id, name, room}) => {
   }
 
   // Store user
-  const user = {id, name, room};
+  const user = {id, userId, name, room};
   users.push(user);
   console.log(users);
 
