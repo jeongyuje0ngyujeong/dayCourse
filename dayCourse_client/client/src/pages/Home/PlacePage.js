@@ -34,14 +34,15 @@ const PlacePage = () => {
     const loaderData = useLoaderData().plan;
     // console.log('loadData: ', loaderData);
     const userId = sessionStorage.getItem('userId');
+    const id = sessionStorage.getItem('id');
     const planId = loaderData.planId; // loaderData에서 planId를 가져옴
     const place = loaderData.place;
-
+    console.log(loaderData.start_userId, userId);
     return (
         <div>
             <div style={{display:'flex', justifyContent: 'space-between', width:'70%', alignItems:'center'}}>
                 <h2>{loaderData.planName}</h2>
-                {loaderData.start_userId === userId ?(
+                {String(loaderData.start_userId) === id ?(
                     <Form action={`/main/schedules/create/${planId}`}>
                         <Button type='submit' width='6rem' height='3rem' $background='white' color='inherit'>일정 수정</Button>
                     </Form>  
