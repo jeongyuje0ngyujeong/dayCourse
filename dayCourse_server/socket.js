@@ -46,14 +46,14 @@ io.on('connection', (socket) => {
       }
 
       const messages = results.map(result => ({
-        userName: result.userName,
-        message: result.message
+        user: result.userName,
+        text: result.message
       }));
 
       // 사용자 환영 메시지를 추가합니다.
       messages.push({
-        userName: 'admin',
-        message: `${user.name}님, 환영합니다.`
+        user: 'admin',
+        text: `${user.name}님, 환영합니다.`
       });
 
       socket.emit('message', messages);
