@@ -1,7 +1,7 @@
 const users = [];
 
 // This is the function that will be called when a user joins a room
-const addUser = ({id, name, room}) => {
+const addUser = ({id, userId, name, room}) => {
   // Clean the data
   name = name.trim().toLowerCase();
 //   room = room.trim().toLowerCase();
