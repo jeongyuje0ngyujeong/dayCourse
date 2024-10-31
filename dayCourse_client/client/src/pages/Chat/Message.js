@@ -28,7 +28,6 @@ const ChatMessage2 = styled.div`
     margin-left: 0;
 `;
 
-
 function Message({  user, text, name  }) {
   // console.log(text);
   let isSentByCurrentUser = false;  
@@ -47,9 +46,9 @@ function Message({  user, text, name  }) {
         </ChatMessage>
     </div>
   ) : (
-    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
-        <p style={{color: 'black'}}>{user}</p>
-        <ChatMessage2>
+    <div>
+        <p style={{color: 'red'}}>{user}</p>
+        <ChatMessage>
             {text}
         </ChatMessage2>
     </div>

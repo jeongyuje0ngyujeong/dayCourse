@@ -1,12 +1,10 @@
 import {useLoaderData,} from "react-router-dom";
 import KakaoMap from './KakaoMap';
 import { Button } from '../../Button';
-
 // import styled from "styled-components";
 import LandingPage from './LandingPage';
 import { getEvent } from "../../schedules";
 import { Form} from "react-router-dom";
-
 
 
 // const Box = styled.div`
@@ -35,6 +33,7 @@ export async function loader({ params }) {
 const PlacePage = () => {
     const loaderData = useLoaderData().plan;
     // console.log('loadData: ', loaderData);
+    // console.log('loadData: ', loaderData);
     const userId = sessionStorage.getItem('userId');
     const id = sessionStorage.getItem('id');
     const planId = loaderData.planId; // loaderData에서 planId를 가져옴
@@ -44,7 +43,7 @@ const PlacePage = () => {
         <div>
             <div style={{display:'flex', justifyContent: 'space-between', width:'70%', alignItems:'center'}}>
                 <h2>{loaderData.planName}</h2>
-                {String(loaderData.start_userId) === id ?(
+                {loaderData.start_userId === userId ?(
                     <Form action={`/main/schedules/create/${planId}`}>
                         <Button type='submit' width='6rem' height='3rem' $background='white' color='inherit'>일정 수정</Button>
                     </Form>  
