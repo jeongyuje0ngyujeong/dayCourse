@@ -557,21 +557,20 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
     const { enCategory, enKeyword } = req.params;
 
     const sql_category = `
-        SELECT placeAddr, placeName, placeRate
-        FROM place_data
+        SELECT placeAddr, placeName, placeId
         WHERE placeType = ?
         ORDER BY placeRate DESC;
     `;
 
     const sql_keyword = `
-        SELECT placeAddr, placeName
+        SELECT placeAddr, placeName, placeId
         FROM place_data
         WHERE placeKeyWord = ?
         ORDER BY placeRate DESC;
     `;
 
     const sql_all = `
-        SELECT placeAddr, placeName
+        SELECT placeAddr, placeName, placeId
         FROM place_data
         ORDER BY placeRate DESC;
     `;
@@ -611,6 +610,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
 
     // 필드 재명명하기
     const renamedUsers = rows.map(row => ({
+        placeId: row.placeId,
         place_name: row.placeName,
         address_name: row.placeAddr,
         road_address_name: "12345", // 임시값
