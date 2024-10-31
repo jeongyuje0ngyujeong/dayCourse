@@ -42,7 +42,7 @@ const PlacePage = () => {
         <div>
             <div style={{display:'flex', justifyContent: 'space-between', width:'70%', alignItems:'center'}}>
                 <h2>{loaderData.planName}</h2>
-                {String(loaderData.start_userId) === id ?(
+                {loaderData.start_userId === userId ?(
                     <Form action={`/main/schedules/create/${planId}`}>
                         <Button type='submit' width='6rem' height='3rem' $background='white' color='inherit'>일정 수정</Button>
                     </Form>  
