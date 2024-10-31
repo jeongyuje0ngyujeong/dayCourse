@@ -4,6 +4,7 @@ import {useState,useEffect } from 'react';
 import styled from 'styled-components';
 import { getSchedules} from "../../schedules";
 import {GroupDatesByWeek} from './CalendarComponent'
+import {DayTable, GroupDatesByWeek} from './CalendarComponent'
 
 const MonthContainer = styled.div `
   display: flex;
@@ -26,35 +27,37 @@ const CalendarContainer = styled.div `
 `
 
 export default function Calendar() {
-    const [currentDate, setCurrentDate] = useState(new Date());
+      const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
+    const [selectedDate, setSelectedDate] = useState([]);
+      const [groupedSchedules, setGroupedSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState([]);
     
   
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth();
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      
+      const firstDayOfMonth = new Date(year, month, 1);
+      const startDay = new Date(firstDayOfMonth);
+      startDay.setDate(1 - firstDayOfMonth.getDay());
     
-    const firstDayOfMonth = new Date(year, month, 1);
-    const startDay = new Date(firstDayOfMonth);
-    startDay.setDate(1 - firstDayOfMonth.getDay());
-  
-    const lastDayOfMonth = new Date(year, month + 1, 0);
-    const endDay = new Date(lastDayOfMonth);
-    endDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
-  
-    const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  
-    const handlePrevMonth = () => {
-      setCurrentDate(
-        new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-      );
-    };
+      const lastDayOfMonth = new Date(year, month + 1, 0);
+      const endDay = new Date(lastDayOfMonth);
+      endDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
     
-    const handleNextMonth = () => {
-      setCurrentDate(
-        new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-      );
-    };
+      const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    
+      const handlePrevMonth = () => {
+        setCurrentDate(
+          new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+        );
+      };
+      
+      const handleNextMonth = () => {
+        setCurrentDate(
+          new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+        );
+      };
 
 
     useEffect(() => {
@@ -78,24 +81,46 @@ export default function Calendar() {
             
     }, [currentDate]);
   
-    return (
-      <>
-      <PageTitle>Calendar</PageTitle>
+
+    useEffect(() => {
+        async function loadSchedules() {
+            try {
+                const loadSchedules = await getSchedules(null, currentDate); 
+                const grouped = loadSchedules.reduce((acc, curr) => {
+                    if (!acc[curr.dateKey]) {
+                        acc[curr.dateKey] = [];
+                    }
+
+                    acc[curr.dateKey].push(curr);
+                    return acc;
+                }, {});
+
+                setGroupedSchedules(grouped);
+            } catch (error) {
+                console.error('Error loading schedules:', error);
+            }}
+            loadSchedules(); 
+            
+    }, [currentDate]);
   
-       <MonthContainer>
-        <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
-        <PageTitle>{year}. {st_month}</PageTitle>
-        <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
-      </MonthContainer>
+      return (
+        <>
+        <PageTitle>Calendar</PageTitle>
+    
+          <MonthContainer>
+          <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
+          <PageTitle>{year}. {st_month}</PageTitle>
+          <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
+        </MonthContainer>
 
       <CalendarContainer>
-        {/* <DayTable/> */}
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate} selectedDate={selectedDate}/>
+        <DayTable/>
+        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate}/>
         {/* <GroupDatesByWeek startDay={startDay} endDay={endDay}/> */}
         <Footer/>
       </CalendarContainer> 
-
-      {/* <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>   */}
+     
+        
       </>
     );
   }

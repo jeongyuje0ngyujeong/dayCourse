@@ -1,7 +1,7 @@
 import { Form, redirect, Link, useOutletContext } from "react-router-dom";
 import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
-
+import {useState, useEffect} from 'react';
 // import {useState,useEffect } from 'react';
 
 // import { Button } from '../../Button';
@@ -50,27 +50,23 @@ export default function Schedule(props) {
   
   // const loaderData = useLoaderData();
   
-  const [selectedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.setGroupedSchedules];
-  // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
-  // console.log(selectedSchedules);
+  const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [null, () => {}];
 
-  function updateSchedulesForDate(dateKey, planId, callback) {
+  console.log(selectedSchedules);
+
+  function updateSchedulesForDate(dateKey, planId) {
     setGroupedSchedules(prevSchedules => {
-        const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
-        const newSchedules = {
-            ...prevSchedules,
-            [dateKey]: filteredEvents
-        };
-        
-        if (callback) callback(newSchedules);
-        
-        return newSchedules;
+      const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
+      return {
+          ...prevSchedules,
+          [dateKey]: filteredEvents
+      };
     });
-
-  }
+}
 
   return (
     <div>
+      {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
           <div>
