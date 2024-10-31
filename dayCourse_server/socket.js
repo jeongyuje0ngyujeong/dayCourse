@@ -45,7 +45,6 @@ io.on('connection', (socket) => {
         return callback(error);
       }
 
-      console.log("메세지 :", results)
       const messages = results.map(result => ({
         userName: result.userName,
         message: result.message
@@ -63,6 +62,8 @@ io.on('connection', (socket) => {
         room: user.room,
         users: getUsersInRoom(user.room),
       })
+
+      console.log(messages)
 
       socket.join(user.room)
       callback(); // 콜백 호출
