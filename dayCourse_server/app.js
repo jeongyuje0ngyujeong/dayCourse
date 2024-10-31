@@ -10,7 +10,10 @@ const app = express();
 dotenv.config();
 
 //서버-클라이언트 연결 테스트
-app.use(cors());
+app.use(cors({
+    origin: '*', // 필요한 경우 특정 도메인만 허용
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // URL-encoded 데이터 처리
 
