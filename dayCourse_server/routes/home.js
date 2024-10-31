@@ -614,8 +614,8 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 });
 
 
-router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
-    console.log("카테고리조회")
+router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
+    console.log("카테고리조회");
     const { enCategory, enKeyword } = req.params;
 
     const sql_category = `
@@ -626,68 +626,60 @@ router.post('/plan/:enCategory/:enKeyword?', (req, res) => {
     `;
 
     const sql_keyword = `
-        SELECT placeAddr, placeName, placeRate
+        SELECT placeAddr, placeName
         FROM place_data
         WHERE placeKeyWord = ?
         ORDER BY placeRate DESC;
     `;
 
     const sql_all = `
-        SELECT placeAddr, placeName, placeRate
+        SELECT placeAddr, placeName
         FROM place_data
         ORDER BY placeRate DESC;
     `;
 
-    if (!enKeyword || enKeyword!="랜덤") {
-        // keyword가 있을 때의 처리
-        console.log("키워드있음")
-        var key = enKeyword
+    let rows = [];
 
-        if (enKeyword === "쇼핑몰") {
-            key = "쇼핑";
-        } else if (enKeyword === "전시회") {
-            key = "전시";
-        }
+    if (enKeyword && enKeyword !== "랜덤") {
+        // 키워드가 있을 때
+        console.log("키워드 있음");
+        let key = enKeyword;
 
-        db.query(sql_keyword, [key], (err, result) => {
-            if (err) {
-                console.error('Error querying data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
+        if (enKeyword === "쇼핑몰") key = "쇼핑";
+        else if (enKeyword === "전시회") key = "전시";
 
-            console.log(result);
-            console.log("돌려줌")
-            return res.status(200).json({ msg: 'success', data: result });
-        });
+        const [result] = await db.query(sql_keyword, [key]);
+        rows = result;
+
     } else {
-        // keyword가 없을 때의 처리
-        console.log("키워드없음")
+        // 키워드가 없을 때
+        console.log("키워드 없음");
+        let sql = sql_category;
         let values = "";
 
-        var sql = sql_category
-
-        if (enCategory === "음식점") {
-            values = "restaurant";
-        } else if (enCategory === "카페") {
-            values = "cafe";
-        } else {
-            sql = sql_all
-            values = ""
+        if (enCategory === "음식점") values = "restaurant";
+        else if (enCategory === "카페") values = "cafe";
+        else {
+            sql = sql_all;
+            values = [];
         }
 
-        console.log("쿼리")
-        db.query(sql, [values], (err, result) => {
-            if (err) {
-                console.error('Error querying data:', err);
-                return res.status(500).json({ error: 'Database error' });
-            }
-
-            console.log(result);
-            console.log("돌려줌")
-            return res.status(200).json({ msg: 'success', data: result });
-        });
+        console.log("쿼리 실행");
+        const [result] = await db.query(sql, Array.isArray(values) ? values : [values]);
+        rows = result;
     }
+
+    // 필드 재명명하기
+    const renamedUsers = rows.map(row => ({
+        place_name: row.placeName,
+        address_name: row.placeAddr,
+        road_address_name:  "12345", // 임시값
+        phone: "01000000000" //필드없음
+    }));
+
+    return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
+
 
 // 이미지 목록을 가져오는 엔드포인트
 router.get('/plan/:planId/images', async (req, res) => {
