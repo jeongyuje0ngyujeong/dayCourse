@@ -647,6 +647,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         else if (enKeyword === "전시회") key = "전시";
 
         //const [result] = db.query(sql_keyword, [key]);
+        onsole.log("쿼리 실행");
         const [result] = await db.promise().query(sql_keyword, [key]);
         rows = result;
 
@@ -676,6 +677,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         phone: "01000000000" //필드없음
     }));
 
+    onsole.log(renamedUsers);
     return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
 
