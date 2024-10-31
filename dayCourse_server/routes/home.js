@@ -647,7 +647,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         else if (enKeyword === "전시회") key = "전시";
 
         //const [result] = db.query(sql_keyword, [key]);
-        onsole.log("쿼리 실행");
+        console.log("쿼리 실행");
         const [result] = await db.promise().query(sql_keyword, [key]);
         rows = result;
 
