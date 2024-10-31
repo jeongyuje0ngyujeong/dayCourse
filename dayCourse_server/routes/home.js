@@ -675,7 +675,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
     const renamedUsers = rows.map(row => ({
         place_name: row.placeName,
         address_name: row.placeAddr,
-        road_address_name:  "12345", // 임시값
+        road_address_name: "12345", // 임시값
         phone: "01000000000" //필드없음
     }));
 
@@ -716,7 +716,7 @@ router.get('/plan/:planId/images', async (req, res) => {
 // 이미지 등록 엔드포인트
 router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
     console.log("사진등록?");
-    
+
     try {
         console.log("사진등록");
         const planId = req.params.planId;
@@ -799,45 +799,42 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             console.error('데이터 가져오기 오류:', err);
             return res.status(500).json({ error: '데이터베이스 오류' });
         }
-        
+
         console.log("조회한 일정 : ", result)
         // 결과가 비어 있지 않은지 확인
         if (result.length === 0) {
             return res.status(200).send('플랜이 없습니다');
         }
 
-        const planId = result[0].planId; // 가장 최근의 플랜을 가져옵니다
-        const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+        // 모든 planId 가져오기
+        const planIds = result.map(plan => plan.planId); // 모든 최근 플랜 ID를 가져옵니다
+        const imagesData = [];
 
-        console.log("S3 에서 가져올거임")
+        console.log("S3 에서 가져올거임");
 
         try {
-            // S3에서 객체 목록 가져오기
-            const data = await s3.listObjectsV2(params).promise();
+            // 각 planId에 대해 S3에서 이미지 목록 가져오기
+            for (const planId of planIds) {
+                const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+                const data = await s3.listObjectsV2(params).promise();
 
-            if (!data.Contents || data.Contents.length === 0) {
-                return res.status(200).send('이미지가 없습니다');
-            }
+                if (!data.Contents || data.Contents.length === 0) {
+                    console.log(`플랜 ${planId}에 대한 이미지가 없습니다`);
+                    continue; // 다음 planId로 넘어갑니다
+                }
 
-            const imagesData = [];
+                // 각 항목에 대한 메타데이터 가져오기
+                for (const item of data.Contents) {
+                    const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
+                    const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
+                    const newMetadata = Object.values(metadata.Metadata);
 
-            console.log("메타데이터 가져옴")
-
-            // 각 항목에 대한 메타데이터 가져오기
-            for (const item of data.Contents) {
-                const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
-
-                // 객체의 메타데이터 가져오기
-                const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
-
-                // 메타데이터 태그값만 남기기
-                const newMetadata = Object.values(metadata.Metadata);
-
-                // URL과 메타데이터를 배열에 저장
-                imagesData.push({
-                    url: imageUrl,
-                    metadata: newMetadata
-                });
+                    // URL과 메타데이터를 배열에 저장
+                    imagesData.push({
+                        url: imageUrl,
+                        metadata: newMetadata
+                    });
+                }
             }
 
             console.log("분석 폼 데이터 준비")
