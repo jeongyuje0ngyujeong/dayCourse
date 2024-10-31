@@ -650,8 +650,8 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         id: "0000",
         place_name: row.placeName,
         address_name: row.placeAddr,
-        x: row.placeLat,
-        y: row.placeLng,
+        x: row.placeLng,
+        y: row.placeLat,
         road_address_name: "12345", // 임시값
         phone: "01000000000" //필드없음
     }));
