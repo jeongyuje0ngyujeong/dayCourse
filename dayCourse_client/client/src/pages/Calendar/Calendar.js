@@ -75,6 +75,7 @@ const Cell = styled.td`
   &:hover {
     background-color: #e0e0e0; 
   }
+  overflow: hidden;
 `
 
 const customModalStyles: ReactModal.Styles = {
@@ -131,7 +132,7 @@ async function fetchSchedules(props, setSchedules) {
   const schedules = await getSchedules(null, `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`);
 
   while (currentDate <= props.endDay) {
-    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${currentDate.getDate()}`;
+    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2,'0')}-${String(currentDate.getDate()).padStart(2, '0')}`;
     const schedule = await getSchedule(dateKey);
     scheduleMap[dateKey] = schedule;
     currentDate.setDate(currentDate.getDate() + 1);
@@ -177,7 +178,7 @@ export function GroupDatesByWeek(props){
   
 
   while (currentDate <= props.endDay) {
-    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${currentDate.getDate()}`;
+    const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
 
     const events = schedules[dateKey];
     // console.log(events);
