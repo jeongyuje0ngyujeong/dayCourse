@@ -114,6 +114,8 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         e.preventDefault();
         onSubmitKeyword(value); // 제출한 검색어를 부모 컴포넌트로 전달
         setValue(""); // 제출 후 입력 필드 초기화
+        setSelectedCategory('');
+        setSelectedKeyword('');
     };
 
     const handlePlaceClick = (place) => {
