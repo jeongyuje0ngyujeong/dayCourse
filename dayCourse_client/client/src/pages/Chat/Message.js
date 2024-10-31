@@ -15,10 +15,10 @@ const ChatMessage = styled.div`
     position: relative;
 `;
 
-function Message({ message: { user, text }, name }) {
-
-  let isSentByCurrentUser = false;
-
+function Message({  user, text, name  }) {
+  // console.log(text);
+  let isSentByCurrentUser = false;  
+  
   const trimmedName = name.trim().toLowerCase();
 
   if(user === trimmedName) {
@@ -41,7 +41,7 @@ function Message({ message: { user, text }, name }) {
     // </div>
   ) : (
     <div>
-        <p style={{color: 'black'}}>{user}</p>
+        <p style={{color: 'red'}}>{user}</p>
         <ChatMessage>
             {text}
         </ChatMessage>

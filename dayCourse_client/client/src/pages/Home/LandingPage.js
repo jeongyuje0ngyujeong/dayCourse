@@ -60,8 +60,8 @@ const UserCursor = styled.div`
 
 
 const LandingPage = ({ userId, planId, place, context }) => {
-    console.log('context: ', context);
-    console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
+    // console.log('context: ', context);
+    // console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
