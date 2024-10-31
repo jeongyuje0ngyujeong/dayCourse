@@ -413,7 +413,7 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
         await db.promise().query(sql, values);
 
         // 성공적인 응답 전송
-        return res.status(200).json({ msg: '성공적으로 삭제되었습니다.' });
+        return res.status(200).json({ msg: 'success' });
     } catch (err) {
         console.error('데이터베이스 오류:', err);
         return res.status(500).json({ error: '데이터베이스 오류' });
