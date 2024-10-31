@@ -82,7 +82,7 @@ export async function getSchedules(query, startDate) {
     }
 
     let schedules = await getData();
-    console.log('fetched: ',schedules);
+    // console.log('fetched: ',schedules);
     await set(schedules);
 
     if (!Array.isArray(schedules)) {
@@ -174,39 +174,34 @@ export async function updateSchedule(planId, updates) {
     return result.data.msg;
 }
 
-export async function deleteSchedule(id) {
+export async function deleteSchedule(planId) {
     let schedules = await localforage.getItem("schedules");
-    let schedule = schedules.find(schedule => schedule.planId === id);
-    let index = schedules.findIndex(schedule => schedule.planId === id);
+    let index = schedules.findIndex(schedule => schedule.planId === planId);
     
     const postData = async () => {
-        let response = axios.post(`${BASE_URL}/home/plan/delete`, 
-        {
-            id: sessionStorage.getItem('id'),
-            planId: schedule.planId
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
-            },
+        try {
+            let response = await axios.post(
+                `${BASE_URL}/home/plan/delete`, 
+                {
+                    id: sessionStorage.getItem('id'),
+                    planId: planId
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
+                    },
+                }
+            );
+            return response.data.msg;
+        } catch (error) {
+            console.error("Delete request failed:", error);
+            throw error;
         }
-    );
-        
-
-        return response;
     }
 
-    if (index > -1) {
-        schedules.splice(index, 1);
-        
-        await postData();
-        await set(schedules);
-        
-        return schedules;
-    }
-
-    // getSchedules();
-    return false;
+    const result = await postData();
+    console.log(result);
+    return result;
 }
 
 function set(schedules) {
