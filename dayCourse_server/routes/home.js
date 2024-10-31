@@ -389,7 +389,12 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
 
     const sql_pu = `
       DELETE FROM Plan_User 
-      WHERE planId = ? AND userId = ?;
+      WHERE planId = ?;
+    `;
+
+    const sql_pl = `
+      DELETE FROM Plan_Location 
+      WHERE planId = ?;
     `;
     
     const sql = `
@@ -401,7 +406,8 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
 
     try {
         // 첫 번째 쿼리 실행
-        await db.promise().query(sql_pu, values);
+        await db.promise().query(sql_pu, [planId]);
+        await db.promise().query(sql_pl, [planId]);
 
         // 두 번째 쿼리 실행
         await db.promise().query(sql, values);
