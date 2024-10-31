@@ -62,11 +62,10 @@ const ScheduleContainer = styled.div `
 `
 
 
-
 export default function Home() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(String(currentDate));
     const selectedSchedules = groupedSchedules[selectedDate];
 
     useEffect(() => {
@@ -134,15 +133,17 @@ export default function Home() {
             <Button onClick={() => handleNextWeek()} $border='none'>{'>'}</Button>
         </MonthContainer>
 
-        <DayTable/> 
         {/* 주단위 달력 */}
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+        <CalendarContainer>
+          {/* <DayTable/>  */}
+          <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          <ScheduleContainer>
+            <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
+          </ScheduleContainer>
+          <Footer/>
+        </CalendarContainer>
 
-        <ScheduleContainer>
-          <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
-        </ScheduleContainer>
 
-        <Footer/>
         </>
     )
 
