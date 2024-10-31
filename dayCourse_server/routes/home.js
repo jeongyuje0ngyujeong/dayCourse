@@ -797,7 +797,8 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             console.error('데이터 가져오기 오류:', err);
             return res.status(500).json({ error: '데이터베이스 오류' });
         }
-
+        
+        console.log("조회한 일정 : ", result)
         // 결과가 비어 있지 않은지 확인
         if (result.length === 0) {
             return res.status(200).send('플랜이 없습니다');
