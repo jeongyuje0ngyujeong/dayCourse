@@ -646,7 +646,8 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         if (enKeyword === "쇼핑몰") key = "쇼핑";
         else if (enKeyword === "전시회") key = "전시";
 
-        const [result] = await db.query(sql_keyword, [key]);
+        //const [result] = db.query(sql_keyword, [key]);
+        const [result] = await db.promise().query(sql_keyword, [key]);
         rows = result;
 
     } else {
@@ -663,7 +664,7 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
         }
 
         console.log("쿼리 실행");
-        const [result] = await db.query(sql, [values]);
+        const [result] = await db.promise().query(sql, [values]);
         rows = result;
     }
 
