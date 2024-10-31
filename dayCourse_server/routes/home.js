@@ -659,35 +659,6 @@ router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
 });
 
 
-// 이미지 목록을 가져오는 엔드포인트
-router.get('/plan/:planId/images', async (req, res) => {
-    console.log("사진가져옴")
-    const planId = req.params.planId;
-
-    try {
-        const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
-
-        // S3에서 객체 목록 가져오기
-        s3.listObjects(params, (err, data) => {
-            if (err) {
-                console.error('Error retrieving images', err);
-                return res.status(500).send('Error retrieving images');
-            }
-
-            // 이미지 URL을 반환하기 위해 S3 URL 생성
-            const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
-
-            // 이미지 URL 목록을 JSON 형식으로 전송
-            console.log("전달");
-            console.log(imageUrls);
-            res.json(imageUrls);
-        });
-    } catch (err) {
-        console.error('Error retrieving images', err);
-        res.status(500).send('Error retrieving images');
-    }
-});
-
 
 // 이미지 등록 엔드포인트
 //router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
@@ -695,7 +666,7 @@ router.post('/plan/:planId/images', (req, res) => {
     const planId = req.params.planId;
 
     console.log("사진등록");
-    return res.status(200).json({ msg: 'success'});
+    return res.status(200).json({ msg: '완료됨' });
 
 
     // if (!req.file) {
@@ -749,24 +720,57 @@ router.post('/plan/:planId/images', (req, res) => {
     //         console.log(uploadParams);
     //     }
 
-        // // S3 업로드
-        // return new Promise((resolve, reject) => {
-        //     s3.upload(uploadParams, function (err, data) {
-        //         if (err) {
-        //             console.error("S3 업로드 오류", err);
-        //             return reject(res.status(500).send('S3 업로드 중 오류 발생'));
-        //         }
-        //         if (data) {
-        //             console.log("이미지 업로드 성공", data.Location);
-        //             return resolve(res.json({ msg: "성공", location: data.Location }));
-        //         }
-        //     });
-        // });
+    // // S3 업로드
+    // return new Promise((resolve, reject) => {
+    //     s3.upload(uploadParams, function (err, data) {
+    //         if (err) {
+    //             console.error("S3 업로드 오류", err);
+    //             return reject(res.status(500).send('S3 업로드 중 오류 발생'));
+    //         }
+    //         if (data) {
+    //             console.log("이미지 업로드 성공", data.Location);
+    //             return resolve(res.json({ msg: "성공", location: data.Location }));
+    //         }
+    //     });
+    // });
     // } catch (err) {
     //     console.error('이미지 처리 중 오류', err);
     //     return res.status(500).send('이미지 처리 중 오류 발생');
     // }
 });
+
+
+// 이미지 목록을 가져오는 엔드포인트
+router.get('/plan/:planId/images', async (req, res) => {
+    console.log("사진가져옴")
+    const planId = req.params.planId;
+
+    try {
+        const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
+
+        // S3에서 객체 목록 가져오기
+        s3.listObjects(params, (err, data) => {
+            if (err) {
+                console.error('Error retrieving images', err);
+                return res.status(500).send('Error retrieving images');
+            }
+
+            // 이미지 URL을 반환하기 위해 S3 URL 생성
+            const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
+
+            // 이미지 URL 목록을 JSON 형식으로 전송
+            console.log("전달");
+            console.log(imageUrls);
+            res.json(imageUrls);
+        });
+    } catch (err) {
+        console.error('Error retrieving images', err);
+        res.status(500).send('Error retrieving images');
+    }
+});
+
+
+
 
 
 // // 이미지 등록 엔드포인트
