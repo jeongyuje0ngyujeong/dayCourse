@@ -692,7 +692,8 @@ router.get('/plan/:planId/images', async (req, res) => {
 
 
 // 이미지 등록 엔드포인트
-router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
+//router.post('/plan/:planId/images', upload.single('image'), async (req, res) => {
+router.post('/plan/:planId/images', (req, res) => {
     const planId = req.params.planId;
 
     console.log("사진등록");
