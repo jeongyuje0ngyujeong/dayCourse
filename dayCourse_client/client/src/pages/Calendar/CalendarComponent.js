@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {useState,useEffect } from 'react';
+import Modal from 'react-modal';
 
 const Cell = styled.td`
   color: #818181;
@@ -9,14 +10,15 @@ const Cell = styled.td`
   ${'' /* border: 1px solid; */}
   padding: 0.5rem;
   font-weight: 600;
-  max-height: 1rem;
+  ${'' /* max-height: 5rem;
+  overflow: hidden; */}
   &:hover {
     background-color: #e0e0e0; 
   }
 `
 const DateTable = styled.table`
   width: 100%;
-  height: 100%;
+  ${'' /* height: 100%; */}
   max-height: 7rem;
   border-top: 1px solid;
   border-color: green;
@@ -51,11 +53,59 @@ export function DayTable(){
   )
 }
 
+export const ScheduleModal = ({ isOpen, OnRequestClose, content }) => {
+  try {
+    return (
+      <Modal style={customModalStyles} isOpen={isOpen} onRequestClose={OnRequestClose}>
+        {content && content.props && content.props.schedule && content.props.schedule.length > 0 ? (
+          <h2>
+            {new Date(content.props.schedule[0].dateKey).getDate()} {getDayName(new Date(content.props.schedule[0].dateKey).getDay())}
+          </h2>
+        ) : null}
+        <p>{content}</p>
+        <button onClick={OnRequestClose}>닫기</button>
+      </Modal>
+    );
+  } catch (error) {
+    console.error("Error in ScheduleModal:", error);
+  }
+};
+
+const customModalStyles: ReactModal.Styles = {
+  overlay: {
+    backgroundColor: " rgba(0, 0, 0, 0.4)",
+    width: "100%",
+    height: "100vh",
+    zIndex: "10",
+    position: "fixed",
+    top: "0",
+    left: "0",
+  },
+  content: {
+    width: "50%",
+    height: "80%",
+    zIndex: "150",
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    borderRadius: "10px",
+    boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.25)",
+    backgroundColor: "white",
+    justifyContent: "center",
+    overflow: "auto",
+    // display: "flex", 
+    // flexDirection: "column", 
+    // alignItems: "center", 
+  },
+};
 
 export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, setSelectedDate}){
     const weeks = []; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [modalContent, setModalContent] = useState('');
     // console.log(startDay, endDay); 
     // console.log(groupedSchedules);
 
@@ -68,9 +118,10 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
       setSelectedDate(params);
       
       if (location.pathname === "/main/calendar"){
+        // setModalIsOpen(true);
         // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
         // setModalContent(content);
-        // setModalIsOpen(true);
+        setModalIsOpen(true);
       }
       else{
         // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
@@ -124,7 +175,9 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     }
 
     return (
-        <>{weeks}</>
+        <>{weeks}
+        <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>
+        </>
     )
 }
 
