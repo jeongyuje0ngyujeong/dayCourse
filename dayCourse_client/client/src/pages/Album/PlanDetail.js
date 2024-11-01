@@ -27,7 +27,7 @@ const Image = styled.img`
     object-fit: cover; /* 이미지 비율을 유지하면서 영역에 맞게 조절 */
 `;
 
-const PlanDetail = ({ }) => {
+const PlanDetail = () => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
     const [selectedFile, setSelectedFile] = useState(null);
     const [imageUrls, setImageUrls] = useState([]);
