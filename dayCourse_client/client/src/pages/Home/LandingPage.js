@@ -254,7 +254,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             const x = e.clientX;
             const y = e.clientY;
             socketRef.current.emit('mouse-move', {room: planId, x, y});
-        }, 100);
+        }, 50);
 
         window.addEventListener('mousemove', throttledMouseMove);
 
