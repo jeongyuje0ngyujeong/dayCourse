@@ -26,7 +26,7 @@ const Image = styled.img`
     border-radius: 5px;
 `;
 
-const PlanDetail = ({ userId }) => {
+const PlanDetail = () => {
     const { planId } = useParams(); // URL에서 플랜 ID 가져오기
     const [selectedFile, setSelectedFile] = useState(null);
     const [imageUrls, setImageUrls] = useState([]);
