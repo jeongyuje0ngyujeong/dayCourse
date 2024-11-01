@@ -51,8 +51,8 @@ export default function Group({setSelectedGroup}) {
             }
         };
 
-        fetchGroups(); // Call the function when the component mounts
-    }, []);
+        fetchGroups(); 
+    }, [group]);
 
     const handleTab1Click = async (e,tab) => {
         e.preventDefault();

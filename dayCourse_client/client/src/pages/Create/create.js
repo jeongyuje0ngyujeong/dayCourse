@@ -3,9 +3,6 @@ import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
 import { Link } from 'react-router-dom'; 
 import Group from './group';
 import { PageTitle } from '../../commonStyles';
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import {Button} from '../../Button';
 
 const ResultContainer = styled.div`
     display: flex;
@@ -58,13 +55,12 @@ export default function CreateSchedule() {
   // console.log('event: ', event);
 
   let date;
-  let group, planName, town;
+  let group, planName;
 
   if (event) {
     date = new Date(event.dateKey);
     group = event.groupId;
     planName = event.planName;
-    town = event.town;
   }
 
   console.log(selectedGroup);
