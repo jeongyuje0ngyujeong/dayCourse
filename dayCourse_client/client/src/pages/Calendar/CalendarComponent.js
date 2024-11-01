@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import {useState} from 'react';
 import Modal from 'react-modal';
 import Schedule from './Schedule';
-import Schedule from './Schedule';
+
 
 const Cell = styled.td`
   flex: 1;

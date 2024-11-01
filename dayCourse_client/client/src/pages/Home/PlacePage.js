@@ -1,12 +1,12 @@
 import {useLoaderData,} from "react-router-dom";
 import KakaoMap from './KakaoMap';
 import { Button } from '../../Button';
-import { Button } from '../../Button';
+
 // import styled from "styled-components";
 import LandingPage from './LandingPage';
 import { getEvent } from "../../schedules";
 import { Form} from "react-router-dom";
-import { Form} from "react-router-dom";
+
 
 
 // const Box = styled.div`
