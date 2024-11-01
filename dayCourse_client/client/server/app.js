@@ -143,5 +143,3 @@ io.on('connection', (socket) => {
 
 
 server.listen(PORT, () => console.log(`서버가 ${PORT} 에서 시작되었어요`))
-
-
