@@ -2,7 +2,7 @@ import styled from "styled-components";
 import {useState, useEffect} from 'react';
 import {useState, useEffect} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
-import {DayTable, GroupDatesByWeek, getDayName} from '../Calendar/CalendarComponent'
+import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";

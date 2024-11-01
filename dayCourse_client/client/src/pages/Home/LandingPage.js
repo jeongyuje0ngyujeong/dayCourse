@@ -85,7 +85,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [distances, setDistances] = useState([]);
+    // const [distances, setDistances] = useState([]);
+    const distances = [];
 
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({})
