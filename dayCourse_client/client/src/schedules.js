@@ -177,7 +177,7 @@ export async function updateSchedule(planId, updates) {
 }
 
 export async function deleteSchedule(planId) {
-    let schedules = await localforage.getItem("schedules");
+    // let schedules = await localforage.getItem("schedules");
     // let index = schedules.findIndex(schedule => schedule.planId === planId);
     
     const postData = async () => {
