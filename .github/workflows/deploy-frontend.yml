@@ -20,12 +20,22 @@ jobs:
         run: npm install
 
       - name: Build React App
-        run: npm run build
+        env:     
+          REACT_APP_KAKAOMAP_API_KEY: ${{ secrets.REACT_APP_KAKAOMAP_API_KEY }}
+          REACT_APP_SERVICE_KEY: ${{ secrets.REACT_APP_SERVICE_KEY }}
+          REACT_APP_BASE_URL: ${{ secrets.REACT_APP_BASE_URL }}
+          REACT_APP_CONSUMER_KEY: ${{ secrets.REACT_APP_CONSUMER_KEY }}
+          REACT_APP_CONSUMER_SECRET: ${{ secrets.REACT_APP_CONSUMER_SECRET }}
+        run: |
+          npm run build
+          echo ${{ github.workspace }}
 
-        
-      # - name: Deploy                  # Upload build file to S3
-      #   env:
-      #    AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   run: |
-      #     aws s3 cp --recursive --region ap-northeast-2 build s3://${s3 버킷 이름} 
+
+      - name: Deploy                  # Upload build file to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+        run: |
+          aws s3 cp --recursive --region ap-northeast-2 build s3://daycourse-front-deploy
+      
