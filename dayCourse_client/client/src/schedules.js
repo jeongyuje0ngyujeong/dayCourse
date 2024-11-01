@@ -11,8 +11,8 @@ export async function getToken() {
         // axios로 SGIS API에서 토큰을 받아옴
         let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/auth/authentication.json`, {
             params: {
-                consumer_key: "5ac5b0ab0d744c9996e0",
-                consumer_secret: "1614098cdb9b4d13adbb",
+                consumer_key: process.env.REACT_APP_CONSUMER_KEY,
+                consumer_secret: process.env.REACT_APP_CONSUMER_SECRET,
             },
         });
 
