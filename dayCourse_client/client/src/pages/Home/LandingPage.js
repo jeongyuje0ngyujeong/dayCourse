@@ -1,12 +1,12 @@
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance, addRecommendedPlace} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
-
+import io from 'socket.io-client';
+import throttle from 'lodash/throttle';
 
 const SelectedPlacesContainer = styled.div`
     display: flex; 
@@ -42,6 +42,23 @@ const DistanceBox = styled.div`
     font-weight: bold;
 `;
 
+
+// 사용자 마우스 커서를 표시하기 위한 스타일
+const UserCursor = styled.div`
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: ${props => props.color || 'red'};
+    transform: translate(-50%, -50%); /* 커서 위치 정확히 표시 */
+`;
+
+
+
+
+
 const LandingPage = ({ userId, planId, place, context }) => {
     console.log('context: ', context);
     console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
@@ -49,6 +66,12 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [distances, setDistances] = useState([]);
+
+    const [users, setUsers] = useState([]);
+    const [userColors, setUserColors] = useState({})
+    const [userCursors, setUserCursors] = useState({})
+
+    const socketRef = useRef(null);
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -82,15 +105,26 @@ const LandingPage = ({ userId, planId, place, context }) => {
             await addPlace(userId, planId, place);
           }
           await fetchExistPlace(); // 상태 갱신
+
+        //장소 업데이트 소켓에 전달
+          if (socketRef.current) {
+                socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
+          }
+
         } catch (error) {
           console.error("장소 추가 실패:", error);
         }
       };
 
+
+
     const removePlace = async (placeId) => {
         try {
             await deletePlace(placeId, userId);
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
+            if (socketRef.current) {
+                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+            }
         } catch (error) {
             console.error("장소 삭제 실패!", error);
         }
@@ -122,6 +156,9 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     place.version // 여전히 유효한 version 값 사용
                 )
             ));
+            if (socketRef.current) {
+                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+            }
     
             // 상태 업데이트
         } catch (error) {
@@ -147,6 +184,86 @@ const LandingPage = ({ userId, planId, place, context }) => {
     //     };
     //     loadDistance();
     // }, [selectedPlaces]);
+
+
+    useEffect(() => {
+        socketRef.current = io('http://localhost:5001');
+
+        socketRef.current.on('connect', () => {
+            console.log('서버에 연결됨');
+            
+            socketRef.current.emit('join', {userId, name: `User_${userId}`, room:planId},
+        (error) => {
+           if (error) {
+            alert(error.error);
+           } 
+        })
+    })
+
+    socketRef.current.on('disconnect', () => {
+        console.log('서버 연결 끊어짐');
+    })
+
+    socketRef.current.on('roomData', ({ room, users }) => {
+        console.log('수신한 roomData:', { room, users }); // 로그 추가
+        setUsers(users);
+        const colorMapping = {};
+        users.forEach(user => {
+            colorMapping[user.userId] = user.color;
+        });
+        setUserColors(colorMapping);
+    });
+    
+    socketRef.current.on('user-mouse-move', ({ userId, name, cursor }) => {
+        console.log('수신한 user-mouse-move:', { userId, name, cursor }); // 로그 추가
+        setUserCursors(prev => ({
+            ...prev,
+            [userId]: { ...cursor, name }
+        }));
+    });
+
+
+
+    socketRef.current.on('message', (message) => {
+        console.log('수신한 메세지:', message);
+    });
+
+
+    socketRef.current.on('places-updated', (updatedPlaces) => {
+        setSelectedPlaces(updatedPlaces);
+    }) 
+
+    socketRef.current.on('user-left', ({ userId }) => {
+        setUserCursors(prev => {
+            const updated = {...prev};
+            delete updated[userId];
+            return updated;
+        })
+        setUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
+    });
+    return () => {
+        socketRef.current.disconnect();
+    }
+    }, [userId, planId]);
+
+    useEffect(() => {
+        if (!socketRef.current) return;
+
+        const throttledMouseMove = throttle((e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            socketRef.current.emit('mouse-move', {room: planId, x, y});
+        }, 100);
+
+        window.addEventListener('mousemove', throttledMouseMove);
+
+        return () => {
+            window.removeEventListener('mousemove', throttledMouseMove);
+            throttledMouseMove.cancel();
+        }
+    },[planId]);
+
+
 
 
     return (
@@ -209,8 +326,30 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     )}
                 </Droppable>
             </DragDropContext>
-        </div>
-    );
-};
+            {/* 다른 사용자의 마우스 커서 표시 */}
+            {Object.entries(userCursors).map(([userId, cursorData]) => (
+                            <div key={userId}>
+                                <UserCursor 
+                                    style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
+                                    title={cursorData.name}
+                                />
+                                <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
+                                    {cursorData.name}
+                                </span>
+                            </div>
+                        ))}
+
+                        {/* 현재 접속한 사용자 목록 표시 */}
+                        <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
+                            <h4>접속 사용자</h4>
+                            <ul>
+                                {users.map(user => (
+                                    <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                );
+            };
 
 export default LandingPage;
