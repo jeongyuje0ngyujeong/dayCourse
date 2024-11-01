@@ -83,7 +83,6 @@ export async function getSchedules(query, startDate) {
 
     let schedules = await getData();
     // console.log('fetched: ',schedules);
-    // console.log('fetched: ',schedules);
     await set(schedules);
 
     if (!Array.isArray(schedules)) {
@@ -180,29 +179,6 @@ export async function deleteSchedule(planId) {
     // let index = schedules.findIndex(schedule => schedule.planId === planId);
     
     const postData = async () => {
-        try {
-            let response = await axios.post(
-                `${BASE_URL}/home/plan/delete`, 
-                {
-                    id: sessionStorage.getItem('id'),
-                    planId: planId
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${sessionStorage.getItem('token')}`, 
-                    },
-                }
-            );
-            return response.data.msg;
-        } catch (error) {
-            console.error("Delete request failed:", error);
-            throw error;
-        }
-    }
-
-    const result = await postData();
-    console.log(result);
-    return result;
         try {
             let response = await axios.post(
                 `${BASE_URL}/home/plan/delete`, 

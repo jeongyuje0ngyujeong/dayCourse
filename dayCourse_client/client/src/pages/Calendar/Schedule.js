@@ -49,7 +49,6 @@ const ButtonContainer = styled.div`
 export default function Schedule(props) {
   
   // const loaderData = useLoaderData();
-  // const loaderData = useLoaderData();
   
   const [selectedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.setGroupedSchedules];
   // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
@@ -72,7 +71,6 @@ export default function Schedule(props) {
 
   return (
     <div>
-      {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
           <div>

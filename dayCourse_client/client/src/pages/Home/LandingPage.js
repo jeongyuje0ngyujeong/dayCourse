@@ -1,13 +1,10 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import React, { useEffect, useState, useCallback, useRef } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import io from 'socket.io-client';
-import throttle from 'lodash/throttle';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
 
@@ -44,23 +41,6 @@ const DistanceBox = styled.div`
     margin: 10px 0;
     font-weight: bold;
 `;
-
-
-// 사용자 마우스 커서를 표시하기 위한 스타일
-const UserCursor = styled.div`
-    position: absolute;
-    pointer-events: none;
-    z-index: 1000;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: ${props => props.color || 'red'};
-    transform: translate(-50%, -50%); /* 커서 위치 정확히 표시 */
-`;
-
-
-
-
 
 
 // 사용자 마우스 커서를 표시하기 위한 스타일
@@ -132,12 +112,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
                 socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
           }
 
-
-        //장소 업데이트 소켓에 전달
-          if (socketRef.current) {
-                socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
-          }
-
         } catch (error) {
           console.error("장소 추가 실패:", error);
         }
@@ -149,9 +123,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
-            }
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
             }
@@ -186,9 +157,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     place.version // 여전히 유효한 version 값 사용
                 )
             ));
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
-            }
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
             }

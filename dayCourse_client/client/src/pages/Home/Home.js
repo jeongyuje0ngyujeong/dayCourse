@@ -1,21 +1,10 @@
 import styled from "styled-components";
 import {useState, useEffect} from 'react';
-import {useState, useEffect} from 'react';
 import { PageTitle, Footer } from '../../commonStyles';
 import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
-
-export async function action() {
-    // const schedule = await createSchedule();
-    // return redirect(`/schedules/create`);
-  }
-  
-export async function loader() {
-    const schedules= await getSchedules();
-    return { schedules };
-}
 
 export async function action() {
     // const schedule = await createSchedule();
@@ -104,18 +93,9 @@ export default function Home() {
       };
       
     const handleNextWeek = () => {
-    const handlePrevWeek = () => {
-        setCurrentDate(
-          new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-7)
-        );
-      };
-      
-    const handleNextWeek = () => {
     setCurrentDate(
         new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()+7)
-        new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()+7)
     );
-    };
     };
 
     return(

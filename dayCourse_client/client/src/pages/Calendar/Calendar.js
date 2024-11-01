@@ -26,35 +26,35 @@ const CalendarContainer = styled.div `
 `
 
 export default function Calendar() {
-      const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentDate, setCurrentDate] = useState(new Date());
     const [groupedSchedules, setGroupedSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState([]);
     
   
-      const year = currentDate.getFullYear();
-      const month = currentDate.getMonth();
-      
-      const firstDayOfMonth = new Date(year, month, 1);
-      const startDay = new Date(firstDayOfMonth);
-      startDay.setDate(1 - firstDayOfMonth.getDay());
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
     
-      const lastDayOfMonth = new Date(year, month + 1, 0);
-      const endDay = new Date(lastDayOfMonth);
-      endDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startDay = new Date(firstDayOfMonth);
+    startDay.setDate(1 - firstDayOfMonth.getDay());
+  
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const endDay = new Date(lastDayOfMonth);
+    endDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
+  
+    const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  
+    const handlePrevMonth = () => {
+      setCurrentDate(
+        new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+      );
+    };
     
-      const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
-    
-      const handlePrevMonth = () => {
-        setCurrentDate(
-          new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-        );
-      };
-      
-      const handleNextMonth = () => {
-        setCurrentDate(
-          new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-        );
-      };
+    const handleNextMonth = () => {
+      setCurrentDate(
+        new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+      );
+    };
 
 
     useEffect(() => {
@@ -78,37 +78,15 @@ export default function Calendar() {
             
     }, [currentDate]);
   
-
-    useEffect(() => {
-        async function loadSchedules() {
-            try {
-                const loadSchedules = await getSchedules(null, currentDate); 
-                const grouped = loadSchedules.reduce((acc, curr) => {
-                    if (!acc[curr.dateKey]) {
-                        acc[curr.dateKey] = [];
-                    }
-
-                    acc[curr.dateKey].push(curr);
-                    return acc;
-                }, {});
-
-                setGroupedSchedules(grouped);
-            } catch (error) {
-                console.error('Error loading schedules:', error);
-            }}
-            loadSchedules(); 
-            
-    }, [currentDate]);
+    return (
+      <>
+      <PageTitle>Calendar</PageTitle>
   
-      return (
-        <>
-        <PageTitle>Calendar</PageTitle>
-    
-          <MonthContainer>
-          <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
-          <PageTitle>{year}. {st_month}</PageTitle>
-          <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
-        </MonthContainer>
+       <MonthContainer>
+        <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
+        <PageTitle>{year}. {st_month}</PageTitle>
+        <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
+      </MonthContainer>
 
       <CalendarContainer>
         {/* <DayTable/> */}
