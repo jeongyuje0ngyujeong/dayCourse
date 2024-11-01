@@ -66,17 +66,17 @@ const ScrollContainer = styled.div`
     }
 `
 
-const ResultContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    height: 15rem;  
-    overflow: auto; 
+// const ResultContainer = styled.div`
+//     display: flex;
+//     flex-direction: column;
+//     position: relative;
+//     height: 15rem;  
+//     overflow: auto; 
     
-    &::-webkit-scrollbar {
-        display: none; 
-    }
-`
+//     &::-webkit-scrollbar {
+//         display: none; 
+//     }
+// `
 
 const MapContainer = styled.div`
     display: flex;

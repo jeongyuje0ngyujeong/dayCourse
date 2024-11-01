@@ -2,11 +2,8 @@ import { PageTitle, Footer } from '../../commonStyles';
 import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
-import { getSchedule, getSchedules} from "../../schedules";
-
-import { useNavigate, useLocation } from 'react-router-dom';
-import Schedule from "./Schedule";
-import {DayTable, GroupDatesByWeek, ScheduleModal} from './CalendarComponent'
+import { getSchedules} from "../../schedules";
+import {GroupDatesByWeek} from './CalendarComponent'
 
 const MonthContainer = styled.div `
   display: flex;

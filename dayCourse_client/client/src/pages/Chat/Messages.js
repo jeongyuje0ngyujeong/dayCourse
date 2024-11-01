@@ -1,7 +1,7 @@
 // import React from 'react';
 import styled from 'styled-components';
 import Message from "./Message";
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 const ChatContent = styled.div`
     flex: 1;
