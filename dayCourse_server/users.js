@@ -1,29 +1,32 @@
 const users = [];
 
 // This is the function that will be called when a user joins a room
-const addUser = ({id, userId, name, room}) => {
+const addUser = ({ id, userId, name, room }) => {
   // Clean the data
   name = name.trim().toLowerCase();
-//   room = room.trim().toLowerCase();
+  //   room = room.trim().toLowerCase();
 
   // Check for existing user
-  
+
   const existingUser = users.find((user) => user.room === room && user.name === name && user.userId === userId)
 
   // Validate name and room
-  if (!name || !room) return {error: '이름과 방이 필요해요.'};
+  if (!name || !room) return { error: '이름과 방이 필요해요.' };
 
   // Validate username
   if (existingUser) {
-    return {error: '이미 존재하는 이름입니다.'};
+    return { error: '이미 존재하는 이름입니다.' };
   }
 
+  // 색상 할당
+  const color = getColorUser(userId);
+
   // Store user
-  const user = {id, userId, name, room};
+  const user = { id, userId, name, room, cursor: {x:0, y:0}, color};
   users.push(user);
   console.log(users);
 
-  return {user};
+  return { user };
 }
 
 // This is the function that will be called when a user leaves a room
@@ -41,4 +44,4 @@ const getUser = (id) => users.find((user) => user.id === id);
 // This is the function that will be called when a user sends a message
 const getUsersInRoom = (room) => users.filter((user) => user.room === room);
 
-module.exports = {addUser, removeUser, getUser, getUsersInRoom};
+module.exports = { addUser, removeUser, getUser, getUsersInRoom };

@@ -109,6 +109,24 @@ io.on('connection', (socket) => {
     }
     console.log('유저가 나갔습니다.')
   })
+
+  socket.on('mouse-move', ({ room, x, y }) => {
+    const user = getUser(socket.id);
+    if (user) {
+      user.cursor = { x, y };
+      socket.to(user.room).emit('user-mouse-move', {
+        userId: user.userId,
+        name: user.name,
+        cursor: { x, y }
+      });
+      console.log(`마우스 이동 이벤트 전송: userId=${user.userId}, x=${x}, y=${y}`);
+    }
+  });
+
+  socket.on('update-places', ({room, places}) => {
+    socket.to(room).emit('places-updated', places);
+  });
+  
 })
 
 server.listen(PORT, () => console.log(`서버가 ${PORT} 에서 시작되었어요`))
