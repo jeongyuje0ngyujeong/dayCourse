@@ -47,7 +47,7 @@ const RecentPlan = ({plans}) => {
 
     return (
         <div>
-            <h5>모든 플랜</h5>
+            <h2>모든 플랜</h2>
             <Container>
                 {plans.map(item => ( // item으로 통일
                     <Box key={item.planId} onClick={() => handleBoxClick(item)}>
