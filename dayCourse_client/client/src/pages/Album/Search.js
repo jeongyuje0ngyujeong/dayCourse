@@ -1,6 +1,6 @@
 import { SlCalender } from "react-icons/sl";
 import styled from 'styled-components';
-// import { PageTitle } from '../../commonStyles';
+
 import React from 'react';
 
 const Container = styled.div `
@@ -29,14 +29,14 @@ const Search = ({searchTerm, setSearchTerm}) => {
     return (
         <div>
             <Container>
-            <p>이곳은 공유 앨범 페이지 입니다</p>
-            <InnerContainer>
-                <SlCalender />
-            <Input type="text"
-                placeholder="검색하기"
-                value={searchTerm} 
-                onChange={handleInputChange} />
-            </InnerContainer>
+            {/* <p>이곳은 공유 앨범 페이지 입니다</p> */}
+                <InnerContainer>
+                    <SlCalender />
+                    <Input type="text"
+                        placeholder="검색하기"
+                        value={searchTerm} 
+                        onChange={handleInputChange} />
+                </InnerContainer>
             </Container>
         </div>
     );

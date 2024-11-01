@@ -1,6 +1,6 @@
 // import { Outlet} from "react-router-dom";
 // import styled from 'styled-components';
-
+import { PageTitle } from '../../commonStyles';
 import React, { useState , useEffect} from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
@@ -60,12 +60,13 @@ const Album = ({userId}) => {
   
   return (
     <div>
-      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+    <PageTitle>Album</PageTitle>
       <div>
         <button onClick={() => setActiveTab('posts')}>포스팅</button>
         <button onClick={() => setActiveTab('moments')}>모먼트</button>
         {/* <button onClick={() => setActiveTab('videos')}>동영상</button> */}
       </div>
+      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       {renderContent()}
     </div>
   )
