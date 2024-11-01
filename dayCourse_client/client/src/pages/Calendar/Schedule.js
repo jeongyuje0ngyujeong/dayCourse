@@ -1,7 +1,7 @@
-import { Form, useLoaderData, redirect, Link, useOutletContext } from "react-router-dom";
+import { Form, redirect, Link, useOutletContext } from "react-router-dom";
 import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
-import {useState, useEffect} from 'react';
+
 // import {useState,useEffect } from 'react';
 
 // import { Button } from '../../Button';

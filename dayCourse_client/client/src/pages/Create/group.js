@@ -70,7 +70,7 @@ export default function Group({group}) {
         };
 
         fetchGroups(); 
-    }, []);
+    }, [group]);
 
     const handleTab1Click = async (e,tab) => {
         e.preventDefault();

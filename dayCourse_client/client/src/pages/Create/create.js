@@ -3,9 +3,6 @@ import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
 import { Link } from 'react-router-dom'; 
 import Group from './group';
 import { PageTitle } from '../../commonStyles';
-import React, {useState} from 'react';
-import styled from 'styled-components';
-import {Button} from '../../Button';
 
 export async function action({ request, params }) {
   const formData = await request.formData();
@@ -42,13 +39,12 @@ export default function CreateSchedule() {
   console.log('event: ', event);
 
   let date;
-  let group, planName, town;
+  let group, planName;
 
   if (event) {
     date = event.dateKey;
     group = event.groupId;
     planName = event.planName;
-    town = event.town;
   }
 
   return (

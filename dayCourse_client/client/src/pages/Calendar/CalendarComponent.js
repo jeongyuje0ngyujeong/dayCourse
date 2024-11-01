@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {useState,useEffect } from 'react';
+import {useState} from 'react';
 import Modal from 'react-modal';
 import Schedule from './Schedule';
 
@@ -133,7 +133,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('');
-    const [content, setContent] = useState('');
+    
     // console.log(startDay, endDay); 
     // console.log(groupedSchedules);
 
@@ -142,7 +142,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
 
     const handleCellClick = async (params, e) => {
       e.preventDefault();
-      const scheduleData = groupedSchedules[params];
+      
       setSelectedDate(params);
       
       if (location.pathname === "/main/calendar"){

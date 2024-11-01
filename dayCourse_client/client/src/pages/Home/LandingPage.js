@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, fetchDistance, addRecommendedPlace} from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 
@@ -48,7 +48,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [distances, setDistances] = useState([]);
+    // const [distances, setDistances] = useState([]);
+    const distances = [];
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);

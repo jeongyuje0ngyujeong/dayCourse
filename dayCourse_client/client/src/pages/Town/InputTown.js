@@ -12,7 +12,6 @@ function KakaoMap({ searchKeyword, setPlaces }) {
 
         const map = new kakao.maps.Map(mapContainer, mapOptions);
         const ps = new kakao.maps.services.Places();
-        let markers = [];
 
         const displayPlaces = (places) => {
             const bounds = new kakao.maps.LatLngBounds();

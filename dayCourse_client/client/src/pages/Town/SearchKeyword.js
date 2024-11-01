@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState,} from 'react';
 import {Button} from '../../Button';
-import { Form, redirect, } from "react-router-dom";
+import { Form,} from "react-router-dom";
 import styled from "styled-components";
 
 const ResultContainer = styled.div`
@@ -50,11 +50,11 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
         }
     };
 
-    const handleDepartureChange = (index, value) => {
-        const updatedPoints = [...departurePoints];
-        updatedPoints[index] = value;
-        setDeparturePoints(updatedPoints);
-    }
+    // const handleDepartureChange = (index, value) => {
+    //     const updatedPoints = [...departurePoints];
+    //     updatedPoints[index] = value;
+    //     setDeparturePoints(updatedPoints);
+    // }
 
     return(
         <>
