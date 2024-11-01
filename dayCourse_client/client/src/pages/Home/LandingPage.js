@@ -188,7 +188,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URL);
+        socketRef.current = io(process.env.REACT_APP_BASE_URLS);
 
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
