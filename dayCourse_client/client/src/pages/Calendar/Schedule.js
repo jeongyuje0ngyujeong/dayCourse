@@ -52,6 +52,8 @@ export default function Schedule(props) {
   
   const [selectedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.setGroupedSchedules];
   // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
+  const [selectedSchedules, , setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, , props.setGroupedSchedules];
+  // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
   // console.log(selectedSchedules);
 
   function updateSchedulesForDate(dateKey, planId, callback) {
