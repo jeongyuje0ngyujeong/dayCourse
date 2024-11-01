@@ -1,5 +1,12 @@
 const users = [];
 
+// 사용자 고유 색상 생성 함수
+const getColorUser = (userId) => {
+  const hash = Array.from(userId).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  const color = `hsl(${hash % 360}, 70%, 50%)`; // 쉼표 추가
+  return color;
+}
+
 // This is the function that will be called when a user joins a room
 const addUser = ({ id, userId, name, room }) => {
   // Clean the data
