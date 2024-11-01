@@ -51,7 +51,7 @@ export default function Schedule(props) {
   // const loaderData = useLoaderData();
   // const loaderData = useLoaderData();
   
-  const [selectedSchedules, , setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, , props.setGroupedSchedules];
+  const [selectedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.setGroupedSchedules];
   // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
   // console.log(selectedSchedules);
 
@@ -103,7 +103,7 @@ export default function Schedule(props) {
                                 props.setModalContent(
                                     <Schedule 
                                         selectedSchedules={newSchedule} 
-                                        groupedSchedules={props.groupedSchedules} 
+                                        groupedSchedules={newSchedules} 
                                         setGroupedSchedules={setGroupedSchedules} 
                                         setModalContent={props.setModalContent}
                                     />
