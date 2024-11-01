@@ -142,7 +142,7 @@ export default function Home() {
           {/* <DayTable/>  */}
           <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           <ScheduleContainer>
-            <Outlet context={[selectedSchedules, groupedSchedules ,setGroupedSchedules]}/>
+            <Outlet context={[selectedSchedules, setGroupedSchedules]}/>
           </ScheduleContainer>
           <Footer/>
         </CalendarContainer>
