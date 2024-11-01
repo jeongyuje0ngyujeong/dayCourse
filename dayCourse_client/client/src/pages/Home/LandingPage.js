@@ -1,10 +1,13 @@
 
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace} from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import io from 'socket.io-client';
+import throttle from 'lodash/throttle';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
 
@@ -59,14 +62,30 @@ const UserCursor = styled.div`
 
 
 
+
+// 사용자 마우스 커서를 표시하기 위한 스타일
+const UserCursor = styled.div`
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: ${props => props.color || 'red'};
+    transform: translate(-50%, -50%); /* 커서 위치 정확히 표시 */
+`;
+
+
+
+
+
 const LandingPage = ({ userId, planId, place, context }) => {
     // console.log('context: ', context);
     // console.log("LandingPage Props - userId:", userId, "planId:", planId); // 로그 확인
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    // const [distances, setDistances] = useState([]);
-    const distances = [];
+    const [distances, setDistances] = useState([]);
 
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({})
@@ -112,6 +131,12 @@ const LandingPage = ({ userId, planId, place, context }) => {
                 socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
           }
 
+
+        //장소 업데이트 소켓에 전달
+          if (socketRef.current) {
+                socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
+          }
+
         } catch (error) {
           console.error("장소 추가 실패:", error);
         }
@@ -123,6 +148,9 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
+            if (socketRef.current) {
+                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+            }
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
             }
@@ -160,6 +188,9 @@ const LandingPage = ({ userId, planId, place, context }) => {
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
             }
+            if (socketRef.current) {
+                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+            }
     
             // 상태 업데이트
         } catch (error) {
@@ -188,7 +219,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
+        socketRef.current = io('http://localhost:5001');
 
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
@@ -254,7 +285,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             const x = e.clientX;
             const y = e.clientY;
             socketRef.current.emit('mouse-move', {room: planId, x, y});
-        }, 50);
+        }, 100);
 
         window.addEventListener('mousemove', throttledMouseMove);
 
