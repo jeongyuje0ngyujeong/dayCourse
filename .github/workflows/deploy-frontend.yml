@@ -36,6 +36,7 @@ jobs:
           REACT_APP_CONSUMER_KEY: ${{ secrets.REACT_APP_CONSUMER_KEY }}
           REACT_APP_CONSUMER_SECRET: ${{ secrets.REACT_APP_CONSUMER_SECRET }}
           REACT_APP_BASE_URLSS: ${{ secrets.REACT_APP_BASE_URLSS }}
+          REACT_APP_ODSAY_KEY: ${{ secrets.REACT_APP_ODSAY_KEY }}
         run: |
           npm run build
           echo ${{ github.workspace }}
