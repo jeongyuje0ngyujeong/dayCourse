@@ -183,6 +183,7 @@ def tt():
     
 @app.route('/cluster', methods=['POST'])
 def cluster_objects():
+    print("요청들어옴.")
     # 요청에서 이미지 리스트를 가져옴
     img_list1 = request.json.get('images', [])
 
