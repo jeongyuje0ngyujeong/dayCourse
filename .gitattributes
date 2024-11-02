@@ -1,1 +1,3 @@
 *.pkl filter=lfs diff=lfs merge=lfs -text
+glove_model.pkl filter=lfs diff=lfs merge=lfs -text
+dayCourse_ai/glove_model.pkl filter=lfs diff=lfs merge=lfs -text
