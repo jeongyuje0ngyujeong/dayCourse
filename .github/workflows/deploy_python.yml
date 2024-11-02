@@ -57,8 +57,8 @@ jobs:
               cd $APP_DIR/dayCourse_ai
             fi"
 
-      # 3. Git LFS 파일 다운로드
-      - name: Install Git LFS and pull files
+      # 3. Git LFS 설치 및 파일 다운로드
+      - name: Install Git LFS
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
           REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
@@ -68,6 +68,12 @@ jobs:
           eval "$(ssh-agent -s)"
           echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
           ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            # Git LFS 설치
+            if ! command -v git-lfs &> /dev/null; then
+              echo 'Installing Git LFS'
+              sudo apt-get install -y git-lfs
+            fi
+            # Git LFS 설정 및 파일 다운로드
             cd $APP_DIR &&
             git lfs install &&
             git lfs pull"
