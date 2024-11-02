@@ -84,10 +84,12 @@ const LandingPage = ({ userId, planId, place, context }) => {
             console.log("Fetched places:", existPlace); // 데이터 로그 확인
             if (Array.isArray(existPlace)) {
                 const sortedPlaces = existPlace.sort((a, b) => a.l_priority - b.l_priority);
-                setSelectedPlaces(sortedPlaces.map((place) => ({
+                const newSelectedPlaces = sortedPlaces.map((place) => ({
                     ...place,
                     version: place.version || 1 // 버전이 존재하고 유효한 값이라면 해당값을 사용하고, 아니면 버전정보=>1
-                })));
+                }));
+                setSelectedPlaces(newSelectedPlaces);
+                return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
                 setSelectedPlaces([]);
@@ -123,11 +125,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
           } else {
             await addPlace(userId, planId, place);
           }
-          await fetchExistPlace(); // 상태 갱신
+        const updatedPlaces = await fetchExistPlace(); // 상태 갱신
 
         //장소 업데이트 소켓에 전달
           if (socketRef.current) {
-                socketRef.current.emit('update-places', {room: planId, places: selectedPlaces})
+                socketRef.current.emit('update-places', {room: planId, places: updatedPlaces})
           }
 
         } catch (error) {
@@ -176,7 +178,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                 )
             ));
             if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
             }
     
             // 상태 업데이트
