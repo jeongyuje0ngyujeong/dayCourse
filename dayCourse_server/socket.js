@@ -45,6 +45,8 @@ io.on('connection', (socket) => {
         return callback(error);
       }
 
+      console.log(results)
+
       const messages = results.map(result => ({
         user: result.userName,
         text: result.message
