@@ -12,6 +12,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          lfs: true  
+
+      # Git LFS 파일 다운로드
+      - name: Install Git LFS
+        run: |
+          git lfs install
+          git lfs pull  # Git LFS 파일 다운로드
 
       # 1. SSH 설정 및 Python 설치
       - name: Install Python on EC2 if missing

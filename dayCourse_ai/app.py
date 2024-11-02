@@ -3,17 +3,25 @@ import os
 import sys
 import logging
 import json
+import numpy as np
+import pickle
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from collections import defaultdict
+from sklearn.cluster import KMeans
+from collections import defaultdict, Counter
 
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# GloVe 모델 로드
+with open('./glove_model.pkl', 'rb') as f:
+    model = pickle.load(f)
+
 
 # ImageBoundingBox 객체를 딕셔너리로 변환하는 함수
 def bounding_box_to_dict(bounding_box):
@@ -32,141 +40,6 @@ def bounding_box_to_dict(bounding_box):
         return {
             'error': "Invalid bounding box format"
         }
-
-
-def sample_analyze_all_image_file():
-    # Set up logging
-    logger = logging.getLogger("azure")
-    logger.setLevel(logging.INFO)
-    handler = logging.StreamHandler(stream=sys.stdout)
-    formatter = logging.Formatter("%(asctime)s:%(levelname)s:%(name)s:%(message)s")
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
-
-    # Load Azure credentials from environment variables
-    try:
-        endpoint = "https://daycourse.cognitiveservices.azure.com/"
-        key = "80a9636cb8e545f6ab0239efea8d95b3"
-    except KeyError:
-        return "Missing environment variable 'VISION_ENDPOINT' or 'VISION_KEY'"
-
-    # 분석할 이미지 URL
-    image_url = "https://learn.microsoft.com/azure/ai-services/computer-vision/media/quickstarts/presentation.png"
-
-    # Create an Image Analysis client
-    client = ImageAnalysisClient(
-        endpoint=endpoint,
-        credential=AzureKeyCredential(key),
-        logging_enable=True
-    )
-
-    # Load image to analyze into a 'bytes' object
-    # with open("KakaoTalk_20241016_144939920.jpg", "rb") as f:
-    with open("경로", "rb") as f:
-        image_data = f.read()
-
-    visual_features = [
-        VisualFeatures.TAGS,
-        VisualFeatures.OBJECTS,
-        VisualFeatures.CAPTION,
-        VisualFeatures.DENSE_CAPTIONS,
-        VisualFeatures.READ,
-        VisualFeatures.SMART_CROPS,
-        VisualFeatures.PEOPLE,
-    ]
-
-    result = client.analyze(
-        image_data=image_data,
-        visual_features=visual_features,
-        smart_crops_aspect_ratios=[0.9, 1.33],
-        gender_neutral_caption=True,
-        language="en"
-    )
-
-    print('확인')
-    # print(result)
-
-   
-
-    analysis_results = {}
-
-
-    # Collect analysis results
-    # Print all analysis results to the console
-    print("Image analysis results:")
-
-    if result.caption is not None:
-        print(" Caption:")
-        print(f"   '{result.caption.text}', Confidence {result.caption.confidence:.4f}")
-
-    if result.dense_captions is not None:
-        print(" Dense Captions:")
-        for caption in result.dense_captions.list:
-            print(f"   '{caption.text}', {caption.bounding_box}, Confidence: {caption.confidence:.4f}")
-        
-
-    # if result.read is not None:
-    #     print(" Read:")
-    #     if result.read.blocks is not None:
-    #         for line in result.read.blocks[0].lines:
-    #             print(f"   Line: '{line.text}', Bounding box {line.bounding_polygon}")
-    #             for word in line.words:
-    #                 print(f"     Word: '{word.text}', Bounding polygon {word.bounding_polygon}, Confidence {word.confidence:.4f}")
-
-    # if result.read is not None:
-    #     try:
-    #         print("Read:")
-    #         if result.read.blocks is not None and len(result.read.blocks) > 0:
-    #             for line in result.read.blocks[0].lines:
-    #                 print(f"   Line: '{line.text}', Bounding box {line.bounding_polygon}")
-    #                 for word in line.words:
-    #                     print(f"     Word: '{word.text}', Bounding polygon {word.bounding_polygon}, Confidence {word.confidence:.4f}")
-    #         else:
-    #             print("No blocks found in the result.")
-    #     except AttributeError as e:
-    #         print(f"AttributeError: {e}. Please check the structure of 'result.read'.")
-    #     except Exception as e:
-    #         print(f"An unexpected error occurred: {e}")
-    # else:
-    #     print("The 'read' result is None.")
-
-
-    if result.tags is not None:
-        print(" Tags:")
-        tags_list = []
-        for tag in result.tags.list:
-            print(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
-            tags_list.append({
-                'name': tag.name,
-                'confidence': tag.confidence
-            })
-        print(result.tags.list)
-        analysis_results['Tags'] = tags_list
-
-    if result.objects is not None:
-        print(" Objects:")
-        for object in result.objects.list:
-            print(f"   '{object.tags[0].name}', {object.bounding_box}, Confidence: {object.tags[0].confidence:.4f}")
-
-    if result.people is not None:
-        print(" People:")
-        for person in result.people.list:
-            print(f"   {person.bounding_box}, Confidence {person.confidence:.4f}")
-
-    if result.smart_crops is not None:
-        print(" Smart Cropping:")
-        for smart_crop in result.smart_crops.list:
-            print(f"   Aspect ratio {smart_crop.aspect_ratio}: Smart crop {smart_crop.bounding_box}")
-
-    print(f" Image height: {result.metadata.height}")
-    print(f" Image width: {result.metadata.width}")
-    print(f" Model version: {result.model_version}")
-
-
-    
-    print(analysis_results)
-    #return jsonify('test')
-    return jsonify(analysis_results)
 
 def analyze_image_file(image):
     # Set up logging
@@ -308,7 +181,53 @@ def tt():
     else:
         return jsonify({"error": "No metadata found"}), 400
     
+@app.route('/cluster', methods=['POST'])
+def cluster_objects():
+    # 요청에서 이미지 리스트를 가져옴
+    img_list1 = request.json.get('images', [])
 
+    # 태그 벡터화
+    tag_vectors = []
+    for obj in img_list1:
+        vectors = [model[tag] for tag in obj["metadata"] if tag in model]
+        if vectors:  # 벡터가 있는 경우
+            avg_vector = np.mean(vectors, axis=0)  # 평균 벡터 계산
+            tag_vectors.append((obj["url"], avg_vector))  # 객체 URL과 벡터를 저장
+
+    # K-means 클러스터링 수행
+    X = np.array([vec for _, vec in tag_vectors])
+    n_clusters = 5  # 클러스터 수
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+    labels = kmeans.fit_predict(X)
+
+    # 클러스터링 결과 해석 및 객체 그룹화
+    clustered_objects = {i: [] for i in range(n_clusters)}
+    for (obj_id, _), label in zip(tag_vectors, labels):
+        clustered_objects[label].append(obj_id)
+
+    # 클러스터의 핵심 태그 찾기 (빈도수 기반)
+    core_tags = {}
+    for cluster_id, obj_ids in clustered_objects.items():
+        # 해당 클러스터의 모든 태그 수집
+        tag_list = []
+        for obj_id in obj_ids:
+            # 해당 객체의 태그 가져오기
+            obj_tags = next(item for item in img_list1 if item["url"] == obj_id)["metadata"]
+            tag_list += obj_tags.strip().split(',')
+        
+        # 가장 빈도 높은 태그 찾기
+        if tag_list:
+            most_common_tag, _ = Counter(tag_list).most_common(1)[0]
+            core_tags[cluster_id] = most_common_tag
+        else:
+            core_tags[cluster_id] = None  # 태그가 없는 경우
+
+    # 결과 반환
+    result = {
+        'clusters': {cluster_id: {'object_ids': obj_ids, 'core_tag': core_tags[cluster_id]} 
+                       for cluster_id, obj_ids in clustered_objects.items()}
+    }
+    return jsonify(result)
 
 
 if __name__ == '__main__':
