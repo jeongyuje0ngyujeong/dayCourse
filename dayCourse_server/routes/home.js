@@ -233,42 +233,69 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
 
 
 router.post('/plan/place', authenticateJWT, (req, res) => {
-    // SQL 쿼리
-    console.log('place get')
+    console.log('place get');
     const { planId } = req.body;
 
     const sql = `
       SELECT Plan.town
       FROM Plan
       WHERE Plan.planId = ?;
-      `
+    `;
 
     const sql_location = `
-      SELECT Plan_Location.memo, Plan_Location.l_priority, Plan_Location.place, Plan_Location.placeId, Plan_Location.place_name, Plan_Location.version, Plan_Location.coordinates
+      SELECT 
+        Plan_Location.memo, 
+        Plan_Location.l_priority, 
+        Plan_Location.place, 
+        Plan_Location.placeId, 
+        Plan_Location.place_name, 
+        Plan_Location.version, 
+        ST_AsText(Plan_Location.coordinates) as coordinates
       FROM Plan_Location
       WHERE Plan_Location.planId = ?;
-      `
+    `;
 
     const values = [planId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
-            console.error('Error inserting data:', err);
+            console.error('Error fetching town data:', err);
             return res.status(500).json({ error: 'Database error' });
         }
 
         db.query(sql_location, values, (err, result_location) => {
             if (err) {
-                console.error('Error inserting data:', err);
+                console.error('Error fetching location data:', err);
                 return res.status(500).json({ error: 'Database error' });
             }
 
-            console.log("place get :" + JSON.stringify(result_location));
+            // 좌표 파싱
+            const formattedResult = result_location.map(location => {
+                const coordinatesText = location.coordinates; // "POINT(X Y)" 형태
+                let x = null, y = null;
+                
+                if (coordinatesText) {
+                    // 좌표 텍스트에서 X, Y 추출
+                    const match = coordinatesText.match(/POINT\(([^ ]+) ([^ ]+)\)/);
+                    if (match) {
+                        x = parseFloat(match[1]);
+                        y = parseFloat(match[2]);
+                    }
+                }
 
-            res.status(201).json(result_location);
+                return {
+                    ...location,
+                    X: x,
+                    Y: y
+                };
+            });
+
+            console.log("place get :" + JSON.stringify(formattedResult));
+            res.status(201).json(formattedResult);
         });
     });
 });
+
 
 
 router.delete('/plan/place', authenticateJWT, (req, res) => {
