@@ -33,6 +33,8 @@ io.on('connection', (socket) => {
     const { error, user } = addUser({ id: socket.id, userId, name, room })
     if (error) callback({error : '에러가 발생했습니다.'})
 
+    socket.join(user.room)
+
     const query = `
       SELECT userName, message
       FROM Chat
@@ -71,7 +73,7 @@ io.on('connection', (socket) => {
 
       console.log(messages)
 
-      socket.join(user.room)
+   
       callback(); // 콜백 호출
     });
 

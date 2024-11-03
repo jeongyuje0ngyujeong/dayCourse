@@ -124,9 +124,9 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const removePlace = async (placeId) => {
         try {
             await deletePlace(placeId, userId);
-            fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
+            const updatedPlaces = await fetchExistPlace(); // 삭제 후 기존 장소 목록을 다시 가져옴
             if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: selectedPlaces });
+                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("장소 삭제 실패!", error);
@@ -343,11 +343,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         ))}
 
                         {/* 현재 접속한 사용자 목록 표시 */}
-                        <div style={{ position: 'absolute', top: 10, right: 10, background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
+                        <div style={{ position: 'absolute', top: -20, left: 1330, background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
                             <h4>접속 사용자</h4>
                             <ul>
                                 {users.map(user => (
-                                    <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                                    <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
                                 ))}
                             </ul>
                         </div>
