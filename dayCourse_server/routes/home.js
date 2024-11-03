@@ -233,7 +233,7 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
 
 
 router.post('/plan/place', authenticateJWT, (req, res) => {
-    // SQL INSERT 쿼리
+    // SQL 쿼리
     console.log('place get')
     const { planId } = req.body;
 
@@ -244,7 +244,7 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
       `
 
     const sql_location = `
-      SELECT Plan_Location.memo, Plan_Location.l_priority, Plan_Location.place, Plan_Location.placeId, Plan_Location.place_name, Plan_Location.version
+      SELECT Plan_Location.memo, Plan_Location.l_priority, Plan_Location.place, Plan_Location.placeId, Plan_Location.place_name, Plan_Location.version, Plan_Location.coordinates
       FROM Plan_Location
       WHERE Plan_Location.planId = ?;
       `
