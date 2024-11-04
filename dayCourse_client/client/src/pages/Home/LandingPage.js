@@ -7,7 +7,6 @@ import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedP
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
-import Loader from './Loader'; // 로딩 스피너 컴포넌트
 
 // Styled Components
 const SelectedPlacesContainer = styled.div`
@@ -58,18 +57,8 @@ const DistanceBox = styled.div`
     margin: 10px 0;
     font-weight: bold;
 `;
-const Overlay = styled.div`
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-`;
+
+// 사용자 마우스 커서를 표시하기 위한 스타일
 const UserCursor = styled.div`
     position: absolute;
     pointer-events: none;
@@ -78,16 +67,16 @@ const UserCursor = styled.div`
     height: 10px;
     border-radius: 50%;
     background-color: ${props => props.color || 'red'};
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* 커서 위치 정확히 표시 */
 `;
 
 const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
-    const [error, setError] = useState(null);
+    const [_isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const distances = [];
+    
 
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
@@ -110,19 +99,18 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     version: place.version || 1
                 }));
                 setSelectedPlaces(newSelectedPlaces);
-                setError(null);
+                setIsPlacesLoaded(true);
                 return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
                 setSelectedPlaces([]);
-                setError("유효하지 않은 데이터 형식입니다.");
+               
             }
         } catch (error) {
             console.error("기존 장소 불러오기 실패!", error);
-            setSelectedPlaces([]);
-            setError("장소를 불러오는 데 실패했습니다.");
+            setSelectedPlaces([]); // 오류 시 빈 배열 설정
         } finally {
-            setIsPlacesLoaded(true);
+            setIsPlacesLoaded(true); // 로딩 완료
         }
     }, [userId, planId]);
 
@@ -136,6 +124,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             }
             const updatedPlaces = await fetchExistPlace();
 
+            // 장소 업데이트 소켓에 전달
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -193,8 +182,9 @@ const LandingPage = ({ userId, planId, place, context }) => {
         fetchExistPlace();
     }, [fetchExistPlace]);
 
+    // 소켓 연결 및 이벤트 처리
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
+        socketRef.current = io('http://localhost:5001');
 
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
@@ -252,6 +242,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         };
     }, [userId, planId]);
 
+    // 마우스 움직임 소켓 전송
     useEffect(() => {
         if (!socketRef.current) return;
 
@@ -269,95 +260,81 @@ const LandingPage = ({ userId, planId, place, context }) => {
         }
     }, [planId]);
 
-    useEffect(() => {
-        if (isPlacesLoaded) {
-            console.log("장소 데이터가 성공적으로 로드되었습니다.");
-            // 추가적인 작업 수행 가능
-        }
-    }, [isPlacesLoaded]);
-
     return (
         <div className="landing-page">
-            {!isPlacesLoaded && (
-                <Overlay>
-                    <Loader />
-                </Overlay>
-            )}
-            {isPlacesLoaded && error ? (
-                <div style={{ padding: '20px', color: 'red' }}>{error}</div>
-            ) : (
-                <>
-                    <RightSidebar 
-                        userId={userId} 
-                        planId={planId} 
-                        planInfo={context}
-                        places={places} 
-                        setPlaces={setPlaces} 
-                        onSubmitKeyword={submitKeyword} 
-                        onPlaceClick={handlePlaceClick}
-                    />
-                    <KakaoMap 
-                        searchKeyword={keyword} 
-                        setPlaces={setPlaces} 
-                        selectedPlaces={selectedPlaces || []} 
-                    />
+            <RightSidebar 
+                userId={userId} 
+                planId={planId} 
+                planInfo={context}
+                places={places} 
+                setPlaces={setPlaces} 
+                onSubmitKeyword={submitKeyword} 
+                onPlaceClick={handlePlaceClick}
+            />
+            <KakaoMap 
+                searchKeyword={keyword} 
+                setPlaces={setPlaces} 
+                selectedPlaces={selectedPlaces || []} // selectedPlaces 전달
+            />
 
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="places">
-                            {(provided) => (
-                                <SelectedPlacesContainer 
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                >
-                                    {selectedPlaces.map((place, index) => {
-                                        if (!place || (!place.placeId && !place.id) || !place.place_name) {
-                                            console.warn("Invalid place object:", place);
-                                            return null;
-                                        }
-                                        return (
-                                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
-                                                <Draggable
-                                                    draggableId={place.placeId?.toString() || place.id?.toString()} 
-                                                    index={index}
+            <DragDropContext onDragEnd={onDragEnd}>
+                <Droppable droppableId="places">
+                    {(provided) => (
+                        <SelectedPlacesContainer 
+                            ref={provided.innerRef}
+                            {...provided.droppableProps}
+                        >
+                            {selectedPlaces.map((place, index) => {
+                                // 유효한 place 객체인지 확인
+                                if (!place || (!place.placeId && !place.id) || !place.place_name) {
+                                    console.warn("Invalid place object:", place);
+                                    return null;
+                                }
+                                return (
+                                    <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
+                                        <Draggable
+                                            draggableId={place.placeId?.toString() || place.id?.toString()} 
+                                            index={index}
+                                        >
+                                            {(provided) => (
+                                                <PlaceBox 
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
                                                 >
-                                                    {(provided) => (
-                                                        <PlaceBox 
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                        >
-                                                            <h5>{index + 1}. {place.place_name}</h5>
-                                                            <span>{place.address_name}</span>
-                                                            <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
-                                                        </PlaceBox>
-                                                    )}
-                                                </Draggable>
+                                                    <h5>{index + 1}. {place.place_name}</h5>
+                                                    <span>{place.address_name}</span>
+                                                    {/* <span>{place.phone}</span> */}
+                                                    <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
+                                                </PlaceBox>
+                                            )}
+                                        </Draggable>
 
-                                                {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && distances[index] !== undefined && (
-                                                    <DistanceBox>
-                                                        {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
-                                                    </DistanceBox>
-                                                )}
-                                            </React.Fragment>
-                                        );
-                                    })}
-                                    {provided.placeholder}
-                                </SelectedPlacesContainer>
-                            )}
-                        </Droppable>
-                    </DragDropContext>
-                    {/* 다른 사용자의 마우스 커서 표시 */}
-                    {Object.entries(userCursors).map(([userId, cursorData]) => (
-                        <div key={userId}>
-                            <UserCursor 
-                                style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
-                                title={cursorData.name}
-                            />
-                            <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-                                {cursorData.name}
-                            </span>
-                        </div>
-                    ))}
+                                        {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && distances[index] !== undefined && (
+                                            <DistanceBox>
+                                                {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
+                                            </DistanceBox>
+                                        )}
+                                    </React.Fragment>
+                                );
+                            })}
+                            {provided.placeholder}
+                        </SelectedPlacesContainer>
+                    )}
+                </Droppable>
+            </DragDropContext>
+            {/* 다른 사용자의 마우스 커서 표시 */}
+            {Object.entries(userCursors).map(([userId, cursorData]) => (
+                <div key={userId}>
+                    <UserCursor 
+                        style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
+                        title={cursorData.name}
+                    />
+                    <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
+               
+                    </span>
+                </div>
+            ))}
 
             {/* 현재 접속한 사용자 목록 표시 */}
             <div style={{ position: 'absolute', top: "-2%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '2px', borderRadius: '8px', fontSize:"15px"}}>
