@@ -7,7 +7,7 @@ import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedP
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
-import Loader from './Loader';
+import Loader from './Loader'; // 로딩 스피너 컴포넌트
 
 // Styled Components
 const SelectedPlacesContainer = styled.div`
@@ -15,40 +15,23 @@ const SelectedPlacesContainer = styled.div`
     flex-direction: column; 
 `;
 const PlaceBox = styled.div`
-    display: flex;
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: space-between; /* 공간을 양쪽 끝에 배치 */
-    width: 35%;
     margin: 5px;
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0.1, 0.1, 0.1, 0.1);
     transition: box-shadow 0.3s ease;
-
     &:hover {
         box-shadow: 0 6px 10px rgba(0.15, 0.15, 0.15, 0.15);
     }
-
-    h5 {
-        margin: 0;
-        font-size: 16px;
-        font-weight: normal;
-    }
-
-    span {
-        font-size: 14px;
-        color: #666;
-    }
 `;
 const DeleteButton = styled.button`
-    margin-left: 10px; 
+    margin-top: 5px;
     background-color: #ff4d4d;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    padding: 5px 10px;
 
     &:hover {
         background-color: #e60000;
@@ -58,8 +41,18 @@ const DistanceBox = styled.div`
     margin: 10px 0;
     font-weight: bold;
 `;
-
-// 사용자 마우스 커서를 표시하기 위한 스타일
+const Overlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+`;
 const UserCursor = styled.div`
     position: absolute;
     pointer-events: none;
@@ -68,7 +61,7 @@ const UserCursor = styled.div`
     height: 10px;
     border-radius: 50%;
     background-color: ${props => props.color || 'red'};
-    transform: translate(-50%, -50%); /* 커서 위치 정확히 표시 */
+    transform: translate(-50%, -50%);
 `;
 
 const LandingPage = ({ userId, planId, place, context }) => {
@@ -76,8 +69,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
+    const [error, setError] = useState(null);
     const distances = [];
-    
 
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
@@ -100,18 +93,19 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     version: place.version || 1
                 }));
                 setSelectedPlaces(newSelectedPlaces);
-                setIsPlacesLoaded(true);
+                setError(null);
                 return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
                 setSelectedPlaces([]);
-               
+                setError("유효하지 않은 데이터 형식입니다.");
             }
         } catch (error) {
             console.error("기존 장소 불러오기 실패!", error);
-            setSelectedPlaces([]); // 오류 시 빈 배열 설정
+            setSelectedPlaces([]);
+            setError("장소를 불러오는 데 실패했습니다.");
         } finally {
-            setIsPlacesLoaded(true); // 로딩 완료
+            setIsPlacesLoaded(true);
         }
     }, [userId, planId]);
 
@@ -125,7 +119,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
             }
             const updatedPlaces = await fetchExistPlace();
 
-            // 장소 업데이트 소켓에 전달
             if (socketRef.current) {
                 socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -183,7 +176,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
         fetchExistPlace();
     }, [fetchExistPlace]);
 
-    // 소켓 연결 및 이벤트 처리
     useEffect(() => {
         socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
 
@@ -243,7 +235,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
         };
     }, [userId, planId]);
 
-    // 마우스 움직임 소켓 전송
     useEffect(() => {
         if (!socketRef.current) return;
 
@@ -260,6 +251,13 @@ const LandingPage = ({ userId, planId, place, context }) => {
             throttledMouseMove.cancel();
         }
     }, [planId]);
+
+    useEffect(() => {
+        if (isPlacesLoaded) {
+            console.log("장소 데이터가 성공적으로 로드되었습니다.");
+            // 추가적인 작업 수행 가능
+        }
+    }, [isPlacesLoaded]);
 
     return (
         <div className="landing-page">
