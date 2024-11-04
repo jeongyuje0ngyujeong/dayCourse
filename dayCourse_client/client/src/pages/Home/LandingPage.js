@@ -74,7 +74,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
-    const [_isPlacesLoaded, setIsPlacesLoaded] = useState(false);
+    const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const distances = [];
     
 
@@ -280,89 +280,98 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
     return (
         <div className="landing-page">
-            <RightSidebar 
-                userId={userId} 
-                planId={planId} 
-                planInfo={context}
-                places={places} 
-                setPlaces={setPlaces} 
-                onSubmitKeyword={submitKeyword} 
-                onPlaceClick={handlePlaceClick}
-            />
-            <KakaoMap 
-                searchKeyword={keyword} 
-                setPlaces={setPlaces} 
-                selectedPlaces={selectedPlaces || []} // selectedPlaces 전달
-            />
-
-            <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="places">
-                    {(provided) => (
-                        <SelectedPlacesContainer 
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                        >
-                            {selectedPlaces.map((place, index) => {
-                                // 유효한 place 객체인지 확인
-                                if (!place || (!place.placeId && !place.id) || !place.place_name) {
-                                    console.warn("Invalid place object:", place);
-                                    return null;
-                                }
-                                return (
-                                    <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
-                                        <Draggable
-                                            draggableId={place.placeId?.toString() || place.id?.toString()} 
-                                            index={index}
-                                        >
-                                            {(provided) => (
-                                                <PlaceBox 
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                >
-                                                    <h5>{index + 1}. {place.place_name}</h5>
-                                                    <span>{place.address_name}</span>
-                                                    {/* <span>{place.phone}</span> */}
-                                                    <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
-                                                </PlaceBox>
-                                            )}
-                                        </Draggable>
-
-                                        {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && distances[index] !== undefined && (
-                                            <DistanceBox>
-                                                {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
-                                            </DistanceBox>
-                                        )}
-                                    </React.Fragment>
-                                );
-                            })}
-                            {provided.placeholder}
-                        </SelectedPlacesContainer>
-                    )}
-                </Droppable>
-            </DragDropContext>
-            {/* 다른 사용자의 마우스 커서 표시 */}
-            {Object.entries(userCursors).map(([userId, cursorData]) => (
-                <div key={userId}>
-                    <UserCursor 
-                        style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
-                        title={cursorData.name}
+            {!isPlacesLoaded && (
+                <Overlay>
+                    <Loader />
+                </Overlay>
+            )}
+            {isPlacesLoaded && error ? (
+                <div style={{ padding: '20px', color: 'red' }}>{error}</div>
+            ) : (
+                <>
+                    <RightSidebar 
+                        userId={userId} 
+                        planId={planId} 
+                        planInfo={context}
+                        places={places} 
+                        setPlaces={setPlaces} 
+                        onSubmitKeyword={submitKeyword} 
+                        onPlaceClick={handlePlaceClick}
                     />
-                    <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-               
-                    </span>
-                </div>
-            ))}
+                    <KakaoMap 
+                        searchKeyword={keyword} 
+                        setPlaces={setPlaces} 
+                        selectedPlaces={selectedPlaces || []} 
+                    />
 
-            {/* 현재 접속한 사용자 목록 표시 */}
-            <div style={{ position: 'absolute', top: "-2%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '2px', borderRadius: '8px', fontSize:"15px"}}>
-                <h4>접속 사용자</h4>
-                <ul>
-                    {users.map(user => (
-                        <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        <Droppable droppableId="places">
+                            {(provided) => (
+                                <SelectedPlacesContainer 
+                                    ref={provided.innerRef}
+                                    {...provided.droppableProps}
+                                >
+                                    {selectedPlaces.map((place, index) => {
+                                        if (!place || (!place.placeId && !place.id) || !place.place_name) {
+                                            console.warn("Invalid place object:", place);
+                                            return null;
+                                        }
+                                        return (
+                                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
+                                                <Draggable
+                                                    draggableId={place.placeId?.toString() || place.id?.toString()} 
+                                                    index={index}
+                                                >
+                                                    {(provided) => (
+                                                        <PlaceBox 
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                        >
+                                                            <h5>{index + 1}. {place.place_name}</h5>
+                                                            <span>{place.address_name}</span>
+                                                            <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
+                                                        </PlaceBox>
+                                                    )}
+                                                </Draggable>
+
+                                                {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && distances[index] !== undefined && (
+                                                    <DistanceBox>
+                                                        {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
+                                                    </DistanceBox>
+                                                )}
+                                            </React.Fragment>
+                                        );
+                                    })}
+                                    {provided.placeholder}
+                                </SelectedPlacesContainer>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                    {/* 다른 사용자의 마우스 커서 표시 */}
+                    {Object.entries(userCursors).map(([userId, cursorData]) => (
+                        <div key={userId}>
+                            <UserCursor 
+                                style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
+                                title={cursorData.name}
+                            />
+                            <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
+                                {cursorData.name}
+                            </span>
+                        </div>
                     ))}
-                </ul>
-            </div>
+
+                    {/* 현재 접속한 사용자 목록 표시 */}
+                    <div style={{ position: 'absolute', top: -20, left: 1330, background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
+                        <h4>접속 사용자</h4>
+                        <ul>
+                            {users.map(user => (
+                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </>
+            )}
         </div>
     );
 };
