@@ -292,7 +292,6 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
                 };
             });
 
-            console.log("place get :" + JSON.stringify(formattedResult));
             res.status(201).json(formattedResult);
         });
     });
@@ -863,7 +862,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             console.log("분석시작")
 
             // 이미지 데이터를 분석 서비스로 전송
-            const response = await axios.post('http://13.124.135.96:5000/tt', form, {
+            const response = await axios.post('http://13.124.135.96:5000/cluster', form, {
                 headers: {
                     'Accept': 'application/json',
                     ...form.getHeaders() // FormData의 헤더 추가
