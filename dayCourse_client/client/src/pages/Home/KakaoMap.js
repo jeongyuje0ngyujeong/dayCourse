@@ -51,7 +51,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         const mapContainer = document.getElementById("map");
         const mapOptions = {
             center: new kakao.maps.LatLng(37.496486063, 127.028361548),
-            level: 3,
+            level: 5,
         };
         
         const map = new kakao.maps.Map(mapContainer, mapOptions);
@@ -134,9 +134,8 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
             searchMarkerRef.current = [];
             selectedOverlayRef.current = [];
         };
-        
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchKeyword, setPlaces, selectedPlaces]); 
+        // eslint-disable-next-line
+    }, [searchKeyword, setPlaces, selectedPlaces]); // selectedPlaces 의존성 추가
 
     useEffect(() => {
         setAutoFitBounds(true);
@@ -147,7 +146,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         if (mapRef.current) {
             renderOverlays();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line
     }, [selectedPlaces]);
 
     return (
