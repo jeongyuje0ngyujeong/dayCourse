@@ -66,14 +66,13 @@ def analyze_image_file(image):
 
     # Load image to analyze into a 'bytes' object
     # with open("KakaoTalk_20241016_144939920.jpg", "rb") as f:
-    image_data = image.read()
 
     visual_features = [
         VisualFeatures.TAGS,
     ]
 
-    result = client.analyze(
-        image_data=image_data,
+    result = client.analyze_from_url(
+        image_url=image,
         visual_features=visual_features,
         smart_crops_aspect_ratios=[0.9, 1.33],
         gender_neutral_caption=True,
@@ -100,6 +99,9 @@ def analyze_image_file(image):
     
     print(analysis_results)
     return jsonify(analysis_results)
+
+
+
 
 def test23(data):
 
@@ -167,7 +169,7 @@ def hello():
 @app.route('/analyze', methods=['POST'])
 def analyze_image():
     if request.content_type.startswith('multipart/form-data'):
-        image = request.files.get('file')
+        image = request.form.get('imageUrl')
         return analyze_image_file(image)
 
 @app.route('/tt', methods=['POST'])
@@ -186,6 +188,7 @@ def cluster_objects():
     print("요청들어옴.")
     # 요청에서 이미지 리스트를 가져옴
     img_list1 = request.json.get('images', [])
+    
 
     # 태그 벡터화
     tag_vectors = []
