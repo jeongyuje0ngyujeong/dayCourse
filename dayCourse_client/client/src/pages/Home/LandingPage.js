@@ -7,6 +7,7 @@ import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedP
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
+import Loader from './Loader';
 
 // Styled Components
 const SelectedPlacesContainer = styled.div`
