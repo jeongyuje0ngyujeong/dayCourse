@@ -18,6 +18,7 @@ const Cell = styled.td`
     background-color: #eee; 
   }
 `
+
 const DateTable = styled.tr`
   display: flex;
   width: 100%;
@@ -127,15 +128,28 @@ const customModalStyles: ReactModal.Styles = {
   },
 };
 
+function getFirst(date) {
+  const month = date.getMonth();
+
+  if (date.getDate() === 1) {
+    return month; 
+  }
+
+  if (month === 11) {
+    return 0;
+  }
+
+  return month + 1;
+}
+
 export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, selectedDate, setSelectedDate}){
     const weeks = [<DayTable/>]; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('');
-    
-    // console.log(startDay, endDay); 
-    // console.log(groupedSchedules);
+ 
+    const MainMonth = getFirst(startDay);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -158,37 +172,46 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     };
     
     while (currentDate <= endDay) {
-        const dateKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth()+1).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2,'0')}`;
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const date = currentDate.getDate();
+        const day = currentDate.getDay();
+
+        const dateKey = `${year}-${String(month+1).padStart(2, '0')}-${String(date).padStart(2,'0')}`;
         const events = groupedSchedules[dateKey] || [];
 
         currentWeek.push(
-            <Cell 
-                key={dateKey} 
-                onClick={(e)=>handleCellClick(dateKey, e)}
-                style={{
-                  border: dateKey === selectedDate ? "2px solid #90B54C" : "none",
-                  // borderLeft: dateKey === selectedDate ? "2px solid #90B54C" : "none",
-                  borderRadius: '10px'
-                }}
-            >
-                <div style={{color:'black', fontWeight: '500'}}>{new Date(currentDate).getDate().toString()}</div>
-                
-                <div style={{ fontWeight: '500' }}>
-                  {events && events.length > 0 ? (
-                    <>
-                      {events.slice(0, 3).map((event, index) => (
-                        <div key={index}>{event.planName}</div>
-                      ))}
-                      {events.length > 3 && (
-                        <div>+{events.length - 3}</div>
-                      )}
-                    </>
-                  ) : null}
-                </div>
-            </Cell>
-        );
+              <Cell 
+                  key={dateKey} 
+                  onClick={(e)=>handleCellClick(dateKey, e)}
+                  style={{ 
+                    border: dateKey === selectedDate ? "2px solid #90B54C" : "none",
+                    borderRadius: '10px'
+                  }}
+              >
+                  <div style={{
+                    color: day === 6 ? 'blue': day === 0 ? 'red' : 'black', 
+                    fontWeight: '500',
+                    opacity: month === MainMonth ? 1 : 0.3,
+                  }}>{String(date)}</div>
+                  
+                  <div 
+                    style={{ color: month === MainMonth ? 'black' : '#ccc', fontWeight: '500' }}>
+                    {events && events.length > 0 ? (
+                      <>
+                        {events.slice(0, 3).map((event, index) => (
+                          <div key={index}>{event.planName}</div>
+                        ))}
+                        {events.length > 3 && (
+                          <div>+{events.length - 3}</div>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+              </Cell>
+        )
 
-        if (currentWeek.length === 7 || currentDate.getDay() === 6) {
+        if (currentWeek.length === 7 || day === 6) {
           weeks.push(
             <DateTable key={currentDate.toISOString().slice(0, 10)}>
               {/* <tbody> */}
@@ -201,7 +224,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
           currentWeek = []; 
         }
 
-        currentDate.setDate(currentDate.getDate() + 1);
+        currentDate.setDate(date + 1);
     }
 
     if (currentWeek.length > 0) {
@@ -215,8 +238,10 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     }
 
     return (
-        <>{weeks}
+        <>
+        {weeks}
         <ScheduleModal isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent} dateKey={selectedDate}/>
         </>
     )
 }
+
