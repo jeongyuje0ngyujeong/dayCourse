@@ -184,7 +184,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
     // 소켓 연결 및 이벤트 처리
     useEffect(() => {
-        socketRef.current = io('http://localhost:5001');
+        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
 
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
