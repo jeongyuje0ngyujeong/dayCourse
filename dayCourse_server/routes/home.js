@@ -770,60 +770,67 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
             uploadResults.push({ msg: "성공", location: data.Location });
         }
 
-        // 모든 파일의 업로드 결과를 사용자에게 반환
+        // 업로드 결과를 클라이언트에 먼저 반환
         res.json(uploadResults);
 
-       // 사진 분석 요청 (비동기 작업)
-       for (const file of req.files) {
-        const imgNAME = path.basename(file.originalname);
-        const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location; // S3 URL 가져오기
+        // 비동기 사진 분석 요청 (백그라운드 작업)
+        for (const file of req.files) {
+            const imgNAME = path.basename(file.originalname);
+            const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
 
-        // 이미지 분석 요청
-        const form = new FormData();
-        form.append('imageUrl', s3ImageUrl); // data.Location을 전달
+            // 비동기 처리 내부 함수 정의
+            (async () => {
+                try {
+                    // 이미지 분석 요청
+                    const form = new FormData();
+                    form.append('imageUrl', s3ImageUrl);
 
-        try {
-            const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
-                headers: {
-                    ...form.getHeaders(),
-                },
-            });
+                    const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
+                        headers: {
+                            ...form.getHeaders(),
+                        },
+                    });
 
-            const tags = response.data.Tags;
+                    const tags = response.data.Tags;
 
-            // S3 메타데이터 업데이트를 위한 파라미터 설정
-            const uploadParams = {
-                Bucket: bucketName,
-                Key: `plans/${planId}/${imgNAME}`,
-                Metadata: {}
-            };
+                    // S3 메타데이터 업데이트를 위한 파라미터 설정
+                    const uploadParams = {
+                        Bucket: bucketName,
+                        Key: `plans/${planId}/${imgNAME}`,
+                        Metadata: {}
+                    };
 
-            // 태그 메타데이터 추가
-            tags.forEach((tag, index) => {
-                uploadParams.Metadata[`tag${index + 1}`] = tag.name;
-            });
+                    // 태그 메타데이터 추가
+                    tags.forEach((tag, index) => {
+                        uploadParams.Metadata[`tag${index + 1}`] = tag.name;
+                    });
 
-            // S3 메타데이터 업데이트
-            await s3.copyObject({
-                Bucket: bucketName,
-                CopySource: `${bucketName}/plans/${planId}/${imgNAME}`,
-                Key: `plans/${planId}/${imgNAME}`,
-                MetadataDirective: 'REPLACE', // 기존 메타데이터를 교체
-                Metadata: uploadParams.Metadata // 새 메타데이터 추가
-            }).promise();
+                    // S3 메타데이터 업데이트
+                    await s3.copyObject({
+                        Bucket: bucketName,
+                        CopySource: `${bucketName}/plans/${planId}/${imgNAME}`,
+                        Key: `plans/${planId}/${imgNAME}`,
+                        MetadataDirective: 'REPLACE', // 기존 메타데이터를 교체
+                        Metadata: uploadParams.Metadata // 새 메타데이터 추가
+                    }).promise();
 
-            console.log(`메타데이터가 ${imgNAME}에 대해 업데이트되었습니다.`);
+                    console.log(`메타데이터가 ${imgNAME}에 대해 업데이트되었습니다.`);
 
-        } catch (error) {
-            console.error('이미지 분석 중 오류 발생:', error);
+                } catch (error) {
+                    console.error('이미지 분석 중 오류 발생:', error);
+                }
+            })();
         }
-    }
 
     } catch (err) {
         console.error('이미지 처리 중 오류 발생', err);
-        res.status(500).send('이미지 처리 중 오류 발생');
+        // 오류가 발생한 경우 응답이 이미 전송되지 않았다면 에러를 반환
+        if (!res.headersSent) {
+            res.status(500).send('이미지 처리 중 오류 발생');
+        }
     }
 });
+
 
 
 router.get('/plan/moment', authenticateJWT, async (req, res) => {
