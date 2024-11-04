@@ -1,6 +1,8 @@
 import React, { useEffect, useRef,useState } from 'react';
-
+import './KakaoMap.css';
 const { kakao } = window;
+
+
 
 function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     const mapRef = useRef(null);
@@ -57,10 +59,14 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         const map = new kakao.maps.Map(mapContainer, mapOptions);
 
         const zoomControl = new kakao.maps.ZoomControl();
-        const mapTypecontrol = new kakao.maps.MapTypeControl();
+        //const mapTypecontrol = new kakao.maps.MapTypeControl();
 
         map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-        map.addControl(mapTypecontrol, kakao.maps.ControlPosition.TOPRIGHT);
+        //map.addControl(mapTypecontrol, kakao.maps.ControlPosition.TOPRIGHT);
+
+           // 지도 로드 후 컨트롤 요소에 클래스 추가
+    const controls = document.querySelectorAll(".mapType, .zoomControl");
+    controls.forEach(control => control.classList.add("custom-control"));
         
         // 지도가 완전히 로드된 후 실행
         kakao.maps.event.addListener(map, 'tilesloaded', () => {
@@ -151,14 +157,10 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
 
     return (
         <div className="map-container">
-            <div id="map" style={{ 
-                width: "80%", 
-                height: "500px",
-                borderRadius: "8px",
-                boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
-            }}></div>
+            <div id="map"></div>
         </div>
     );
 }
+
 
 export default KakaoMap;
