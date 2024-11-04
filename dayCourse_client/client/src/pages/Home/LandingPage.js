@@ -212,7 +212,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     }, [fetchExistPlace]);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
+        socketRef.current = io("http://localhost:5001");
 
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
