@@ -57,28 +57,7 @@ jobs:
               cd $APP_DIR/dayCourse_ai
             fi"
 
-      # 3. Git LFS 설치 및 파일 다운로드
-      - name: Install Git LFS
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
-          REMOTE_USER: ${{ secrets.EC2_USER }}            
-          APP_DIR: '/home/ubuntu/dayCourseAi/dayCourse_ai'
-        run: |
-          eval "$(ssh-agent -s)"
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
-          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-            # Git LFS 설치
-            if ! command -v git-lfs &> /dev/null; then
-              echo 'Installing Git LFS'
-              sudo apt-get install -y git-lfs
-            fi
-            # Git LFS 설정 및 파일 다운로드
-            cd $APP_DIR &&
-            git lfs install &&
-            git lfs pull"
-
-      # 4. 가상 환경 설정 및 의존성 설치
+      # 3. 가상 환경 설정 및 의존성 설치
       - name: Set up virtual environment and install dependencies
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
@@ -95,7 +74,7 @@ jobs:
             pip install -r requirements.txt &&
             pip install gunicorn"
 
-      # 5. systemd 서비스를 구성하고 애플리케이션을 시작합니다
+      # 4. systemd 서비스를 구성하고 애플리케이션을 시작합니다
       - name: Configure and Start Flask AI Application via systemd
         env:
           SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}

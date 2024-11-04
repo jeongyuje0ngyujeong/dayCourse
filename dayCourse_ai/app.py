@@ -18,9 +18,9 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# # GloVe 모델 로드
-# with open('./glove_model.pkl', 'rb') as f:
-#     model = pickle.load(f)
+# GloVe 모델 로드
+with open('./glove_model.pkl', 'rb') as f:
+    model = pickle.load(f)
 
 
 # ImageBoundingBox 객체를 딕셔너리로 변환하는 함수
@@ -181,54 +181,54 @@ def tt():
     else:
         return jsonify({"error": "No metadata found"}), 400
     
-# @app.route('/cluster', methods=['POST'])
-# def cluster_objects():
-#     print("요청들어옴.")
-#     # 요청에서 이미지 리스트를 가져옴
-#     img_list1 = request.json.get('images', [])
+@app.route('/cluster', methods=['POST'])
+def cluster_objects():
+    print("요청들어옴.")
+    # 요청에서 이미지 리스트를 가져옴
+    img_list1 = request.json.get('images', [])
 
-#     # 태그 벡터화
-#     tag_vectors = []
-#     for obj in img_list1:
-#         vectors = [model[tag] for tag in obj["metadata"] if tag in model]
-#         if vectors:  # 벡터가 있는 경우
-#             avg_vector = np.mean(vectors, axis=0)  # 평균 벡터 계산
-#             tag_vectors.append((obj["url"], avg_vector))  # 객체 URL과 벡터를 저장
+    # 태그 벡터화
+    tag_vectors = []
+    for obj in img_list1:
+        vectors = [model[tag] for tag in obj["metadata"] if tag in model]
+        if vectors:  # 벡터가 있는 경우
+            avg_vector = np.mean(vectors, axis=0)  # 평균 벡터 계산
+            tag_vectors.append((obj["url"], avg_vector))  # 객체 URL과 벡터를 저장
 
-#     # K-means 클러스터링 수행
-#     X = np.array([vec for _, vec in tag_vectors])
-#     n_clusters = 5  # 클러스터 수
-#     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
-#     labels = kmeans.fit_predict(X)
+    # K-means 클러스터링 수행
+    X = np.array([vec for _, vec in tag_vectors])
+    n_clusters = 5  # 클러스터 수
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0)
+    labels = kmeans.fit_predict(X)
 
-#     # 클러스터링 결과 해석 및 객체 그룹화
-#     clustered_objects = {i: [] for i in range(n_clusters)}
-#     for (obj_id, _), label in zip(tag_vectors, labels):
-#         clustered_objects[label].append(obj_id)
+    # 클러스터링 결과 해석 및 객체 그룹화
+    clustered_objects = {i: [] for i in range(n_clusters)}
+    for (obj_id, _), label in zip(tag_vectors, labels):
+        clustered_objects[label].append(obj_id)
 
-#     # 클러스터의 핵심 태그 찾기 (빈도수 기반)
-#     core_tags = {}
-#     for cluster_id, obj_ids in clustered_objects.items():
-#         # 해당 클러스터의 모든 태그 수집
-#         tag_list = []
-#         for obj_id in obj_ids:
-#             # 해당 객체의 태그 가져오기
-#             obj_tags = next(item for item in img_list1 if item["url"] == obj_id)["metadata"]
-#             tag_list += obj_tags.strip().split(',')
+    # 클러스터의 핵심 태그 찾기 (빈도수 기반)
+    core_tags = {}
+    for cluster_id, obj_ids in clustered_objects.items():
+        # 해당 클러스터의 모든 태그 수집
+        tag_list = []
+        for obj_id in obj_ids:
+            # 해당 객체의 태그 가져오기
+            obj_tags = next(item for item in img_list1 if item["url"] == obj_id)["metadata"]
+            tag_list += obj_tags.strip().split(',')
         
-#         # 가장 빈도 높은 태그 찾기
-#         if tag_list:
-#             most_common_tag, _ = Counter(tag_list).most_common(1)[0]
-#             core_tags[cluster_id] = most_common_tag
-#         else:
-#             core_tags[cluster_id] = None  # 태그가 없는 경우
+        # 가장 빈도 높은 태그 찾기
+        if tag_list:
+            most_common_tag, _ = Counter(tag_list).most_common(1)[0]
+            core_tags[cluster_id] = most_common_tag
+        else:
+            core_tags[cluster_id] = None  # 태그가 없는 경우
 
-#     # 결과 반환
-#     result = {
-#         'clusters': {cluster_id: {'object_ids': obj_ids, 'core_tag': core_tags[cluster_id]} 
-#                        for cluster_id, obj_ids in clustered_objects.items()}
-#     }
-#     return jsonify(result)
+    # 결과 반환
+    result = {
+        'clusters': {cluster_id: {'object_ids': obj_ids, 'core_tag': core_tags[cluster_id]} 
+                       for cluster_id, obj_ids in clustered_objects.items()}
+    }
+    return jsonify(result)
 
 
 if __name__ == '__main__':
