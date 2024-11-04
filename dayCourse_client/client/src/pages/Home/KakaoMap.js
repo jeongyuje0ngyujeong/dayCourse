@@ -134,7 +134,9 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
             searchMarkerRef.current = [];
             selectedOverlayRef.current = [];
         };
-    }, [searchKeyword, setPlaces, selectedPlaces]); // selectedPlaces 의존성 추가
+        
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchKeyword, setPlaces, selectedPlaces]); 
 
     useEffect(() => {
         setAutoFitBounds(true);
@@ -145,6 +147,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         if (mapRef.current) {
             renderOverlays();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedPlaces]);
 
     return (
