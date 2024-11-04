@@ -148,6 +148,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('');
+    console.log(endDay.getDate()-startDay.getDate());
  
     const MainMonth = getFirst(startDay);
 
@@ -190,13 +191,13 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                   }}
               >
                   <div style={{
-                    color: day === 6 ? 'blue': day === 0 ? 'red' : 'black', 
+                    color: day === 6 ? '#F3CD86': day === 0 ? '#F5A281' : 'black', 
                     fontWeight: '500',
-                    opacity: month === MainMonth ? 1 : 0.3,
+                    opacity: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 1 : 0.3,
                   }}>{String(date)}</div>
                   
                   <div 
-                    style={{ color: month === MainMonth ? 'black' : '#ccc', fontWeight: '500' }}>
+                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '500' }}>
                     {events && events.length > 0 ? (
                       <>
                         {events.slice(0, 3).map((event, index) => (
