@@ -15,23 +15,40 @@ const SelectedPlacesContainer = styled.div`
     flex-direction: column; 
 `;
 const PlaceBox = styled.div`
+    display: flex;
+    align-items: center; /* 수직 중앙 정렬 */
+    justify-content: space-between; /* 공간을 양쪽 끝에 배치 */
+    width: 35%;
     margin: 5px;
-    padding: 5px;
+    padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0.1, 0.1, 0.1, 0.1);
     transition: box-shadow 0.3s ease;
+
     &:hover {
         box-shadow: 0 6px 10px rgba(0.15, 0.15, 0.15, 0.15);
     }
+
+    h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    span {
+        font-size: 14px;
+        color: #666;
+    }
 `;
 const DeleteButton = styled.button`
-    margin-top: 5px;
+    margin-left: 10px; 
     background-color: #ff4d4d;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    padding: 5px 10px;
 
     &:hover {
         background-color: #e60000;
@@ -342,17 +359,15 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         </div>
                     ))}
 
-                    {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: -20, left: 1330, background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
-                        <h4>접속 사용자</h4>
-                        <ul>
-                            {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </>
-            )}
+            {/* 현재 접속한 사용자 목록 표시 */}
+            <div style={{ position: 'absolute', top: "-2%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '2px', borderRadius: '8px', fontSize:"15px"}}>
+                <h4>접속 사용자</h4>
+                <ul>
+                    {users.map(user => (
+                        <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };
