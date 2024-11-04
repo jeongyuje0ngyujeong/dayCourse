@@ -328,17 +328,15 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
                     ))}
 
-                    {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: -20, left: 1330, background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
-                        <h4>접속 사용자</h4>
-                        <ul>
-                            {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
-                            ))}
-                        </ul>
-                    </div>
-                </>
-            )}
+            {/* 현재 접속한 사용자 목록 표시 */}
+            <div style={{ position: 'absolute', top: "-2%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '2px', borderRadius: '8px', fontSize:"15px"}}>
+                <h4>접속 사용자</h4>
+                <ul>
+                    {users.map(user => (
+                        <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                    ))}
+                </ul>
+            </div>
         </div>
     );
 };
