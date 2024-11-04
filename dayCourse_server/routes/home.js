@@ -720,74 +720,82 @@ router.get('/plan/:planId/images', async (req, res) => {
 
 
 
-// 이미지 등록 엔드포인트
-router.post('/plan/upload/:planId/images', upload.single('image'), async (req, res) => {
-    console.log("사진등록?");
+router.post('/plan/upload/:planId/images', upload.array('image'), async (req, res) => {
+    console.log("사진 등록");
 
     try {
-        console.log("사진등록");
         const planId = req.params.planId;
 
-        if (!req.file) {
+        if (!req.files || req.files.length === 0) {
             return res.status(400).send('파일이 없습니다');
         }
 
-        const file = req.file;
-        const imgNAME = path.basename(file.originalname);
+        // 결과 배열을 준비하여 모든 업로드 결과를 저장합니다.
+        const uploadResults = [];
 
-        // S3에서 객체 업로드 파라미터 설정
-        const uploadParams = {
-            Bucket: bucketName,
-            Key: `plans/${planId}/${imgNAME}`,
-            Body: file.buffer,
-            ContentType: file.mimetype,
-            Metadata: {}
-        };
+        // 모든 파일에 대해 반복
+        for (const file of req.files) {
+            const imgNAME = path.basename(file.originalname);
 
-        // 이미지 파일 확장자 확인
-        const ext = path.extname(file.originalname).toLowerCase();
-        const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
-        const isImage = allowedImageExtensions.includes(ext);
+            // S3 업로드 파라미터 설정
+            const uploadParams = {
+                Bucket: bucketName,
+                Key: `plans/${planId}/${imgNAME}`,
+                Body: file.buffer,
+                ContentType: file.mimetype,
+                Metadata: {}
+            };
 
-        if (isImage) {
-            // 이미지 분석을 위한 요청
-            const form = new FormData();
-            form.append('file', file.buffer, { filename: file.originalname });
+            // 이미지 파일 확장자 확인
+            const ext = path.extname(file.originalname).toLowerCase();
+            const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
+            const isImage = allowedImageExtensions.includes(ext);
 
-            const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
-                headers: {
-                    ...form.getHeaders(),
-                },
+            if (isImage) {
+                // 이미지 분석 요청
+                const form = new FormData();
+                form.append('file', file.buffer, { filename: file.originalname });
+
+                const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
+                    headers: {
+                        ...form.getHeaders(),
+                    },
+                });
+
+                const tags = response.data.Tags;
+
+                // 태그 메타데이터 추가
+                tags.forEach((tag, index) => {
+                    uploadParams.Metadata[`tag${index + 1}`] = tag.name;
+                });
+            }
+
+            // S3 업로드
+            const data = await new Promise((resolve, reject) => {
+                s3.upload(uploadParams, (err, data) => {
+                    if (err) {
+                        console.log("Error", err);
+                        reject('S3 업로드 중 오류 발생');
+                    } else {
+                        console.log("Upload Success", data.Location);
+                        resolve(data.Location);
+                    }
+                });
             });
 
-            const tags = response.data.Tags;
-
-            // 태그 메타데이터 추가
-            tags.forEach((tag, index) => {
-                uploadParams.Metadata[`tag${index + 1}`] = tag.name; // 태그 이름 추가
-            });
-
-            console.log(uploadParams);
+            // 업로드된 위치를 결과 배열에 추가
+            uploadResults.push({ msg: "성공", location: data });
         }
 
-        // S3 업로드
-        s3.upload(uploadParams, function (err, data) {
-            if (err) {
-                console.log("Error", err);
-                return res.status(500).send('S3 업로드 중 오류 발생');
-            }
-            if (data) {
-                console.log("Upload Success", data.Location);
-                return res.json({ msg: "성공", location: data.Location });
-            }
-        });
+        // 모든 파일의 업로드 결과를 반환
+        return res.json(uploadResults);
 
-        // 여기에 return 문을 추가하지 않도록 주의하세요.
     } catch (err) {
         console.error('Error retrieving images', err);
         res.status(500).send('Error retrieving images');
     }
 });
+
 
 router.get('/plan/moment', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
