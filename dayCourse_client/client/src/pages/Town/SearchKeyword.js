@@ -42,6 +42,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
 
     const addDeparturePoint = (place) => {
         // 최대 10개의 출발지 입력창만 추가할 수 있게 제한
+        
         if (departurePoints.length < 10) {
             setDeparturePoints([...departurePoints, place]);
         }
@@ -84,10 +85,10 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
                     {places.map((place, index) => (
                         <li 
                             key={index} 
-                            onClick={() => {
+                            onMouseDown={() => {
                                 addDeparturePoint(place);
                                 setPlaces([]);
-                                setShowResult(false);
+                                // setShowResult(false);
                             }} 
                             style={{ cursor: 'pointer' }}
                         >
