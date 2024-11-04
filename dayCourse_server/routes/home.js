@@ -725,11 +725,12 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
     try {
         const planId = req.params.planId;
 
+        // 파일이 없을 경우 처리
         if (!req.files || req.files.length === 0) {
             return res.status(400).send('파일이 없습니다');
         }
 
-        // 결과 배열을 준비하여 모든 업로드 결과를 저장합니다.
+        // 업로드 결과를 저장할 배열
         const uploadResults = [];
 
         // 모든 파일에 대해 반복
@@ -750,26 +751,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
             const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
             const isImage = allowedImageExtensions.includes(ext);
 
-            if (isImage) {
-                // 이미지 분석 요청
-                const form = new FormData();
-                form.append('file', file.buffer, { filename: file.originalname });
-
-                const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
-                    headers: {
-                        ...form.getHeaders(),
-                    },
-                });
-
-                const tags = response.data.Tags;
-
-                // 태그 메타데이터 추가
-                tags.forEach((tag, index) => {
-                    uploadParams.Metadata[`tag${index + 1}`] = tag.name;
-                });
-            }
-
-            // S3 업로드
+            // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
                 s3.upload(uploadParams, (err, data) => {
                     if (err) {
@@ -777,107 +759,69 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
                         reject('S3 업로드 중 오류 발생');
                     } else {
                         console.log("Upload Success", data.Location);
-                        resolve(data.Location);
+                        resolve(data);
                     }
                 });
             });
 
             // 업로드된 위치를 결과 배열에 추가
-            uploadResults.push({ msg: "성공", location: data });
+            uploadResults.push({ msg: "성공", location: data.Location });
         }
 
-        // 모든 파일의 업로드 결과를 반환
-        return res.json(uploadResults);
+        // 모든 파일의 업로드 결과를 사용자에게 반환
+        res.json(uploadResults);
+
+       // 사진 분석 요청 (비동기 작업)
+       for (const file of req.files) {
+        const imgNAME = path.basename(file.originalname);
+        const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location; // S3 URL 가져오기
+
+        // 이미지 분석 요청
+        const form = new FormData();
+        form.append('imageUrl', s3ImageUrl); // data.Location을 전달
+
+        try {
+            const response = await axios.post('http://13.124.135.96:5000/analyze', form, {
+                headers: {
+                    ...form.getHeaders(),
+                },
+            });
+
+            const tags = response.data.Tags;
+
+            // S3 메타데이터 업데이트를 위한 파라미터 설정
+            const uploadParams = {
+                Bucket: bucketName,
+                Key: `plans/${planId}/${imgNAME}`,
+                Metadata: {}
+            };
+
+            // 태그 메타데이터 추가
+            tags.forEach((tag, index) => {
+                uploadParams.Metadata[`tag${index + 1}`] = tag.name;
+            });
+
+            // S3 메타데이터 업데이트
+            await s3.copyObject({
+                Bucket: bucketName,
+                CopySource: `${bucketName}/plans/${planId}/${imgNAME}`,
+                Key: `plans/${planId}/${imgNAME}`,
+                MetadataDirective: 'REPLACE', // 기존 메타데이터를 교체
+                Metadata: uploadParams.Metadata // 새 메타데이터 추가
+            }).promise();
+
+            console.log(`메타데이터가 ${imgNAME}에 대해 업데이트되었습니다.`);
+
+        } catch (error) {
+            console.error('이미지 분석 중 오류 발생:', error);
+        }
+    }
 
     } catch (err) {
-        console.error('Error retrieving images', err);
-        res.status(500).send('Error retrieving images');
+        console.error('이미지 처리 중 오류 발생', err);
+        res.status(500).send('이미지 처리 중 오류 발생');
     }
 });
-
-
-// router.get('/plan/moment', authenticateJWT, async (req, res) => {
-//     const userId = req.user.userId;
-//     console.log("모먼트 가져옴")
-
-//     const sql = `
-//       SELECT Plan.planId
-//       FROM groupMembers
-//       JOIN Plan ON groupMembers.groupId = Plan.groupId
-//       WHERE groupMembers.userId = ? AND Plan.startDate <= NOW()
-//       ORDER BY Plan.startDate DESC
-//     `;
-
-//     db.query(sql, [userId], async (err, result) => {
-//         if (err) {
-//             console.error('데이터 가져오기 오류:', err);
-//             return res.status(500).json({ error: '데이터베이스 오류' });
-//         }
-
-//         console.log("조회한 일정 : ", result)
-//         // 결과가 비어 있지 않은지 확인
-//         if (result.length === 0) {
-//             return res.status(200).send('플랜이 없습니다');
-//         }
-
-//         // 모든 planId 가져오기
-//         const planIds = result.map(plan => plan.planId); // 모든 최근 플랜 ID를 가져옵니다
-//         const imagesData = [];
-
-//         console.log("S3 에서 가져올거임");
-
-//         try {
-//             // 각 planId에 대해 S3에서 이미지 목록 가져오기
-//             for (const planId of planIds) {
-//                 const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
-//                 const data = await s3.listObjectsV2(params).promise();
-
-//                 if (!data.Contents || data.Contents.length === 0) {
-//                     console.log(`플랜 ${planId}에 대한 이미지가 없습니다`);
-//                     continue; // 다음 planId로 넘어갑니다
-//                 }
-
-//                 // 각 항목에 대한 메타데이터 가져오기
-//                 for (const item of data.Contents) {
-//                     const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
-//                     const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
-//                     const newMetadata = Object.values(metadata.Metadata);
-
-//                     // URL과 메타데이터를 배열에 저장
-//                     imagesData.push({
-//                         url: imageUrl,
-//                         metadata: newMetadata
-//                     });
-//                 }
-//             }
-
-//             console.log("분석 폼 데이터 준비")
-
-//             // Axios 요청을 위한 폼 데이터 준비
-//             const form = new FormData();
-//             form.append('metadata', JSON.stringify(imagesData));
-
-//             console.log("분석시작")
-
-//             // 이미지 데이터를 분석 서비스로 전송
-//             const response = await axios.post('http://13.124.135.96:5000/tt', form, {
-//                 headers: {
-//                     'Accept': 'application/json',
-//                     ...form.getHeaders() // FormData의 헤더 추가
-//                 },
-//             });
-
-//             console.log("돌려줌")
-
-//             console.log(response.data);
-//             // 이미지 URL과 메타데이터를 응답으로 전송
-//             return res.json(response.data);
-//         } catch (err) {
-//             console.error('이미지 가져오기 오류:', err);
-//             return res.status(500).send('이미지 가져오기 오류');
-//         }
-//     });
-// });
 
 
 router.get('/plan/moment', authenticateJWT, async (req, res) => {
@@ -951,6 +895,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
                 transformedData.clusters[core_tag] = transformedData.clusters[core_tag].concat(object_ids);
             }
 
+            console.log("모먼트 반환 완료");
             return res.json(transformedData.clusters); // 여기서 응답을 보냄
         } catch (err) {
             console.error('이미지 가져오기 오류:', err);
