@@ -43,33 +43,34 @@ const PlanDetail = () => {
     }, [planId]);
 
     const onFileChange = (event) => {
-        setSelectedFile(event.target.files[0]);
+        const files = event.target.files;
+        setSelectedFile(Array.from(files)); // 배열로 변환하여 상태에 저장
     }
-
+    
     const onSubmit = async (event) => {
         event.preventDefault();
-
-        if (!selectedFile) {
+    
+        if (!selectedFile || selectedFile.length === 0) {
             alert('파일을 선택해줘');
             return;
         }
-
-        console.log('Selected file:', selectedFile); // 파일 확인
-
+    
         try {
-            await uploadImage(selectedFile, planId); // 올바른 매개변수 전달
+            await uploadImage(selectedFile, planId); // 다중 파일 업로드 함수 호출
             fetchImageUrls(); // 이미지 목록 새로고침
+            setSelectedFile([]); // 업로드 후 파일 선택 초기화
         } catch (error) {
             console.error('업로드 실패:', error);
             alert(`업로드 실패: ${error.response?.data?.message || error.message}`);
         }
     };
+    
 
     useEffect(() => {
         if (userId && planId) {
             fetchImageUrls(); // 사용자 ID와 플랜 ID가 설정되면 이미지 목록 가져오기
         }
-    }, [userId, planId, fetchImageUrls]);
+    }, [planId, fetchImageUrls]);
 
     return (
         <Container>
@@ -81,7 +82,7 @@ const PlanDetail = () => {
                     </div>
                     <div>
                         <label>이미지 선택:</label>
-                        <input type="file" onChange={onFileChange} required/>
+                        <input type="file" multiple onChange={onFileChange} required/>
                     </div>
                     <button type="submit">업로드</button>
                 </form>
