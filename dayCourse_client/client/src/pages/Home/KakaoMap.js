@@ -51,7 +51,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         const mapContainer = document.getElementById("map");
         const mapOptions = {
             center: new kakao.maps.LatLng(37.496486063, 127.028361548),
-            level: 3,
+            level: 5,
         };
         
         const map = new kakao.maps.Map(mapContainer, mapOptions);
