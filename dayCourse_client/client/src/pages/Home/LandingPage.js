@@ -372,7 +372,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                 title={cursorData.name}
                             />
                             <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-                                {cursorData.name}
+                        
                             </span>
                         </div>
                     ))}
