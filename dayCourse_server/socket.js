@@ -121,7 +121,7 @@ io.on('connection', (socket) => {
         name: user.name,
         cursor: { x, y }
       });
-      console.log(`마우스 이동 이벤트 전송: userId=${user.userId}, x=${x}, y=${y}`);
+      //console.log(`마우스 이동 이벤트 전송: userId=${user.userId}, x=${x}, y=${y}`);
     }
   });
 
