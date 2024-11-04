@@ -7,11 +7,12 @@ import SearchKeyword from './SearchKeyword';
 import SelectTown from './SelectTown';
 import styled from "styled-components";
 import {Button} from '../../Button';
+import ConvexHullCalculator from './Recommand/convex_hull'
 
 
 export async function loader({ params }) {
       const { planId } = params;
-      console.log(planId);
+    //   console.log(planId);
       const event = await getEvent(planId);
       return { event };
     }
@@ -164,7 +165,8 @@ export default function UpdateTown() {
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
-            </SidebarContainer>     
+            <ConvexHullCalculator departurePoints={departurePoints}/>  
+            </SidebarContainer>   
         </div>
     );
 };

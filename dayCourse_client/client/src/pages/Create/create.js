@@ -29,7 +29,7 @@ export async function action({ request, params }) {
     
     if (params.id){
       await updateSchedule(params.id, updates);
-      return redirect(`/main/home/schedules/${dateKey}`);
+      return redirect(`/main/schedules/${dateKey}/${params.id}/town`);
     }
     else{
       const planId = (await createSchedule(dateKey, formData)).planId;
