@@ -667,6 +667,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         ORDER BY Plan.startDate DESC
     `;
 
+    console.log("쿼리1");
     const [plans] = await db.promise().query(sql_plan, [userId]);
 
     const sql_plan_location =`
@@ -674,10 +675,10 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         FROM Plan_Location 
         WHERE planId IN (?);
     `
-
+    console.log("쿼리2");
     const [plan_locations] = await db.promise().query(sql_plan_location, [plans]);
     
-
+    console.log("쿼리3");
     const locationsPromises = plan_locations.map(async (planLocation) => {
         const sql_locations = `
             SELECT location.*
@@ -689,6 +690,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         console.log(locations)
         console.log("테스트문구1124")
     });
+
+    console.log("기존문구 시작");
 
     const sql_category = `
         SELECT addressFull, LocationName, LocationID, latitude, longitude
