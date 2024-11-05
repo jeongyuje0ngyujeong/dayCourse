@@ -694,10 +694,10 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         }
     });
 
-    await Promise.all(locationsPromises);
+    const locations = await Promise.all(locationsPromises);
 
-    if (locationsPromises) {
-        console.log(locationsPromises)
+    if (locations) {
+        console.log(locations)
         return res.status(200).json({ msg: 'success' });
     } else {
         console.log("기존문구 시작");
