@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 // import {Button} from '../../Button';
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 import Messages from './Messages';
 import Input from './Input';
 import React, { useState, useEffect } from 'react';
@@ -45,14 +45,14 @@ const ChatName = styled.div`
 //     border-radius: 4px;
 // `;
 
-const ENDPOINT = 'http://13.125.236.177:3030';
+// const ENDPOINT = 'http://13.125.236.177:3030';
 // const ENDPOINT = 'http://localhost:5000';
 let socket;
 
 export default function Chat({userId, planInfo}) {
     const planId = planInfo.planId;
-    const [name, setName] = useState(userId);
-    const [room, setRoom] = useState(planId);
+    // const [name, setName] = useState(userId);
+    // const [room, setRoom] = useState(planId);
     const [users, setUsers] = useState('');
     const [message, setMessage] = useState('');
     const [messages, setMessages] = useState([]);
