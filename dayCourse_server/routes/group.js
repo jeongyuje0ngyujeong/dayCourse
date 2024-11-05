@@ -195,8 +195,12 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         const groupId = result_groupId.insertId; // 삽입한 그룹의 ID
 
+        let friendIds;
+
         // 모든 친구의 userId를 가져옵니다.
-        const friendIds = groupMembers.map(member => member.friendId);
+        if(groupMembers){
+            friendIds = groupMembers.map(member => member.friendId);
+        }
 
         console.log("그룹을 위한 친구찾기");
 
