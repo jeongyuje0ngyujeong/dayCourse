@@ -31,7 +31,7 @@ io.on('connection', (socket) => {
     console.log('userId', userId, 'name:', name, 'room:', room);
     const { error, user } = addUser({ id: socket.id, userId, name, room })
 
-    console.log(user)
+    //console.log(user)
 
     if (error) callback({ error: '에러가 발생했습니다.' })
 
