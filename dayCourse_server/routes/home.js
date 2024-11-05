@@ -677,11 +677,13 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     const [plan_locations] = await db.promise().query(sql_plan_location, [plans]);
     
     console.log("쿼리3");
+    console.log(plan_locations);
     const locationsPromises = plan_locations.map(async (planLocation) => {
+        console.log("??");
         try {
             const sql_locations = `
-                SELECT location.*
-                FROM location
+                SELECT Locations.*
+                FROM Locations
                 WHERE LocationName = ? AND addressFull = ?;
             `;
     
@@ -756,7 +758,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         phone: "01000000000" //필드없음
     }));
 
-    console.log(renamedUsers);
+    //console.log(renamedUsers);
     return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
 
