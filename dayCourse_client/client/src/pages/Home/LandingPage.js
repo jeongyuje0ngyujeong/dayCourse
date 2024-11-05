@@ -364,7 +364,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         <h4>접속 사용자</h4>
                         <ul>
                             {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
                             ))}
                         </ul>
                     </div>
