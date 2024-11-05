@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 import json
+import pandas as pd
 import numpy as np
 import pickle
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
@@ -10,7 +11,7 @@ from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential
 
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn.cluster import KMeans
 from collections import defaultdict, Counter
 
@@ -21,6 +22,18 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 # GloVe 모델 로드
 with open('./glove_model.pkl', 'rb') as f:
     model = pickle.load(f)
+
+# 파일 경로 지정
+file_path = './output.csv'
+
+# CSV 파일 읽기
+data = pd.read_csv(file_path)
+
+# 결측치 처리
+data['rating'] = data['rating'].fillna(data['rating'].mean())
+data['tag1'] = data['tag1'].fillna('')
+data['tag2'] = data['tag2'].fillna('')
+data['tag3'] = data['tag3'].fillna('')
 
 
 # ImageBoundingBox 객체를 딕셔너리로 변환하는 함수
@@ -309,6 +322,61 @@ def cluster_objects2():
     
     return jsonify(result)
 
+def get_recommendations(cosine_sim, idx):
+
+    # 해당 스토어와 모든 스토어 간의 유사도 가져오기
+    sim_scores = list(enumerate(cosine_sim[idx]))
+
+    # 유사도에 따라 스토어 정렬
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+    # 상위 10개 스토어 인덱스 가져오기
+    sim_scores = sim_scores[1:11]
+
+    # 인덱스 리스트 만들기
+    store_indices = [i[0] for i in sim_scores]
+
+    # 상위 10개 스토어 데이터프레임 반환
+    return data.iloc[store_indices]
+
+
+@app.route('/SpotSuggest', methods=['POST'])
+def SpotSuggest():
+    locations = request.json.get('locations', [])
+    text = request.json.get('text')
+
+    LocationName = locations[0]['LocationName']
+    addressFull = locations[0]['addressFull']
+    category = locations[0]['category']
+    keyword = locations[0]['keyword']
+
+    if text == "k":
+        data_text = "combined_features_k"
+        datas = data[data['keyword'].str.contains(keyword)].copy().reset_index(drop=True)
+    elif text == "c":
+        data_text = "combined_features_c"
+        datas = data[data['category'].str.contains(category)].copy().reset_index(drop=True)
+    else:
+        data_text = "combined_features_a"  # 기본 값
+        datas = data.copy()
+    
+    # 필요한 피처 결합
+    datas['combined_features_a'] = datas['category'] + ' ' + datas['keyword'] + ' ' + datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
+    datas['combined_features_c'] = datas['keyword'] + ' ' + datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
+    datas['combined_features_k'] = datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
+
+    # TF-IDF 벡터화
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(datas[data_text])
+
+    # 코사인 유사도 행렬 계산
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+    #입력된 스토어의 인덱스 찾기
+    idx = datas[datas['LocationName'] == LocationName].index[0]
+    
+    recommendations = get_recommendations(cosine_sim, idx)
+    return jsonify(recommendations.to_dict(orient='records'))
 
 if __name__ == '__main__':
      app.run(host='0.0.0.0', port=5000) 
