@@ -935,8 +935,6 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     locations = locations.flat();
 
     if (locations.length > 0) {
-        console.log(locations)
-
         let text = ""
 
         if (key !== "random") {
@@ -969,29 +967,29 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         return res.status(200).json({ msg: 'success', place: renamedUsers });
     } else {
 
-        key = 'random'
-        Cate = 'cafe'
+        key = translateKeyword(enKeyword);
+        Cate = translateCategory(enCategory)
 
         console.log("기존문구 시작");
         const sql_category = `
-    SELECT addressFull, LocationName, LocationID, latitude, longitude
-    FROM Locations
-    WHERE category = ?
-    LIMIT 10;
-`;
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            WHERE category = ?
+            LIMIT 10;
+        `;
 
         const sql_keyword = `
-    SELECT addressFull, LocationName, LocationID, latitude, longitude
-    FROM Locations
-    WHERE keyword = ?
-    LIMIT 10;
-`;
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            WHERE keyword = ?
+            LIMIT 10;
+        `;
 
         const sql_all = `
-    SELECT addressFull, LocationName, LocationID, latitude, longitude
-    FROM Locations
-    LIMIT 10;
-`;
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            LIMIT 10;
+        `;
 
         let rows = [];
 
