@@ -250,7 +250,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         return () => {
             socketRef.current.disconnect();
         };
-    }, []);
+    }, [userId, planId]);
 
     useEffect(() => {
         if (!socketRef.current) return;
