@@ -58,7 +58,7 @@ export default function Chat({userId, planInfo}) {
     const [messages, setMessages] = useState([]);
     const [userNames, setUserNames] = useState('');
 
-    useEffect(() => {
+    // useEffect(() => {
         // const {name, room} = queryString.parse(window.location.search);
         
         // socket = io(ENDPOINT);
@@ -78,7 +78,7 @@ export default function Chat({userId, planInfo}) {
         //   socket.emit();
         //   socket.off();
         // }
-    }, [name, room]);
+    // }, [name, room]);
     // [ENDPOINT, window.location.search]
 
     useEffect(() => {
