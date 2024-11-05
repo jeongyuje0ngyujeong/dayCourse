@@ -21,16 +21,15 @@ AWS.config.update({ region: 'ap-northeast-2' });
 const s3 = new AWS.S3();
 const bucketName = 'daycourseimage';
 
-// 1. 메모리 스토리지 설정 (파일을 메모리에 저장)
+//메모리 스토리지 설정 (파일을 메모리에 저장)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage }); // 메모리 기반 저장소 사용
 
 router.get('/', authenticateJWT, async (req, res) => {
-    console.log('home 일정 가져옴');
     const { startDate } = req.query;
     const userId = req.user.userId;
+    console.log('home 일정 가져옴 :', startDate);
 
-    // Check if required parameters are provided
     if (!startDate) {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
@@ -53,36 +52,32 @@ router.get('/', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        // Convert each result's startDate to KST (UTC + 9)
+        // 날짜시간 한국식 변환 >> KST (UTC + 9)
         const formattedResult = result.map(plan => {
-            const utcDate = new Date(plan.startDate); // Parse the original UTC date
+            const utcDate = new Date(plan.startDate); //original UTC date
             const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // Convert to KST
             const formattedStartDate = koreaTime.toISOString().split('T')[0]; // Extract YYYY-MM-DD
 
             const { startDate, ...rest } = plan;
 
-            // Return the modified object with the KST startDate
             return {
                 ...rest,
-                dateKey: formattedStartDate // Replace original startDate with the KST formatted date
+                dateKey: formattedStartDate
             };
         });
 
-        return res.status(200).json(formattedResult); // Return the modified result
+        return res.status(200).json(formattedResult);
     });
 });
 
 router.post('/plan', authenticateJWT, async (req, res) => {
-    console.log("req.user:", JSON.stringify(req.user, null, 2));
-
     const userId = req.user.userId;
     const { dateKey, startDateTime, planName, town, groupId } = req.body;
 
-    console.log('일정등록요청')
+    console.log('일정등록요청 user: ', userId, "dateKey :", dateKey, "groupId :", groupId)
 
-    // Check if required parameters are provided
     if (!dateKey) {
-        return res.status(400).json({ error: 'userId or startDate are required' });
+        return res.status(400).json({ error: 'dateKey 가 없습니다.' });
     }
 
     let newplanName = planName
@@ -96,8 +91,6 @@ router.post('/plan', authenticateJWT, async (req, res) => {
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
-    // groupId 잠시 주석,, 나중에 그룹이 만들어지면 추가할 것
-    //const values = [userId, dateKey, dateKey, newplanName, town];
     const values = [userId, dateKey, dateKey, newplanName, town, groupId];
 
     db.query(sql, values, (err, result) => {
@@ -146,22 +139,22 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        // Convert each result's startDate to KST (UTC + 9)
+        // 날짜시간 한국식 변환 >> KST (UTC + 9)
         const formattedResult = result.map(plan => {
-            const utcDate = new Date(plan.startDate); // Parse the original UTC date
+            const utcDate = new Date(plan.startDate); // original UTC date
             const koreaTime = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000); // Convert to KST
             const formattedStartDate = koreaTime.toISOString().split('T')[0]; // Extract YYYY-MM-DD
 
             const { startDate, ...rest } = plan;
 
-            // Return the modified object with the KST startDate
+            // 날짜 넘겨줌
             return {
                 ...rest,
-                dateKey: formattedStartDate // Replace original startDate with the KST formatted date
+                dateKey: formattedStartDate
             };
         });
 
-        res.status(200).json(formattedResult); // Return the modified result
+        res.status(200).json(formattedResult);
     });
 });
 
@@ -171,7 +164,6 @@ router.post('/plan/town_update', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     console.log("지역 업데이트")
 
-    // Check if required parameters are provided
     if (!planId) {
         return res.status(400).json({ error: 'userId or planId are required' });
     }
@@ -201,7 +193,7 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     const { planId, dateKey, endDate, planName, town } = schedule;
-    console.log('계획수정')
+    console.log('계획 수정 planId :', planId)
 
     // Check if required parameters are provided
     if (!planId) {
@@ -245,14 +237,8 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
     `;
 
     const sql_location = `
-      SELECT 
-        Plan_Location.memo, 
-        Plan_Location.l_priority, 
-        Plan_Location.place, 
-        Plan_Location.placeId, 
-        Plan_Location.place_name, 
-        Plan_Location.version, 
-        ST_AsText(Plan_Location.coordinates) as coordinates
+      SELECT memo, l_priority, place, placeId, place_name, version, 
+      ST_AsText(coordinates) as coordinates
       FROM Plan_Location
       WHERE Plan_Location.planId = ?;
     `;
@@ -300,8 +286,8 @@ router.post('/plan/place', authenticateJWT, (req, res) => {
 
 
 router.delete('/plan/place', authenticateJWT, (req, res) => {
-    console.log('place delete');
     const { placeId } = req.query;
+    console.log('일정 상세 장소 삭제 placeId :', placeId);
 
     if (!placeId) {
         return res.status(400).json({ error: 'placeId 없음!' });
@@ -371,11 +357,11 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
     const { planId } = req.body;
     const userId = req.user.userId;
 
-    console.log('일정 삭제');
+    console.log('일정 삭제 planId:', planId);
 
     // 필수 파라미터 확인
     if (!planId) {
-        return res.status(400).json({ error: 'planId는 필수입니다.' });
+        return res.status(400).json({ error: 'planId가 없습니다.' });
     }
 
     const sql_pu = `
@@ -615,74 +601,124 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 });
 
 
+
+function translateKeyword(Keyword) {
+    switch (Keyword) {
+        // 음식 관련
+        case '랜덤': return 'random';
+        case '한식': return 'korean';
+        case '중식': return 'chinese';
+        case '일식': return 'japanese';
+        case '양식': return 'western';
+        case '아시안': return 'asian';
+
+        // 카페 관련
+        case '로스팅': return 'coffee';
+        case '디저트': return 'desert';
+        case '감성카페': return 'mood';
+        case '카공': return 'study';
+        case '베이커리': return 'bakery';
+        case '애견카페': return 'pet';
+
+        // 액티비티 관련
+        case '공방': return 'studio';
+        case '서점': return 'book_store';
+        case '방탈출': return 'escape_room';
+        case '만화카페': return 'cartoonCafe';
+        //case '영화관': return 'Cinema';
+        case '공원': return 'park';
+        case '쇼핑몰': return 'shopping';
+        //case '전시회': return 'Exhibition';
+
+        // 기본 값
+        default: return 'random';
+    }
+}
+
+function translateCategory(Category) {
+    switch (Category) {
+        // 음식 관련
+        case '랜덤': return 'Random';
+        case '음식점': return 'restaurant';
+        case '카페': return 'cafe';
+        case '문화생활': return 'activities';
+
+        // 기본 값
+        default: return 'random';
+    }
+}
+
+
 router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
     console.log("카테고리조회");
     const { enCategory, enKeyword } = req.params;
 
+    //여기에 기존.............과거..........방문기록....가져오기
+    //가져와서 태그 모음?
+    //핵심 태그 몇가지 뽑아둠.
+
+
     const sql_category = `
-        SELECT placeAddr, placeName, placeId, placeLat, placeLng
-        WHERE placeType = ?
-        ORDER BY placeRate DESC;
+        SELECT addressFull, LocationName, LocationID, latitude, longitude
+        FROM Locations
+        WHERE category = ?
+        LIMIT 10;
     `;
 
     const sql_keyword = `
-        SELECT placeAddr, placeName, placeId, placeLat, placeLng
-        FROM place_data
-        WHERE placeKeyWord = ?
-        ORDER BY placeRate DESC;
+        SELECT addressFull, LocationName, LocationID, latitude, longitude
+        FROM Locations
+        WHERE keyword = ?
+        LIMIT 10;
     `;
 
     const sql_all = `
-        SELECT placeAddr, placeName, placeId, placeLat, placeLng
-        FROM place_data
-        ORDER BY placeRate DESC;
+        SELECT addressFull, LocationName, LocationID, latitude, longitude
+        FROM Locations
+        LIMIT 10;
     `;
+
+    let key = translateKeyword(enKeyword);
+    let Cate = translateCategory(enCategory)
 
     let rows = [];
 
-    if (enKeyword && enKeyword !== "랜덤") {
+    if (key !== "random") {
         // 키워드가 있을 때
-        console.log("키워드 있음");
-        let key = enKeyword;
-
-        if (enKeyword === "쇼핑몰") key = "쇼핑";
-        else if (enKeyword === "전시회") key = "전시";
+        //console.log("키워드 있음");
 
         //const [result] = db.query(sql_keyword, [key]);
-        console.log("쿼리 실행");
+        //console.log("쿼리 실행");
         const [result] = await db.promise().query(sql_keyword, [key]);
         rows = result;
 
     } else {
         // 키워드가 없을 때
-        console.log("키워드 없음");
+        //console.log("키워드 없음");
         let sql = sql_category;
-        let values = "";
 
-        if (enCategory === "음식점") values = "restaurant";
-        else if (enCategory === "카페") values = "cafe";
-        else {
+        if (Cate === "random") {
             sql = sql_all;
-            values = [];
+            Cate = ""
         }
 
-        console.log("쿼리 실행");
-        const [result] = await db.promise().query(sql, [values]);
+        //console.log("쿼리 실행");
+        const [result] = await db.promise().query(sql, [Cate]);
         rows = result;
     }
 
     // 필드 재명명하기
     const renamedUsers = rows.map(row => ({
-        id: "0000",
-        place_name: row.placeName,
-        address_name: row.placeAddr,
-        x: row.placeLng,
-        y: row.placeLat,
+        id: row.LocationID,
+        place_name: row.LocationName,
+        address_name: row.addressFull,
+        x: row.longitude,
+        y: row.latitude,
         road_address_name: "12345", // 임시값
         phone: "01000000000" //필드없음
     }));
 
-    console.log(renamedUsers);
+    //console.log(renamedUsers);
     return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
 
@@ -707,8 +743,8 @@ router.get('/plan/:planId/images', async (req, res) => {
             const imageUrls = data.Contents.map(item => `https://${bucketName}.s3.amazonaws.com/${item.Key}`);
 
             // 이미지 URL 목록을 JSON 형식으로 전송
-            console.log("전달");
-            console.log(imageUrls);
+            //console.log("전달");
+            //console.log(imageUrls);
             res.json(imageUrls);
         });
     } catch (err) {
@@ -716,10 +752,6 @@ router.get('/plan/:planId/images', async (req, res) => {
         res.status(500).send('Error retrieving images');
     }
 });
-
-
-
-
 
 router.post('/plan/upload/:planId/images', upload.array('image'), async (req, res) => {
     console.log("사진 등록");
@@ -851,7 +883,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: '데이터베이스 오류' });
         }
 
-        console.log("조회한 일정 : ", result);
+        //console.log("조회한 일정 : ", result);
         if (result.length === 0) {
             return res.status(200).send('플랜이 없습니다'); // 플랜이 없는 경우
         }
@@ -859,7 +891,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
         const planIds = result.map(plan => plan.planId);
         const imagesData = [];
 
-        console.log("S3 에서 가져올거임");
+        //console.log("S3 에서 가져올거임");
 
         try {
             for (const planId of planIds) {

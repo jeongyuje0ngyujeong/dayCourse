@@ -14,7 +14,7 @@ const addUser = ({ id, userId, name, room }) => {
   //   room = room.trim().toLowerCase();
 
   // Check for existing user
-  console.log("테스트2 :", room, name, userId)
+  console.log("추가됨 :", room, name, userId)
   const existingUser = users.find((user) => user.room === room && user.name === name && user.userId === userId)
 
   // Validate name and room
@@ -32,7 +32,7 @@ const addUser = ({ id, userId, name, room }) => {
   // Store user
   const user = { id, userId, name, room, cursor: {x:0, y:0}, color};
   users.push(user);
-  console.log(users);
+  //console.log(users);
 
   return { user };
 }
