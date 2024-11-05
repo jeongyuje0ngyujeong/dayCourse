@@ -31,6 +31,8 @@ io.on('connection', (socket) => {
     console.log('userId', userId, 'name:', name, 'room:', room);
     const { error, user } = addUser({ id: socket.id, userId, name, room })
 
+    console.log(user)
+
     if (error) callback({ error: '에러가 발생했습니다.' })
 
     const query = `
@@ -46,7 +48,7 @@ io.on('connection', (socket) => {
         return callback(error);
       }
 
-      console.log(results)
+      //console.log(results)
 
       const messages = results.map(result => ({
         user: result.userName,
