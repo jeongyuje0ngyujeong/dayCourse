@@ -359,6 +359,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
         }
     }, [isPlacesLoaded]);
 
+    useEffect(() => {
+        const unique = Array.from(new Map(users.map(user => [user.userId, user])).values());
+        setUniqueUsers(unique);
+    }, [users]);
+
     return (
         <div className="landing-page">
             {!isPlacesLoaded && (
