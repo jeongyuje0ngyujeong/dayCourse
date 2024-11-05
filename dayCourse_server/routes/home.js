@@ -652,6 +652,9 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     const userId = req.user.userId;
     const { enCategory, enKeyword } = req.params;
 
+    let key = translateKeyword(enKeyword);
+    let Cate = translateCategory(enCategory)
+
     //여기에 기존.............과거..........방문기록....가져오기
     //가져와서 태그 모음?
     //핵심 태그 몇가지 뽑아둠.
@@ -677,13 +680,42 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     const locationsPromises = plan_locations.map(async (planLocation) => {
         try {
-            const sql_locations = `
+            const sql_locations_c = `
                 SELECT Locations.*
                 FROM Locations
-                WHERE LocationName = ? AND addressFull = ?;
+                WHERE LocationName = ? AND addressFull = ? AND category = ?;
+                LIMIT 1;
+            `;
+            
+            const sql_locations_k = `
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ? AND keyword = ?
+                LIMIT 1;
             `;
 
-            const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
+            const sql_locations_a = `
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ?
+                LIMIT 1;
+            `;
+
+            let locations = []
+
+            if (key !== "random") {
+                const [result] = await db.promise().query(sql_locations_k, [planLocation.place_name, planLocation.place, key]);
+                locations = result;
+            } else {
+                let sql = sql_locations_c;
+                if (Cate === "random") {
+                    sql = sql_locations_a;
+                    Cate = ""
+                }
+                const [result] = await db.promise().query(sql, [Cate]);
+                locations = result;
+            }
+
             if (locations.length > 0) {
                 return locations;
             }
@@ -726,9 +758,6 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         FROM Locations
         LIMIT 10;
     `;
-
-        let key = translateKeyword(enKeyword);
-        let Cate = translateCategory(enCategory)
 
         let rows = [];
 
