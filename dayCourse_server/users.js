@@ -14,7 +14,7 @@ const addUser = ({ id, userId, name, room }) => {
   //   room = room.trim().toLowerCase();
 
   // Check for existing user
-  console.log("테스트 :", user.room, user.name, user.userId)
+  console.log("테스트2 :", room, name, userId)
   const existingUser = users.find((user) => user.room === room && user.name === name && user.userId === userId)
 
   // Validate name and room
