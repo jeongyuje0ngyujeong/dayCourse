@@ -684,7 +684,9 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             `;
 
             const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
-            return locations;
+            if (locations.length > 0) {
+                return locations;
+            }
         } catch (error) {
             console.error("Error fetching locations:", error);
         }
