@@ -123,7 +123,7 @@ export default function Chat({userId, planInfo}) {
     return (
     <ChatContainer>
         <ChatName>채팅방: {userNames}</ChatName>
-        <Messages messages={messages} name={name}/>
+        <Messages messages={messages} name={userId}/>
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         {/* <ChatInputBar>
             <ChatInput placeholder="메시지 입력" message={message} setMessage={setMessage} sendMessage={sendMessage}></ChatInput>
