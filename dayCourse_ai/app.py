@@ -242,7 +242,7 @@ def cluster_objects():
 
 
 @app.route('/cluster2', methods=['POST'])
-def cluster_objects():
+def cluster_objects2():
     print("요청들어옴.")
     
     # 요청에서 이미지 리스트를 가져옴
@@ -258,6 +258,7 @@ def cluster_objects():
                 "url": obj["url"],
                 "metadata": obj["metadata"],
                 "planId": obj["planId"],
+                "vector": avg_vector,
             })
     
     # K-means 클러스터링 수행
@@ -271,6 +272,7 @@ def cluster_objects():
     for item, label in zip(tag_vectors, labels):
         clustered_objects[label].append({
             "url": item["url"],
+            "planId": item["planId"],
             "metadata": item["metadata"],
         })
 
@@ -281,7 +283,8 @@ def cluster_objects():
         # 해당 클러스터의 모든 태그 수집
         tag_list = []
         for obj in obj_list:
-            tag_list += obj["metadata"]
+            obj_tags = obj["metadata"]
+            tag_list += obj_tags.strip().split(',')
         
         # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
