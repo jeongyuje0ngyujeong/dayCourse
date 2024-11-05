@@ -474,9 +474,9 @@ router.post('/plan/place/priority', async (req, res) => {
 
 
 
-const getPlaces = (sql, params) => {
+const getPlaces = (sql, values) => {
     return new Promise((resolve, reject) => {
-        db.query(sql, params, (err, results) => {
+        db.query(sql, values, (err, results) => {
             if (err) return reject(err);
             resolve(results);
         });
@@ -561,6 +561,275 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
         // 요청 초과 예외처리용
         } else {
             return res.status(429).json({ msg: 'api 요청 초과', distances });
+        }
+
+    } catch (error) {
+        console.error('오류 응답 데이터:', error.response?.data);
+        res.status(500).send('API 요청에 실패했습니다.');
+    }
+});
+
+// 쿼리문과 planId로 DB에서 주소를 가져옴
+const getAddrNameId = (sql, values) => {
+    return new Promise((resolve, reject) => {
+        db.query(sql, values, (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
+    });
+};
+
+// 시작점과 도착점 임의로 줄 때, 인덱스번호 체킹
+function checkIdx(idx, size) {
+    if (idx < size) {
+        return idx;
+    }
+
+    return idx - size;
+}
+
+// planId로 Locations 테이블에 접근하여 LocationID 리스트 반환
+function getLocationIdsByPlanId(planId) {
+    return new Promise((resolve, reject) => {
+        const findLocationId = `
+            SELECT Plan_Location.LocationID
+            FROM Plan_Location
+            WHERE Plan_Location.planId = ?
+            ORDER BY Plan_Location.l_priority ASC;
+        `;
+
+        db.query(findLocationId, [planId], (err, results) => {
+            if (err) return reject(err);
+            if (results.length === 0) return reject(new Error("No locations found for the given planId"));
+
+            // LocationID 목록만 추출
+            const locationIds = results.map(result => result.LocationID);
+            resolve(locationIds);
+        });
+    });
+}
+
+// 카테고리 파악
+function getCategoryStats(planId) {
+    // getLocationIdsByPlnaId는 비동기 작업이므로 해당 작업이 끝난 후 카테고리를 찾는 작업을 진행할 수 있음 => then 체인으로 연결하여 진행
+    return getLocationIdsByPlanId(planId).then(locationIds => {
+        const findCategory = `
+            SELECT Locations.category
+            FROM Locations
+            WHERE Locations.LocationID = ?
+        `;
+
+        let category = [0, 0, 0];
+
+        const queries = locationIds.map((locationId) => {
+            return new Promise((resolve, reject) => {
+                db.query(findCategory, [locationId], (err, category_result) => {
+                    if (err) return reject(err);
+                    if (category_result.length === 0) return reject(new Error("Category not found for LocationID"));
+
+                    const categoryType = category_result[0].category;
+
+                    if (categoryType === "restaurant") category[0]++;
+                    else if (categoryType === "cafe") category[1]++;
+                    else category[2]++;
+
+                    resolve();
+                });
+            });
+        });
+
+        return Promise.all(queries)
+                      .then(() => category);
+                      .catch((err) => reject(err));
+    });
+}
+
+// 음식점 locationId 수집
+function getRestaurantLocations(planId) {
+    return getLocationIdsByPlanId(planId).then(locationIds => {
+        const findCategory = `
+            SELECT Locations.category
+            FROM Locations
+            WHERE Locations.LocationID = ?
+        `;
+
+        let restaurants = [];
+
+        const queries = locationIds.map((locationId) => {
+            return new Promise((resolve, reject) => {
+                db.query(findCategory, [locationId], (err, category_result) => {
+                    if (err) return reject(err);
+                    if (category_result.length === 0) return reject(new Error("Category not found for LocationID"));
+
+                    const categoryType = category_result[0].category;
+
+                    if (categoryType === "restaurant") {
+                        restaurants.push(locationId);
+                    }
+                    resolve();
+                });
+            });
+        });
+
+        return Promise.all(queries)
+                      .then(() => restaurants);
+                      .catch((err) => reject(err));
+    });
+}
+
+// 카페 키워드 파악
+function getCafeStats (planId) {
+    return getLocationIdsByPlanId(planId).then(locationIds => {
+        const findKeyword = `
+            SELECT Locations.keyword
+            FROM Locations
+            WHERE Locations.LocationID = ?
+        `;
+        // coffee, desert, bakery, mood, study, pet 순
+        let keywords = [0, 0, 0, 0, 0, 0];
+
+        const queries = locationIds.map((locationId) => {
+            return new Promise((resolve, reject) => {
+                db.query(findKeyword, [locationId], (err, keyword_result) => {
+                    if (err) return reject(err);
+                    if (keyword_result.length === 0) return reject(new Error("Keyword not found for LocationID"));
+
+                    const keywordType = keyword_result[0].keyword;
+
+                    if (keywordType === "coffee") keywords[0]++;
+                    else if (keywordType === "dessert") keywords[1]++;
+                    else if (keywordType === "bakery") keywords[2]++;
+                    else if (keywordType === "mood") keywords[3]++;
+                    else if (keywordType === "study") keywords[4]++;
+                    else keywords[5]++;
+
+                    resolve();
+                });
+            });
+        });
+
+        return Promise.all(queries)
+                      .then(() => keywords);
+                      .catch((err) => reject(err));
+    });
+}
+
+// cafe 내 같은 keyword를 가진 locationId 집합 반환
+function getCafeLocations(planId) {
+    return getLocationIdsByPlanId(planId).then(locationIds => {
+        const findKeyword = `
+            SELECT Locations.keyword
+            FROM Locations
+            WHERE Locations.LocationID = ?
+        `;
+
+        let cafes = [[], [], [], [], [], []];
+
+        const queries = locationIds.map((locationId) => {
+            return new Promise((resolve, reject) => {
+                db.query(findKeyword, [locationId], (err, keyword_result) => {
+                    if (err) return reject(err);
+                    if (keyword_result.length === 0) return reject(new Error("Keyword not found for LocationID"));
+
+                    const keywordType = keyword_result[0].keyword;
+                    
+                    if (keywordType === "coffee") {
+                        cafes[0].push(locationId);
+                    } else if (keywordType === "dessert") {
+                        cafes[1].push(locationId);
+                    } else if (keywordType === "bakery") {
+                        cafes[2].push(locationId);
+                    }else if (keywordType === "mood") {
+                        cafes[3].push(locationId);
+                    }else if (keywordType === "study") {
+                        cafes[4].push(locationId);
+                    } else {
+                        cafes[5].push(locationId);
+                    }
+                    resolve();
+                });
+            });
+        });
+
+        return Promise.all(queries)
+                      .then(() => cafes);
+                      .catch((err) => reject(err));
+    });
+}
+
+// 중복없는 숫자뽑기
+function getRandomNum(min, max) {
+    // min~max 숫자 배열 생성
+    const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
+
+    // Fisher-Yates Shuffle 알고리즘 활용, numbers 숫자 무작위로 섞기
+    for (let i = numbers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [numbers[i], numbers[j]] = [numbers[j], numbers[i]]; // Swap
+    }
+
+    // 섞인 배열에서 하나씩 뽑아 반환할 함수
+    return function() {
+        if (numbers.length === 0) {
+            throw new Error("더 이상 선택할 숫자가 없습니다.");
+        }
+        return numbers.pop();
+    };
+}
+
+router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
+    console.log("루트 추천");
+    const { planId, recommendCnt } = req.body;
+
+    if (!planId || !recommendCnt) {
+        return res.status(400).json({ error: 'planId or recommendCnt are required' });
+    }
+
+    const findAddrName = `
+      SELECT Plan_Location.place, Plan_Location.place_name, Plan_Location.locationId
+      FROM Plan_Location
+      WHERE Plan_Location.planId = ?
+      ORDER BY Plan_Location.l_priority ASC;
+    `;
+
+    try {
+        // Plan_Location에서 planId를 기준으로 사용자가 선택한 순서대로 주소 값 받아옴
+        const places = await getAddrNameId(findAddrName, [planId]);
+
+        if (places.length === 0) {
+            return res.json({ result: 'failure', message: 'Invalid planId' });
+        }
+
+        const size = places.length;
+
+        // 출발지, 도착지 인덱스 번호 임의로 지정
+        let firstPlace = checkIdx(size - 1 + recommendCnt, size);
+        let lastPlace = checkIdx(0 + recommendCnt, size);
+
+        if (size <= 2) 
+            return res.json([places[firstPlace], places[lastPlace]]);
+        
+        let findCategory = getCategoryStats (planId);
+        let restaurants = [];
+        if (findCategory[0] >= 2) {
+            restaurants = getRestaurantLocations(planId);
+        }
+        
+        let cafeKeywords = [];
+        let cafeLocations = [];
+        if (categories[1] >= 2) {
+            cafeKeywords = getCafeStats (planId);
+            if (cafeKeywords.some(num => num >= 2)) {
+                cafeLocations = getCafeLocations (planId);
+            }
+        }
+        
+        // 무작위 알고리즘과 경로 최적화 api를 더한 루트 추천
+        // 겹쳐서 루트 추천해주면 안되는 것들 체킹 (음식점이 2곳 이상, 같은 키워드가 2개 이상인 카페)
+        if findCategory[0] >= 2 {
+            if cafeLocations.length != 0 {
+                
+            }
         }
 
     } catch (error) {
