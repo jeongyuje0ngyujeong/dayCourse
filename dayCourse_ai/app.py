@@ -200,7 +200,7 @@ def cluster_objects():
 
     # K-means 클러스터링 수행
     X = np.array([vec for _, vec in tag_vectors])
-    n_clusters = 5  # 클러스터 수
+    n_clusters = 8  # 클러스터 수
     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
     labels = kmeans.fit_predict(X)
 
@@ -211,6 +211,7 @@ def cluster_objects():
 
     # 클러스터의 핵심 태그 찾기 (빈도수 기반)
     core_tags = {}
+    used_tags = set()
     for cluster_id, obj_ids in clustered_objects.items():
         # 해당 클러스터의 모든 태그 수집
         tag_list = []
@@ -219,12 +220,18 @@ def cluster_objects():
             obj_tags = next(item for item in img_list1 if item["url"] == obj_id)["metadata"]
             tag_list += obj_tags.strip().split(',')
         
-        # 가장 빈도 높은 태그 찾기
+        # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
-            most_common_tag, _ = Counter(tag_list).most_common(1)[0]
+            tag_counts = Counter(tag_list)
+            most_common_tag = None
+            for tag, _ in tag_counts.most_common():
+                if tag not in used_tags:
+                    most_common_tag = tag
+                    used_tags.add(tag)
+                    break
             core_tags[cluster_id] = most_common_tag
         else:
-            core_tags[cluster_id] = None  # 태그가 없는 경우
+            core_tags[cluster_id] = '123456'  # 태그가 없는 경우
 
     # 결과 반환
     result = {
