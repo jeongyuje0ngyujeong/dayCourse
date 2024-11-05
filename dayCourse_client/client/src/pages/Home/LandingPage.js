@@ -92,6 +92,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
+    const [uniqueUsers, setUniqueUsers] = useState([]);
 
     const socketRef = useRef(null);
 
@@ -199,7 +200,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
             
-            socketRef.current.emit('join', { userId, name: `User_${userId}`, room: planId },
+            socketRef.current.emit('join', { userId, name: `${userId}`, room: planId },
                 (error) => {
                     if (error) {
                         alert(error.error);
@@ -214,9 +215,15 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
         socketRef.current.on('roomData', ({ room, users }) => {
             console.log('수신한 roomData:', { room, users });
-            setUsers(users);
+            const standardizedUsers = users.map(user => ({
+                userId: user.userId || user.id, // 'id' 또는 'userId'를 'userId'로 통일
+                name: user.name,
+                color: user.color,
+            }));
+            setUsers(standardizedUsers);
+
             const colorMapping = {};
-            users.forEach(user => {
+            standardizedUsers.forEach(user => {
                 colorMapping[user.userId] = user.color;
             });
             setUserColors(colorMapping);
@@ -275,6 +282,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
             // 추가적인 작업 수행 가능
         }
     }, [isPlacesLoaded]);
+
+    useEffect(() => {
+        const unique = Array.from(new Map(users.map(user => [user.userId, user])).values());
+        setUniqueUsers(unique);
+    }, [users]);
 
     return (
         <div className="landing-page">
@@ -363,10 +375,10 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     <div style={{ position: 'absolute', top: "-2%", left: "90%", background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
                         <h4>접속 사용자</h4>
                         <ul>
-                            {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
-                            ))}
-                        </ul>
+                        {uniqueUsers.map(user => (
+                            <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                        ))}
+                    </ul>
                     </div>
                 </>
             )}
