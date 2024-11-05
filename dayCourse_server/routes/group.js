@@ -204,6 +204,8 @@ router.post('/add', authenticateJWT, async (req, res) => {
             });
         });
 
+        let allUserData;
+
         if (friendIds) {
             // 친구들의 userId와 userName을 조회합니다.
             const friendResults = await new Promise((resolve, reject) => {
@@ -213,15 +215,19 @@ router.post('/add', authenticateJWT, async (req, res) => {
                 });
             });
 
+            allUserData = userResults.map(result => ({ userId: result.userId, userName: result.userName }))
+            .concat(friendResults.map(result => ({ userId: result.userId, userName: result.userName })));
+
+        }else{
+            allUserData = userResults.map(result => ({ userId: result.userId, userName: result.userName }))
         }
 
-        // console.log(userResults);
+        console.log(userResults);
         // console.log(friendResults);
 
 
         // 사용자 정보 저장
-        const allUserData = userResults.map(result => ({ userId: result.userId, userName: result.userName }))
-            .concat(friendResults.map(result => ({ userId: result.userId, userName: result.userName })));
+        
 
         // 중복 여부 확인
         const existsResults = await new Promise((resolve, reject) => {
