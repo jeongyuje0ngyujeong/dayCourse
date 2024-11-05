@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 // import {Button} from '../../Button';
-// import io from 'socket.io-client';
+import io from 'socket.io-client';
 import Messages from './Messages';
 import Input from './Input';
 import React, { useState, useEffect } from 'react';
