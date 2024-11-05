@@ -1,11 +1,12 @@
 // RightSidebar.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useContext} from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
 import Chat from '../Chat/Chat';
+import SocketContext from '../../SocketContext';
 
 // Styled Components
 const SidebarContainer = styled.div`
@@ -64,9 +65,7 @@ const PlaceAddress = styled.span`
 `;
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
-    // console.log("RightSidebar Props - userId:", userId, "planId:", planId); 
-    // console.log('planInfo: ', planInfo);
-    // console.log('places prop:', places); 
+    const { messages, users, sendMessage } = useContext(SocketContext);
 
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
