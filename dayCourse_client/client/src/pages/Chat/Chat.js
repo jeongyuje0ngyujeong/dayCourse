@@ -49,8 +49,8 @@ const ChatName = styled.div`
 // const ENDPOINT = 'http://localhost:5000';
 let socket;
 
-export default function Chat({userId, planInfo}) {
-    const planId = planInfo.planId;
+export default function Chat({userId}) {
+    // const planId = planInfo.planId;
     // const [name, setName] = useState(userId);
     // const [room, setRoom] = useState(planId);
     const [users, setUsers] = useState('');
