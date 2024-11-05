@@ -199,7 +199,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         socketRef.current.on('connect', () => {
             console.log('서버에 연결됨');
             
-            socketRef.current.emit('join', { userId, name: `User_${userId}`, room: planId },
+            socketRef.current.emit('join', { userId, name: `${userId}`, room: planId },
                 (error) => {
                     if (error) {
                         alert(error.error);
@@ -364,7 +364,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         <h4>접속 사용자</h4>
                         <ul>
                             {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
                             ))}
                         </ul>
                     </div>
