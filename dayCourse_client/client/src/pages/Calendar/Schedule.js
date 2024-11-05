@@ -30,7 +30,7 @@ const EventContainer = styled.div `
 
 const NoEventContainer = styled.div `
   display: flex;
-  border: 1px, solid;
+  border: 2px solid #ccc;
   border-radius: 1rem;
   margin: 1rem 0;
   min-height: 5rem;

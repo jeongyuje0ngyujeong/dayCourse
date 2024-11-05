@@ -241,7 +241,7 @@ i {
 
 #detail {
   flex: 1;
-  padding: 1% 5% 0 5%;
+  padding: 1% 10% 0 10%;
   width: 100%;
   overflow-y: scroll;
 }

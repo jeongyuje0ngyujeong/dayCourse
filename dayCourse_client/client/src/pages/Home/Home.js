@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import {useState, useEffect} from 'react';
-import { PageTitle, Footer } from '../../commonStyles';
+import { PageTitle } from '../../commonStyles';
 import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
@@ -37,8 +37,8 @@ const CalendarContainer = styled.div `
   flex-direction: column;
   margin: 0 auto; 
   width: 100%;
-  height: 20%;
-  padding: 0 3rem;
+  height: 100%;
+  ${'' /* padding: 0 3rem; */}
 `
 
 const ScheduleContainer = styled.div `
@@ -102,25 +102,30 @@ export default function Home() {
         <>
         <PageTitle>Home</PageTitle>
         <WeekBar>
-            <h3>한 주 일정</h3>
-            <Form action="/main/schedules/create">
-                <Button type='submit' width='6rem' $background='#90B54C' color='white'>+ 일정추가</Button>
-            </Form>
+            {/* <h3>한 주 일정</h3> */}
+          <MonthContainer>
+              <h2>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</h2>
+          </MonthContainer>
+            <div style={{display:'flex', gap:'1rem'}}>
+              <Form action="/main/schedules/create">
+                  <Button type='submit' width='6rem' $background='#90B54C' color='white'>+ 일정추가</Button>
+              </Form>
+              <Button onClick={() => handlePrevWeek()} $background='#90B54C' $border='none' color='white'>{'<'}</Button>
+              <Button onClick={() => handleNextWeek()} $background='#90B54C' $border='none' color='white'>{'>'}</Button>
+            </div>
         </WeekBar>
-        <MonthContainer>
-            <h3>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</h3>
-            <Button onClick={() => handlePrevWeek()} $border='none'>{'<'}</Button>
-            <Button onClick={() => handleNextWeek()} $border='none'>{'>'}</Button>
-        </MonthContainer>
 
+          <div style={{display:'flex', alignItems:'center', gap:'1rem', border: '1px solid #ccc', padding: '1rem 0.5rem 0.5rem 0.5rem', borderRadius:'10px'}}>
+
+            <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          </div>
         {/* 주단위 달력 */}
         <CalendarContainer>
           {/* <DayTable/>  */}
-          <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           <ScheduleContainer>
             <Outlet context={[selectedSchedules, setGroupedSchedules]}/>
           </ScheduleContainer>
-          <Footer/>
+          {/* <Footer/> */}
         </CalendarContainer>
 
 
