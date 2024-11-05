@@ -649,7 +649,7 @@ function translateCategory(Category) {
 
 router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) => {
     console.log("카테고리조회");
-    const { planId } = req.body;
+    const userId = req.user.userId;
     const { enCategory, enKeyword } = req.params;
 
     //여기에 기존.............과거..........방문기록....가져오기
@@ -665,7 +665,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         ORDER BY Plan.startDate DESC
     `;
 
-    const [plans] = await db.promise().query(sql_plan, [planId]);
+    const [plans] = await db.promise().query(sql_plan, [userId]);
 
     const sql_plan_location =`
         SELECT place, place_name
