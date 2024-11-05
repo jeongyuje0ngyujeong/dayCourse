@@ -175,12 +175,12 @@ const { kakao } = window;
 const geocoder = new kakao.maps.services.Geocoder();
 
 export default function ConvexHullCalculator({departurePoints}) {
-    const [points, setPoints] = useState([]);   // 출발지 좌표
+    // const [points, setPoints] = useState([]);  
     const [convexHull, setConvexHull] = useState([]); // 볼록다각형 꼭지점 좌표
     const [centroid, setCentroid] = useState([0, 0]); // 중간점 
     const [centroidAddress, setCentroidAddress] = useState('');
     // const [pairVector, setPairVector] = useState([]);
-    const [timeVector, setTimeVector] = useState([]);
+    // const [timeVector, setTimeVector] = useState([]);
     const [resultTowns, setResultTown] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -189,7 +189,7 @@ export default function ConvexHullCalculator({departurePoints}) {
       const hull = getConvexHull(coordinates);
       const calculatedCentroid = calculateCentroid(hull);
       
-      setPoints(coordinates);
+      // setPoints(coordinates);
       setConvexHull(hull);
       setCentroid(calculatedCentroid);
       // setPairVector(pairCoordinatesWithTarget(hull, calculatedCentroid));
@@ -201,7 +201,7 @@ export default function ConvexHullCalculator({departurePoints}) {
           try {
               console.log('convexHull: ', convexHull, 'centroid: ', temp_centroid);
               const routes = await getAllRoutes(convexHull, temp_centroid);
-              setTimeVector(routes);
+              // setTimeVector(routes);
               return routes;
           } catch (error) {
               console.error("Error fetching routes:", error);

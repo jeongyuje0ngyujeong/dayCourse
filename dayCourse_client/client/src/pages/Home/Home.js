@@ -45,7 +45,7 @@ const ScheduleContainer = styled.div `
 
   display: flex;
   flex-direction: column;
-  border-top: 2px solid #eee;
+  ${'' /* border-top: 2px solid #eee; */}
   ${'' /* margin: 1rem auto;  */}
   clear: left;
 `
@@ -115,7 +115,7 @@ export default function Home() {
             </div>
         </WeekBar>
 
-          <div style={{display:'flex', alignItems:'center', gap:'1rem', border: '1px solid #ccc', padding: '1rem 0.5rem 0.5rem 0.5rem', borderRadius:'10px'}}>
+          <div style={{display:'flex', alignItems:'center', gap:'1rem', border: '1px solid #ccc', padding: '1rem 0.5rem 0.5rem 0.5rem', borderRadius:'10px', boxShadow: "2px 2px 2px rgba(0, 0, 0, 0.25)",}}>
 
             <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           </div>
