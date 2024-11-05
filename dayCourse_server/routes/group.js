@@ -217,7 +217,7 @@ router.post('/add', authenticateJWT, async (req, res) => {
 
         if (friendIds) {
             console.log("친구조회2")
-            console.log(allUserData)
+            console.log(friendIds)
             // 친구들의 userId와 userName을 조회합니다.
             const friendResults = await new Promise((resolve, reject) => {
                 db.query(sql_SelectFIds, [friendIds], (err, result) => {
