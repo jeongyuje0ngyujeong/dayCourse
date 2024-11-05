@@ -696,10 +696,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     .then((results) => {
         // 결과 배열에서 undefined 값을 제거
         const filteredResults = results.filter(location => location !== undefined);
-        console.log(filteredResults);
-        // 여기서 filteredResults를 사용하여 후속 작업을 수행
-
-        return
+        return filteredResults
     })
     .catch(error => {
         console.error("Error in processing locations:", error);
