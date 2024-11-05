@@ -600,25 +600,6 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
     }
 });
 
-// 쿼리문과 planId로 DB에서 주소를 가져옴
-const getAddrNameId = (sql, values) => {
-    return new Promise((resolve, reject) => {
-        db.query(sql, values, (err, results) => {
-            if (err) return reject(err);
-            resolve(results);
-        });
-    });
-};
-
-// 시작점과 도착점 임의로 줄 때, 인덱스번호 체킹
-function checkIdx(idx, size) {
-    if (idx < size) {
-        return idx;
-    }
-
-    return idx - size;
-}
-
 // planId로 Locations 테이블에 접근하여 LocationID 리스트 반환
 function getLocationIdsByPlanId(planId) {
     return new Promise((resolve, reject) => {
@@ -644,8 +625,9 @@ function getLocationIdsByPlanId(planId) {
 function getAllLocationsByPlanId(planId) {
     return getLocationIdsByPlanId(planId).then(locationIds => {
         const findLocationDetails = `
-            SELECT Locations.LocationID, Locations.category, Locations.keyword
+            SELECT Locations.LocationID, Locations.category, Locations.keyword, Plan_Location.place_name, Plan_Location.place
             FROM Locations
+            JOIN Plan_Location ON Locations.LocationID = Plan_Location.LocationID
             WHERE Locations.LocationID = ?
         `;
 
@@ -685,153 +667,71 @@ function classifyLocations(locations) {
     return { restaurants, cafesByKeyword, others };
 }
 
-// 카테고리 파악
-function getCategoryStats(planId) {
-    // getLocationIdsByPlnaId는 비동기 작업이므로 해당 작업이 끝난 후 카테고리를 찾는 작업을 진행할 수 있음 => then 체인으로 연결하여 진행
-    return getLocationIdsByPlanId(planId).then(locationIds => {
-        const findCategory = `
-            SELECT Locations.category
-            FROM Locations
-            WHERE Locations.LocationID = ?
-        `;
+// 음식점과 같은 키워드의 카페들이 연속으로 루트 추천되지 않도록 재배치
+function arrangeLocations(restaurants, cafesByKeyword, others) {
+    const result = [];
+    let previousCategory = null;
+    let previousKeyword = null;
 
-        let category = [0, 0, 0];
+    // 모든 장소를 합친 배열 생성
+    let allLocations = [];
 
-        const queries = locationIds.map((locationId) => {
-            return new Promise((resolve, reject) => {
-                db.query(findCategory, [locationId], (err, category_result) => {
-                    if (err) return reject(err);
-                    if (category_result.length === 0) return reject(new Error("Category not found for LocationID"));
+    // 음식점이 2곳 이상인 경우
+    if (restaurants.length >= 2) {
+        allLocations = allLocations.concat(restaurants);
+    }
 
-                    const categoryType = category_result[0].category;
+    // 카페 키워드별로 2곳 이상인 그룹을 찾음
+    const cafeGroups = [];
+    for (const keyword in cafesByKeyword) {
+        if (cafesByKeyword[keyword].length >= 2) {
+            cafeGroups.push(cafesByKeyword[keyword]);
+        } else {
+            // 키워드가 2개 미만인 카페는 기타로 분류
+            others = others.concat(cafesByKeyword[keyword]);
+        }
+    }
 
-                    if (categoryType === "restaurant") category[0]++;
-                    else if (categoryType === "cafe") category[1]++;
-                    else category[2]++;
+    // 나머지 장소들 추가
+    allLocations = allLocations.concat(others);
 
-                    resolve();
-                });
-            });
+    // 장소 순서를 조건에 맞게 재배치
+    while (allLocations.length > 0) {
+        let candidates = allLocations.filter(location => {
+            // 이전 장소가 음식점인 경우, 음식점 제외
+            if (location.category === previousCategory && location.category === 'restaurant') {
+                return false; 
+            }
+            // 이전 장소가 동일 키워드의 카페인 경우 제외
+            if (location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
+                return false; 
+            }
+            return true;
         });
 
-        return Promise.all(queries)
-                      .then(() => category);
-                      .catch((err) => reject(err));
-    });
+        // 후보가 없을 경우 조건을 완화하여 모든 장소를 후보로 설정
+        if (candidates.length === 0) {
+            candidates = allLocations;
+        }
+
+        // 무작위로 장소 선택
+        const randomIndex = Math.floor(Math.random() * candidates.length);
+        const nextLocation = candidates[randomIndex];
+
+        // 결과에 추가
+        result.push(nextLocation);
+
+        // 선택된 장소를 전체 목록에서 제거
+        allLocations.splice(allLocations.indexOf(nextLocation), 1);
+
+        // 이전 카테고리와 키워드 업데이트
+        previousCategory = nextLocation.category;
+        previousKeyword = nextLocation.keyword;
+    }
+
+    return result;
 }
 
-// // 음식점 locationId 수집 >> 음식점의 placeId만 얻는 함수
-// function getRestaurantLocations(planId) {
-//     return getLocationIdsByPlanId(planId).then(locationIds => {
-//         const findCategory = `
-//             SELECT Locations.category
-//             FROM Locations
-//             WHERE Locations.LocationID = ?
-//         `;
-
-//         let restaurants = [];
-
-//         const queries = locationIds.map((locationId) => {
-//             return new Promise((resolve, reject) => {
-//                 db.query(findCategory, [locationId], (err, category_result) => {
-//                     if (err) return reject(err);
-//                     if (category_result.length === 0) return reject(new Error("Category not found for LocationID"));
-
-//                     const categoryType = category_result[0].category;
-
-//                     if (categoryType === "restaurant") {
-//                         restaurants.push(locationId);
-//                     }
-//                     resolve();
-//                 });
-//             });
-//         });
-
-//         return Promise.all(queries)
-//                       .then(() => restaurants);
-//                       .catch((err) => reject(err));
-//     });
-// }
-
-// 카페 키워드 파악
-function getCafeStats (planId) {
-    return getLocationIdsByPlanId(planId).then(locationIds => {
-        const findKeyword = `
-            SELECT Locations.keyword
-            FROM Locations
-            WHERE Locations.LocationID = ?
-        `;
-        // coffee, desert, bakery, mood, study, pet 순
-        let keywords = [0, 0, 0, 0, 0, 0];
-
-        const queries = locationIds.map((locationId) => {
-            return new Promise((resolve, reject) => {
-                db.query(findKeyword, [locationId], (err, keyword_result) => {
-                    if (err) return reject(err);
-                    if (keyword_result.length === 0) return reject(new Error("Keyword not found for LocationID"));
-
-                    const keywordType = keyword_result[0].keyword;
-
-                    if (keywordType === "coffee") keywords[0]++;
-                    else if (keywordType === "dessert") keywords[1]++;
-                    else if (keywordType === "bakery") keywords[2]++;
-                    else if (keywordType === "mood") keywords[3]++;
-                    else if (keywordType === "study") keywords[4]++;
-                    else keywords[5]++;
-
-                    resolve();
-                });
-            });
-        });
-
-        return Promise.all(queries)
-                      .then(() => keywords);
-                      .catch((err) => reject(err));
-    });
-}
-
-// // cafe 내 같은 keyword를 가진 locationId 집합 반환 >> cafesByKeyword - locationId만 갖고 있음
-// function getCafeLocations(planId) {
-//     return getLocationIdsByPlanId(planId).then(locationIds => {
-//         const findKeyword = `
-//             SELECT Locations.keyword
-//             FROM Locations
-//             WHERE Locations.LocationID = ?
-//         `;
-
-//         let cafes = [[], [], [], [], [], []];
-
-//         const queries = locationIds.map((locationId) => {
-//             return new Promise((resolve, reject) => {
-//                 db.query(findKeyword, [locationId], (err, keyword_result) => {
-//                     if (err) return reject(err);
-//                     if (keyword_result.length === 0) return reject(new Error("Keyword not found for LocationID"));
-
-//                     const keywordType = keyword_result[0].keyword;
-                    
-//                     if (keywordType === "coffee") {
-//                         cafes[0].push(locationId);
-//                     } else if (keywordType === "dessert") {
-//                         cafes[1].push(locationId);
-//                     } else if (keywordType === "bakery") {
-//                         cafes[2].push(locationId);
-//                     }else if (keywordType === "mood") {
-//                         cafes[3].push(locationId);
-//                     }else if (keywordType === "study") {
-//                         cafes[4].push(locationId);
-//                     } else {
-//                         cafes[5].push(locationId);
-//                     }
-//                     resolve();
-//                 });
-//             });
-//         });
-
-//         return Promise.all(queries)
-//                       .then(() => cafes);
-//                       .catch((err) => reject(err));
-//     });
-// }
 
 // 중복없는 숫자뽑기
 function getRandomNum(min, max) {
@@ -861,59 +761,39 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'planId or recommendCnt are required' });
     }
 
-    const findAddrName = `
-      SELECT Plan_Location.place, Plan_Location.place_name, Plan_Location.locationId
-      FROM Plan_Location
-      WHERE Plan_Location.planId = ?
-      ORDER BY Plan_Location.l_priority ASC;
-    `;
-
     try {
         // Plan_Location에서 planId를 기준으로 사용자가 선택한 순서대로 주소 값 받아옴
-        const places = await getAddrNameId(findAddrName, [planId]);
+        const locations = await getAllLocationsByPlanId(planId);
 
-        if (places.length === 0) {
+        if (locations.length === 0) {
             return res.json({ result: 'failure', message: 'Invalid planId' });
         }
 
-        const size = places.length;
+        // 장소 분류
+        const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
 
-        // 출발지, 도착지 인덱스 번호 임의로 지정
-        let firstPlace = checkIdx(size - 1 + recommendCnt, size);
-        let lastPlace = checkIdx(0 + recommendCnt, size);
+        // 장소 재배치
+        const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others);
 
-        if (size <= 2) 
-            return res.json([places[firstPlace], places[lastPlace]]);
-        
-        let findCategory = getCategoryStats (planId);
-        let restaurants = [];
-        if (findCategory[0] >= 2) {
-            restaurants = getRestaurantLocations(planId);
-        }
-        
-        let cafeKeywords = [];
-        let cafeLocations = [];
-        if (categories[1] >= 2) {
-            cafeKeywords = getCafeStats (planId);
-            if (cafeKeywords.some(num => num >= 2)) {
-                cafeLocations = getCafeLocations (planId);
-            }
-        }
-        
-        // 무작위 알고리즘과 경로 최적화 api를 더한 루트 추천
-        // 겹쳐서 루트 추천해주면 안되는 것들 체킹 (음식점이 2곳 이상, 같은 키워드가 2개 이상인 카페)
-        if findCategory[0] >= 2 {
-            if (cafeLocations.length != 0) {
-                let rest = size - findCategory[0] - cafeLocations.length;
+        // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
+        const startLocation = arrangedLocations[0];
+        const endLocation = arrangedLocations[arrangedLocations.length - 1];
+        const waypoints = arrangedLocations.slice(1, -1);
 
-                getRandomNum(0, findCategory[0])
-            }
-        }
+        // 최종 결과 반환
+        res.json({ 
+            result: 'success', 
+            locationInfo: arrangedLocations.map(location => ({
+                LocationID: location.LocationID,
+                place_name: location.place_name,
+                place: location.place
+            })) 
+        });
 
-    } catch (error) {
-        console.error('오류 응답 데이터:', error.response?.data);
-        res.status(500).send('API 요청에 실패했습니다.');
-    }
+   } catch (error) {
+       console.error('오류:', error);
+       res.status(500).send('API 요청에 실패했습니다.');
+   }
 });
 
 
