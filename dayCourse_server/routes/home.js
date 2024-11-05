@@ -667,7 +667,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     console.log("쿼리1");
     const [plans] = await db.promise().query(sql_plan, [userId]);
-    console.log(plans);
+    const planIds = plans.map(plan => plan.planId);
+    console.log(planIds);
 
     const sql_plan_location =`
         SELECT place, place_name
@@ -675,92 +676,93 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         WHERE planId IN (?);
     `
     console.log("쿼리2");
-    const [plan_locations] = await db.promise().query(sql_plan_location, [plans]);
+    const [plan_locations] = await db.promise().query(sql_plan_location, [planIds]);
+    console.log(plan_locations);
     
     console.log("쿼리3");
-    console.log(plan_locations);
-    const locationsPromises = plan_locations.map(async (planLocation) => {
-        console.log("??");
-        try {
-            const sql_locations = `
-                SELECT Locations.*
-                FROM Locations
-                WHERE LocationName = ? AND addressFull = ?;
-            `;
+    // const locationsPromises = plan_locations.map(async (planLocation) => {
+    //     console.log("??");
+    //     try {
+    //         const sql_locations = `
+    //             SELECT Locations.*
+    //             FROM Locations
+    //             WHERE LocationName = ? AND addressFull = ?;
+    //         `;
     
-            const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
-            console.log(locations); 
-            console.log("테스트문구1124");
-        } catch (error) {
-            console.error("Error fetching locations:", error);
-        }
-    });
+    //         const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
+    //         console.log(locations); 
+    //         console.log("테스트문구1124");
+    //     } catch (error) {
+    //         console.error("Error fetching locations:", error);
+    //     }
+    // });
 
-    await Promise.all(locationsPromises);
-    console.log("기존문구 시작");
+    // await Promise.all(locationsPromises);
+    // console.log("기존문구 시작");
 
-    const sql_category = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        WHERE category = ?
-        LIMIT 10;
-    `;
+    // const sql_category = `
+    //     SELECT addressFull, LocationName, LocationID, latitude, longitude
+    //     FROM Locations
+    //     WHERE category = ?
+    //     LIMIT 10;
+    // `;
 
-    const sql_keyword = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        WHERE keyword = ?
-        LIMIT 10;
-    `;
+    // const sql_keyword = `
+    //     SELECT addressFull, LocationName, LocationID, latitude, longitude
+    //     FROM Locations
+    //     WHERE keyword = ?
+    //     LIMIT 10;
+    // `;
 
-    const sql_all = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        LIMIT 10;
-    `;
+    // const sql_all = `
+    //     SELECT addressFull, LocationName, LocationID, latitude, longitude
+    //     FROM Locations
+    //     LIMIT 10;
+    // `;
 
-    let key = translateKeyword(enKeyword);
-    let Cate = translateCategory(enCategory)
+    // let key = translateKeyword(enKeyword);
+    // let Cate = translateCategory(enCategory)
 
-    let rows = [];
+    // let rows = [];
 
-    if (key !== "random") {
-        // 키워드가 있을 때
-        //console.log("키워드 있음");
+    // if (key !== "random") {
+    //     // 키워드가 있을 때
+    //     //console.log("키워드 있음");
 
-        //const [result] = db.query(sql_keyword, [key]);
-        //console.log("쿼리 실행");
-        const [result] = await db.promise().query(sql_keyword, [key]);
-        rows = result;
+    //     //const [result] = db.query(sql_keyword, [key]);
+    //     //console.log("쿼리 실행");
+    //     const [result] = await db.promise().query(sql_keyword, [key]);
+    //     rows = result;
 
-    } else {
-        // 키워드가 없을 때
-        //console.log("키워드 없음");
-        let sql = sql_category;
+    // } else {
+    //     // 키워드가 없을 때
+    //     //console.log("키워드 없음");
+    //     let sql = sql_category;
 
-        if (Cate === "random") {
-            sql = sql_all;
-            Cate = ""
-        }
+    //     if (Cate === "random") {
+    //         sql = sql_all;
+    //         Cate = ""
+    //     }
 
-        //console.log("쿼리 실행");
-        const [result] = await db.promise().query(sql, [Cate]);
-        rows = result;
-    }
+    //     //console.log("쿼리 실행");
+    //     const [result] = await db.promise().query(sql, [Cate]);
+    //     rows = result;
+    // }
 
-    // 필드 재명명하기
-    const renamedUsers = rows.map(row => ({
-        id: row.LocationID,
-        place_name: row.LocationName,
-        address_name: row.addressFull,
-        x: row.longitude,
-        y: row.latitude,
-        road_address_name: "12345", // 임시값
-        phone: "01000000000" //필드없음
-    }));
+    // // 필드 재명명하기
+    // const renamedUsers = rows.map(row => ({
+    //     id: row.LocationID,
+    //     place_name: row.LocationName,
+    //     address_name: row.addressFull,
+    //     x: row.longitude,
+    //     y: row.latitude,
+    //     road_address_name: "12345", // 임시값
+    //     phone: "01000000000" //필드없음
+    // }));
 
     //console.log(renamedUsers);
-    return res.status(200).json({ msg: 'success', place: renamedUsers });
+    //return res.status(200).json({ msg: 'success', place: renamedUsers });
+    return res.status(200).json({ msg: 'success'});
 });
 
 
