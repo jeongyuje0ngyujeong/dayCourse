@@ -250,7 +250,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
         return () => {
             socketRef.current.disconnect();
         };
-    }, [userId, planId]);
+    }, []);
 
     useEffect(() => {
         if (!socketRef.current) return;
@@ -364,7 +364,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         <h4>접속 사용자</h4>
                         <ul>
                             {Array.from(new Map(users.map(user => [user.userId, user])).values()).map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{`/${user.name}`}</li>
+                                <li key={user.userId} style={{ color: user.color }}>{`${user.name}`}</li>
                             ))}
                         </ul>
                     </div>
