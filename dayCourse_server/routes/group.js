@@ -153,6 +153,10 @@ router.post('/add', authenticateJWT, async (req, res) => {
     console.log(groupName);
     console.log(groupMembers);
 
+    if(!groupName){
+        return res.json({ success: false, message: '그룹명없음' });
+    }
+
     const sqlInsertGroup = `
       INSERT INTO day_Group (groupName)
       VALUES (?)
