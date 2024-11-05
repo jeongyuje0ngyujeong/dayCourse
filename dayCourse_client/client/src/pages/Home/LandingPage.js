@@ -91,6 +91,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
+    const [uniqueUsers, setUniqueUsers] = useState([]);
 
     const distances = [];
 
@@ -204,7 +205,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             console.log('수신한 roomData:', { room, users });
             setUniqueUsers(users);
             const colorMapping = {};
-            users.forEach(user => {
+            standardizedUsers.forEach(user => {
                 colorMapping[user.userId] = user.color;
             });
             setUserColors(colorMapping);
@@ -275,6 +276,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
             // 추가적인 작업 수행 가능
         }
     }, [isPlacesLoaded]);
+
+    useEffect(() => {
+        const unique = Array.from(new Map(users.map(user => [user.userId, user])).values());
+        setUniqueUsers(unique);
+    }, [users]);
 
     return (
         <div className="landing-page">
