@@ -45,9 +45,9 @@ const ChatName = styled.div`
 //     border-radius: 4px;
 // `;
 
-// const ENDPOINT = 'http://13.125.236.177:3030';
+const ENDPOINT = 'http://13.125.236.177:3030';
 // const ENDPOINT = 'http://localhost:5000';
-let socket;
+const socket = io(ENDPOINT);
 
 export default function Chat({userId}) {
     // const planId = planInfo.planId;
