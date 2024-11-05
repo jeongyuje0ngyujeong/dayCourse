@@ -157,7 +157,9 @@ export const addRecommendedPlace = async (userId, planId, place) => {
             planId,
             place_name: place.place_name,
             address_name: place.address_name,
-            l_priority: place.l_priority || 1
+            l_priority: place.l_priority || 1,
+            X: place.X || place.x,
+            Y: place.Y || place.y,
 
         });
         return response.data;

@@ -33,7 +33,7 @@ export async function getPlan() {
 }
 
 // 이미지 업로드
-export const uploadImage = async (selectedFile, planId) => {
+export const uploadImage = async (selectedFiles, planId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     const userId = sessionStorage.getItem('userId'); // userId를 세션 저장소에서 가져옴
 
@@ -42,13 +42,12 @@ export const uploadImage = async (selectedFile, planId) => {
     }
 
     const formData = new FormData();
-    formData.append("userId", userId);      // 사용자 ID 추가
-    formData.append("image", selectedFile); // 이미지 파일 추가
+    formData.append("userId", userId); // 사용자 ID 추가
 
-    // 디버깅: FormData 내용 확인
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-    }
+    // 선택된 모든 파일 추가
+    selectedFiles.forEach(file => {
+        formData.append("image", file); // "image"라는 이름으로 여러 개의 파일 추가
+    });
 
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/upload/${planId}/images`, formData, {
@@ -57,14 +56,13 @@ export const uploadImage = async (selectedFile, planId) => {
                 Authorization: `Bearer ${token}`
             },
         });
-        const result = response.data
-        console.log(result);
         return response.data;
     } catch (error) {
         console.error("업로드 실패:", error.response ? error.response.data : error);
         throw error;
     }
 };
+
 
 // 특정 플랜에 있는 이미지 가져오기
 export const fetchImage = async (planId) => {
