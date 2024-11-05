@@ -287,7 +287,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             console.log('수신한 roomData:', { room, users });
             setUniqueUsers(users);
             const colorMapping = {};
-            users.forEach(user => {
+            standardizedUsers.forEach(user => {
                 colorMapping[user.userId] = user.color;
             });
             setUserColors(colorMapping);
@@ -358,22 +358,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
             // 추가적인 작업 수행 가능
         }
     }, [isPlacesLoaded]);
-
-
-        // TMAP 거리 계산 API 
-
-        // useEffect(() => {
-        //     const loadDistance = async () => {
-        //         if (selectedPlaces.length > 1) {
-        //             const distances = await fetchDistance(planId, userId);
-        //             console.log("받은 거리 정보:", distances);
-        //             setDistances(distances.distances);
-        //         } else {
-        //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-        //         }
-        //     };
-        //     loadDistance();
-        // }, [selectedPlaces]);
 
     return (
         <div className="landing-page">
