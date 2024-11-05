@@ -91,7 +91,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
-    // const [uniqueUsers, setUniqueUsers] = useState([]);
 
     const distances = [];
 
