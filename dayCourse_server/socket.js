@@ -31,7 +31,8 @@ io.on('connection', (socket) => {
     console.log('userId', userId, 'name:', name, 'room:', room);
     const { error, user } = addUser({ id: socket.id, userId, name, room })
 
-    //console.log(user)
+    console.log(user)
+    console.log(error)
 
     if (error) callback({ error: '에러가 발생했습니다.' })
 
@@ -56,7 +57,6 @@ io.on('connection', (socket) => {
       }));
 
       // 사용자 환영 메시지를 추가합니다.
-      console.log(user)
       messages.push({
         user: 'admin',
         text: `${user.name}님, 환영합니다.`
