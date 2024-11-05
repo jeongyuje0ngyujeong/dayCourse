@@ -1,5 +1,4 @@
-// LandingPage.js
-import React, { useEffect, useState, useCallback, useContext } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext} from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
@@ -7,6 +6,7 @@ import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedP
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
+import SocketContext from '../../SocketContext';
 import SocketContext from '../../SocketContext';
 
 // Styled Components
@@ -139,12 +139,18 @@ const RecommendedRoutesBox = styled.div`
 
 const LandingPage = ({ userId, planId, place, context }) => {
     const { socket, joinRoom } = useContext(SocketContext); 
+ const { socket, messages, users, joinRoom, sendMessage } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
-    const [uniqueUsers, setUniqueUsers] = useState([]);
+    const [localUsers, setLocalUsers] = useState([]);
+
+
+    const distances = [];
+
+    // const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
@@ -220,6 +226,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
         } catch (error) {
@@ -231,6 +239,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             const updatedPlaces = await fetchExistPlace();
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -265,11 +275,14 @@ const LandingPage = ({ userId, planId, place, context }) => {
             ));
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
+
 
 
     useEffect(() => {
@@ -283,59 +296,45 @@ const LandingPage = ({ userId, planId, place, context }) => {
         joinRoom(planId);
 
         // 소켓 이벤트 리스너 설정
-        socket.on('roomData', ({ room, users }) => {
-            console.log('수신한 roomData:', { room, users });
-            setUniqueUsers(users);
-            const colorMapping = {};
-            standardizedUsers.forEach(user => {
-                colorMapping[user.userId] = user.color;
-            });
-            setUserColors(colorMapping);
+    socket.on('roomData', ({ room, users }) => {
+        console.log('수신한 roomData:', { room, users });
+        setLocalUsers(users); // 여기 업데이트
+        const colorMapping = {};
+        users.forEach(user => {
+            colorMapping[user.userId] = user.color;
         });
+        setUserColors(colorMapping);
+        setLocalUsers(users);
+    });
 
-        socket.on('user-joined', (user) => {
-            console.log('새로운 사용자加入:', user);
-            setUniqueUsers(prevUsers => [...prevUsers, user]);
-            setUserColors(prevColors => ({ ...prevColors, [user.userId]: user.color }));
-        });
+    socket.on('user-joined', ({ userId, name, color }) => {
+        console.log('새로운 사용자加入:', { userId, name, color });
+        setLocalUsers(prevUsers => [...prevUsers, { userId, name, color }]); // 여기 업데이트
+        setUserColors(prevColors => ({...prevColors, [userId]: color }));
+    });
 
-        socket.on('user-left', ({ userId }) => {
-            console.log('사용자 나감:', userId);
-            setUniqueUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
-            setUserColors(prevColors => {
-                const updatedColors = { ...prevColors };
-                delete updatedColors[userId];
-                return updatedColors;
-            });
-            setUserCursors(prev => {
-                const updated = { ...prev };
-                delete updated[userId];
-                return updated;
-            });
+    socket.on('user-left', ({ userId }) => {
+        setUserCursors(prev => {
+            const updated = {...prev };
+            delete updated[userId];
+            return updated;
         });
-
-        socket.on('user-mouse-move', ({ userId, name, cursor }) => {
-            console.log('수신한 user-mouse-move:', { userId, name, cursor });
-            setUserCursors(prev => ({
-                ...prev,
-                [userId]: { ...cursor, name }
-            }));
-        });
-
-        socket.on('places-updated', (updatedPlaces) => {
-            setSelectedPlaces(updatedPlaces);
-        });
+        setLocalUsers(prevUsers => prevUsers.filter(user => user.userId!== userId)); // 여기 업데이트
+    });
 
         return () => {
+            socket.off('places-updated');
+            socket.off('user-mouse-move');
             socket.off('roomData');
             socket.off('user-joined');
             socket.off('user-left');
-            socket.off('user-mouse-move');
-            socket.off('places-updated');
         };
     }, [socket, planId, joinRoom]);
 
+
+
     useEffect(() => {
+        if (!socket) return;
         if (!socket) return;
 
         const throttledMouseMove = throttle((e) => {
@@ -351,6 +350,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             throttledMouseMove.cancel();
         }
     }, [socket, planId]);
+    }, [socket, planId]);
 
     useEffect(() => {
         if (isPlacesLoaded) {
@@ -358,11 +358,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
             // 추가적인 작업 수행 가능
         }
     }, [isPlacesLoaded]);
-
-    useEffect(() => {
-        const unique = Array.from(new Map(users.map(user => [user.userId, user])).values());
-        setUniqueUsers(unique);
-    }, [users]);
 
     return (
         <div className="landing-page">
@@ -459,10 +454,10 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     <div style={{ position: 'absolute', top: "2%", left: "90%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
                         <h4>접속 사용자</h4>
                         <ul>
-                            {uniqueUsers.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
-                            ))}
-                        </ul>
+                        {localUsers.map(user => (
+                            <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                        ))}
+                    </ul>
                     </div>
 
                 <RecommendedRoutesBox>
