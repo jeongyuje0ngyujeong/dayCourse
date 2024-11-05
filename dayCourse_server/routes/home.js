@@ -734,7 +734,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         console.error("Error in processing locations:", error);
     });
 
-    if (locations) {
+    if (locations.length > 0) {
         console.log(locations)
         return res.status(200).json({ msg: 'success' });
     } else {
