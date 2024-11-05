@@ -47,7 +47,7 @@ const ChatName = styled.div`
 
 const ENDPOINT = 'http://13.125.236.177:3030';
 // const ENDPOINT = 'http://localhost:5000';
-const socket = io(ENDPOINT);
+let socket;
 
 export default function Chat({userId}) {
     // const planId = planInfo.planId;
@@ -82,6 +82,7 @@ export default function Chat({userId}) {
     // [ENDPOINT, window.location.search]
 
     useEffect(() => {
+      socket = io(ENDPOINT);
       socket.on('message', (incomingMessages) => {
         console.log('받은 메시지:', incomingMessages); // 수신된 메시지 로그
         
