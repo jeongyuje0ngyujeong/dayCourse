@@ -649,14 +649,46 @@ function translateCategory(Category) {
 }
 
 
-router.post('/plan/:enCategory/:enKeyword?', async (req, res) => {
+router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) => {
     console.log("카테고리조회");
+    const { planId } = req.body;
     const { enCategory, enKeyword } = req.params;
 
     //여기에 기존.............과거..........방문기록....가져오기
     //가져와서 태그 모음?
     //핵심 태그 몇가지 뽑아둠.
+    //일단은 2번 거칠거임. 1.모든 플랜의 장소 조회 > 2.일치하는 Location 찾기.
 
+    const sql_plan = `
+        SELECT Plan.planId
+        FROM groupMembers
+        JOIN Plan ON groupMembers.groupId = Plan.groupId
+        WHERE groupMembers.userId = ?
+        ORDER BY Plan.startDate DESC
+    `;
+
+    const [plans] = await db.promise().query(sql_plan, [planId]);
+
+    const sql_plan_location =`
+        SELECT place, place_name
+        FROM Plan_Location 
+        WHERE planId IN (?);
+    `
+
+    const [plan_locations] = await db.promise().query(sql_plan_location, [plans]);
+    
+
+    const locationsPromises = plan_locations.map(async (planLocation) => {
+        const sql_locations = `
+            SELECT location.*
+            FROM location
+            WHERE LocationName = ? AND addressFull = ?; // AND 연산자로 수정
+        `;
+        
+        const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
+        console.log(locations)
+        console.log("테스트문구1124")
+    });
 
     const sql_category = `
         SELECT addressFull, LocationName, LocationID, latitude, longitude
