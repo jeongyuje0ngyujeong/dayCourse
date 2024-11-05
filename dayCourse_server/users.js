@@ -14,7 +14,6 @@ const addUser = ({ id, userId, name, room }) => {
   //   room = room.trim().toLowerCase();
 
   // Check for existing user
-
   const existingUser = users.find((user) => user.room === room && user.name === name && user.userId === userId)
 
   // Validate name and room
@@ -22,6 +21,7 @@ const addUser = ({ id, userId, name, room }) => {
 
   // Validate username
   if (existingUser) {
+    console.log("에러")
     return { error: '이미 존재하는 이름입니다.' };
   }
 
