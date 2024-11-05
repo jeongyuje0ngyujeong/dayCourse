@@ -56,9 +56,10 @@ io.on('connection', (socket) => {
       }));
 
       // 사용자 환영 메시지를 추가합니다.
+      console.log(user)
       messages.push({
         user: 'admin',
-        text: `${user.userName}님, 환영합니다.`
+        text: `${user.name}님, 환영합니다.`
       });
 
       socket.emit('message', messages);
