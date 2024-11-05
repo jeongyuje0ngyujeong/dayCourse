@@ -680,15 +680,19 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     
     console.log("쿼리3");
     const locationsPromises = plan_locations.map(async (planLocation) => {
-        const sql_locations = `
-            SELECT location.*
-            FROM location
-            WHERE LocationName = ? AND addressFull = ?; // AND 연산자로 수정
-        `;
-        
-        const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
-        console.log(locations)
-        console.log("테스트문구1124")
+        try {
+            const sql_locations = `
+                SELECT location.*
+                FROM location
+                WHERE LocationName = ? AND addressFull = ?;
+            `;
+    
+            const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
+            console.log(locations); 
+            console.log("테스트문구1124");
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
     });
 
     await Promise.all(locationsPromises);
