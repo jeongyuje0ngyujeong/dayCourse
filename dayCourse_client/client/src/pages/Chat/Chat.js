@@ -61,23 +61,23 @@ export default function Chat({userId, planInfo}) {
     useEffect(() => {
         // const {name, room} = queryString.parse(window.location.search);
         
-        socket = io(ENDPOINT);
-        setName(name);
-        setRoom(room);
-        socket.emit('join', {
-          userId: sessionStorage.getItem('id'), 
-          name: name, 
-          room: room
-        }, (err) => {
-          if (err) {
-            alert(err);
-          }
-        });
+        // socket = io(ENDPOINT);
+        // setName(name);
+        // setRoom(room);
+        // socket.emit('join', {
+        //   userId: sessionStorage.getItem('id'), 
+        //   name: name, 
+        //   room: room
+        // }, (err) => {
+        //   if (err) {
+        //     alert(err);
+        //   }
+        // });
 
-        return () => {
-          socket.emit();
-          socket.off();
-        }
+        // return () => {
+        //   socket.emit();
+        //   socket.off();
+        // }
     }, [name, room]);
     // [ENDPOINT, window.location.search]
 
