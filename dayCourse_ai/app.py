@@ -322,7 +322,7 @@ def cluster_objects2():
     
     return jsonify(result)
 
-def get_recommendations(cosine_sim, idx):
+def get_recommendations(cosine_sim, idx, datas):
 
     # 해당 스토어와 모든 스토어 간의 유사도 가져오기
     sim_scores = list(enumerate(cosine_sim[idx]))
@@ -337,7 +337,7 @@ def get_recommendations(cosine_sim, idx):
     store_indices = [i[0] for i in sim_scores]
 
     # 상위 10개 스토어 데이터프레임 반환
-    return data.iloc[store_indices]
+    return datas.iloc[store_indices]
 
 
 @app.route('/SpotSuggest', methods=['POST'])
@@ -375,7 +375,7 @@ def SpotSuggest():
     #입력된 스토어의 인덱스 찾기
     idx = datas[datas['LocationName'] == LocationName].index[0]
     
-    recommendations = get_recommendations(cosine_sim, idx)
+    recommendations = get_recommendations(cosine_sim, idx, datas)
     return jsonify(recommendations.to_dict(orient='records'))
 
 if __name__ == '__main__':
