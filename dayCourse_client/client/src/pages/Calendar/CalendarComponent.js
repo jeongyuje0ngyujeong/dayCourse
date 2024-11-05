@@ -7,19 +7,17 @@ import Schedule from './Schedule';
 const Cell = styled.td`
   flex: 1;
   color: #818181;
-  vertical-align: baseline;
   text-align: center;
-  ${'' /* border: 1px solid; */}
   padding: 0.5rem;
-  ${'' /* font-weight: 600; */}
-  ${'' /* max-height: 5rem;
-  overflow: hidden; */}
   &:hover {
     background-color: #eee; 
   }
+  position: relative;
+  ${'' /* z-index:5000000000; */}
 `
 
 const DateTable = styled.tr`
+  position: relative;
   display: flex;
   width: 100%;
   height: 100%;
@@ -29,14 +27,16 @@ const DateTable = styled.tr`
   border-collapse: collapse;
   table-layout: fixed;
   overflow: hidden;
+  
 `
 
 const StyleDayT = styled.tr`
   display: flex;
-  height: 20%;
+  height: 30%;
   width: 100%;
+  margin: 0;
   ${'' /* table-layout: fixed; */}
-  margin-bottom: 1rem;
+  ${'' /* margin-bottom: 1rem; */}
   ${'' /* color: #818181; */}
   ${'' /* margin-top: 1rem; */}
   justify-content: space-between;
@@ -52,33 +52,32 @@ export const getDayName = (day)=> {
 export function DayTable(){
   return (
     <StyleDayT>
-        {/* <tr> */}
-          {daysOfWeek.map((day, index) => (
-            <th
-      key={index}
-      title={day}
-      style={{
-        flex: '1',
-        padding: '0.5rem',
-        textAlign: 'center',
-        verticalAlign: 'middle',
-      }}
-    >
-      <div style={{
-        border: '2px solid #90B54C',
-        borderRadius: '50%',
-        width: '2rem',
-        height: '2rem',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: '0 auto' // 중앙 정렬
-      }}>
-        {day}
-      </div>
-    </th>
+      {daysOfWeek.map((day, index) => (
+        <th
+        key={index}
+        title={day}
+        style={{
+          flex: '1',
+          marginBottom: '0.5rem',
+          // border: '1px solid',
+          // textAlign: 'center',
+          // verticalAlign: 'middle',
+        }}
+        >
+          <div style={{
+            border: '2px solid #90B54C',
+            borderRadius: '50%',
+            width: '2rem',
+            height: '2rem',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            margin: '0 auto', 
+          }}>
+            {day}
+          </div>
+        </th>
           ))}
-        {/* </tr> */}
     </StyleDayT>
   )
 }
@@ -143,7 +142,7 @@ function getFirst(date) {
 }
 
 export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, selectedDate, setSelectedDate}){
-    const weeks = [<DayTable/>]; 
+    const weeks = []; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -181,13 +180,14 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
         const dateKey = `${year}-${String(month+1).padStart(2, '0')}-${String(date).padStart(2,'0')}`;
         const events = groupedSchedules[dateKey] || [];
 
-        currentWeek.push(
+        currentWeek.push(<>
               <Cell 
                   key={dateKey} 
                   onClick={(e)=>handleCellClick(dateKey, e)}
                   style={{ 
                     border: dateKey === selectedDate ? "2px solid #90B54C" : "none",
-                    borderRadius: '10px'
+                    borderRadius: '10px',
+                   
                   }}
               >
                   <div style={{
@@ -209,7 +209,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                       </>
                     ) : null}
                   </div>
-              </Cell>
+              </Cell></>
         )
 
         if (currentWeek.length === 7 || day === 6) {
@@ -217,7 +217,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
             <DateTable key={currentDate.toISOString().slice(0, 10)}>
               {/* <tbody> */}
                 
-                  {currentWeek}
+                {currentWeek}
                 
               {/* </tbody> */}
             </DateTable>
@@ -231,16 +231,21 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     if (currentWeek.length > 0) {
     weeks.push(
         <DateTable key={currentDate.toISOString().slice(0, 10)}>
-            <tr>
-              {currentWeek}
-            </tr>
+            {currentWeek}
         </DateTable>
     );
     }
 
     return (
         <>
-        {weeks}
+        <table style={{ borderCollapse: 'collapse', width: '100%' }}>
+          <thead style={{display:'relative', zIndex:'1'}}>
+            <DayTable/>
+          </thead>
+          <tbody style={{display:'relative', zIndex:'100'}}>
+            {weeks}
+          </tbody>
+        </table>
         <ScheduleModal isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent} dateKey={selectedDate}/>
         </>
     )
