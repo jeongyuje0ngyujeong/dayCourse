@@ -11,6 +11,9 @@ const MonthContainer = styled.div `
   justify-content: center; 
   align-items: center; 
   color: black;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  margin-bottom: 1rem;
 `
 
 const CalendarContainer = styled.div `
@@ -20,8 +23,8 @@ const CalendarContainer = styled.div `
   width: 100%;
   height: 80%;
   color: #818181;
-  padding: 0 3rem;
-  ${'' /* padding: 0.5rem; */}
+  ${'' /* padding: 0 3rem; */}
+  padding: 0 0.5rem;
   ${'' /* background-color: #90B54C; */}
 `
 

@@ -44,23 +44,23 @@ const DepartureContainer = styled.div`
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 컨테이너 전체 공간을 균일하게 사용 */
+    justify-content: space-between; 
     margin-top: 10px;
     padding-right: 20px;
     position: relative;
+    max-height: 10rem;
 `
 const RecommendResult = styled.div`
     display: flex;
     margin-top: 30px;
     flex: 1;
-    height: 29rem;
-
+    height: 33rem;
 `
 const ScrollContainer = styled.div`
     flex-grow: 1; 
     display: flex;
     flex-direction: column;
-    min-height: 11rem;  
+    min-height: 13rem;  
     overflow: auto; 
     &::-webkit-scrollbar {
         display: none; 
@@ -81,6 +81,7 @@ const ScrollContainer = styled.div`
 
 const MapContainer = styled.div`
     display: flex;
+    flex: 1;
     width: 100%;
     ${'' /* border: 1px solid; */}
     border-radius: 10px;
@@ -93,6 +94,7 @@ const Container = styled.div`
     display: flex;
     gap: 5px;
     margin-top: auto;
+    width: 100%;
 `;
 
 const Box = styled.div`
@@ -151,11 +153,8 @@ export default function UpdateTown() {
                             ))}
                         </ScrollContainer>
 
-                        <h3 style={{marginTop: '1rem'}}>추천지역</h3>
                         <Container>
-                            <Box>추천지역1</Box>
-                            <Box>추천지역2</Box>
-                            <Box>추천지역3</Box>
+                            <ConvexHullCalculator departurePoints={departurePoints}/> 
                         </Container>
                     </DepartureContainer>
 
@@ -165,7 +164,7 @@ export default function UpdateTown() {
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
-            <ConvexHullCalculator departurePoints={departurePoints}/>  
+             
             </SidebarContainer>   
         </div>
     );

@@ -1,5 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import {searchPubTransPath, storeZoneInRadius} from './requestTime';
+import styled from "styled-components";
+import {Button} from '../../../Button';
+
+const Box = styled.div`
+    width: 100%; /* 너비 조정 */
+    height: 10rem; /* 높이 조정 */
+    background-color: white; /* 배경색을 흰색으로 설정 */
+    border: 1px solid #ccc; /* 경계선 추가 */
+    border-radius: 10px; /* 둥근 모서리 */
+    margin-bottom: 10px; /* 여백 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    cursor: pointer;
+    transition: transform 0.2s; /* 애니메이션 효과 */
+    
+    &:hover {
+        transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
+    }
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+`;
+
+const Container = styled.div`
+    flex: 1;
+    display: flex;
+    gap: 5px;
+    margin-top: auto;
+`;
 
 // 점 배열을 받아 볼록 다각형을 이루는 점 배열을 반환하는 함수
 function getConvexHull(points) {
@@ -77,40 +107,41 @@ function calculateCentroid(points) {
 }
 
 function calculateNextPosition(currentPosition, convexHull, weights) {
-  let sumWeightedVectors = { x: 0, y: 0 };
+  let totalWeightedX = 0;
+  let totalWeightedY = 0;
   let totalWeight = 0;
 
-  convexHull.forEach((pos, index) => {
-      const weight = weights[index];
+  // 각 convexHull 지점과 currentPosition 간의 이동 방향을 가중치를 적용해 계산
+  for (let i = 0; i < convexHull.length; i++) {
+      const [x, y] = convexHull[i];
+      const weight = weights[i];
 
-      // Vector from current position to user position
-      const vector = {
-          x: pos[0] - currentPosition[0], // currentPosition을 배열로 처리
-          y: pos[1] - currentPosition[1], // convexHull pos도 배열로 처리
-      };
+      // currentPosition과 convexHull[i] 간의 벡터
+      const directionX = x - currentPosition[0];
+      const directionY = y - currentPosition[1];
+      const distance = Math.sqrt(directionX ** 2 + directionY ** 2);
 
-      // Normalize the vector (unit vector)
-      const length = Math.sqrt(vector.x ** 2 + vector.y ** 2);
-      if (length > 0) { // length가 0일 경우 분모가 0이 되는 것을 방지
-          const unitVector = {
-              x: vector.x / length,
-              y: vector.y / length,
-          };
+      // 단위 벡터로 정규화 (거리 0일 경우 제외)
+      if (distance > 0) {
+          const unitX = directionX / distance;
+          const unitY = directionY / distance;
 
-          // Weighted vector
-          sumWeightedVectors.x += unitVector.x * weight;
-          sumWeightedVectors.y += unitVector.y * weight;
+          // 가중치를 곱한 벡터를 누적
+          totalWeightedX += unitX * weight;
+          totalWeightedY += unitY * weight;
           totalWeight += weight;
       }
-  });
+  }
 
-  // Calculate next position
-  const nextPosition = [
-      currentPosition[0] + sumWeightedVectors.x / totalWeight,
-      currentPosition[1] + sumWeightedVectors.y / totalWeight,
-  ];
+  // 이동 방향을 가중치로 평균화한 후, 너무 멀리 벗어나지 않도록 스케일 조정
+  const averageDirectionX = (totalWeightedX / totalWeight) * 0.05; // 이동 비율을 줄임
+  const averageDirectionY = (totalWeightedY / totalWeight) * 0.05;
 
-  return nextPosition; // nextPosition도 배열로 반환
+  // nextPosition을 currentPosition에서 비율만큼 이동
+  const nextPositionX = currentPosition[0] + averageDirectionX;
+  const nextPositionY = currentPosition[1] + averageDirectionY;
+
+  return [nextPositionX, nextPositionY];
 }
 
 
@@ -121,17 +152,14 @@ function extractCoordinates(dataArray) {
     return []; // 빈 배열이나 유효하지 않은 데이터가 제공된 경우 빈 배열 반환
 }
 
-function pairCoordinatesWithTarget(pointsArray, targetPoint) {
-    if (pointsArray.length > 1){
-      return pointsArray.map(([sx, sy]) => [sx, sy, targetPoint[0], targetPoint[1]]);
-    }
-    return [];
-}
 
 
-async function getAllRoutes(pointsArray) {
+async function getAllRoutes(convexHull, centroid) {
   // 각 좌표와 targetPoint를 짝 지어 요청
-  const promises = pointsArray.map(([sx, sy, ex, ey]) => searchPubTransPath(sx, sy, ex, ey));
+  const pointsArray = convexHull.map(([x, y]) => [x, y, centroid[0], centroid[1]]);
+  const promises = pointsArray.map(([sx, sy, ex, ey]) => 
+      searchPubTransPath(sx, sy, ex, ey)
+  );
 
   try {
     // 모든 요청이 완료될 때까지 대기하고 결과 배열 반환
@@ -147,13 +175,14 @@ const { kakao } = window;
 const geocoder = new kakao.maps.services.Geocoder();
 
 export default function ConvexHullCalculator({departurePoints}) {
-    const [points, setPoints] = useState([]);
-    const [convexHull, setConvexHull] = useState([]);
-    const [centroid, setCentroid] = useState([0, 0]);
+    const [points, setPoints] = useState([]);   // 출발지 좌표
+    const [convexHull, setConvexHull] = useState([]); // 볼록다각형 꼭지점 좌표
+    const [centroid, setCentroid] = useState([0, 0]); // 중간점 
     const [centroidAddress, setCentroidAddress] = useState('');
-    const [pairVector, setPairVector] = useState([]);
+    // const [pairVector, setPairVector] = useState([]);
     const [timeVector, setTimeVector] = useState([]);
     const [resultTowns, setResultTown] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
       const coordinates = extractCoordinates(departurePoints);
@@ -163,66 +192,103 @@ export default function ConvexHullCalculator({departurePoints}) {
       setPoints(coordinates);
       setConvexHull(hull);
       setCentroid(calculatedCentroid);
-      setPairVector(pairCoordinatesWithTarget(hull, calculatedCentroid));
-      // console.log(points);
-      // console.log(centroid);
-      // console.log(pairVector);
+      // setPairVector(pairCoordinatesWithTarget(hull, calculatedCentroid));
     }, [departurePoints]);
 
     const calculateConvexHull = async () => {
-      const fetchRoutes = async () => {
+      setResultTown([]);
+      const fetchRoutes = async (temp_centroid) => {
           try {
-              const routes = await getAllRoutes(pairVector);
-              setTimeVector(routes); // 상태 업데이트
-              return routes; // 최신 경로 데이터를 반환
+              console.log('convexHull: ', convexHull, 'centroid: ', temp_centroid);
+              const routes = await getAllRoutes(convexHull, temp_centroid);
+              setTimeVector(routes);
+              return routes;
           } catch (error) {
               console.error("Error fetching routes:", error);
               return null;
           }
       };
   
-      if (centroid[0] !== 0 || centroid[1] !== 0) {
-          // 초기 경로 데이터를 fetchRoutes 호출로 가져옴
-          let timeVector = await fetchRoutes();
-          const maxCount = 5;
-  
-          for (let count = 0; count < maxCount; count++) {
-              // timeVector 값이 없으면 루프 종료
-              if (!timeVector || timeVector.length === 0) break;
+      const fetchTown = async (temp_centroid) => {
+          let radius = 500; // 초기 반경 값 설정
+          let towns = null;
 
-              const minTime = Math.min(...timeVector);
-              const maxTime = Math.max(...timeVector);
+          // 반경을 늘려가며 towns 길이가 3 이상일 때까지 반복
+          while (radius <= 5000) {
+              try {
+                  console.log(`Fetching towns with radius: ${radius}`);
+                  const result = await storeZoneInRadius(radius, temp_centroid[0], temp_centroid[1]);
+                  towns = result.body.items;
   
-              // 조건을 확인하여 만족할 경우 종료
-              if (maxTime - minTime <= minTime / 3) {
-                  console.log('points: ', points);
-                  console.log('centroid: ', centroid);
-                  console.log('pairVector: ', pairVector);
-                  console.log('timeVector: ', timeVector);
+                  if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
+                      setResultTown(towns);
+                      break;
+                  }
+              } catch (error) {
+                  console.error("Error fetching town:", error);
+              } 
 
-                  const result = await storeZoneInRadius(1000, centroid[1], centroid[0]);
-                  setResultTown(result.body.items)
-                  console.log('추천 지역: ', result);
-                  break;
-              }
-  
-              const nextPosition = calculateNextPosition(centroid, convexHull, timeVector);
-              setCentroid(nextPosition);
-              setPairVector(pairCoordinatesWithTarget(convexHull, nextPosition));
-  
-              // fetchRoutes 호출하여 timeVector 최신 상태로 갱신
-              timeVector = await fetchRoutes();
-              console.log("Updated centroid:", nextPosition);
+              radius += 500; // 반경을 점진적으로 증가
           }
+          setLoading(false);
+          return towns;
+      };
   
-          const coords = new kakao.maps.LatLng(centroid[1], centroid[0]);
-          searchDetailAddrFromCoords(coords, (result, status) => {
-              if (status === kakao.maps.services.Status.OK) {
-                  setCentroidAddress(result[0].address.address_name);
-              }
-          });
+      if (centroid[0] !== 0 || centroid[1] !== 0) {
+        let temp_centroid = centroid;
+        let temp_timeVector = [];
+        let optimalCentroid = temp_centroid;
+        let minTimeDifference = Infinity;
+
+        setLoading(true);
+        for (let count = 0; count < 5; count++) {
+            console.log(count);
+            temp_timeVector = await fetchRoutes(temp_centroid);
+
+            if (!temp_timeVector || temp_timeVector.length === 0) {
+                console.log('no timeVector break');
+                break;
+            }
+
+            const minTime = Math.min(...temp_timeVector);
+            const maxTime = Math.max(...temp_timeVector);
+            const timeDifference = maxTime - minTime;
+
+            console.log(temp_timeVector);
+            if (timeDifference < minTimeDifference) {
+                minTimeDifference = timeDifference;
+                optimalCentroid = temp_centroid;
+            }
+
+            if (timeDifference <= minTime / 3) {
+                console.log("find good town break");
+                break;
+            }
+
+            const nextPosition = calculateNextPosition(temp_centroid, convexHull, temp_timeVector);
+
+            const epsilon = 0.0001;
+            if (Math.abs(nextPosition[0] - temp_centroid[0]) < epsilon && Math.abs(nextPosition[1] - temp_centroid[1]) < epsilon) {
+                console.log(count, 'not updated');
+                break;
+            }
+
+            temp_centroid = nextPosition;
+            setCentroid(nextPosition);
+        }
+
+        // 루프 완료 후 최적의 centroid로 fetchTown 호출
+        await fetchTown(optimalCentroid);
+        setCentroid(optimalCentroid);
+
+        const coords = new kakao.maps.LatLng(optimalCentroid[1], optimalCentroid[0]);
+        searchDetailAddrFromCoords(coords, (result, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+                setCentroidAddress(result[0].address.address_name);
+            }
+        });
       }
-  };
+    }
 
     // 상세주소 
     const searchDetailAddrFromCoords = (coords, callback) => {
@@ -279,32 +345,39 @@ export default function ConvexHullCalculator({departurePoints}) {
     // }, [centroid]);
 
     return (
-        <div>
-        {/* <h2>Convex Hull Calculator</h2> */}
-        <button onClick={calculateConvexHull}>지역 추천 받기</button>
-        {/* <div>
-            <h3>Points:</h3>
-            {points.map((point, index) => (
-            <div key={index}>
-                ({point[0]}, {point[1]})
+        <div style={{width:'100%'}}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
+              <h3>추천지역</h3>
+              {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
             </div>
-            ))}
-        </div> */}
-        <div>
-            {/* <h3>Convex Hull:</h3> */}
-            {/* {convexHull.map((point, index) => (
-            <div key={index}>
-                ({point[0]}, {point[1]})
-            </div>
-            ))} */}
-            {/* {centroid[0] !== 0 || centroid[1] !== 0 ? <div>{centroid[0]}, {centroid[1]}</div> : null} */}
-            {centroidAddress}
-            {resultTowns.map((town, index) => (
-              <div key={index}>
+            <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
+          </div>
+          
+          
+          {/* <Container>
+              <Box>추천지역1</Box>
+              <Box>추천지역2</Box>
+              <Box>추천지역3</Box>
+            {resultTowns.slice(0, 3).map((town, index) => (
+              <Box key={index}>
                 {town.mainTrarNm} 
-              </div>
+              </Box>
             ))}
-        </div>
+          </Container> */}
+          <Container>
+            {resultTowns && resultTowns.length > 0 ? (
+              resultTowns.slice(0, 3).map((town, index) => (
+                <Box key={index}>
+                  {town.mainTrarNm}
+                </Box>
+              ))
+            ) : loading ? (
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+                <p>추천 지역을 탐색중입니다</p>
+              </Box>
+            ) : null}
+          </Container>
         </div>
     );
 };
