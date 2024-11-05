@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
         users: getUsersInRoom(user.room),
       })
 
-      console.log(messages)
+      //console.log(messages)
 
       socket.join(user.room)
       callback(); // 콜백 호출
