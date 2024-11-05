@@ -97,26 +97,6 @@ const Container = styled.div`
     width: 100%;
 `;
 
-const Box = styled.div`
-    width: 100%; /* 너비 조정 */
-    height: 8rem; /* 높이 조정 */
-    background-color: white; /* 배경색을 흰색으로 설정 */
-    border: 1px solid #ccc; /* 경계선 추가 */
-    border-radius: 10px; /* 둥근 모서리 */
-    margin-bottom: 10px; /* 여백 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    cursor: pointer;
-    transition: transform 0.2s; /* 애니메이션 효과 */
-    
-    &:hover {
-        transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
-    }
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
 
 
 export default function UpdateTown() {
