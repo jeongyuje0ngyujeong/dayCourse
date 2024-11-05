@@ -689,6 +689,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         console.log("테스트문구1124")
     });
 
+    await Promise.all(locationsPromises);
     console.log("기존문구 시작");
 
     const sql_category = `
@@ -751,7 +752,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         phone: "01000000000" //필드없음
     }));
 
-    //console.log(renamedUsers);
+    console.log(renamedUsers);
     return res.status(200).json({ msg: 'success', place: renamedUsers });
 });
 
