@@ -612,7 +612,7 @@ function translateKeyword(Keyword) {
 
         // 카페 관련
         case '로스팅': return 'coffee';
-        case '디저트': return 'desert';
+        case '디저트': return 'dessert';
         case '감성카페': return 'mood';
         case '카공': return 'study';
         case '베이커리': return 'bakery';
@@ -636,7 +636,7 @@ function translateKeyword(Keyword) {
 function translateCategory(Category) {
     switch (Category) {
         // 음식 관련
-        case '랜덤': return 'Random';
+        case '랜덤': return 'random';
         case '음식점': return 'restaurant';
         case '카페': return 'cafe';
         case '문화생활': return 'activities';
@@ -661,45 +661,45 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     //일단은 2번 거칠거임. 1.모든 플랜의 장소 조회 > 2.일치하는 Location 찾기.
 
     const sql_plan = `
-        SELECT Plan.planId
-        FROM groupMembers
-        JOIN Plan ON groupMembers.groupId = Plan.groupId
-        WHERE groupMembers.userId = ?
-        ORDER BY Plan.startDate DESC
-    `;
+    SELECT Plan.planId
+    FROM groupMembers
+    JOIN Plan ON groupMembers.groupId = Plan.groupId
+    WHERE groupMembers.userId = ?
+    ORDER BY Plan.startDate DESC
+`;
 
     const [plans] = await db.promise().query(sql_plan, [userId]);
     const planIds = plans.map(plan => plan.planId);
 
     const sql_plan_location = `
-        SELECT place, place_name
-        FROM Plan_Location 
-        WHERE planId IN (?);
-    `
+    SELECT place, place_name
+    FROM Plan_Location 
+    WHERE planId IN (?);
+`
     const [plan_locations] = await db.promise().query(sql_plan_location, [planIds]);
 
     const locationsPromises = plan_locations.map(async (planLocation) => {
         try {
             const sql_locations_c = `
-                SELECT Locations.*
-                FROM Locations
-                WHERE LocationName = ? AND addressFull = ? AND category = ?;
-                LIMIT 1;
-            `;
-            
+            SELECT Locations.*
+            FROM Locations
+            WHERE LocationName = ? AND addressFull = ? AND category = ?
+            LIMIT 1;
+        `;
+
             const sql_locations_k = `
-                SELECT Locations.*
-                FROM Locations
-                WHERE LocationName = ? AND addressFull = ? AND keyword = ?
-                LIMIT 1;
-            `;
+            SELECT Locations.*
+            FROM Locations
+            WHERE LocationName = ? AND addressFull = ? AND keyword = ?
+            LIMIT 1;
+        `;
 
             const sql_locations_a = `
-                SELECT Locations.*
-                FROM Locations
-                WHERE LocationName = ? AND addressFull = ?
-                LIMIT 1;
-            `;
+            SELECT Locations.*
+            FROM Locations
+            WHERE LocationName = ? AND addressFull = ?
+            LIMIT 1;
+        `;
 
             let locations = []
 
@@ -712,7 +712,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
                     sql = sql_locations_a;
                     Cate = ""
                 }
-                const [result] = await db.promise().query(sql, [Cate]);
+                const [result] = await db.promise().query(sql, [planLocation.place_name, planLocation.place, Cate]);
                 locations = result;
             }
 
@@ -724,44 +724,76 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         }
     });
 
-    const locations = await Promise.all(locationsPromises)
-    .then((results) => {
-        // 결과 배열에서 undefined 값을 제거
-        const filteredResults = results.filter(location => location !== undefined);
-        return filteredResults
-    })
-    .catch(error => {
-        console.error("Error in processing locations:", error);
-    });
+    let locations = await Promise.all(locationsPromises)
+        .then((results) => {
+            // 결과 배열에서 undefined 값을 제거
+            const filteredResults = results.filter(location => location !== undefined);
+            return filteredResults
+        })
+        .catch(error => {
+            console.error("Error in processing locations:", error);
+        });
+
+    locations = locations.flat();
 
     if (locations.length > 0) {
         console.log(locations)
-        return res.status(200).json({ msg: 'success' });
+
+        let text = ""
+
+        if (key !== "random") {
+            text = "k"
+        } else {
+            text = "c"
+            if (Cate === "random") {
+                text = "a"
+            }
+        }
+
+        const response = await axios.post('http://13.124.135.96:5000/SpotSuggest', { locations: locations, text: text }, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        console.log("응답 : ", response.data)
+        const renamedUsers = response.data.map(row => ({
+            id: row.LocationID,
+            place_name: row.LocationName,
+            address_name: row.addressFull,
+            x: row.longitude,
+            y: row.latitude,
+            road_address_name: "12345", // 임시값
+            phone: "01000000000" //필드없음
+        }));
+
+        return res.status(200).json({ msg: 'success', place: renamedUsers });
     } else {
 
-        key = translateKeyword(enKeyword);
-        Cate = translateCategory(enCategory)
+        key = 'random'
+        Cate = 'cafe'
 
         console.log("기존문구 시작");
         const sql_category = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        WHERE category = ?
-        LIMIT 10;
-    `;
+    SELECT addressFull, LocationName, LocationID, latitude, longitude
+    FROM Locations
+    WHERE category = ?
+    LIMIT 10;
+`;
 
         const sql_keyword = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        WHERE keyword = ?
-        LIMIT 10;
-    `;
+    SELECT addressFull, LocationName, LocationID, latitude, longitude
+    FROM Locations
+    WHERE keyword = ?
+    LIMIT 10;
+`;
 
         const sql_all = `
-        SELECT addressFull, LocationName, LocationID, latitude, longitude
-        FROM Locations
-        LIMIT 10;
-    `;
+    SELECT addressFull, LocationName, LocationID, latitude, longitude
+    FROM Locations
+    LIMIT 10;
+`;
 
         let rows = [];
 
