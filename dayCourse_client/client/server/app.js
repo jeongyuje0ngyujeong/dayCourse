@@ -7,7 +7,7 @@ const router = require('./router')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users')
 const db = require('./db'); // db.js 파일 경로 확인
 
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT 
 
 const app = express();
 const server = http.createServer(app)

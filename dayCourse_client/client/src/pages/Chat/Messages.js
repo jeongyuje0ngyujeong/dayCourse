@@ -28,8 +28,10 @@ export default function Messages({ messages, name }) {
 
     return (
         <ChatContent>
-            {messages.length>0 && messages.map((message, i) => (
-                <div key={i}><Message user={message.user} text={message.text} name={name}/></div>
+            {messages.length>0 && messages.map((message, index) => (
+                <div key={index}>
+                    <Message user={message.user} text={message.text} name={name}/>
+                </div>
             ))}
         </ChatContent>
     );

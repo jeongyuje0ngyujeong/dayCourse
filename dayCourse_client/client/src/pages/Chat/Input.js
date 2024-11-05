@@ -16,6 +16,7 @@ const ChatInput = styled.input`
     border-radius: 4px;
 `;
 
+
 export default function Input({ setMessage, sendMessage, message }) {
     return(
         <ChatInputBar>
@@ -31,5 +32,3 @@ export default function Input({ setMessage, sendMessage, message }) {
         </ChatInputBar>
     )
 }
-
-        
