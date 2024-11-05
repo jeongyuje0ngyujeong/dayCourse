@@ -62,11 +62,7 @@ const Album = ({ userId }) => {
       case 'posts':
         return <RecentPlan plans={filteredPlans} />;
       case 'moments':
-        return (<>
-          <h2>모먼트</h2>
-          <Moment />
-        </>);
-
+        return <Moment />;
       // case 'videos':
       //   return <div>동영상</div>;
       default:
@@ -74,9 +70,10 @@ const Album = ({ userId }) => {
     }
   };
 
+
   return (
     <Container>
-      {/* <PageTitle>앨범</PageTitle> */}
+      <PageTitle>앨범</PageTitle>
 
       {/* 탭 버튼 */}
       <TabContainer>
