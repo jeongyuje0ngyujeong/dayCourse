@@ -677,28 +677,28 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     `
     console.log("쿼리2");
     const [plan_locations] = await db.promise().query(sql_plan_location, [planIds]);
-    console.log(plan_locations);
     
     console.log("쿼리3");
-    // const locationsPromises = plan_locations.map(async (planLocation) => {
-    //     console.log("??");
-    //     try {
-    //         const sql_locations = `
-    //             SELECT Locations.*
-    //             FROM Locations
-    //             WHERE LocationName = ? AND addressFull = ?;
-    //         `;
+    const locationsPromises = plan_locations.map(async (planLocation) => {
+        console.log("??");
+        console.log(planLocation);
+        try {
+            const sql_locations = `
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ?;
+            `;
     
-    //         const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
-    //         console.log(locations); 
-    //         console.log("테스트문구1124");
-    //     } catch (error) {
-    //         console.error("Error fetching locations:", error);
-    //     }
-    // });
+            const [locations] = await db.promise().query(sql_locations, [planLocation.place_name, planLocation.place]);
+            console.log(locations); 
+            console.log("테스트문구1124");
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    });
 
-    // await Promise.all(locationsPromises);
-    // console.log("기존문구 시작");
+    await Promise.all(locationsPromises);
+    console.log("기존문구 시작");
 
     // const sql_category = `
     //     SELECT addressFull, LocationName, LocationID, latitude, longitude
