@@ -668,6 +668,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     `;
 
     console.log("쿼리1");
+    console.log(plans);
     const [plans] = await db.promise().query(sql_plan, [userId]);
 
     const sql_plan_location =`
