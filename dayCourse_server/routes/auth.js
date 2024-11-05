@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
 
     // WHERE에서 ㅑ
     const sql = `
-        SELECT User.id, User.pw, User.userId
+        SELECT User.id, User.pw, User.userId, User.userName
         FROM User
         WHERE User.id = ?
         `;
@@ -116,7 +116,7 @@ router.post('/login', async (req, res) => {
             if (isMatch) {
                 const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, { expiresIn: '1h' });
                 // console.log("로그인 시 주어진 token: " + token);
-                return res.json({ result: 'success', access_token: token, id: user.userId });
+                return res.json({ result: 'success', access_token: token, id: user.userId, userName: user.userName });
             } else {
                 return res.json({ result: 'failure', message: '비밀번호가 틀렸습니다. 다시 입력해 주세요' });
             }
