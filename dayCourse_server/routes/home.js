@@ -740,6 +740,10 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         console.log(locations)
         return res.status(200).json({ msg: 'success' });
     } else {
+
+        key = translateKeyword(enKeyword);
+        Cate = translateCategory(enCategory)
+
         console.log("기존문구 시작");
         const sql_category = `
         SELECT addressFull, LocationName, LocationID, latitude, longitude
