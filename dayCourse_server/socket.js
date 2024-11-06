@@ -63,7 +63,9 @@ io.on('connection', (socket) => {
       });
 
       socket.emit('message', messages);
-
+      
+      socket.join(user.room)
+      
       io.to(user.room).emit('roomData', {
         room: user.room,
         users: getUsersInRoom(user.room),
@@ -71,7 +73,6 @@ io.on('connection', (socket) => {
 
       //console.log(messages)
 
-      socket.join(user.room)
       callback(); // 콜백 호출
     });
 
