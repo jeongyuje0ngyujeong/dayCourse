@@ -8,7 +8,6 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
-import SocketContext from '../../SocketContext';
 
 // Styled Components
 const PlaceBox = styled.div`
@@ -221,8 +220,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
-            if (socket) {
-                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
         } catch (error) {
@@ -234,8 +231,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             const updatedPlaces = await fetchExistPlace();
-            if (socket) {
-                socket.emit('update-places', { room: planId, places: updatedPlaces });
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -270,14 +265,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
             ));
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
-            if (socket) {
-                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
-
 
 
     useEffect(() => {
@@ -345,7 +337,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
     useEffect(() => {
         if (!socket) return;
-        if (!socket) return;
 
         const throttledMouseMove = throttle((e) => {
             const x = e.clientX;
@@ -359,7 +350,6 @@ const LandingPage = ({ userId, planId, place, context }) => {
             window.removeEventListener('mousemove', throttledMouseMove);
             throttledMouseMove.cancel();
         }
-    }, [socket, planId]);
     }, [socket, planId]);
 
     useEffect(() => {
