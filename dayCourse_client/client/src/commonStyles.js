@@ -6,14 +6,14 @@ export const PageTitle = styled.h1 `
 
 const FooterText = styled.div `
   display: block;
-  margin: 2rem auto;
-  text-align: center;
+  margin: 0.5rem auto;
   color: #818181;
+  ${'' /* border-top: 1px solid; */}
 `
 export function Footer(){
     return (
     <FooterText>
-      This is a footer.
+      2024 HeaJo All rights reserved.
     </FooterText>
     )
 }

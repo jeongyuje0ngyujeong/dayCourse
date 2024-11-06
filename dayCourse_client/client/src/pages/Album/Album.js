@@ -48,7 +48,10 @@ const Album = ({userId}) => {
         return <RecentPlan plans={filteredPlans} />;
 
       case 'moments':
-        return <Moment />;
+        return (<>
+          <h2>모먼트</h2>
+          <Moment />
+        </>);
 
       // case 'videos':
       //   return <div>동영상</div>;
@@ -59,8 +62,8 @@ const Album = ({userId}) => {
   };
   
   return (
-    <div>
-    <PageTitle>Album</PageTitle>
+    <>
+      <PageTitle>Album</PageTitle>
       <div>
         <button onClick={() => setActiveTab('posts')}>포스팅</button>
         <button onClick={() => setActiveTab('moments')}>모먼트</button>
@@ -68,7 +71,7 @@ const Album = ({userId}) => {
       </div>
       <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
       {renderContent()}
-    </div>
+    </>
   )
 
 }

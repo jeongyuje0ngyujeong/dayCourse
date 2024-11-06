@@ -4,9 +4,11 @@ import styled from 'styled-components';
 import { getMoment } from './AlbumApi';
 
 const Container = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    padding: 20px;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(5, 1fr); 
+    place-items: center;
+    ${'' /* padding: 20px; */}
 `;
 
 const Box = styled.div`
@@ -19,7 +21,7 @@ const Box = styled.div`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
     cursor: pointer;
     transition: transform 0.2s; /* 애니메이션 효과 */
-
+    overflow: hidden;
     &:hover {
         transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
     }
@@ -104,11 +106,13 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = () => {
+const Moment = ({maxItems}) => {
     const [moments, setMoments] = useState([]); // 모먼트 리스트 저장
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalImages, setModalImages] = useState([]);
+
+    console.log(moments);
 
     // 컴포넌트가 마운트될 때 모먼트 데이터 가져오기
     useEffect(() => {
@@ -133,12 +137,28 @@ const Moment = () => {
     };
 
     return (
-        <div>
-            <h2>모먼트</h2>
+        <>
             <Container>
-                {Object.entries(moments).map(([key, images]) => (
+                {Object.entries(moments)
+                    .slice(0, maxItems || Object.entries(moments).length) // maxItems가 없을 경우 전체 항목 렌더링
+                    .map(([key, images]) => (
                     <Box key={key} onClick={() => handleBoxClick(key, images)}>
-                        {key.charAt(0).toUpperCase() + key.slice(1)} {/* 첫 글자 대문자 */}
+                        <img
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                opacity: 0.5,
+                                filter: 'blur(2px)',
+                                borderRadius: '10px'
+                            }}
+                            src={images[0]}
+                            alt="Company Logo"
+                            className="logo"
+                        />
+                        <p style={{ position: 'absolute' }}>
+                            {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </p>
                     </Box>
                 ))}
             </Container>
@@ -149,7 +169,7 @@ const Moment = () => {
                 title={modalTitle}
                 images={modalImages}
             />
-        </div>
+        </>
     );
 };
 

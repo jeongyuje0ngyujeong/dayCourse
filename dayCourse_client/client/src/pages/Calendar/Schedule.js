@@ -20,20 +20,27 @@ export async function action(params) {
 }
 
 const EventContainer = styled.div `
-  border: 2px solid #ccc;
+  display:flex;
+  border: 2px solid #eee;
   border-radius: 1rem;
-  padding: 1rem;
-  ${'' /* margin-bottom: 1rem; */}
-  margin: 1rem 0;
+  padding: 0.2rem 2rem;
+  background: white;
+  ${'' /* background: white; */}
+  height: 8.5rem;
+  min-height: 8.5rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: space-between; 
+  align-items: center;
   ${'' /* background: red; */}
 `
 
 const NoEventContainer = styled.div `
   display: flex;
-  border: 2px solid #ccc;
+  ${'' /* border: 2px solid #ccc; */}
   border-radius: 1rem;
   margin: 1rem 0;
-  min-height: 5rem;
+  ${'' /* min-height: 35rem; */}
+  padding: 1rem;
   justify-content: center; 
   align-items: center;
 `
@@ -43,7 +50,7 @@ const ButtonContainer = styled.div`
   flex-direction: row;
   justify-content: center;
   gap: 1rem;
-  width: 100%;
+  ${'' /* flex:1; */}
 `
 
 export default function Schedule(props) {
@@ -70,16 +77,14 @@ export default function Schedule(props) {
   }
 
   return (
-    <div>
+    <>
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
-          <div>
             <h3>
               {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
             </h3>
 
             {event.groupName && (<p>{event.groupName}</p>)}
-            {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
               <Link to={`/main/PlacePage/${event.planId}`}>
@@ -118,9 +123,8 @@ export default function Schedule(props) {
                 <button type="submit">Delete</button>:null}
               </Form>
             </ButtonContainer>
-          </div>
         </EventContainer>
-      )) : <NoEventContainer><div>일정 없음</div></NoEventContainer>}
-    </div>
+      )) : <NoEventContainer><h3>일정 없음</h3></NoEventContainer>}
+    </>
   );
 }

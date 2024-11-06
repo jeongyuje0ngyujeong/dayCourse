@@ -41,7 +41,7 @@ const PlacePage = () => {
     console.log(loaderData.start_userId, userId);
     return (
         <div>
-            <div style={{display:'flex', justifyContent: 'space-between', width:'70%', alignItems:'center'}}>
+            <div style={{display:'flex', justifyContent: 'space-between', width:'75%', alignItems:'center'}}>
                 <h2>{loaderData.planName}</h2>
                 {String(loaderData.start_userId) === id ?(
                     <Form action={`/main/schedules/create/${planId}`}>

@@ -100,10 +100,12 @@ button:active {
 
 #sidebar {
   width: 17%;
+  height: 100%;
   background-color: #f7f7f7;
   border-right: solid 1px #e3e3e3;
   display: flex;
   flex-direction: column;
+  position: fixed;
 }
 
 #sidebar > * {
@@ -180,10 +182,43 @@ button:active {
   }
 }
 
+.logo {
+  width: 80px;
+  height: auto;
+}
+
+/* Flexbox 컨테이너 설정 */
+.container {
+  display: flex;
+  flex: 1;
+  padding-left: 17%;
+  flex-direction: column;
+  min-height: 100vh; /* 전체 화면 높이 */
+}
+
+/* main이 남은 공간을 차지하도록 */
+main {
+  flex: 1;
+  padding: 1rem;
+  position: relative;
+  /* border-bottom: 1px solid #ccc;  */
+}
+
+/* Footer 스타일 */
+footer {
+  /* border-top: 1px solid #ccc; */
+  /* background-color: #333; */
+  box-shadow: inset 0 1px 0 #ccc;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
 #sidebar nav {
   flex: 1;
   overflow: auto;
   padding-top: 1rem;
+  /* position: fixed; */
 }
 
 #sidebar nav a span {
@@ -208,7 +243,7 @@ i {
 }
 
 #sidebar li {
-  margin: 0.8rem 0;
+  margin: 1rem 0;
 }
 
 #sidebar nav a {
@@ -218,7 +253,7 @@ i {
   overflow: hidden;
 
   white-space: pre;
-  padding: 0.5rem;
+  padding: 1rem;
   border-radius: 8px;
   color: inherit;
   font-size: 20px;
@@ -241,9 +276,10 @@ i {
 
 #detail {
   flex: 1;
-  padding: 1% 10% 0 10%;
+  padding: 6rem 3% 0 3%;
   width: 100%;
-  overflow-y: scroll;
+  /* background-color: #eee; */
+  /* overflow-y: scroll; */
 }
 
 #detail.loading {

@@ -51,32 +51,32 @@ export default function CreateSchedule() {
     <>
     <PageTitle>일정</PageTitle>
     <Form method="post" id="schedule-form">
-      <span>약속 날짜</span>
-      <p>
-        <input
-          placeholder="년"
-          aria-label="년"
-          type="date"
-          name="date"
-          defaultValue={date}
-          style={{width:'15rem'}}
-          required
-        />
-      </p>
-      <span>약속 이름</span>
-      <p>
-      <label>
-        <input
-          type="text"
-          name="planName"
-          style={{width:'15rem'}}
-          placeholder={'약속의 이름을 입력해주세요.'}
-          defaultValue={planName}
-        />
-      </label>
-      </p>
+      <div style={{display:'flex', gap: '3rem'}}>
+        <div style={{display:'flex', flexDirection:'column',  flex:'0'}}>
+          <h4>약속 날짜</h4>
+          <input
+            placeholder="년"
+            aria-label="년"
+            type="date"
+            name="date"
+            defaultValue={date}
+            style={{width:'15rem'}}
+            required
+          />
+          <h4>약속 이름</h4>
+          <input
+            type="text"
+            name="planName"
+            style={{width:'15rem'}}
+            placeholder={'약속의 이름을 입력해주세요.'}
+            defaultValue={planName}
+          />
+        </div>
+        <div style={{flex:'1'}}>
+          <Group group={group}/>
+        </div>
+      </div>
 
-      <Group group={group}/>
 
       <p>
         <button type="submit">Save</button>

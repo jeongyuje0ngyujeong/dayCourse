@@ -24,6 +24,7 @@ export async function getToken() {
 
     } catch (error) {
         console.error('Error fetching the token:', error);
+        
         return null;
     }
 }
