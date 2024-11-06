@@ -467,7 +467,10 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     const { planId, memo, place, locationId } = req.body;
     const userId = req.user.userId;
 
+    
+
     console.log("일정장소추가")
+    console.log(locationId)
 
     const x = parseFloat(place.x);
     const y = parseFloat(place.y);
