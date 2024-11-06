@@ -704,8 +704,12 @@ function getAllLocationsByPlanId(planId) {
             WHERE Locations.LocationID = ?
         `;
 
+        console.log(planId);
+        console.log(locationIds);
+
         const queries = locationIds.map(locationId => {
             return new Promise((resolve, reject) => {
+                console.log(locationId);
                 db.query(findLocationDetails, [locationId], (err, results) => {
                     if (err) return reject(err);
                     if (results.length === 0) return reject(new Error("Location not found for LocationID"));
