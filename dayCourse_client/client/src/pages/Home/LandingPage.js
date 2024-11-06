@@ -8,6 +8,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
+import SocketContext from '../../SocketContext';
 
 // Styled Components
 const SelectedPlacesContainer = styled.div`
@@ -154,8 +155,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
             }
             const updatedPlaces = await fetchExistPlace();
 
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
         } catch (error) {
@@ -167,8 +168,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             const updatedPlaces = await fetchExistPlace();
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("장소 삭제 실패!", error);
@@ -199,8 +200,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     place.version
                 )
             ));
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
@@ -271,7 +272,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     }, [userId, planId]);
 
     useEffect(() => {
-        if (!socketRef.current) return;
+        if (!socket) return;
 
         const throttledMouseMove = throttle((e) => {
             const x = e.clientX;
@@ -285,7 +286,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             window.removeEventListener('mousemove', throttledMouseMove);
             throttledMouseMove.cancel();
         }
-    }, [planId]);
+    }, [socket, planId]);
 
     useEffect(() => {
         if (isPlacesLoaded) {
