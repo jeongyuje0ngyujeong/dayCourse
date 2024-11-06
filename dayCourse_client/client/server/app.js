@@ -7,7 +7,7 @@ const router = require('./router')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users')
 const db = require('./db'); // db.js 파일 경로 확인
 
-const PORT = process.env.PORT || 5001
+const PORT = process.env.PORT 
 
 const app = express();
 const server = http.createServer(app)
@@ -122,6 +122,7 @@ io.on('connection', (socket) => {
 
   socket.on('mouse-move', ({ room, x, y }) => {
     const user = getUser(socket.id);
+    // console.log('USER: ',user);
     if (user) {
       user.cursor = { x, y };
       socket.to(user.room).emit('user-mouse-move', {
@@ -129,7 +130,7 @@ io.on('connection', (socket) => {
         name: user.name,
         cursor: { x, y }
       });
-      console.log(`마우스 이동 이벤트 전송: userId=${user.userId}, x=${x}, y=${y}`);
+      // console.log(`마우스 이동 이벤트 전송: userId=${user.userId}, x=${x}, y=${y}`);
     }
   });
 

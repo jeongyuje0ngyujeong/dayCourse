@@ -1,13 +1,13 @@
 // LandingPage.js
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
 import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace } from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
+import SocketContext from '../../SocketContext';
 
 // Styled Components
 const SelectedPlacesContainer = styled.div`
@@ -82,18 +82,17 @@ const UserCursor = styled.div`
 `;
 
 const LandingPage = ({ userId, planId, place, context }) => {
+    const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
-    const distances = [];
-
-    const [users, setUsers] = useState([]);
+    const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
 
-    const socketRef = useRef(null);
+    const distances = [];
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -136,8 +135,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
             }
             const updatedPlaces = await fetchExistPlace();
 
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
         } catch (error) {
@@ -149,8 +148,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
         try {
             await deletePlace(placeId, userId);
             const updatedPlaces = await fetchExistPlace();
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("장소 삭제 실패!", error);
@@ -181,48 +180,58 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     place.version
                 )
             ));
-            if (socketRef.current) {
-                socketRef.current.emit('update-places', { room: planId, places: updatedPlaces });
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
 
+
     useEffect(() => {
         fetchExistPlace();
     }, [fetchExistPlace]);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
+        if (!socket) return;
 
-        socketRef.current.on('connect', () => {
-            console.log('서버에 연결됨');
-            
-            socketRef.current.emit('join', { userId, name: `User_${userId}`, room: planId },
-                (error) => {
-                    if (error) {
-                        alert(error.error);
-                    } 
-                }
-            );
-        });
+        // 방에 참여
+        joinRoom(planId);
 
-        socketRef.current.on('disconnect', () => {
-            console.log('서버 연결 끊어짐');
-        });
-
-        socketRef.current.on('roomData', ({ room, users }) => {
+        // 소켓 이벤트 리스너 설정
+        socket.on('roomData', ({ room, users }) => {
             console.log('수신한 roomData:', { room, users });
-            setUsers(users);
+            setUniqueUsers(users);
             const colorMapping = {};
             users.forEach(user => {
                 colorMapping[user.userId] = user.color;
             });
             setUserColors(colorMapping);
         });
-        
-        socketRef.current.on('user-mouse-move', ({ userId, name, cursor }) => {
+
+        socket.on('user-joined', (user) => {
+            console.log('새로운 사용자加入:', user);
+            setUniqueUsers(prevUsers => [...prevUsers, user]);
+            setUserColors(prevColors => ({ ...prevColors, [user.userId]: user.color }));
+        });
+
+        socket.on('user-left', ({ userId }) => {
+            console.log('사용자 나감:', userId);
+            setUniqueUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
+            setUserColors(prevColors => {
+                const updatedColors = { ...prevColors };
+                delete updatedColors[userId];
+                return updatedColors;
+            });
+            setUserCursors(prev => {
+                const updated = { ...prev };
+                delete updated[userId];
+                return updated;
+            });
+        });
+
+        socket.on('user-mouse-move', ({ userId, name, cursor }) => {
             console.log('수신한 user-mouse-move:', { userId, name, cursor });
             setUserCursors(prev => ({
                 ...prev,
@@ -230,36 +239,27 @@ const LandingPage = ({ userId, planId, place, context }) => {
             }));
         });
 
-        socketRef.current.on('message', (message) => {
-            console.log('수신한 메세지:', message);
-        });
-
-        socketRef.current.on('places-updated', (updatedPlaces) => {
+        socket.on('places-updated', (updatedPlaces) => {
             setSelectedPlaces(updatedPlaces);
-        }); 
-
-        socketRef.current.on('user-left', ({ userId }) => {
-            setUserCursors(prev => {
-                const updated = {...prev};
-                delete updated[userId];
-                return updated;
-            });
-            setUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
         });
 
         return () => {
-            socketRef.current.disconnect();
+            socket.off('roomData');
+            socket.off('user-joined');
+            socket.off('user-left');
+            socket.off('user-mouse-move');
+            socket.off('places-updated');
         };
-    }, [userId, planId]);
+    }, [socket, planId, joinRoom]);
 
     useEffect(() => {
-        if (!socketRef.current) return;
+        if (!socket) return;
 
         const throttledMouseMove = throttle((e) => {
             const x = e.clientX;
             const y = e.clientY;
-            socketRef.current.emit('mouse-move', { room: planId, x, y });
-        }, 100);
+            socket.emit('mouse-move', { room: planId, x, y });
+        }, 80);
 
         window.addEventListener('mousemove', throttledMouseMove);
 
@@ -267,7 +267,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
             window.removeEventListener('mousemove', throttledMouseMove);
             throttledMouseMove.cancel();
         }
-    }, [planId]);
+    }, [socket, planId]);
 
     useEffect(() => {
         if (isPlacesLoaded) {
@@ -354,17 +354,17 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                 title={cursorData.name}
                             />
                             <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-                        
+                                {cursorData.name}
                             </span>
                         </div>
                     ))}
 
                     {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: "-2%", left: "90%", background: 'rgba(255,255,255,0.8)', padding: '5px', borderRadius: '8px' }}>
+                    <div style={{ position: 'absolute', top: "2%", left: "90%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
                         <h4>접속 사용자</h4>
                         <ul>
-                            {users.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.userId}</li>
+                            {uniqueUsers.map(user => (
+                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
                             ))}
                         </ul>
                     </div>

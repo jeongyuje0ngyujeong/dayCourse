@@ -1,59 +1,52 @@
+// src/pages/Chat/Message.js
 import React from 'react';
 import styled from 'styled-components';
 
 const ChatMessage = styled.div`
     display: inline-flex;
     align-items: center;
-    height:auto; 
     padding: 0.5rem 0.5rem;
     background: #ccc;
     color: black;
     border-radius: 5px;
-    width: fit-content;
+    max-width: 70%;
     word-wrap: break-word;
-    position: relative;
-    margin-left: 0;
 `;
 
 const ChatMessage2 = styled.div`
     display: inline-flex;
     align-items: center;
-    height:auto; 
     padding: 0.5rem 0.5rem;
     background: #90B54C;
+    color: white;
     border-radius: 5px;
-    width: fit-content;
+    max-width: 70%;
     word-wrap: break-word;
-    position: relative;
-    margin-left: 0;
 `;
 
+const MessageContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+`;
 
-function Message({  user, text, name  }) {
-  // console.log(text);
-  let isSentByCurrentUser = false;  
-  
-  const trimmedName = name.trim().toLowerCase();
+function Message({ user, text, name }) {
+  const isSentByCurrentUser = user.trim().toLowerCase() === name.trim().toLowerCase();
 
-  if(user === trimmedName) {
-    isSentByCurrentUser = true;
-  }
-
-  return isSentByCurrentUser ? (
-    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
-        <p style={{color: 'black'}}>{trimmedName}</p>
-        <ChatMessage>
-            {text}
-        </ChatMessage>
-    </div>
-  ) : (
-    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
-        <p style={{color: 'black'}}>{user}</p>
-        <ChatMessage2>
-            {text}
-        </ChatMessage2>
-    </div>
-  )
+  return (
+      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start' }}>
+          <p style={{ color: 'black' }}>{isSentByCurrentUser? name : user}</p>
+          {isSentByCurrentUser? (
+              <ChatMessage2>
+                  {text}
+              </ChatMessage2>
+          ) : (
+              <ChatMessage>
+                  {text}
+              </ChatMessage>
+          )}
+      </MessageContainer>
+  );
 }
 
 export default Message;
