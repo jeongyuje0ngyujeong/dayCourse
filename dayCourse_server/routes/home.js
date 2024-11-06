@@ -469,8 +469,6 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     const { planId, memo, place, locationId } = req.body;
     const userId = req.user.userId;
 
-    
-
     console.log("일정장소추가")
     console.log(locationId)
 
@@ -1009,8 +1007,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             id: row.LocationID,
             place_name: row.LocationName,
             address_name: row.addressFull,
-            x: row.longitude,
-            y: row.latitude,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
         }));
@@ -1198,15 +1196,6 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
                     tags.forEach((tag, index) => {
                         uploadParams.Metadata[`tag${index + 1}`] = tag.name;
                     });
-
-                    // 오브젝트 메타데이터 추가
-                    const Objects = response.data.Objects;
-                    Objects.forEach((Object, index) => {
-                        uploadParams.Metadata[`Object${index + 1}`] = Object.name;
-                    });
-
-                    // 캡션 메타데이터 추가
-                    uploadParams.Metadata[`Caption`] = response.data.Caption;
 
                     // S3 메타데이터 업데이트
                     await s3.copyObject({
