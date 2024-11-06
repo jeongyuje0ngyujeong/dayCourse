@@ -1,21 +1,20 @@
-import { PageTitle, Footer } from '../../commonStyles';
-import { Button } from '../../Button';
+// import { Button } from '../../Button';
 import {useState,useEffect } from 'react';
 import styled from 'styled-components';
 import { getSchedules} from "../../schedules";
 import {GroupDatesByWeek} from './CalendarComponent'
 
-const MonthContainer = styled.div `
-  display: flex;
-  flex-direction: row;
-  justify-content: center; 
-  align-items: center; 
-  color: black;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
-`
+// const MonthContainer = styled.div `
+//   display: flex;
+//   flex-direction: row;
+//   justify-content: center; 
+//   align-items: center; 
+//   color: black;
+//   border: 1px solid #ccc;
+//   border-radius: 10px;
+//   margin-bottom: 1rem;
+//   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
+// `
 const CalendarContainer = styled.div `
   display: flex;
   flex-direction: column;
@@ -47,19 +46,19 @@ export default function Calendar({showCalendar, currentDate, setCurrentDate}) {
     const endDay = new Date(lastDayOfMonth);
     endDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
   
-    const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    // const st_month = String(currentDate.getMonth() + 1).padStart(2, '0');
   
-    const handlePrevMonth = () => {
-      setCurrentDate(
-        new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
-      );
-    };
+    // const handlePrevMonth = () => {
+    //   setCurrentDate(
+    //     new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1)
+    //   );
+    // };
     
-    const handleNextMonth = () => {
-      setCurrentDate(
-        new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
-      );
-    };
+    // const handleNextMonth = () => {
+    //   setCurrentDate(
+    //     new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
+    //   );
+    // };
 
 
     useEffect(() => {
