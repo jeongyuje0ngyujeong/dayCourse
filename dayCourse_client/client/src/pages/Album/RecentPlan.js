@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-
-
+import { fetchImage } from './AlbumApi.js';
 
 const Container = styled.div`
     display: flex;
@@ -38,6 +37,28 @@ const RecentPlan = ({plans}) => {
     const navigate = useNavigate();
   //  const [plans, setPlans] = useState([]); // 플랜을 저장할 상태
 
+  // 이미지 목록 가져오기
+  const fetchThumbnails = useCallback(async () => {
+    const newThumbnails = {};
+
+    for (const plan of plans) {
+        try {
+            const images = await fetchImage(plan.planId);
+            if (images && images.length > 0) {
+                newThumbnails[plan.planId] = images[0];
+            }
+        } catch (error) {
+            console.error('error',error);
+        }
+    }
+    setThumbnails(newThumbnails);
+  }, [plans]);
+
+  useEffect(() => {
+    if (plans && plans.length > 0) {
+        fetchThumbnails();
+    }
+  }, [plans, fetchThumbnails])
 
 
     const handleBoxClick = (item) => { // item으로 통일

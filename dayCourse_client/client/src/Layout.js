@@ -1,5 +1,7 @@
 import { Outlet, NavLink, useNavigate} from "react-router-dom";
-import { Button } from './Button';
+//import { Button } from './Button';
+import { Footer } from './commonStyles';
+// import {PageTitle} from './commonStyles'
 // import { Logout } from './pages/Login/auth'
 import localforage from "localforage";
 

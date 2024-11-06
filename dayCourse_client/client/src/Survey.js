@@ -1,5 +1,5 @@
-import {React, useState} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios'; // Axios 임포트
 
@@ -83,6 +83,38 @@ const Survey = () => {
         '쇼핑몰', '전시회'
     ];
 
+    const goMain = useCallback(() => {
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2,'0')}`;
+        navigate(`/main/home/schedules/${formattedDate}`);
+    }, [navigate]);
+
+    useEffect(() => {
+        const checkOk = async () => {
+            const token = sessionStorage.getItem('token'); // 토큰 가져오기
+            try {
+                const response = await axios.get(`${BASE_URL}/home/survey`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                console.log('서버 응답:', response.data); // 서버 응답 로그 확인
+
+                const { dataPresence } = response.data;
+
+                if (dataPresence === false) {
+                    goMain();
+                } else {
+                    setLoading(true);
+                }
+            } catch (error) {
+                console.error('서베이 상태 확인 오류', error);
+                setLoading(false);
+            }
+        };
+        checkOk();
+    }, [goMain]); // goMain을 의존성 배열에 추가
 
     const checkboxChange = (keyword) => {
         if (selectedKeyWords.includes(keyword)) {
@@ -101,6 +133,11 @@ const Survey = () => {
         } catch(error) {
             console.error('서버 전송 에러', error);
         }
+    };
+
+    if (loading) {
+        // 로딩 중일 때 표시할 내용 (예: 스피너)
+        return <SurveyPage><p>로딩 중...</p></SurveyPage>;
     }
 
     
