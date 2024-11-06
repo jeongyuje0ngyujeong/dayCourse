@@ -148,23 +148,51 @@ export const recommendPlace = async (category, keyword=null) => {
 
 
 
-
 // 추천 장소 추가 시 사용
+
 export const addRecommendedPlace = async (userId, planId, place) => {
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
-        const response = await axios.post(`${BASE_URL}/home/plan/addRecommendedPlace`, {
+        const payload = {
             userId,
             planId,
             place_name: place.place_name,
             address_name: place.address_name,
             l_priority: place.l_priority || 1,
-            X: place.X || place.x,
-            Y: place.Y || place.y,
+            x: place.X || place.x , // 실제 좌표값 확인
+            y: place.Y || place.y ,  // 실제 좌표값 확인
+            locationId: place.id || place.locationId,
+        };
 
-        });
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+        };
+
+        console.log('addRecommendedPlace payload:', payload); // 데이터 확인
+
+        const response = await axios.post(`${BASE_URL}/home/plan/addRecommendedPlace`, payload, { headers });
+        console.log('addRecommendedPlace response:', response.data); // 응답 확인
         return response.data;
     } catch (error) {
         console.error('추천 장소 추가 실패: ', error.response ? error.response.data : error.message);
+        throw error;
+    }
+};
+//루트 추천∂
+export const recommendRoutes = async (planId) => {
+    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
+    try {
+        const response = await axios.post(`${BASE_URL}/home/plan/recommend_routes`, {
+            planId
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        return response.data;
+    } catch (error) {
+        console.error("루트 추천 실패:", error);
         throw error;
     }
 };

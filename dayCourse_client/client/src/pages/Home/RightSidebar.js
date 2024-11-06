@@ -1,5 +1,5 @@
 // RightSidebar.js
-import React, { useState, useEffect , useContext} from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
@@ -8,7 +8,7 @@ import KeywordButton from './KeywordButton';
 import Chat from '../Chat/Chat';
 //import SocketContext from '../../SocketContext';
 
-// Styled Components
+// Styled Components (변경 없음)
 const SidebarContainer = styled.div`
     width: 20%;
     padding: 20px;
@@ -65,8 +65,6 @@ const PlaceAddress = styled.span`
 `;
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
-  //  const { messages, users, sendMessage } = useContext(SocketContext);
-
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
@@ -117,11 +115,11 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         setSelectedKeyword('');
     };
 
-    const handlePlaceClick = (place) => {
-        onPlaceClick(place); // 부모 컴포넌트로 장소 정보를 전달
+    const handlePlaceClick = (place, isRecommended = false) => {
+        onPlaceClick(place, isRecommended); // 부모 컴포넌트로 장소 정보와 추천 여부 전달
     };
 
-    const renderPlaceList = (placeList) => {
+    const renderPlaceList = (placeList, isRecommended = false) => {
         console.log('Rendering place list:', placeList); // 디버깅을 위한 로그 추가
 
         if (!Array.isArray(placeList)) {
@@ -132,8 +130,8 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
             <ul id="places-list" style={{ listStyle: "none", padding:0 }}>
                 {placeList.map((place, index) => (
                     <ListItem 
-                        key={index} 
-                        onClick={() => handlePlaceClick(place)} 
+                        key={place.id || index} 
+                        onClick={() => handlePlaceClick(place, isRecommended)} 
                     >
                         <PlaceTitle>{place.place_name}</PlaceTitle>
                         <PlaceAddress>{place.address_name}</PlaceAddress><br />
@@ -182,7 +180,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                                 {recommendPlaces.length === 0 && !error ? (
                                     <p>추천 결과 없음</p>
                                 ) : (
-                                    renderPlaceList(recommendPlaces)
+                                    renderPlaceList(recommendPlaces, true) // 추천 장소에 isRecommended=true 전달
                                 )}
                             </div>
                         ) : (
@@ -190,7 +188,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                                 {places.length === 0 ? (
                                     <p>검색 결과가 없습니다</p>
                                 ) : (
-                                    renderPlaceList(places)
+                                    renderPlaceList(places, false) // 일반 장소에 isRecommended=false 전달
                                 )}
                             </div>
                         )}
