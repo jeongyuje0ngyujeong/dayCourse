@@ -1,5 +1,5 @@
 // RightSidebar.js
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
