@@ -810,6 +810,7 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
     // 나머지 장소들 추가
     allLocations = allLocations.concat(others);
 
+    console.log("재배치 전 모든 로케이션: ", allLocations);
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
         let candidates = allLocations.filter(location => {
@@ -822,11 +823,13 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
                 return false; 
             }
             return true;
+            console.log("재배치 중 로케이션: ", candidates);
         });
 
         // 후보가 없을 경우 조건을 완화하여 모든 장소를 후보로 설정
         if (candidates.length === 0) {
             candidates = allLocations;
+            console.log("후보지 로케이션 완화: ", candidates)
         }
 
         // 무작위로 장소 선택
@@ -835,7 +838,8 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
 
         // 결과에 추가
         result.push(nextLocation);
-
+        console.log("결과값에 추가된 장소들: ", result)
+        
         // 선택된 장소를 전체 목록에서 제거
         allLocations.splice(allLocations.indexOf(nextLocation), 1);
 
