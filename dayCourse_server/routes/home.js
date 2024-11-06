@@ -101,8 +101,8 @@ router.post('/survey', authenticateJWT, async (req, res) => {
     const { interest1, interest2, interest3, interest4, interest5 } = req.body;
 
     const sql = `
-      INSERT INTO User_survey (UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO User_survey (userId, UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const userInterest1 = interest1 || null;
@@ -111,7 +111,9 @@ router.post('/survey', authenticateJWT, async (req, res) => {
     const userInterest4 = interest4 || null;
     const userInterest5 = interest5 || null;
 
-    db.query(sql, [userInterest1, userInterest2, userInterest3, userInterest4, userInterest5], (err, result) => {
+    const values = [userId, userInterest1, userInterest2, userInterest3, userInterest4, userInterest5]
+
+    db.query(sql, values, (err, result) => {
         if (err) {
             console.error('Error fetching data:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -830,9 +832,9 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         res.json({ 
             result: 'success', 
             locationInfo: arrangedLocations.map(location => ({
-                LocationID: location.LocationID,
-                place_name: location.place_name,
-                place: location.place
+                locationId: location.LocationID,
+                placeName: location.place_name,
+                placeAddr: location.place
             })) 
         });
 
