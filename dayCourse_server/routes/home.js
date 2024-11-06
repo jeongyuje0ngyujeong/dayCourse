@@ -693,6 +693,44 @@ function getLocationIdsByPlanId(planId) {
     });
 }
 
+// // planId로 Locations 테이블에 접근하여 장소 관련 정보들 모두 반환하는 함수
+// function getAllLocationsByPlanId(planId) {
+//     console.log("getAllLocationsByPlanId 실행");
+//     return new Promise((resolve, reject) => {
+//         const findLocationDetails = `
+//             SELECT Plan_Location.LocationID, Locations.category, Locations.keyword, Plan_Location.place_name, Plan_Location.place
+//             FROM Plan_Location
+//             LEFT JOIN Locations 
+//             ON Plan_Location.LocationID = Locations.LocationID
+//             WHERE Plan_Location.planId = ?
+//             ORDER BY Plan_Location.l_priority ASC;
+//         `;
+        
+//         db.query(findLocationDetails, [planId], (err, results) => {
+//             if (err) {
+//                 console.error("Error executing query:", err);
+//                 return reject(err);
+//             }
+//             if (results.length === 0) {
+//                 console.warn(`No locations found for planId: ${planId}`);
+//                 return reject(new Error("No locations found for the given planId"));
+//             }
+
+//             // 유효한 위치와 누락된 위치 분리
+//             const validLocations = results.filter(loc => loc.category !== null && loc.keyword !== null && loc.place_name !== null && loc.place !== null);
+//             const missingLocations = results.filter(loc => loc.category === null || loc.keyword === null || loc.place_name === null || loc.place === null).map(loc => loc.LocationID);
+
+//             if (missingLocations.length > 0) {
+//                 console.warn(`Missing Locations for LocationIDs: ${missingLocations.join(", ")}`);
+//                 // 필요에 따라 클라이언트에 누락된 LocationIDs를 포함시킬 수 있습니다.
+//             }
+
+//             resolve({ validLocations, missingLocations });
+//         });
+//     });
+// }
+
+
 // planId로 Locations 테이블에 접근하여 장소 관련 정보들 모두 반환하는 함수
 function getAllLocationsByPlanId(planId) {
     console.log("getAllLocationsByPlanId 실행");
@@ -704,12 +742,12 @@ function getAllLocationsByPlanId(planId) {
             WHERE Locations.LocationID = ?
         `;
 
-        console.log(planId);
-        console.log(locationIds);
+        console.log("planId", planId);
+        console.log("locationIds", locationIds);
 
         const queries = locationIds.map(locationId => {
             return new Promise((resolve, reject) => {
-                console.log(locationId);
+                console.log("locationId", locationId);
                 db.query(findLocationDetails, [locationId], (err, results) => {
                     if (err) return reject(err);
                     if (results.length === 0) return reject(new Error("Location not found for LocationID"));
