@@ -248,7 +248,7 @@ async function analyzeImage(userId){
                 },
             });
 
-            console.log(response.data);
+            //console.log(response.data);
 
             let resultData = []
 
