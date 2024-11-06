@@ -663,7 +663,184 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
     }
 });
 
+// planId로 Locations 테이블에 접근하여 LocationID 리스트 반환
+function getLocationIdsByPlanId(planId) {
+    console.log("getLocationIdsByPlanId 실행");
+    return new Promise((resolve, reject) => {
+        const findLocationId = `
+            SELECT Plan_Location.LocationID
+            FROM Plan_Location
+            WHERE Plan_Location.planId = ?
+            ORDER BY Plan_Location.l_priority ASC;
+        `;
 
+        db.query(findLocationId, [planId], (err, results) => {
+            if (err) return reject(err);
+            if (results.length === 0) return reject(new Error("No locations found for the given planId"));
+
+            // LocationID 목록만 추출
+            const locationIds = results.map(result => result.LocationID);
+            resolve(locationIds);
+        });
+    });
+}
+
+// planId로 Locations 테이블에 접근하여 장소 관련 정보들 모두 반환하는 함수
+function getAllLocationsByPlanId(planId) {
+    console.log("getAllLocationsByPlanId 실행");
+    return getLocationIdsByPlanId(planId).then(locationIds => {
+        const findLocationDetails = `
+            SELECT Locations.LocationID, Locations.category, Locations.keyword, Plan_Location.place_name, Plan_Location.place
+            FROM Locations
+            JOIN Plan_Location ON Locations.LocationID = Plan_Location.LocationID
+            WHERE Locations.LocationID = ?
+        `;
+
+        const queries = locationIds.map(locationId => {
+            return new Promise((resolve, reject) => {
+                db.query(findLocationDetails, [locationId], (err, results) => {
+                    if (err) return reject(err);
+                    if (results.length === 0) return reject(new Error("Location not found for LocationID"));
+                    resolve(results[0]);
+                });
+            });
+        });
+
+        return Promise.all(queries);
+    });
+}
+
+// 장소를 카테고리 별로 그룹화
+function classifyLocations(locations) {
+    console.log("classifyLocations 실행");
+    const restaurants = [];
+    const cafesByKeyword = {};
+    const others = [];
+
+    locations.forEach(location => {
+        if (location.category === 'restaurant') {
+            restaurants.push(location);
+        } else if (location.category === 'cafe') {
+            if (!cafesByKeyword[location.keyword]) {
+                cafesByKeyword[location.keyword] = [];
+            }
+            cafesByKeyword[location.keyword].push(location);
+        } else {
+            others.push(location);
+        }
+    });
+
+    return { restaurants, cafesByKeyword, others };
+}
+
+// 음식점과 같은 키워드의 카페들이 연속으로 루트 추천되지 않도록 재배치
+function arrangeLocations(restaurants, cafesByKeyword, others) {
+    console.log("arrangeLocations 실행");
+    const result = [];
+    let previousCategory = null;
+    let previousKeyword = null;
+
+    // 모든 장소를 합친 배열 생성
+    let allLocations = [];
+
+    // 음식점이 2곳 이상인 경우
+    if (restaurants.length >= 2) {
+        allLocations = allLocations.concat(restaurants);
+    }
+
+    // 카페 키워드별로 2곳 이상인 그룹을 찾음
+    const cafeGroups = [];
+    for (const keyword in cafesByKeyword) {
+        if (cafesByKeyword[keyword].length >= 2) {
+            cafeGroups.push(cafesByKeyword[keyword]);
+        } else {
+            // 키워드가 2개 미만인 카페는 기타로 분류
+            others = others.concat(cafesByKeyword[keyword]);
+        }
+    }
+
+    // 나머지 장소들 추가
+    allLocations = allLocations.concat(others);
+
+    // 장소 순서를 조건에 맞게 재배치
+    while (allLocations.length > 0) {
+        let candidates = allLocations.filter(location => {
+            // 이전 장소가 음식점인 경우, 음식점 제외
+            if (location.category === previousCategory && location.category === 'restaurant') {
+                return false; 
+            }
+            // 이전 장소가 동일 키워드의 카페인 경우 제외
+            if (location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
+                return false; 
+            }
+            return true;
+        });
+
+        // 후보가 없을 경우 조건을 완화하여 모든 장소를 후보로 설정
+        if (candidates.length === 0) {
+            candidates = allLocations;
+        }
+
+        // 무작위로 장소 선택
+        const randomIndex = Math.floor(Math.random() * candidates.length);
+        const nextLocation = candidates[randomIndex];
+
+        // 결과에 추가
+        result.push(nextLocation);
+
+        // 선택된 장소를 전체 목록에서 제거
+        allLocations.splice(allLocations.indexOf(nextLocation), 1);
+
+        // 이전 카테고리와 키워드 업데이트
+        previousCategory = nextLocation.category;
+        previousKeyword = nextLocation.keyword;
+    }
+
+    return result;
+}
+
+router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
+    console.log("루트 추천");
+    const { planId } = req.body;
+
+    if (!planId) {
+        return res.status(400).json({ error: 'planId is required' });
+    }
+
+    try {
+        // Plan_Location에서 planId를 기준으로 사용자가 선택한 순서대로 주소 값 받아옴
+        const locations = await getAllLocationsByPlanId(planId);
+
+        if (locations.length === 0) {
+            return res.json({ result: 'failure', message: 'Invalid planId' });
+        }
+
+        // 장소 분류
+        const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
+
+        // 장소 재배치
+        const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others);
+
+        // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
+        const startLocation = arrangedLocations[0];
+        const endLocation = arrangedLocations[arrangedLocations.length - 1];
+        const waypoints = arrangedLocations.slice(1, -1);
+
+        // 최종 결과 반환
+        res.json({ 
+            result: 'success', 
+            locationInfo: arrangedLocations.map(location => ({
+                LocationID: location.LocationID,
+                place_name: location.place_name,
+                place: location.place
+            })) 
+        });
+
+   } catch (error) {
+       console.error('오류:', error);
+       res.status(500).send('API 요청에 실패했습니다.');
+   }
+});
 
 function translateKeyword(Keyword) {
     switch (Keyword) {
