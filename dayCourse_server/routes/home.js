@@ -1034,6 +1034,9 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     locations = locations.flat();
 
+    console.log(locations)
+    console.log("확인", key, Cate)
+
     if (locations.length > 0) {
         let text = ""
 
@@ -1053,7 +1056,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             },
         });
 
-        //console.log("응답 : ", response.data)
+        console.log("응답 : ", response.data)
         const renamedUsers = response.data.map(row => ({
             id: row.LocationID,
             place_name: row.LocationName,
