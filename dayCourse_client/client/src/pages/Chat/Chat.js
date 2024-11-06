@@ -25,8 +25,8 @@ const ChatName = styled.div`
 
 export default function Chat({ userId, planInfo }) {
     const { messages, users, sendMessage } = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
-    const [name, setName] = useState(userId);
-    const [room, setRoom] = useState(planInfo.planId);
+    // const [name, setName] = useState(userId);
+    // const [room, setRoom] = useState(planInfo.planId);
     const [message, setMessage] = useState('');
     const [userNames, setUserNames] = useState('');
 
