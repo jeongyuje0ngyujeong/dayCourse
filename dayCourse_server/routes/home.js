@@ -1109,19 +1109,6 @@ router.get('/plan/:planId/images', async (req, res) => {
         res.status(500).send('Error retrieving images');
     }
 });
-        // 결과에 추가
-        result.push(nextLocation);
-
-        // 선택된 장소를 전체 목록에서 제거
-        allLocations.splice(allLocations.indexOf(nextLocation), 1);
-
-        // 이전 카테고리와 키워드 업데이트
-        previousCategory = nextLocation.category;
-        previousKeyword = nextLocation.keyword;
-    }
-
-    return result;
-}
 
 router.post('/plan/upload/:planId/images', upload.array('image'), async (req, res) => {
     console.log("사진 등록");
