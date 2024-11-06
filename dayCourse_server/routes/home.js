@@ -1024,6 +1024,9 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             });
         });
 
+        console.log("모먼트")
+        console.log(formattedResults)
+
         return res.status(200).json(formattedResults);
 
     });
