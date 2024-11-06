@@ -70,31 +70,31 @@ router.get('/', authenticateJWT, async (req, res) => {
     });
 });
 
-// router.get('/survey', authenticateJWT, async (req, res) => {
-//     console.log("서베이 작성 여부 확인");
+router.get('/survey', authenticateJWT, async (req, res) => {
+    console.log("서베이 작성 여부 확인");
 
-//     const userId = req.user.userId;
-//     const sql = `
-//       SELECT EXISTS (
-//         SELECT 1 
-//         FROM User_survey 
-//         WHERE userId = ?
-//       ) AS isExists;
-//     `;
+    const userId = req.user.userId;
+    const sql = `
+      SELECT EXISTS (
+        SELECT 1 
+        FROM User_survey 
+        WHERE userId = ?
+      ) AS isExists;
+    `;
 
-//     db.query(sql, [userId], (err, result) => {
-//         if (err) {
-//             console.error('Error fetching data:', err);
-//             return res.status(500).json({ error: 'Database error' });
-//         }
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
 
-//         if (result === 1) {
-//             return res.status(201).json({ dataPresence: true});
-//         }
-//         return res.status(201).json({ dataPresence: false});
-//     });
+        if (result === 1) {
+            return res.status(201).json({ dataPresence: true});
+        }
+        return res.status(201).json({ dataPresence: false});
+    });
 
-// });
+});
 
 router.post('/survey', authenticateJWT, async (req, res) => {
     console.log("서베이 저장");
@@ -104,7 +104,7 @@ router.post('/survey', authenticateJWT, async (req, res) => {
 
     const sql = `
       INSERT INTO User_survey (UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
-      VALUES (?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const userInterest1 = interest1 || null;
@@ -113,7 +113,9 @@ router.post('/survey', authenticateJWT, async (req, res) => {
     const userInterest4 = interest4 || null;
     const userInterest5 = interest5 || null;
 
-    db.query(sql, [userInterest1, userInterest2, userInterest3, userInterest4, userInterest5], (err, result) => {
+    const values = [userId, userInterest1, userInterest2, userInterest3, userInterest4, userInterest5]
+
+    db.query(sql, values, (err, result) => {
         if (err) {
             console.error('Error fetching data:', err);
             return res.status(500).json({ error: 'Database error' });
