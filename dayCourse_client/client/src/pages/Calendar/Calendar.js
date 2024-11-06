@@ -29,10 +29,10 @@ const CalendarContainer = styled.div `
   ${'' /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25); */}
 `
 
-export default function Calendar({showCalendar, currentDate, setCurrentDate}) {
+export default function Calendar({showCalendar, currentDate, setCurrentDate, selectedDate, setSelectedDate}) {
     // const [currentDate, setCurrentDate] = useState(current);
     const [groupedSchedules, setGroupedSchedules] = useState([]);
-    const [selectedDate, setSelectedDate] = useState([]);
+    // const [selectedDate, setSelectedDate] = useState([]);
     
   
     const year = currentDate.getFullYear();

@@ -92,13 +92,14 @@ const ModalImage = styled.img`
 `;
 
 const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
+    console.log(images);
     return (
         <StyledModal isOpen={isOpen} onRequestClose={onRequestClose} ariaHideApp={false}>
             <div>
                 <h3>{title}</h3>
                 <ImageGrid>
                     {images.map((url, idx) => (
-                        <ModalImage key={idx} src={url} alt={`${title} 이미지 ${idx + 1}`} />
+                        <ModalImage key={idx} src={url.imgURL} alt={`${title} 이미지 ${idx + 1}`} />
                     ))}
                 </ImageGrid>
             </div>
@@ -144,7 +145,7 @@ const Moment = ({ onMomentCountChange }) => {
 
     return (
         <>
-            <Container>
+            <Container columns={columns}>
                 {Object.entries(moments)
                     .slice(0, maxItems || Object.entries(moments).length) // maxItems가 없을 경우 전체 항목 렌더링
                     .map(([key, images]) => (
@@ -158,7 +159,7 @@ const Moment = ({ onMomentCountChange }) => {
                                 filter: 'blur(2px)',
                                 borderRadius: '10px'
                             }}
-                            src={images[0]}
+                            src={images[0].imgURL}
                             alt="Company Logo"
                             className="logo"
                         />

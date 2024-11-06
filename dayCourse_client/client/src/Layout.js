@@ -1,7 +1,9 @@
 import { Outlet, NavLink, useNavigate} from "react-router-dom";
 import { Button } from './Button';
 import { Footer } from './commonStyles';
+// import {PageTitle} from './commonStyles'
 // import { Logout } from './pages/Login/auth'
+import './index.css';
 
 import UpperBar from './UpperBar';
 
@@ -48,7 +50,7 @@ export default function Layout() {
             </ul>
         </nav>
         <div style={{ display: 'flex', flexDirection: 'column-reverse' }}>
-            <Button style={{height:'3rem'}} onClick={handleFriend}>친구추가</Button>
+            <Button style={{height:'4rem', fontFamily: 'NPSfontBold', fontSize:'18px',textAlign:'left',width:'100%', paddingLeft:'1rem'}} $border='none' onClick={handleFriend}>친구추가</Button>
         </div>
     </div>
     <div className="container">

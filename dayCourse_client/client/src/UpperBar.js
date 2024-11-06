@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { useNavigate} from "react-router-dom";
 import { Button } from './Button';
 import localforage from "localforage";
+import {PageTitle} from './commonStyles';
 
 const UpperContainer = styled.td`
   width: 100%;
@@ -34,7 +35,7 @@ export default function UpperBar(){
     return(
         <UpperContainer>
             {/* <div style={{display:'flex', gap:'1rem'}}> */}
-            <h2>데이코스</h2>    
+            <h2 style={{fontFamily: 'HSSanTokki20-Regular',fontSize:'30px'}}>데이코스</h2>    
             <img src="/logo.png" alt="Company Logo" className="logo" />
             {/* </div>  */}
             <Button style={{width: '5rem'}} onClick={handleLogout} $border='none'>로그아웃</Button>
