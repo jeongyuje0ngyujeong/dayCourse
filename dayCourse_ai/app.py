@@ -195,66 +195,8 @@ def tt():
         return test23(images_data)
     else:
         return jsonify({"error": "No metadata found"}), 400
-    
+
 @app.route('/cluster', methods=['POST'])
-def cluster_objects():
-    print("요청들어옴.")
-    # 요청에서 이미지 리스트를 가져옴
-    img_list1 = request.json.get('images', [])
-    
-
-    # 태그 벡터화
-    tag_vectors = []
-    for obj in img_list1:
-        vectors = [model[tag] for tag in obj["metadata"] if tag in model]
-        if vectors:  # 벡터가 있는 경우
-            avg_vector = np.mean(vectors, axis=0)  # 평균 벡터 계산
-            tag_vectors.append((obj["url"], avg_vector))  # 객체 URL과 벡터를 저장
-
-    # K-means 클러스터링 수행
-    X = np.array([vec for _, vec in tag_vectors])
-    n_clusters = 8  # 클러스터 수
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0)
-    labels = kmeans.fit_predict(X)
-
-    # 클러스터링 결과 해석 및 객체 그룹화
-    clustered_objects = {i: [] for i in range(n_clusters)}
-    for (obj_id, _), label in zip(tag_vectors, labels):
-        clustered_objects[label].append(obj_id)
-
-    # 클러스터의 핵심 태그 찾기 (빈도수 기반)
-    core_tags = {}
-    used_tags = set()
-    for cluster_id, obj_ids in clustered_objects.items():
-        # 해당 클러스터의 모든 태그 수집
-        tag_list = []
-        for obj_id in obj_ids:
-            # 해당 객체의 태그 가져오기
-            obj_tags = next(item for item in img_list1 if item["url"] == obj_id)["metadata"]
-            tag_list += obj_tags.strip().split(',')
-        
-        # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
-        if tag_list:
-            tag_counts = Counter(tag_list)
-            most_common_tag = None
-            for tag, _ in tag_counts.most_common():
-                if tag not in used_tags:
-                    most_common_tag = tag
-                    used_tags.add(tag)
-                    break
-            core_tags[cluster_id] = most_common_tag
-        else:
-            core_tags[cluster_id] = '123456'  # 태그가 없는 경우
-
-    # 결과 반환
-    result = {
-        'clusters': {cluster_id: {'object_ids': obj_ids, 'core_tag': core_tags[cluster_id]} 
-                       for cluster_id, obj_ids in clustered_objects.items()}
-    }
-    return jsonify(result)
-
-
-@app.route('/cluster2', methods=['POST'])
 def cluster_objects2():
     print("요청들어옴.")
     
