@@ -70,6 +70,58 @@ router.get('/', authenticateJWT, async (req, res) => {
     });
 });
 
+router.get('/survey', authenticateJWT, async (req, res) => {
+    console.log("서베이 작성 여부 확인");
+
+    const userId = req.user.userId;
+    const sql = `
+      SELECT EXISTS (
+        SELECT 1 
+        FROM User_survey 
+        WHERE userId = ?
+      ) AS isExists;
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (result === 1) {
+            return res.status(201).json({ dataPresence: true});
+        }
+        return res.status(201).json({ dataPresence: false});
+    });
+
+});
+
+router.post('/survey', authenticateJWT, async (req, res) => {
+    console.log("서베이 저장");
+
+    const userId = req.user.userId;
+    const { interest1, interest2, interest3, interest4, interest5 } = req.body;
+
+    const sql = `
+      INSERT INTO User_survey (UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const userInterest1 = interest1 || null;
+    const userInterest2 = interest2 || null;
+    const userInterest3 = interest3 || null;
+    const userInterest4 = interest4 || null;
+    const userInterest5 = interest5 || null;
+
+    db.query(sql, [userInterest1, userInterest2, userInterest3, userInterest4, userInterest5], (err, result) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        return res.status(201).json({ msg: 'success' });
+    });
+});
+
 router.post('/plan', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     const { dateKey, startDateTime, planName, town, groupId } = req.body;
@@ -745,27 +797,6 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
     }
 
     return result;
-}
-
-
-// 중복없는 숫자뽑기
-function getRandomNum(min, max) {
-    // min~max 숫자 배열 생성
-    const numbers = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-
-    // Fisher-Yates Shuffle 알고리즘 활용, numbers 숫자 무작위로 섞기
-    for (let i = numbers.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [numbers[i], numbers[j]] = [numbers[j], numbers[i]]; // Swap
-    }
-
-    // 섞인 배열에서 하나씩 뽑아 반환할 함수
-    return function() {
-        if (numbers.length === 0) {
-            throw new Error("더 이상 선택할 숫자가 없습니다.");
-        }
-        return numbers.pop();
-    };
 }
 
 router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
