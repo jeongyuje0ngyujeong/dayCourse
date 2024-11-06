@@ -1,12 +1,12 @@
 // RightSidebar.js
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
 import Chat from '../Chat/Chat';
-import SocketContext from '../../SocketContext';
+
 
 // Styled Components (변경 없음)
 const SidebarContainer = styled.div`

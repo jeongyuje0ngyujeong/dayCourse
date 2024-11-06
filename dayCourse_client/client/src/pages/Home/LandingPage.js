@@ -3,7 +3,7 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
@@ -112,10 +112,7 @@ const RecommendButton = styled.button`
     }
 `;
 
-const RouteItem = styled.div`
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-`;
+
 
 const RowContainer = styled.div`
     display: flex;
@@ -136,8 +133,8 @@ const RecommendedRoutesBox = styled.div`
     background-color: #fefefe;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     height: fit-content;
-    width: 30%;
-    margin-left:10%;
+    width: 33%;
+    margin-left:6%;
 `;
 
 const LandingPage = ({ userId, planId, place, context }) => {
@@ -153,8 +150,8 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
     const [recommendError, setRecommendError] = useState(null);
     const [recommendedRoutes, setRecommendedRoutes] = useState([]);
-
-    const distances = [];
+    const [distances, setDistances] = useState([]);
+  
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -191,28 +188,24 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const fetchRecommendedRoutes = useCallback(async () => {
         setIsRecommending(true);
     
-        // 디버깅을 위해 planId 값을 출력
-        console.log("요청할 planId:", planId);
-    
         try {
             const recommended = await recommendRoutes(planId);
             console.log('추천된 루트', recommended);
-            // 서버에서 추천된 루트가 배열의 배열로 올 경우
-            if (recommended.routes && Array.isArray(recommended.routes)) {
-                setRecommendedRoutes(recommended.routes);
+    
+            // 추천된 루트가 배열 형식으로 올 때, locationInfo 배열을 바로 설정
+            if (recommended.result === 'success' && Array.isArray(recommended.locationInfo)) {
+                setRecommendedRoutes(recommended.locationInfo);
             } else {
                 console.error("추천 루트 데이터 형식이 올바르지 않습니다:", recommended);
                 setRecommendError("추천 루트 데이터를 불러오는 데 문제가 있습니다.");
             }
         } catch (error) {
             console.error("루트 추천 가져오기 실패:", error);
-            console.log("에러 응답 데이터:", error.response?.data);  // 에러 응답 데이터 확인
             setRecommendError("루트 추천을 가져오는 데 실패했습니다.");
         } finally {
             setIsRecommending(false);
         }
     }, [planId]);
-
 
 
     const handlePlaceClick = async (place, isRecommended = false) => {
@@ -366,6 +359,22 @@ const LandingPage = ({ userId, planId, place, context }) => {
         }
     }, [isPlacesLoaded]);
 
+
+        // TMAP 거리 계산 API 
+
+        // useEffect(() => {
+        //     const loadDistance = async () => {
+        //         if (selectedPlaces.length > 1) {
+        //             const distances = await fetchDistance(planId, userId);
+        //             console.log("받은 거리 정보:", distances);
+        //             setDistances(distances.distances);
+        //         } else {
+        //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
+        //         }
+        //     };
+        //     loadDistance();
+        // }, [selectedPlaces]);
+
     return (
         <div className="landing-page">
             {!isPlacesLoaded && (
@@ -422,8 +431,10 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                             >
+                                                            <div>
                                                                 <h5>{index + 1}. {place.place_name}</h5>
-                                                                <span>{place.address_name}</span>
+                                                                <span>{place.place || "주소 정보 없음"}</span>
+                                                            </div>
                                                                 <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
                                                             </PlaceBox>
                                                         )}
@@ -465,34 +476,31 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         </ul>
                     </div>
 
-
-                        <RecommendedRoutesBox>
-                            <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
-                                {isRecommending ? '추천 중...' : '루트 추천'}
-                            </RecommendButton>
-                            <div style={{ marginTop: '10px' }}>
-                                {isRecommending ? (
-                                    <div>추천 중입니다...</div>
-                                ) : recommendError ? (
-                                    <div style={{ color: 'red' }}>{recommendError}</div>
-                                ) : recommendedRoutes.length > 0 ? (
-                                    recommendedRoutes.map((route, routeIndex) => (
-                                        <div key={routeIndex} style={{ marginBottom: '15px' }}>
-                                            <h4>추천 루트 {routeIndex + 1}</h4>
-                                            {route.map((place, placeIndex) => (
-                                                <PlaceBox key={placeIndex}>
-                                                    <h5>{placeIndex + 1}. {place.placeName}</h5>
-                                                    <span>{place.placeAddr}</span>
-                                                    {/* 추천 루트에서는 삭제 버튼을 표시하지 않음 */}
-                                                </PlaceBox>
-                                            ))}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div>추천된 루트가 없습니다.</div>
-                                )}
+                <RecommendedRoutesBox>
+                <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
+                    {isRecommending ? '추천 중...' : '루트 추천'}
+                </RecommendButton>
+                <div style={{ marginTop: '10px' }}>
+                    {isRecommending ? (
+                        <div>추천 중입니다...</div>
+                    ) : recommendError ? (
+                        <div style={{ color: 'red' }}>{recommendError}</div>
+                    ) : recommendedRoutes.length > 0 ? (
+                        recommendedRoutes.map((place, index) => (
+                            <div key={index} style={{ marginBottom: '15px' }}>
+                                <PlaceBox>
+                                    <div>
+                                        <h5>{index + 1}. {place.placeName}</h5>
+                                        <span>{place.placeAddr}</span>
+                                    </div>
+                                </PlaceBox>
                             </div>
-                        </RecommendedRoutesBox>
+                        ))
+                    ) : (
+                        <div>추천된 루트가 없습니다.</div>
+                    )}
+                </div>
+            </RecommendedRoutesBox>
                     </RowContainer>
                 </>
             )}
