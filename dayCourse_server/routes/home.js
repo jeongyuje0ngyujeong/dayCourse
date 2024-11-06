@@ -134,7 +134,7 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
     const sql_username = `
       SELECT userName
       FROM User
-      WHEREuserId = ?
+      WHERE userId = ?
     `;
 
     const values = [userId];
