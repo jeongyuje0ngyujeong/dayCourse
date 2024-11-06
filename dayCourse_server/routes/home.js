@@ -1066,7 +1066,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             phone: "01000000000" //필드없음
         }));
 
-        console.log("응답 : ", renamedUsers)
+        //console.log("응답 : ", renamedUsers)
 
         return res.status(200).json({ msg: 'success', place: renamedUsers });
     } else {
@@ -1132,7 +1132,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             phone: "01000000000" //필드없음
         }));
 
-        console.log(renamedUsers);
+        //console.log(renamedUsers);
         return res.status(200).json({ msg: 'success', place: renamedUsers });
     }
 });
