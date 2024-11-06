@@ -834,9 +834,9 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         res.json({ 
             result: 'success', 
             locationInfo: arrangedLocations.map(location => ({
-                LocationID: location.LocationID,
-                place_name: location.place_name,
-                place: location.place
+                locationId: location.LocationID,
+                placeName: location.place_name,
+                placeAddr: location.place
             })) 
         });
 
