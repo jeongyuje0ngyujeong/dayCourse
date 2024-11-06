@@ -87,6 +87,8 @@ router.post('/plan', authenticateJWT, async (req, res) => {
     const sql = `
       INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
       VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const values = [userId, dateKey, dateKey, newplanName, town, groupId];
@@ -501,9 +503,9 @@ router.post('/plan/place/priority', async (req, res) => {
 
 
 
-const getPlaces = (sql, params) => {
+const getPlaces = (sql, values) => {
     return new Promise((resolve, reject) => {
-        db.query(sql, params, (err, results) => {
+        db.query(sql, values, (err, results) => {
             if (err) return reject(err);
             resolve(results);
         });
