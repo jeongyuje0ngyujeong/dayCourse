@@ -625,17 +625,17 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             "transportMode": "pedestrian"
         };
         // 요청 초과 예외처리용
-        // const response = null;
+        const response = null;
 
         // 오픈 api 요청
-        const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1',
-            data, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'appKey': APP_KEY
-            }
-        });
+        // const response = await axios.post('https://apis.openapi.sk.com/tmap/matrix?version=1',
+        //     data, {
+        //     headers: {
+        //         'Accept': 'application/json',
+        //         'Content-Type': 'application/json',
+        //         'appKey': APP_KEY
+        //     }
+        // });
 
         // 요청 초과 예외처리용
         if (response != null) {
@@ -660,7 +660,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             console.log('distances: ' + distances);
             return res.status(200).json({ msg: 'success', distances });
 
-            // 요청 초과 예외처리용
+        // 요청 초과 예외처리용
         } else {
             return res.status(429).json({ msg: 'api 요청 초과', distances });
         }
