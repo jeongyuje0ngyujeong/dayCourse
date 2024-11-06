@@ -68,6 +68,58 @@ router.get('/', authenticateJWT, async (req, res) => {
     });
 });
 
+router.get('/survey', authenticateJWT, async (req, res) => {
+    console.log("서베이 작성 여부 확인");
+
+    const userId = req.user.userId;
+    const sql = `
+      SELECT EXISTS (
+        SELECT 1 
+        FROM User_survey 
+        WHERE userId = ?
+      ) AS isExists;
+    `;
+
+    db.query(sql, [userId], (err, result) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        if (result === 1) {
+            return res.status(201).json({ dataPresence: true});
+        }
+        return res.status(201).json({ dataPresence: false});
+    });
+
+});
+
+router.post('/survey', authenticateJWT, async (req, res) => {
+    console.log("서베이 저장");
+
+    const userId = req.user.userId;
+    const { interest1, interest2, interest3, interest4, interest5 } = req.body;
+
+    const sql = `
+      INSERT INTO User_survey (UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    const userInterest1 = interest1 || null;
+    const userInterest2 = interest2 || null;
+    const userInterest3 = interest3 || null;
+    const userInterest4 = interest4 || null;
+    const userInterest5 = interest5 || null;
+
+    db.query(sql, [userInterest1, userInterest2, userInterest3, userInterest4, userInterest5], (err, result) => {
+        if (err) {
+            console.error('Error fetching data:', err);
+            return res.status(500).json({ error: 'Database error' });
+        }
+        return res.status(201).json({ msg: 'success' });
+    });
+});
+
 router.post('/plan', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
     const { dateKey, startDateTime, planName, town, groupId } = req.body;
@@ -878,6 +930,19 @@ router.get('/plan/:planId/images', async (req, res) => {
         res.status(500).send('Error retrieving images');
     }
 });
+        // 결과에 추가
+        result.push(nextLocation);
+
+        // 선택된 장소를 전체 목록에서 제거
+        allLocations.splice(allLocations.indexOf(nextLocation), 1);
+
+        // 이전 카테고리와 키워드 업데이트
+        previousCategory = nextLocation.category;
+        previousKeyword = nextLocation.keyword;
+    }
+
+    return result;
+}
 
 router.post('/plan/upload/:planId/images', upload.array('image'), async (req, res) => {
     console.log("사진 등록");
