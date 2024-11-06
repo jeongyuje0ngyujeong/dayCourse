@@ -1178,19 +1178,28 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
                         },
                     });
 
-                    const tags = response.data.Tags;
-
+                    
                     // S3 메타데이터 업데이트를 위한 파라미터 설정
                     const uploadParams = {
                         Bucket: bucketName,
                         Key: `plans/${planId}/${imgNAME}`,
                         Metadata: {}
                     };
-
+                    
                     // 태그 메타데이터 추가
+                    const tags = response.data.Tags;
                     tags.forEach((tag, index) => {
                         uploadParams.Metadata[`tag${index + 1}`] = tag.name;
                     });
+
+                    // 오브젝트 메타데이터 추가
+                    const Objects = response.data.Objects;
+                    Objects.forEach((Object, index) => {
+                        uploadParams.Metadata[`Object${index + 1}`] = Object.name;
+                    });
+
+                    // 캡션 메타데이터 추가
+                    uploadParams.Metadata[`Caption`] = response.data.Caption;
 
                     // S3 메타데이터 업데이트
                     await s3.copyObject({

@@ -232,9 +232,9 @@ async function analyzeImage(userId){
             });
         });
 
-        // if (result.length === 0) {
-        //     return res.status(200).send('플랜이 없습니다'); // 플랜이 없는 경우
-        // }
+        if (result.length === 0) {
+            return
+        }
 
         const planIds = result.map(plan => plan.planId);
 
