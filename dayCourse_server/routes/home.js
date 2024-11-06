@@ -876,6 +876,10 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         const endLocation = arrangedLocations[arrangedLocations.length - 1];
         const waypoints = arrangedLocations.slice(1, -1);
 
+        arrangedLocations.forEach(location => {
+            console.log("반환되는 로케이션", location.LocationID);
+        });
+
         // 최종 결과 반환
         res.json({ 
             result: 'success', 
