@@ -6,7 +6,7 @@ import { getMoment } from './AlbumApi';
 const Container = styled.div`
     display: grid;
     width: 100%;
-    grid-template-columns: repeat(5, 1fr); 
+    grid-template-columns: ${({ columns }) => `repeat(${columns}, 1fr)`};
     place-items: center;
     ${'' /* padding: 20px; */}
 `;
@@ -88,13 +88,14 @@ const ModalImage = styled.img`
 `;
 
 const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
+    console.log(images);
     return (
         <StyledModal isOpen={isOpen} onRequestClose={onRequestClose} ariaHideApp={false}>
             <div>
                 <h3>{title}</h3>
                 <ImageGrid>
                     {images.map((url, idx) => (
-                        <ModalImage key={idx} src={url} alt={`${title} 이미지 ${idx + 1}`} />
+                        <ModalImage key={idx} src={url.imgURL} alt={`${title} 이미지 ${idx + 1}`} />
                     ))}
                 </ImageGrid>
             </div>
@@ -106,7 +107,8 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({maxItems}) => {
+const Moment = ({maxItems, columns}) => {
+    console.log(columns);
     const [moments, setMoments] = useState([]); // 모먼트 리스트 저장
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
@@ -138,7 +140,7 @@ const Moment = ({maxItems}) => {
 
     return (
         <>
-            <Container>
+            <Container columns={columns}>
                 {Object.entries(moments)
                     .slice(0, maxItems || Object.entries(moments).length) // maxItems가 없을 경우 전체 항목 렌더링
                     .map(([key, images]) => (
@@ -152,7 +154,7 @@ const Moment = ({maxItems}) => {
                                 filter: 'blur(2px)',
                                 borderRadius: '10px'
                             }}
-                            src={images[0]}
+                            src={images[0].imgURL}
                             alt="Company Logo"
                             className="logo"
                         />

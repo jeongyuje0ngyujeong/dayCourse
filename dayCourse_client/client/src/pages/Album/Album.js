@@ -1,6 +1,6 @@
 // import { Outlet} from "react-router-dom";
 import styled from 'styled-components';
-import { PageTitle } from '../../commonStyles';
+// import { PageTitle } from '../../commonStyles';
 import React, { useState , useEffect} from 'react';
 import Search from './Search.js';
 import Moment from './moment.js';
@@ -76,7 +76,7 @@ const Album = ({ userId }) => {
 
   return (
     <Container>
-      <PageTitle>앨범</PageTitle>
+      {/* <PageTitle>앨범</PageTitle> */}
 
       {/* 탭 버튼 */}
       <TabContainer>

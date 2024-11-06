@@ -1,6 +1,7 @@
 import { Form, redirect, Link, useOutletContext } from "react-router-dom";
 import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
+import { Button } from '../../Button';
 
 // import {useState,useEffect } from 'react';
 
@@ -49,7 +50,6 @@ const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 1rem;
   ${'' /* flex:1; */}
 `
 
@@ -88,7 +88,7 @@ export default function Schedule(props) {
             
             <ButtonContainer>
               <Link to={`/main/PlacePage/${event.planId}`}>
-                <button type="submit">상세일정</button>
+                <Button style={{fontFamily: 'NPSfontBold'}} onClick={() => {}}  width='5rem'>상세일정</Button>
               </Link>
               <Form
                 method="post"
@@ -120,7 +120,7 @@ export default function Schedule(props) {
                 }}
               >
               {String(event.start_userId) === sessionStorage.getItem('id') ?
-                <button type="submit">Delete</button>:null}
+                <Button type="submit">X</Button>:null}
               </Form>
             </ButtonContainer>
         </EventContainer>

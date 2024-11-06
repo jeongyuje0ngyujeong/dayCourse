@@ -77,8 +77,8 @@ export default function Friends() {
     
     return (
         <>
-        <PageTitle>친구추가</PageTitle>
-        <h3>친구찾기</h3>
+        {/* <PageTitle>친구추가</PageTitle> */}
+        <PageTitle style={{fontSize: '30px'}}>친구찾기</PageTitle>
         <FriendInput value={value} setValue={setValue} setKeyword={setKeyword}/>
         {showResult && (selectedFriend.length>0 ? 
             (<SearchResult>

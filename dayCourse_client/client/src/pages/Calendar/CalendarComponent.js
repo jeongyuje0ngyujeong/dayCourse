@@ -2,17 +2,18 @@ import styled from 'styled-components';
 import { useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import Modal from 'react-modal';
-import Schedule from './Schedule';
 
 const Cell = styled.td`
   flex: 1;
   color: #818181;
   text-align: center;
-  padding: 0.5rem;
+  ${'' /* padding: 0.5rem; */}
   &:hover {
     background-color: #eee; 
   }
   position: relative;
+  display:flex;
+  flex-direction:column;
   ${'' /* z-index:5000000000; */}
 `
 
@@ -21,7 +22,7 @@ const DateTable = styled.tr`
   display: flex;
   width: 100%;
   flex:1;
-  height: 12vh;
+  height: 13vh;
   ${'' /* min-height: 6rem;
   max-height: 6rem; */}
   border-top: 2px solid #eee;
@@ -35,12 +36,14 @@ const DateTable = styled.tr`
 const StyleDayT = styled.tr`
   display: flex;
   width: 100%;
-  height:3.5rem;
+  ${'' /* height:3.5rem; */}
   margin: 0;
+  font-family: 'NPSfontBold';
   ${'' /* table-layout: fixed; */}
   ${'' /* margin-bottom: 1rem; */}
   ${'' /* color: #818181; */}
   ${'' /* margin-top: 1rem; */}
+  align-item:center;
   justify-content: space-between;
   color: black;
   text-align:center;
@@ -66,16 +69,7 @@ export function DayTable(){
           // verticalAlign: 'middle',
         }}
         >
-          <h4 style={{
-          // border: '2px solid #90B54C',
-          // borderRadius: '50%',
-          // width: '2rem',
-          // height: '2rem',
-          // display: 'flex',
-          // justifyContent: 'center',
-          // alignItems: 'center',
-          // margin: '0 auto', 
-          }}>{day}</h4>
+          {day}
 
         </th>
           ))}
@@ -147,7 +141,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     let currentWeek = []; 
     let currentDate = new Date(startDay);
     const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [modalContent, setModalContent] = useState('');
+    const [modalContent, ] = useState('');
     console.log(endDay.getDate()-startDay.getDate());
  
     const MainMonth = getFirst(startDay);
@@ -160,17 +154,16 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
       
       setSelectedDate(params);
       
-      if (showCalendar){
-        setCurrentDate(new Date(params))
-        console.log(groupedSchedules[params]);
-        const content = <Schedule selectedSchedules={groupedSchedules[params]} groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} setModalContent={setModalContent}/>;
-        setModalContent(content);
-        setModalIsOpen(true);
-      }
-      else{
-        // const content = <Schedule schedule = {scheduleData} setModalContent = {setModalContent} fetchSchedules = {() => fetchSchedules(props, setSchedules)}/>;
+      // if (showCalendar){
+      //   setCurrentDate(new Date(params))
+      //   console.log(groupedSchedules[params]);
+      //   const content = <Schedule selectedSchedules={groupedSchedules[params]} groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} setModalContent={setModalContent}/>;
+      //   setModalContent(content);
+      //   setModalIsOpen(true);
+      // }
+      // else{
         navigate(`/main/home/schedules/${params}`)
-      }
+      // }
     };
     
     while (currentDate <= endDay) {
@@ -192,6 +185,11 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                    
                   }}
               >
+                  {/* {showCalendar?(
+
+                  ):(
+                    
+                  )} */}
                   <div style={{
                     color: day === 6 ? '#F3CD86': day === 0 ? '#F5A281' : 'black', 
                     fontWeight: '700',
@@ -199,17 +197,27 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                   }}>{String(date)}</div>
                   
                   <div 
-                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '300' }}>
-                    {events && events.length > 0 ? (
+                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '300', display: 'flex', flexDirection:'column', flex:'1',alignItems:'center', gap:'3px'}}>
+                    {/* {events && events.length > 0 ? (
+                      <> */}
+                    {showCalendar?(
                       <>
-                        {events.slice(0, 3).map((event, index) => (
-                          <div key={index}>{event.planName}</div>
-                        ))}
-                        {events.length > 3 && (
-                          <div>+{events.length - 3}</div>
-                        )}
+                      {events.slice(0, 2).map((event, index) => (
+                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.5vh',borderRadius:'10px',opacity:'80%'}}>
+                        {event.planName}</div>
+                      ))}
+                      {events.length > 2 && (
+                        <div style={{width:'1.5rem', background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.5vh',borderRadius:'10px',opacity:'80%'}}>+{events.length - 2}</div>
+                      )}
                       </>
-                    ) : null}
+                    )
+                    :(
+                      events.length > 0 && (
+                      <div style={{width:'30%',border:'2px solid #90B54C',background:'#90B54C',color:'white', borderRadius:'15px',fontWeight:'700', opacity:'80%'}}></div>
+                      )
+                    )}
+                      {/* </>
+                    ) : null} */}
                   </div>
               </Cell></>
         )
