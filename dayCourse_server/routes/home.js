@@ -1073,8 +1073,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             id: row.LocationID,
             place_name: row.LocationName,
             address_name: row.addressFull,
-            x: row.longitude,
-            y: row.latitude,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
         }));
