@@ -791,37 +791,29 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
     let previousKeyword = null;
 
     // 모든 장소를 합친 배열 생성
-    let allLocations = [];
-
-    // 음식점이 2곳 이상인 경우
-    if (restaurants.length >= 2) {
-        allLocations = allLocations.concat(restaurants);
-    }
-
-    // 카페 키워드별로 2곳 이상인 그룹을 찾음
-    const cafeGroups = [];
-    for (const keyword in cafesByKeyword) {
-        if (cafesByKeyword[keyword].length >= 2) {
-            cafeGroups.push(cafesByKeyword[keyword]);
-        } else {
-            // 키워드가 2개 미만인 카페는 기타로 분류
-            others = others.concat(cafesByKeyword[keyword]);
-        }
-    }
-
-    // 나머지 장소들 추가
-    allLocations = allLocations.concat(others);
+    let allLocations = [
+        ...restaurants,
+        ...Object.values(cafesByKeyword).flat(),
+        ...others
+    ];
 
     console.log("재배치 전 모든 로케이션: ", allLocations);
+
+    const restaurantsCheck = restaurants.length >= 2;
+    const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
+                                    .filter(keyword => cafesByKeyword[keyword].length >= 2);
+    const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
+
+
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
         let candidates = allLocations.filter(location => {
             // 이전 장소가 음식점인 경우, 음식점 제외
-            if (location.category === previousCategory && location.category === 'restaurant') {
+            if (restaurantsCheck && location.category === previousCategory && location.category === 'restaurant') {
                 return false; 
             }
             // 이전 장소가 동일 키워드의 카페인 경우 제외
-            if (location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
+            if (cafeKeywordsCheck && location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
                 return false; 
             }
             return true;
@@ -841,7 +833,7 @@ function arrangeLocations(restaurants, cafesByKeyword, others) {
         // 결과에 추가
         result.push(nextLocation);
         console.log("결과값에 추가된 장소들: ", result)
-        
+
         // 선택된 장소를 전체 목록에서 제거
         allLocations.splice(allLocations.indexOf(nextLocation), 1);
 
