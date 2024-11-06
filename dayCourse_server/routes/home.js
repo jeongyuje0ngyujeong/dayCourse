@@ -755,10 +755,10 @@ function getRandomNum(min, max) {
 
 router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
     console.log("루트 추천");
-    const { planId, recommendCnt } = req.body;
+    const { planId } = req.body;
 
-    if (!planId || !recommendCnt) {
-        return res.status(400).json({ error: 'planId or recommendCnt are required' });
+    if (!planId) {
+        return res.status(400).json({ error: 'planId is required' });
     }
 
     try {
