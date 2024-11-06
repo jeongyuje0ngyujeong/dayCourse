@@ -70,31 +70,31 @@ router.get('/', authenticateJWT, async (req, res) => {
     });
 });
 
-router.get('/survey', authenticateJWT, async (req, res) => {
-    console.log("서베이 작성 여부 확인");
+// router.get('/survey', authenticateJWT, async (req, res) => {
+//     console.log("서베이 작성 여부 확인");
 
-    const userId = req.user.userId;
-    const sql = `
-      SELECT EXISTS (
-        SELECT 1 
-        FROM User_survey 
-        WHERE userId = ?
-      ) AS isExists;
-    `;
+//     const userId = req.user.userId;
+//     const sql = `
+//       SELECT EXISTS (
+//         SELECT 1 
+//         FROM User_survey 
+//         WHERE userId = ?
+//       ) AS isExists;
+//     `;
 
-    db.query(sql, [userId], (err, result) => {
-        if (err) {
-            console.error('Error fetching data:', err);
-            return res.status(500).json({ error: 'Database error' });
-        }
+//     db.query(sql, [userId], (err, result) => {
+//         if (err) {
+//             console.error('Error fetching data:', err);
+//             return res.status(500).json({ error: 'Database error' });
+//         }
 
-        if (result === 1) {
-            return res.status(201).json({ dataPresence: true});
-        }
-        return res.status(201).json({ dataPresence: false});
-    });
+//         if (result === 1) {
+//             return res.status(201).json({ dataPresence: true});
+//         }
+//         return res.status(201).json({ dataPresence: false});
+//     });
 
-});
+// });
 
 router.post('/survey', authenticateJWT, async (req, res) => {
     console.log("서베이 저장");
