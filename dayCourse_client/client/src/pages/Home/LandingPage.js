@@ -373,7 +373,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                 }
             };
             loadDistance();
-        }, [selectedPlaces]);
+        }, [selectedPlaces, planId, userId]);
 
     return (
         <div className="landing-page">
