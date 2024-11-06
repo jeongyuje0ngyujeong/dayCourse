@@ -233,7 +233,7 @@ async function analyzeImage(userId){
         });
 
         if (result.length === 0) {
-            console.lod('이미지 없음');
+            console.log('이미지 없음');
             return;
         }
 
