@@ -7,6 +7,8 @@ import { getSchedules } from "../../schedules";
 import Moment from '../Album/moment.js';
 import Calendar from '../Calendar/Calendar';
 import {PageTitle} from '../../commonStyles';
+import { ReactComponent as Down } from "../../assets/chevron-down-solid.svg";
+import { ReactComponent as Up } from "../../assets/chevron-up-solid.svg";
 
 
 export async function action() {
@@ -192,7 +194,7 @@ export default function Home() {
             )}
             <div style={{width:'100%', borderTop: '1px solid #ccc'}}>
               <Button  onClick={() => setShowCalendar(!showCalendar)} $border="none" width="100%">
-                {showCalendar ? '/\\' : '\\/'}
+                {showCalendar ? <Up/> : <Down/>}
               </Button>
             </div>
           </div>

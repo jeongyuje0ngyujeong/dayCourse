@@ -1,13 +1,17 @@
 import styled from 'styled-components';
 import { useNavigate} from "react-router-dom";
-import { Button } from './Button';
+// import { Button } from './Button';
 import localforage from "localforage";
-import {PageTitle} from './commonStyles';
+// import {PageTitle} from './commonStyles';
+import { ReactComponent as Logout } from "./assets/arrow-right-from-bracket-solid.svg";
+import { ReactComponent as AddUser } from "./assets/user-plus-solid.svg";
 
 const UpperContainer = styled.td`
   width: 100%;
   height: 5rem;
-  color: #818181;
+  ${'' /* color: #818181; */}
+  ${'' /* color: #90B54C; */}
+  color: black;
 
   background-color: white;
   display: flex;
@@ -32,14 +36,25 @@ export default function UpperBar(){
         navigation('/');
     };
 
+    const handleFriend = (e) => {
+        e.preventDefault();
+        navigation('/main/friends'); 
+    };
+
     return(
         <UpperContainer>
             {/* <div style={{display:'flex', gap:'1rem'}}> */}
             <h2 style={{fontFamily: 'HSSanTokki20-Regular',fontSize:'30px'}}>데이코스</h2>    
             <img src="/logo.png" alt="Company Logo" className="logo" />
             {/* </div>  */}
-            <Button style={{width: '5rem'}} onClick={handleLogout} $border='none'>로그아웃</Button>
-           
+            <div style={{display:'flex', gap:'2rem'}}>
+                <div>
+                    <AddUser onClick={handleFriend}/>
+                </div>
+                <div>
+                    <Logout onClick={handleLogout}/>
+                </div>
+            </div>
             {/* <p>로그아웃</p> */}
         </UpperContainer>
     )
