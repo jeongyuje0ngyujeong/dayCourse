@@ -1,7 +1,6 @@
 import { Outlet, NavLink, useNavigate} from "react-router-dom";
 import { Button } from './Button';
 import { Footer } from './commonStyles';
-import { setupAxiosInterceptors } from './Interceptor';
 import React, { useEffect } from 'react';
 // import { Logout } from './pages/Login/auth'
 
@@ -29,17 +28,10 @@ function Nav({ href, text, style }) {
 export default function Layout() {
     const navigation = useNavigate();
 
-    useEffect(() => {
-        // Set up axios interceptors to redirect to login on 401
-        setupAxiosInterceptors(navigation);
-    }, [navigation]);
-
     const handleFriend = (e) => {
         e.preventDefault();
         navigation('/main/friends'); 
     };
-
-    
 
     return (
     <>
