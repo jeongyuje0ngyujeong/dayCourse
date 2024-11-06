@@ -153,7 +153,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     const MainMonth = getFirst(startDay);
 
     const navigate = useNavigate();
-    const location = useLocation();
+    // const location = useLocation();
 
     const handleCellClick = async (params, e) => {
       e.preventDefault();

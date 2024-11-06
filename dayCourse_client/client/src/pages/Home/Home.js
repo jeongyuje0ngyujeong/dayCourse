@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import {useState, useEffect, useRef} from 'react';
-import { PageTitle, Footer } from '../../commonStyles';
 import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
 import Moment from '../Album/moment.js';
-import { getMoment } from '../Album/AlbumApi';
 import Calendar from '../Calendar/Calendar';
 
 export async function action() {
@@ -34,15 +32,15 @@ const MonthContainer = styled.div `
   height: 10%;
   align-items: center; 
 `
-const CalendarContainer = styled.div `
+// const CalendarContainer = styled.div `
   
-  display: flex;
-  flex-direction: column;
-  margin: 0 auto; 
-  width: 100%;
-  height: 100%;
-  ${'' /* padding: 0 3rem; */}
-`
+//   display: flex;
+//   flex-direction: column;
+//   margin: 0 auto; 
+//   width: 100%;
+//   height: 100%;
+//   ${'' /* padding: 0 3rem; */}
+// `
 
 const ScheduleContainer = styled.div `
   display: flex;
@@ -70,7 +68,6 @@ export default function Home() {
     const selectedSchedules = groupedSchedules[selectedDate];
     const [showCalendar, setShowCalendar] = useState(false);
     const [maxItems, setMaxItems] = useState(10);
-    const divRef = useRef(null);
 
     useEffect(() => {
         async function loadSchedules() {

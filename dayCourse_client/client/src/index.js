@@ -16,7 +16,6 @@ import Friends from "./pages/Friends/Friends";
 import PlacePage, { loader as emptyLoader } from "./pages/Home/PlacePage"; // 빈 페이지 컴포넌트 가져오기
 import UpdateTown, {loader as townLoader, action as townAction,} from "./pages/Town/Town";
 import Survey from './Survey';
-import { setupAxiosInterceptors } from './Interceptor'; // Interceptor 설정 함수 가져오기
 
 // import RecentPlan from './pages/Album/RecentPlan';
 import PlanDetail from './pages/Album/PlanDetail';
