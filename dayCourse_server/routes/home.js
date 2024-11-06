@@ -504,9 +504,12 @@ router.post('/plan/addRecommendedPlace', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     console.log("일정장소추가/추천장소")
-
+    console.log(x, y)
+    
+    
     const xx = parseFloat(x);
     const yy = parseFloat(y);
+    console.log(xx, yy)
 
     // Check if required parameters are provided
     if (!planId) {
@@ -868,7 +871,7 @@ function translateKeyword(Keyword) {
         case '서점': return 'book_store';
         case '방탈출': return 'escape_room';
         case '만화카페': return 'cartoonCafe';
-        //case '영화관': return 'Cinema';
+        //case '영화관': return 'cinema';
         case '공원': return 'park';
         case '쇼핑몰': return 'shopping';
         //case '전시회': return 'Exhibition';
