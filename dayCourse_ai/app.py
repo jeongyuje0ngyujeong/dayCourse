@@ -6,6 +6,7 @@ import json
 import pandas as pd
 import numpy as np
 import pickle
+import simplejson as json #확인
 from azure.ai.vision.imageanalysis import ImageAnalysisClient
 from azure.ai.vision.imageanalysis.models import VisualFeatures
 from azure.core.credentials import AzureKeyCredential
@@ -203,12 +204,31 @@ def get_user_profile_vector(datas, visited_stores, tfidf_matrix):
     
     return user_vector
 
+
+def custom_serializer(obj):
+    # Handle NaN and Inf values
+    if isinstance(obj, float):
+        if np.isnan(obj):  # Check for NaN values
+            return None  # Replace NaN with None or a specific value of your choice
+        elif obj == float('inf') or obj == float('-inf'):  # Check for Infinity values
+            return None  # Replace Inf with None or a specific value of your choice
+    # Handle pandas Timestamps (if applicable)
+    elif isinstance(obj, pd.Timestamp):
+        return obj.isoformat()  # Convert pandas Timestamp to ISO string
+    # Handle None explicitly (if needed)
+    elif obj is None:
+        return None  # Return None as it is
+    # For other objects, convert them to string
+    return str(obj)
+
 @app.route('/SpotSuggest', methods=['POST'])
 def SpotSuggest():
     locations = request.json.get('locations', [])
     text = request.json.get('text')
     category = locations[0]['category']
     keyword = locations[0]['keyword']
+
+    #print(locations)
 
     visited_stores = [location['LocationName'] for location in locations]
 
@@ -245,9 +265,28 @@ def SpotSuggest():
     # 인덱스 리스트 만들기
     store_indices = [i[0] for i in sim_scores]
 
+    
+
     # 상위 10개 스토어 데이터프레임 반환
     recommendations = datas.iloc[store_indices]
-    return jsonify(recommendations.to_dict(orient='records'))
+    
+
+    
+    # 필드를 삭제
+    del recommendations['combined_features_a']
+    del recommendations['combined_features_c']
+    del recommendations['combined_features_k']
+
+    test = recommendations.to_dict(orient='records')
+    
+    for item in test:
+        for key, value in item.items():
+            if isinstance(value, float) and np.isnan(value):  # 값이 NaN인 경우
+                item[key] = None  # 해당 값을 None으로 수정
+    #print(test)
+                
+    output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
+    return output_json
 
 if __name__ == '__main__':
      app.run(host='0.0.0.0', port=5000) 
