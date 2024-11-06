@@ -264,23 +264,18 @@ def cluster_objects2():
     
     return jsonify(result)
 
-def get_recommendations(cosine_sim, idx, datas):
+def get_user_profile_vector(datas, visited_stores, tfidf_matrix):
+    # visited_stores는 사용자가 방문한 가게들의 LocationName 목록 (예: ['Store1', 'Store2', 'Store3'])
+    visited_indices = datas[datas['LocationName'].isin(visited_stores)].index
 
-    # 해당 스토어와 모든 스토어 간의 유사도 가져오기
-    sim_scores = list(enumerate(cosine_sim[idx]))
-
-    # 유사도에 따라 스토어 정렬
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-
-    # 상위 10개 스토어 인덱스 가져오기
-    sim_scores = sim_scores[1:11]
-
-    # 인덱스 리스트 만들기
-    store_indices = [i[0] for i in sim_scores]
-
-    # 상위 10개 스토어 데이터프레임 반환
-    return datas.iloc[store_indices]
-
+    # 각 가게들의 combined_features 벡터를 합성(평균)하여 사용자 벡터 생성
+    user_vector = np.zeros((tfidf_matrix.shape[1],))  # TF-IDF 행렬의 열 수로 초기화
+    for idx in visited_indices:
+        # 가게의 combined_features 벡터를 TF-IDF로 벡터화한 값에 접근
+        user_vector += tfidf_matrix[idx].toarray().flatten()  # 벡터의 합
+    user_vector /= len(visited_indices)  # 평균값을 구함
+    
+    return user_vector
 
 @app.route('/SpotSuggest', methods=['POST'])
 def SpotSuggest():
@@ -291,6 +286,8 @@ def SpotSuggest():
     addressFull = locations[0]['addressFull']
     category = locations[0]['category']
     keyword = locations[0]['keyword']
+
+    visited_stores = [location['LocationName'] for location in locations]
 
     if text == "k":
         data_text = "combined_features_k"
@@ -311,13 +308,22 @@ def SpotSuggest():
     tfidf_vectorizer = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf_vectorizer.fit_transform(datas[data_text])
 
-    # 코사인 유사도 행렬 계산
-    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+    # 사용자가 방문한 가게들의 벡터 평균 구하기
+    user_vector = get_user_profile_vector(datas, visited_stores, tfidf_matrix)
 
-    #입력된 스토어의 인덱스 찾기
-    idx = datas[datas['LocationName'] == LocationName].index[0]
-    
-    recommendations = get_recommendations(cosine_sim, idx, datas)
+     # 사용자 벡터와 다른 가게들의 벡터 간 코사인 유사도 계산
+    user_similarities = linear_kernel(tfidf_matrix, user_vector.reshape(1, -1)).flatten()
+
+    # 유사도가 높은 상위 10개의 가게 추천
+    sim_scores = [(i, score) for i, score in enumerate(user_similarities)]
+    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+    sim_scores = sim_scores[1:11]  # 자기 자신 제외
+
+    # 인덱스 리스트 만들기
+    store_indices = [i[0] for i in sim_scores]
+
+    # 상위 10개 스토어 데이터프레임 반환
+    recommendations = datas.iloc[store_indices]
     return jsonify(recommendations.to_dict(orient='records'))
 
 if __name__ == '__main__':
