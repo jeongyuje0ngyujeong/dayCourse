@@ -3,9 +3,16 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
 const db = require('../db')
+const axios = require('axios');
 const redisClient = require('../config/redisClient'); 
 
 const router = express.Router();
+
+//s3연결
+const AWS = require('aws-sdk');
+AWS.config.update({ region: 'ap-northeast-2' });
+const s3 = new AWS.S3({ apiVersion: "2024-10-18" });
+const bucketName = 'daycourseimage';
 
 // 회원가입 여부 확인
 router.post('/signup/id', async (req, res) => {
@@ -235,7 +242,6 @@ async function analyzeImage(userId){
             const imagesData = await fetchImagesWithLimit(planIds, 2);
 
             const response = await axios.post('http://13.124.135.96:5000/cluster', { images: imagesData }, {
-            // const response = await axios.post('http://127.0.0.1:5000/cluster', { images: imagesData }, {
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json',
