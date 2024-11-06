@@ -1000,7 +1000,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             },
         });
 
-        console.log("응답 : ", response.data)
+        //console.log("응답 : ", response.data)
         const renamedUsers = response.data.map(row => ({
             id: row.LocationID,
             place_name: row.LocationName,
@@ -1010,6 +1010,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
         }));
+
+        console.log("응답 : ", renamedUsers)
 
         return res.status(200).json({ msg: 'success', place: renamedUsers });
     } else {
