@@ -117,26 +117,21 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({maxItems, columns}) => {
-    console.log(columns);
-    const [moments, setMoments] = useState([]); // 모먼트 리스트 저장
+const Moment = ({ maxItems, columns, onMomentCountChange }) => {
+    const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalImages, setModalImages] = useState([]);
 
-    console.log(moments);
-
-    // 컴포넌트가 마운트될 때 모먼트 데이터 가져오기
     useEffect(() => {
         const fetchMoments = async () => {
             try {
                 const data = await getMoment();
                 setMoments(data);
-    
-                // 각 카테고리 배열의 길이를 합산하여 momentCount 계산
-                const totalCount = Object.keys(data).length
-                console.log("Calculated total moment count:", totalCount);
-                onMomentCountChange(totalCount);
+                const totalCount = Object.keys(data).length;
+                if (onMomentCountChange) {
+                    onMomentCountChange(totalCount); // 모먼트 개수를 업데이트
+                }
             } catch (err) {
                 console.error('모먼트를 가져오는 중 오류가 발생했습니다:', err);
             }
