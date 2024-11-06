@@ -133,6 +133,12 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
       ORDER BY Plan.startDate DESC
     `;
 
+    const sql_username = `
+      SELECT userName
+      FROM User
+      WHEREuserId = ?
+    `;
+
     const values = [userId];
 
     db.query(sql, values, (err, result) => {
@@ -156,7 +162,14 @@ router.get('/plans/recent', authenticateJWT, async (req, res) => {
             };
         });
 
-        res.status(200).json(formattedResult);
+        db.query(sql_username, userId, (err, result2) => {
+            if (err) {
+                console.error('Error fetching data:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            return res.status(200).json({ plans: formattedResult, userName: result2 });
+        });
     });
 });
 
@@ -1183,11 +1196,9 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
     console.log("모먼트 가져옴");
 
     const sql = `
-          SELECT Plan.planId
-          FROM groupMembers
-          JOIN Plan ON groupMembers.groupId = Plan.groupId
-          WHERE groupMembers.userId = ? AND Plan.startDate <= NOW()
-          ORDER BY Plan.startDate DESC
+          SELECT moment_name, imgURL, planID , planName
+          FROM moment
+          WHERE userID = ?
         `;
 
     db.query(sql, [userId], async (err, result) => {
@@ -1196,65 +1207,23 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: '데이터베이스 오류' });
         }
 
-        //console.log("조회한 일정 : ", result);
-        if (result.length === 0) {
-            return res.status(200).send('플랜이 없습니다'); // 플랜이 없는 경우
-        }
+        const formattedResults  = {};
 
-        const planIds = result.map(plan => plan.planId);
-        const imagesData = [];
-
-        //console.log("S3 에서 가져올거임");
-
-        try {
-            for (const planId of planIds) {
-                const params = { Bucket: bucketName, Prefix: `plans/${planId}/` };
-                const data = await s3.listObjectsV2(params).promise();
-
-                if (!data.Contents || data.Contents.length === 0) {
-                    continue;
-                }
-
-                for (const item of data.Contents) {
-                    const imageUrl = `https://${bucketName}.s3.amazonaws.com/${item.Key}`;
-                    const metadata = await s3.headObject({ Bucket: bucketName, Key: item.Key }).promise();
-                    const newMetadata = Object.values(metadata.Metadata);
-
-                    imagesData.push({
-                        url: imageUrl,
-                        metadata: newMetadata + "\n"
-                    });
-                }
+        // 입력 배열을 순회하면서 변환
+        result.forEach(row => {
+            // 각 moment_name에 해당하는 배열을 초기화하거나 기존 배열에 푸시
+            if (!formattedResults[row.moment_name]) {
+                formattedResults[row.moment_name] = [];
             }
-
-            console.log("분석 폼 데이터 준비");
-
-            const response = await axios.post('http://13.124.135.96:5000/cluster', { images: imagesData }, {
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
+            formattedResults[row.moment_name].push({
+                imgURL: row.imgURL,
+                planID: row.planID,
+                planName: row.planName
             });
+        });
 
-            const transformedData = { clusters: {} };
+        return res.status(200).json(formattedResults);
 
-            for (const key in response.data.clusters) {
-                const cluster = response.data.clusters[key];
-                const { core_tag, object_ids } = cluster;
-
-                if (!transformedData.clusters[core_tag]) {
-                    transformedData.clusters[core_tag] = [];
-                }
-
-                transformedData.clusters[core_tag] = transformedData.clusters[core_tag].concat(object_ids);
-            }
-
-            console.log("모먼트 반환 완료");
-            return res.json(transformedData.clusters); // 여기서 응답을 보냄
-        } catch (err) {
-            console.error('이미지 가져오기 오류:', err);
-            return res.status(500).send('이미지 가져오기 오류'); // 오류 발생 시 응답
-        }
     });
 });
 
