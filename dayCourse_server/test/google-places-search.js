@@ -1,12 +1,13 @@
 const express = require('express');
 var axios = require('axios');
 const app = express();
+const db = require('../db')
 
 const API_KEY = 'AIzaSyDKWY8E-Qjx_Bt7mgOGh7bUKIoFgmEwo6E'
 
 app.get('/search', async (req, res) => {
-    const region = '광교';
-    const keyWord = '베이커리';
+    const region = '강남역';
+    const keyWord = '전시';
     const placeName = region + " " + keyWord; // 검색할 장소
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json`;
 
@@ -19,6 +20,37 @@ app.get('/search', async (req, res) => {
                 language: 'ko' // 응답을 한글로 받기 위해 language 파라미터 설정
             }
         });
+       
+        const result = response.data.results;
+
+        const sql = `
+            INSERT IGNORE INTO place_data (placeId, placeAddr, placeName, placeLat, placeLng, placeRate, placeType, placeKeyWord)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+        
+        for (let i = 0; i < result.length; i++) {
+            console.log((i + 1) + '번 장소 고유 아이디: ' + result[i].place_id);
+            console.log((i + 1) + '번 장소 주소: ' + result[i].formatted_address);
+            console.log((i + 1) + '번 장소 이름: ' + result[i].name);
+            console.log((i + 1) + '번 장소 별점: ' + result[i].rating);
+            console.log((i + 1) + '번 장소 타입: ' + result[i].types);
+            console.log((i + 1) + '번 장소 위도: ' + result[i].geometry.location.lat)
+            console.log((i + 1) + '번 장소 경도: ' + result[i].geometry.location.lng)
+            console.log(" ");
+            
+            let rating = null;
+            if (result[i].rating != null){
+                rating = result[i].rating;
+            }
+            const values = [result[i].place_id, result[i].formatted_address, result[i].name, result[i].geometry.location.lat, result[i].geometry.location.lng, rating, result[i].types[0], keyWord];
+            
+            db.query(sql, values, (err, dbResult) => {
+                if (err) {
+                    console.error('Error inserting data:', err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
+            });
+        }
 
         // 요청이 성공했을 때 응답
         if (response.data.status === 'OK') {
