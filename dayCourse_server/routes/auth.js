@@ -233,7 +233,8 @@ async function analyzeImage(userId){
         });
 
         if (result.length === 0) {
-            return
+            console.lod('이미지 없음');
+            return;
         }
 
         const planIds = result.map(plan => plan.planId);
