@@ -89,6 +89,8 @@ router.post('/plan', authenticateJWT, async (req, res) => {
     const sql = `
       INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
       VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO Plan (start_userId, startDate, endDate, planName, town, groupId)
+      VALUES (?, ?, ?, ?, ?, ?)
     `;
 
     const values = [userId, dateKey, dateKey, newplanName, town, groupId];
