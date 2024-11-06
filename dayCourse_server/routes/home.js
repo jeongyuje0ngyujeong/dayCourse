@@ -464,7 +464,7 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
 
 
 router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
-    const { planId, memo, place } = req.body;
+    const { planId, memo, place, locationId } = req.body;
     const userId = req.user.userId;
 
     console.log("일정장소추가")
@@ -478,13 +478,13 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
     }
 
     const sql = `
-        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates, version)
-        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})'), ?
+        INSERT INTO Plan_Location (planId, l_priority, memo, place, place_name, coordinates, version, locationId)
+        SELECT ?, IFNULL(MAX(l_priority), 0) + 1, ?, ?, ?, ST_GeomFromText('POINT(${x} ${y})'), ?, ?
         FROM Plan_Location
         WHERE planId = ?;
     `;
 
-    const values = [planId, memo, place.address_name, place.place_name, 1, planId];
+    const values = [planId, memo, place.address_name, place.place_name, 1, locationId, planId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
