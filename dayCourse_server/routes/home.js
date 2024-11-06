@@ -667,6 +667,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
 
 // planId로 Locations 테이블에 접근하여 LocationID 리스트 반환
 function getLocationIdsByPlanId(planId) {
+    console.log("getLocationIdsByPlanId 실행");
     return new Promise((resolve, reject) => {
         const findLocationId = `
             SELECT Plan_Location.LocationID
@@ -688,6 +689,7 @@ function getLocationIdsByPlanId(planId) {
 
 // planId로 Locations 테이블에 접근하여 장소 관련 정보들 모두 반환하는 함수
 function getAllLocationsByPlanId(planId) {
+    console.log("getAllLocationsByPlanId 실행");
     return getLocationIdsByPlanId(planId).then(locationIds => {
         const findLocationDetails = `
             SELECT Locations.LocationID, Locations.category, Locations.keyword, Plan_Location.place_name, Plan_Location.place
@@ -712,6 +714,7 @@ function getAllLocationsByPlanId(planId) {
 
 // 장소를 카테고리 별로 그룹화
 function classifyLocations(locations) {
+    console.log("classifyLocations 실행");
     const restaurants = [];
     const cafesByKeyword = {};
     const others = [];
@@ -734,6 +737,7 @@ function classifyLocations(locations) {
 
 // 음식점과 같은 키워드의 카페들이 연속으로 루트 추천되지 않도록 재배치
 function arrangeLocations(restaurants, cafesByKeyword, others) {
+    console.log("arrangeLocations 실행");
     const result = [];
     let previousCategory = null;
     let previousKeyword = null;
@@ -839,8 +843,6 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
        res.status(500).send('API 요청에 실패했습니다.');
    }
 });
-
-
 
 function translateKeyword(Keyword) {
     switch (Keyword) {
