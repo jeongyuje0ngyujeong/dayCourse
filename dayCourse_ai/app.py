@@ -97,18 +97,32 @@ def analyze_image_file(image):
     # Collect analysis results
     # Print all analysis results to the console
     print("Image analysis results:")  
+    threshold = 0.8 
 
     if result.tags is not None:
         print(" Tags:")
         tags_list = []
         for tag in result.tags.list:
-            print(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
-            tags_list.append({
-                'name': tag.name,
-                'confidence': tag.confidence
-            })
-        print(result.tags.list)
+            if tag.confidence >= threshold:
+                tags_list.append({
+                    'name': tag.name
+                })
         analysis_results['Tags'] = tags_list
+
+    if result.caption is not None:
+        print(" Caption:")
+        analysis_results['Caption'] = result.caption.text
+
+    if result.objects is not None:
+        print(" Objects:")
+        Objects_list = []
+        for object in result.objects.list:
+            if object.tags[0].confidence >= threshold:
+                Objects_list.append({
+                    'name': object.tags[0].name
+                })
+        analysis_results['Objects'] = Objects_list
+
     
     print(analysis_results)
     return jsonify(analysis_results)
@@ -281,9 +295,6 @@ def get_user_profile_vector(datas, visited_stores, tfidf_matrix):
 def SpotSuggest():
     locations = request.json.get('locations', [])
     text = request.json.get('text')
-
-    LocationName = locations[0]['LocationName']
-    addressFull = locations[0]['addressFull']
     category = locations[0]['category']
     keyword = locations[0]['keyword']
 
