@@ -62,8 +62,25 @@ const Moment = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('')
 
-    const handleBoxClick = (content) => {
-        setModalContent(content);
+    useEffect(() => {
+        const fetchMoments = async () => {
+            try {
+                const data = await getMoment();
+                setMoments(data);
+                const totalCount = Object.keys(data).length;
+                if (onMomentCountChange) {
+                    onMomentCountChange(totalCount); // 모먼트 개수를 업데이트
+                }
+            } catch (err) {
+                console.error('모먼트를 가져오는 중 오류가 발생했습니다:', err);
+            }
+        };
+        fetchMoments();
+    }, [onMomentCountChange]);
+
+    const handleBoxClick = (title, images) => {
+        setModalTitle(title);
+        setModalImages(images);
         setModalIsOpen(true);
     };
 
