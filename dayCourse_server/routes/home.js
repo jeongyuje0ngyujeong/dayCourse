@@ -871,7 +871,7 @@ function translateKeyword(Keyword) {
         case '서점': return 'book_store';
         case '방탈출': return 'escape_room';
         case '만화카페': return 'cartoonCafe';
-        //case '영화관': return 'cinema';
+        case '영화관': return 'cinema';
         case '공원': return 'park';
         case '쇼핑몰': return 'shopping';
         //case '전시회': return 'Exhibition';
