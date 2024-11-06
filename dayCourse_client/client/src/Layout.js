@@ -1,7 +1,6 @@
 import { Outlet, NavLink, useNavigate} from "react-router-dom";
 import { Button } from './Button';
 import { Footer } from './commonStyles';
-import React, { useEffect } from 'react';
 // import { Logout } from './pages/Login/auth'
 
 import UpperBar from './UpperBar';
