@@ -103,7 +103,7 @@ router.post('/survey', authenticateJWT, async (req, res) => {
     const { interest1, interest2, interest3, interest4, interest5 } = req.body;
 
     const sql = `
-      INSERT INTO User_survey (UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
+      INSERT INTO User_survey (userId, UserInterest1, UserInterest2, UserInterest3, UserInterest4, UserInterest5)
       VALUES (?, ?, ?, ?, ?, ?)
     `;
 
