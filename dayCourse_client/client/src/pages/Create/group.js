@@ -4,16 +4,17 @@ import styled from 'styled-components';
 import {ExistGroup, NewGroup} from './tapcontents'
 import {getFriends, getGroups} from '../Friends/SearchFriend';
 import {Button} from '../../Button';
+import { PageTitle } from '../../commonStyles';
 
 const TabContainer = styled.div`
-    margin-top: 1rem;
+    ${'' /* margin-top: 1rem; */}
     display: flex;
     ${'' /* border-bottom: 1px solid #ccc; */}
 `;
 
 const Tab = styled.button`
     flex: 1;
-    padding: 8px 20px;
+    ${'' /* padding: 8px 20px; */}
     cursor: pointer;
     border: none;
     outline: none;
@@ -27,6 +28,7 @@ const Tab = styled.button`
 `;
 
 const Content = styled.div`
+
     display: flex;
     top: -10px;
     padding: 20px 0;
@@ -37,15 +39,14 @@ const Content = styled.div`
 
 const ResultContainer = styled.div`
     display: flex;
-    width: 100%;
-    height: 15%;
-    padding: 5px 50px;
+    flex: 1;
+    ${'' /* height: 100%; */}
+    ${'' /* padding: 0 50px; */}
     align-items: center;
     justify-content: space-between;
     border: 1px solid #ced4da;
-    border-radius: 4px;
-    min-height: 3rem;
-    margin-top: 1rem;
+    border-radius: 10px;
+    ${'' /* margin-top: 1rem; */}
 `
 
 export default function Group({group}) {
@@ -101,27 +102,29 @@ export default function Group({group}) {
 
     return (
         <>
-        <h4>그룹</h4>
+        <PageTitle>그룹</PageTitle>
         {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
-        {selectedGroup? (  
-            <ResultContainer>
-            <h4>{selectedGroup.groupName}</h4>
-            <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
-            <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
-            </ResultContainer>
-        ) : (
-            <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
-        )}
-        <div>
-            <TabContainer>
-                <Tab isActive={activeTab === 'Tab1'} onClick={(e) => handleTab1Click(e,'Tab1')}>기존 그룹</Tab>
-                <Tab isActive={activeTab === 'Tab2'} onClick={(e) => handleTab2Click(e,'Tab2')}>새 그룹</Tab>
-            </TabContainer>
-            
-            <Content>
-                {activeTab === 'Tab1' && <ExistGroup groupsList={groupsList} setSelectedGroup={setSelectedGroup}/>}
-                {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} />}
-            </Content>
+        <div style={{display:'flex', gap:'1rem',height:'40vh'}}>
+            {selectedGroup? (  
+                <ResultContainer>
+                    <h4>{selectedGroup.groupName}</h4>
+                    <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
+                    <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+                </ResultContainer>
+            ) : (
+                <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
+            )}
+            <div style={{flex:'2', border:'1px solid #eee', borderRadius:'10px'}}>
+                <TabContainer>
+                    <Tab isActive={activeTab === 'Tab1'} onClick={(e) => handleTab1Click(e,'Tab1')}>기존 그룹</Tab>
+                    <Tab isActive={activeTab === 'Tab2'} onClick={(e) => handleTab2Click(e,'Tab2')}>새 그룹</Tab>
+                </TabContainer>
+                
+                <Content>
+                    {activeTab === 'Tab1' && <ExistGroup groupsList={groupsList} setSelectedGroup={setSelectedGroup}/>}
+                    {activeTab === 'Tab2' && <NewGroup friendsList={friendsList} selectedFriends={selectedFriends} setSelectedFriends={setSelectedFriends} />}
+                </Content>
+            </div>
         </div>
         <input type="hidden" name="groupId" value={selectedGroup.groupId} />
         </>

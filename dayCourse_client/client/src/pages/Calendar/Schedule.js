@@ -1,4 +1,4 @@
-import { Form, redirect, Link, useOutletContext } from "react-router-dom";
+import { Form, redirect, useOutletContext, useNavigate } from "react-router-dom";
 import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
 import { Button } from '../../Button';
@@ -76,6 +76,13 @@ export default function Schedule(props) {
 
   }
 
+  const navigation = useNavigate();
+
+  const handleDetail = (e,planId) => {
+      e.preventDefault();
+      navigation(`/main/PlacePage/${planId}`); 
+  };
+
   return (
     <>
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
@@ -87,9 +94,7 @@ export default function Schedule(props) {
             {event.groupName && (<p>{event.groupName}</p>)}
             
             <ButtonContainer>
-              <Link to={`/main/PlacePage/${event.planId}`}>
-                <Button style={{fontFamily: 'NPSfontBold'}} onClick={() => {}}  width='5rem'>상세일정</Button>
-              </Link>
+              <Button style={{fontFamily: 'NPSfontBold'}} onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
               <Form
                 method="post"
                 action={`${event.planId}/destroy`}
