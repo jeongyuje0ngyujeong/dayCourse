@@ -44,6 +44,13 @@ export const SocketProvider = ({ children, userId }) => {
         };
     }, [userId]);
 
+    const leaveRoom = useCallback(() => {
+        if (currentRoom.current) {
+            socket.emit('leave', { userId, room: currentRoom.current });
+            currentRoom.current = null;
+        }
+    }, [userId]);
+
     const joinRoom = useCallback((planId) => {
         if (currentRoom.current) {
             leaveRoom(); // 기존 방을 나감
@@ -54,14 +61,9 @@ export const SocketProvider = ({ children, userId }) => {
             }
         });
         currentRoom.current = planId;
-    }, [userId]);
+    }, [userId, leaveRoom]);
 
-    const leaveRoom = useCallback(() => {
-        if (currentRoom.current) {
-            socket.emit('leave', { userId, room: currentRoom.current });
-            currentRoom.current = null;
-        }
-    }, [userId]);
+
 
     const sendMessage = useCallback((message, callback) => {
         socket.emit('sendMessage', message, () => callback());

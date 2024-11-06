@@ -65,7 +65,7 @@ const PlaceAddress = styled.span`
 `;
 
 const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKeyword, onPlaceClick }) => {
-    const { messages, users, sendMessage } = useContext(SocketContext);
+  //  const { messages, users, sendMessage } = useContext(SocketContext);
 
     const [value, setValue] = useState(""); // 입력 값 상태
     const [activeTab, setActiveTab] = useState('search');
