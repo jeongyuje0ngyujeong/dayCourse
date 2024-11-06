@@ -903,45 +903,45 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     //일단은 2번 거칠거임. 1.모든 플랜의 장소 조회 > 2.일치하는 Location 찾기.
 
     const sql_plan = `
-    SELECT Plan.planId
-    FROM groupMembers
-    JOIN Plan ON groupMembers.groupId = Plan.groupId
-    WHERE groupMembers.userId = ?
-    ORDER BY Plan.startDate DESC
-`;
+        SELECT Plan.planId
+        FROM groupMembers
+        JOIN Plan ON groupMembers.groupId = Plan.groupId
+        WHERE groupMembers.userId = ?
+        ORDER BY Plan.startDate DESC
+    `;
 
     const [plans] = await db.promise().query(sql_plan, [userId]);
     const planIds = plans.map(plan => plan.planId);
 
     const sql_plan_location = `
-    SELECT place, place_name
-    FROM Plan_Location 
-    WHERE planId IN (?);
-`
+        SELECT place, place_name
+        FROM Plan_Location 
+        WHERE planId IN (?);
+    `;
     const [plan_locations] = await db.promise().query(sql_plan_location, [planIds]);
 
     const locationsPromises = plan_locations.map(async (planLocation) => {
         try {
             const sql_locations_c = `
-            SELECT Locations.*
-            FROM Locations
-            WHERE LocationName = ? AND addressFull = ? AND category = ?
-            LIMIT 1;
-        `;
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ? AND category = ?
+                LIMIT 1;
+            `;
 
             const sql_locations_k = `
-            SELECT Locations.*
-            FROM Locations
-            WHERE LocationName = ? AND addressFull = ? AND keyword = ?
-            LIMIT 1;
-        `;
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ? AND keyword = ?
+                LIMIT 1;
+            `;
 
             const sql_locations_a = `
-            SELECT Locations.*
-            FROM Locations
-            WHERE LocationName = ? AND addressFull = ?
-            LIMIT 1;
-        `;
+                SELECT Locations.*
+                FROM Locations
+                WHERE LocationName = ? AND addressFull = ?
+                LIMIT 1;
+            `;
 
             let locations = []
 
