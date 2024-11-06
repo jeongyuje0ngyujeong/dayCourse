@@ -101,7 +101,7 @@ export default function Group({group}) {
 
     return (
         <>
-        <span>그룹</span>
+        <h4>그룹</h4>
         {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
         {selectedGroup? (  
             <ResultContainer>

@@ -14,22 +14,24 @@ const MonthContainer = styled.div `
   border: 1px solid #ccc;
   border-radius: 10px;
   margin-bottom: 1rem;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
 `
-
 const CalendarContainer = styled.div `
   display: flex;
   flex-direction: column;
   margin: 0 auto; 
   width: 100%;
-  height: 80%;
+  height: 100%;
+  align-items:'center';
   color: #818181;
-  ${'' /* padding: 0 3rem; */}
-  padding: 0 0.5rem;
-  ${'' /* background-color: #90B54C; */}
+  ${'' /* border: 1px solid #ccc; */}
+  ${'' /* border-radius:10px; */}
+  ${'' /* padding: 1rem 0.5rem 0.5rem 0.5rem; */}
+  ${'' /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25); */}
 `
 
-export default function Calendar() {
-    const [currentDate, setCurrentDate] = useState(new Date());
+export default function Calendar({showCalendar, currentDate, setCurrentDate}) {
+    // const [currentDate, setCurrentDate] = useState(current);
     const [groupedSchedules, setGroupedSchedules] = useState([]);
     const [selectedDate, setSelectedDate] = useState([]);
     
@@ -83,19 +85,18 @@ export default function Calendar() {
   
     return (
       <>
-      <PageTitle>Calendar</PageTitle>
+      {/* <PageTitle>Calendar</PageTitle>
   
        <MonthContainer>
         <Button onClick={() => handlePrevMonth()} $border='none'>{'<'}</Button>
         <PageTitle>{year}. {st_month}</PageTitle>
         <Button onClick={() => handleNextMonth()} $border='none'>{'>'}</Button>
-      </MonthContainer>
+      </MonthContainer> */}
 
       <CalendarContainer>
         {/* <DayTable/> */}
-        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setSelectedDate={setSelectedDate} selectedDate={selectedDate}/>
+        <GroupDatesByWeek groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} startDay={startDay} endDay={endDay} setCurrentDate={setCurrentDate} setSelectedDate={setSelectedDate} selectedDate={selectedDate} showCalendar={showCalendar}/>
         {/* <GroupDatesByWeek startDay={startDay} endDay={endDay}/> */}
-        <Footer/>
       </CalendarContainer> 
 
       {/* <ScheduleModal  isOpen={modalIsOpen} OnRequestClose={()=>{setModalIsOpen(false)}} content={modalContent}/>   */}

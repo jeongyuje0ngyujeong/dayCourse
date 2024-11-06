@@ -26,10 +26,12 @@ export default function Login() {
             if (response.data.result === 'success'){
                 const token = response.data.access_token;
                 const id = response.data.id;
+                const userName = response.data.userName;
                 if (token){
                     sessionStorage.setItem('token', token);
                     sessionStorage.setItem('id', id);
                     sessionStorage.setItem('userId', userId);
+                    sessionStorage.setItem('userName', userName);
                     alert('로그인 성공!');
                     navigate('/Survey'); 
                 }

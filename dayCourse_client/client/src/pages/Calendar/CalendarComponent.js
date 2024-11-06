@@ -20,8 +20,10 @@ const DateTable = styled.tr`
   position: relative;
   display: flex;
   width: 100%;
-  height: 100%;
-  min-height: 9rem;
+  flex:1;
+  height: 12vh;
+  ${'' /* min-height: 6rem;
+  max-height: 6rem; */}
   border-top: 2px solid #eee;
   ${'' /* border-color: #90B54C; */}
   border-collapse: collapse;
@@ -32,8 +34,8 @@ const DateTable = styled.tr`
 
 const StyleDayT = styled.tr`
   display: flex;
-  height: 30%;
   width: 100%;
+  height:3.5rem;
   margin: 0;
   ${'' /* table-layout: fixed; */}
   ${'' /* margin-bottom: 1rem; */}
@@ -58,24 +60,23 @@ export function DayTable(){
         title={day}
         style={{
           flex: '1',
-          marginBottom: '0.5rem',
+          // marginBottom: '0.5rem',
           // border: '1px solid',
           // textAlign: 'center',
           // verticalAlign: 'middle',
         }}
         >
-          <div style={{
-            border: '2px solid #90B54C',
-            borderRadius: '50%',
-            width: '2rem',
-            height: '2rem',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            margin: '0 auto', 
-          }}>
-            {day}
-          </div>
+          <h4 style={{
+          // border: '2px solid #90B54C',
+          // borderRadius: '50%',
+          // width: '2rem',
+          // height: '2rem',
+          // display: 'flex',
+          // justifyContent: 'center',
+          // alignItems: 'center',
+          // margin: '0 auto', 
+          }}>{day}</h4>
+
         </th>
           ))}
     </StyleDayT>
@@ -109,11 +110,11 @@ const customModalStyles: ReactModal.Styles = {
     left: "0",
   },
   content: {
-    width: "50%",
+    width: "40%",
     height: "80%",
     zIndex: "150",
     position: "absolute",
-    top: "50%",
+    top: "55%",
     left: "50%",
     transform: "translate(-50%, -50%)",
     borderRadius: "10px",
@@ -141,7 +142,7 @@ function getFirst(date) {
   return month + 1;
 }
 
-export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, selectedDate, setSelectedDate}){
+export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDay, endDay, setCurrentDate, selectedDate, setSelectedDate, showCalendar}){
     const weeks = []; 
     let currentWeek = []; 
     let currentDate = new Date(startDay);
@@ -159,7 +160,8 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
       
       setSelectedDate(params);
       
-      if (location.pathname === "/main/calendar"){
+      if (showCalendar){
+        setCurrentDate(new Date(params))
         console.log(groupedSchedules[params]);
         const content = <Schedule selectedSchedules={groupedSchedules[params]} groupedSchedules={groupedSchedules} setGroupedSchedules={setGroupedSchedules} setModalContent={setModalContent}/>;
         setModalContent(content);
@@ -192,12 +194,12 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
               >
                   <div style={{
                     color: day === 6 ? '#F3CD86': day === 0 ? '#F5A281' : 'black', 
-                    fontWeight: '500',
+                    fontWeight: '700',
                     opacity: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 1 : 0.3,
                   }}>{String(date)}</div>
                   
                   <div 
-                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '500' }}>
+                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '300' }}>
                     {events && events.length > 0 ? (
                       <>
                         {events.slice(0, 3).map((event, index) => (
@@ -239,10 +241,10 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
     return (
         <>
         <table style={{ borderCollapse: 'collapse', width: '100%' }}>
-          <thead style={{display:'relative', zIndex:'1'}}>
+          <thead style={{}}>
             <DayTable/>
           </thead>
-          <tbody style={{display:'relative', zIndex:'100'}}>
+          <tbody style={{}}>
             {weeks}
           </tbody>
         </table>

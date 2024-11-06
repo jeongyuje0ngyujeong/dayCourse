@@ -116,6 +116,8 @@ const Moment = ({ onMomentCountChange }) => {
     const [modalTitle, setModalTitle] = useState('');
     const [modalImages, setModalImages] = useState([]);
 
+    console.log(moments);
+
     // 컴포넌트가 마운트될 때 모먼트 데이터 가져오기
     useEffect(() => {
         const fetchMoments = async () => {
@@ -141,12 +143,28 @@ const Moment = ({ onMomentCountChange }) => {
     };
 
     return (
-        <div>
-            <h2>모먼트</h2>
+        <>
             <Container>
-                {Object.entries(moments).map(([key, images]) => (
+                {Object.entries(moments)
+                    .slice(0, maxItems || Object.entries(moments).length) // maxItems가 없을 경우 전체 항목 렌더링
+                    .map(([key, images]) => (
                     <Box key={key} onClick={() => handleBoxClick(key, images)}>
-                        {key.charAt(0).toUpperCase() + key.slice(1)} {/* 첫 글자 대문자 */}
+                        <img
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                objectFit: 'cover',
+                                opacity: 0.5,
+                                filter: 'blur(2px)',
+                                borderRadius: '10px'
+                            }}
+                            src={images[0]}
+                            alt="Company Logo"
+                            className="logo"
+                        />
+                        <p style={{ position: 'absolute' }}>
+                            {key.charAt(0).toUpperCase() + key.slice(1)}
+                        </p>
                     </Box>
                 ))}
             </Container>
@@ -157,7 +175,7 @@ const Moment = ({ onMomentCountChange }) => {
                 title={modalTitle}
                 images={modalImages}
             />
-        </div>
+        </>
     );
 };
 
