@@ -198,7 +198,7 @@ async function processQueue(queue, imagesData) {
                 });
             }
         } catch (error) {
-            console.error("S3 이미지 가져오기 오류:", error);
+            console.error("S3 이미지 가져오기 오류:");
         }
     }
 }
@@ -268,7 +268,7 @@ async function analyzeImage(userId){
 
                     db.query(sql_moment, values_moment, (err, result) => {
                         if (err) {
-                            console.error('Error inserting data:', err);
+                            console.error('Error inserting data:');
                         }
 
                         resultData.push(result)          
@@ -276,10 +276,10 @@ async function analyzeImage(userId){
                 });
             }
         } catch (err) {
-            console.error('모먼트 분석 이미지 오류:', err);
+            console.error('모먼트 분석 이미지 오류:');
         }
     } catch (err) {
-        console.error('모먼트 분석 데이터 오류:', err);
+        console.error('모먼트 분석 데이터 오류:');
     }
 }
 
