@@ -97,96 +97,19 @@ def analyze_image_file(image):
     # Collect analysis results
     # Print all analysis results to the console
     print("Image analysis results:")  
-    threshold = 0.8 
 
     if result.tags is not None:
         print(" Tags:")
         tags_list = []
         for tag in result.tags.list:
-            if tag.confidence >= threshold:
-                tags_list.append({
-                    'name': tag.name
-                })
+            print(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
+            tags_list.append({
+                'name': tag.name,
+                'confidence': tag.confidence
+            })
         analysis_results['Tags'] = tags_list
-
-    if result.caption is not None:
-        print(" Caption:")
-        analysis_results['Caption'] = result.caption.text
-
-    if result.objects is not None:
-        print(" Objects:")
-        Objects_list = []
-        for object in result.objects.list:
-            if object.tags[0].confidence >= threshold:
-                Objects_list.append({
-                    'name': object.tags[0].name
-                })
-        analysis_results['Objects'] = Objects_list
-
     
-    print(analysis_results)
     return jsonify(analysis_results)
-
-
-
-
-def test23(data):
-
-    # 사진과 태그 정의 딕셔너리 초기화
-    photos = {}
-
-    # 데이터 변환
-    for item in data:
-        photo_name = f"{item['url']}"  # 이름 변환
-        photos[photo_name] = item["metadata"]
-
-    # 모든 태그를 평탄화하여 리스트로 변환
-    all_tags = set(tag for tags in photos.values() for tag in tags)
-
-    # TF-IDF 벡터화
-    vectorizer = TfidfVectorizer()
-    tfidf_matrix = vectorizer.fit_transform(all_tags)
-
-    # 코사인 유사도 계산
-    cosine_sim = cosine_similarity(tfidf_matrix)
-
-    # 태그 간의 유사도를 사전 형태로 저장
-    tag_similarities = defaultdict(list)
-
-    # 태그 리스트
-    tags_list = list(all_tags)
-
-    # 유사도 기반으로 그룹화
-    threshold = 0.5  # 유사도 임계값
-    for i in range(len(tags_list)):
-        for j in range(i + 1, len(tags_list)):
-            if cosine_sim[i, j] > threshold:  # 임계값을 넘는 경우
-                tag_similarities[tags_list[i]].append(tags_list[j])
-
-    # 결과 출력
-    grouped_tags = defaultdict(list)
-    print("test")
-
-    for tag, similar_tags in tag_similarities.items():
-        # 유사한 태그를 포함하여 결과 그룹화
-        grouped_tags[tag].extend(similar_tags)
-
-    # 태그와 그에 해당하는 사진 출력
-    final_tagged_photos = defaultdict(list)
-
-    for tag, similar_tags in grouped_tags.items():
-        all_relevant_tags = [tag] + similar_tags
-        for photo, tags in photos.items():
-            if any(t in all_relevant_tags for t in tags):
-                final_tagged_photos[tag].append(photo)
-
-    # 최종 결과 출력
-    result = {}
-    for tag, photo_list in final_tagged_photos.items():
-        print(f"{tag}: {', '.join(photo_list)}")
-        result[tag] = photo_list
-    
-    return result
 
 
 @app.route('/')
@@ -198,17 +121,6 @@ def analyze_image():
     if request.content_type.startswith('multipart/form-data'):
         image = request.form.get('imageUrl')
         return analyze_image_file(image)
-
-@app.route('/tt', methods=['POST'])
-def tt():
-    # 메타데이터를 JSON 형식으로 수신
-    data = request.form.get('metadata')  # FormData로 전송된 'metadata'를 가져옴
-
-    if data:
-        images_data = json.loads(data)  # JSON 문자열을 파이썬 객체로 변환
-        return test23(images_data)
-    else:
-        return jsonify({"error": "No metadata found"}), 400
 
 @app.route('/cluster', methods=['POST'])
 def cluster_objects2():
