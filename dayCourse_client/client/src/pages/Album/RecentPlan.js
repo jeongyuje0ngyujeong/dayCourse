@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { uploadImage, fetchImage } from './AlbumApi.js';
+import { fetchImage } from './AlbumApi.js';
 
 const Container = styled.div`
   display: grid;
@@ -65,7 +65,7 @@ const RecentPlan = ({plans}) => {
                 newThumbnails[plan.planId] = images[0];
             }
         } catch (error) {
-            console.error('error 썸너엘 ${plan.planId}');
+            console.error('error',error);
         }
     }
     setThumbnails(newThumbnails);

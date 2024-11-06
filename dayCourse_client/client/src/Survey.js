@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios'; // Axios 임포트
@@ -79,6 +79,12 @@ const Survey = () => {
         '쇼핑몰', '전시회'
     ];
 
+    const goMain = useCallback(() => {
+        const today = new Date();
+        const formattedDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2,'0')}`;
+        navigate(`/main/home/schedules/${formattedDate}`);
+    }, [navigate]);
+
     useEffect(() => {
         const checkOk = async () => {
             const token = sessionStorage.getItem('token'); // 토큰 가져오기
@@ -91,7 +97,6 @@ const Survey = () => {
 
                 console.log('서버 응답:', response.data); // 서버 응답 로그 확인
 
-                // 서버가 dataPresence를 boolean으로 보내는지, 숫자로 보내는지 확인
                 const { dataPresence } = response.data;
 
                 if (dataPresence === false) {
@@ -101,12 +106,11 @@ const Survey = () => {
                 }
             } catch (error) {
                 console.error('서베이 상태 확인 오류', error);
-                // 에러가 발생하면 서베이를 보여주거나 다른 처리를 할 수 있습니다.
                 setLoading(false);
             }
         };
         checkOk();
-    }, []);
+    }, [goMain]); // goMain을 의존성 배열에 추가
 
     const checkboxChange = (keyword) => {
         if (selectedKeyWords.includes(keyword)) {
@@ -148,12 +152,6 @@ const Survey = () => {
             console.error('서베이 전송 에러', error);
             alert('서버 전송 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
-    };
-
-    const goMain = () => {
-        const today = new Date();
-        const formattedDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2, '0')}-${String(today.getDate()).padStart(2,'0')}`;
-        navigate(`/main/home/schedules/${formattedDate}`);
     };
 
     if (loading) {
