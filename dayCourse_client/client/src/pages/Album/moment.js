@@ -12,13 +12,13 @@ const Container = styled.div`
 `;
 
 const Box = styled.div`
-    width: 150px; /* 너비 조정 */
-    height: 200px; /* 높이 조정 */
-    background-color: white; /* 배경색을 흰색으로 설정 */
-    border: 1px solid #ccc; /* 경계선 추가 */
-    border-radius: 10px; /* 둥근 모서리 */
-    margin: 10px; /* 여백 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+    width: 150px;
+    height: 200px;
+    background-color: #ccc;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     transition: transform 0.2s; /* 애니메이션 효과 */
     overflow: hidden;
@@ -30,7 +30,17 @@ const Box = styled.div`
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    position: relative;
+    overflow: hidden;
+    background-image: url(${props => props.background});
+    background-size: cover;
+    background-position: center;
+    color: white;
+    font-size: 16px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+
+    &:hover {
+        transform: scale(1.05);
+    }
 `;
 
 const StyledModal = styled(Modal)`
@@ -121,16 +131,18 @@ const Moment = ({maxItems, columns}) => {
         const fetchMoments = async () => {
             try {
                 const data = await getMoment();
-                // 서버의 응답 구조에 따라 데이터 설정
-                // 예를 들어, data.moments가 모먼트 배열이라면:
                 setMoments(data);
+    
+                // 각 카테고리 배열의 길이를 합산하여 momentCount 계산
+                const totalCount = Object.keys(data).length
+                console.log("Calculated total moment count:", totalCount);
+                onMomentCountChange(totalCount);
             } catch (err) {
                 console.error('모먼트를 가져오는 중 오류가 발생했습니다:', err);
             }
         };
-
         fetchMoments();
-    }, []);
+    }, [onMomentCountChange]);
 
     const handleBoxClick = (title, images) => {
         setModalTitle(title);

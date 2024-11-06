@@ -2,7 +2,7 @@
 import styled from 'styled-components';
 // import { PageTitle } from '../../commonStyles';
 import React, { useState , useEffect} from 'react';
-import Search from './Search.js';
+
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
 import { getPlan } from './AlbumApi'; // 플랜 가져오는 API 함수
@@ -16,8 +16,11 @@ const Container = styled.div`
   border-radius: 3px;
   box-sizing: border-box;
   align-items: center;
+  margin-top:20px;
+  
 `;
 const ProfileHeader = styled.div`
+
   display: flex;
   align-items: center;
 
@@ -26,6 +29,7 @@ const ProfileHeader = styled.div`
 
 const ProfileInfo = styled.div`
   width: 100%; /* 전체 가로 너비 사용 */
+  
 
 `;
 
@@ -87,7 +91,7 @@ const TabButton = styled.button`
   border: none;
   outline: none;
   box-shadow: none; /* 윤곽선 및 그림자 제거 */
-  font-size: 14px;
+  font-size: 15px;
   color: ${(props) => (props.isActive ? '#262626' : '#8e8e8e')};
   font-weight: ${(props) => (props.isActive ? '600' : 'normal')};
   border-top: ${(props) => (props.isActive ? '2px solid #262626' : 'none')}; /* 선택된 탭에만 검은색 선 */
@@ -122,9 +126,10 @@ const ContentContainer = styled.div`
 
 const Album = ({ userId }) => {
   const [activeTab, setActiveTab] = useState('photos');
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
   const [plans, setPlans] = useState([]);
   const [username, setUsername] = useState('')
+  const [momentCount, setMomentCount] = useState('');
 
   const currentUserId = sessionStorage.getItem('userId');
 
@@ -147,20 +152,18 @@ const Album = ({ userId }) => {
     console.log('userName', currentUserId.userName);
   }, [currentUserId]);
 
-  const filteredPlans = plans.filter((plan) =>
-    plan.planName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
 
   const renderContent = () => {
     switch (activeTab) {
       case 'posts':
-        return <RecentPlan plans={filteredPlans} />;
+        return <RecentPlan plans={plans} />;
       case 'moments':
-        return <Moment />;
+        return <Moment onMomentCountChange={setMomentCount} />;
       case 'videos':
         return <div>동영상</div>;
       default:
-        return <RecentPlan plans={filteredPlans} />;
+        return <RecentPlan plans={plans} />;
     }
   };
 
@@ -173,10 +176,10 @@ const Album = ({ userId }) => {
           <Username>{currentUserId}</Username>
           <ProfileStats>
             <Stat>
-              <strong>공유사진 {plans.length}</strong> 
+              <strong>일정 {plans.length}</strong> 
             </Stat>
             <Stat>
-              <strong>모먼트 0</strong> 
+              <strong>모먼트 {momentCount}</strong> 
             </Stat>
             <Stat>
               <strong>동영상 0</strong> 
@@ -197,7 +200,7 @@ const Album = ({ userId }) => {
 
       <Tabs>
         <TabButton isActive={activeTab === 'posts'} onClick={() => setActiveTab('posts')}>
-          공유앨범
+          공유사진
         </TabButton>
         <TabButton isActive={activeTab === 'moments'} onClick={() => setActiveTab('moments')}>
           모먼트

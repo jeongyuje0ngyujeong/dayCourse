@@ -116,7 +116,7 @@ const PlanDetail = ({plans}) => {
                 </form>
             </UploadContainer>
 
-            <h3>사진 목록</h3>
+           
             <ImageContainer>
                 {imageUrls.length > 0 ? (
                     imageUrls.map((url, index) => (
