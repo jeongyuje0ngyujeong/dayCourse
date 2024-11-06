@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { useNavigate} from 'react-router-dom';
+//import { useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import Modal from 'react-modal';
 import Schedule from './Schedule'
