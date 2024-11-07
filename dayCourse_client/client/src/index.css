@@ -267,7 +267,7 @@ button:active {
 main {
   flex: 1;
   padding: 1rem;
-  position: relative;
+  /* position: relative; */
   /* border-bottom: 1px solid #ccc;  */
 }
 

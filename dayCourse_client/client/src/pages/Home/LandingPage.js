@@ -453,54 +453,55 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                 )}
                             </Droppable>
                         </DragDropContext>
-                             {/* 다른 사용자의 마우스 커서 표시 */}
-                    {Object.entries(userCursors).map(([userId, cursorData]) => (
-                        <div key={userId}>
-                            <UserCursor 
-                                style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
-                                title={cursorData.name}
-                            />
-                            <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-                                {cursorData.name}
-                            </span>
-                        </div>
-                    ))}
 
-                    {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: "3%", left: "20%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
-                        <h4>접속 사용자</h4>
-                        <ul>
-                            {uniqueUsers.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
-                            ))}
-                        </ul>
-                    </div>
-
-                <RecommendedRoutesBox>
-                <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
-                    {isRecommending ? '추천 중...' : '루트 추천'}
-                </RecommendButton>
-                <div style={{ marginTop: '10px' }}>
-                    {isRecommending ? (
-                        <div>추천 중입니다...</div>
-                    ) : recommendError ? (
-                        <div style={{ color: 'red' }}>{recommendError}</div>
-                    ) : recommendedRoutes.length > 0 ? (
-                        recommendedRoutes.map((place, index) => (
-                            <div key={index} style={{ marginBottom: '15px' }}>
-                                <PlaceBox>
-                                    <div>
-                                        <h5>{index + 1}. {place.placeName}</h5>
-                                        <span>{place.placeAddr}</span>
-                                    </div>
-                                </PlaceBox>
+                        {/* 다른 사용자의 마우스 커서 표시 */}
+                        {Object.entries(userCursors).map(([userId, cursorData]) => (
+                            <div key={userId}>
+                                <UserCursor 
+                                    style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
+                                    title={cursorData.name}
+                                />
+                                <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
+                                    {cursorData.name}
+                                </span>
                             </div>
-                        ))
-                    ) : (
-                        <div>추천된 루트가 없습니다.</div>
-                    )}
-                </div>
-            </RecommendedRoutesBox>
+                        ))}
+
+                        {/* 현재 접속한 사용자 목록 표시 */}
+                        <div style={{ position: 'absolute', top: "10%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
+                            <h4>접속 사용자</h4>
+                            <ul>
+                                {uniqueUsers.map(user => (
+                                    <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        <RecommendedRoutesBox>
+                            <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
+                                {isRecommending ? '추천 중...' : '루트 추천'}
+                            </RecommendButton>
+                            <div style={{ marginTop: '10px' }}>
+                                {isRecommending ? (
+                                    <div>추천 중입니다...</div>
+                                ) : recommendError ? (
+                                    <div style={{ color: 'red' }}>{recommendError}</div>
+                                ) : recommendedRoutes.length > 0 ? (
+                                    recommendedRoutes.map((place, index) => (
+                                        <div key={index} style={{ marginBottom: '15px' }}>
+                                            <PlaceBox>
+                                                <div>
+                                                    <h5>{index + 1}. {place.placeName}</h5>
+                                                    <span>{place.placeAddr}</span>
+                                                </div>
+                                            </PlaceBox>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div>추천된 루트가 없습니다.</div>
+                                )}
+                            </div>
+                        </RecommendedRoutesBox>
                     </RowContainer>
                 </>
             )}
