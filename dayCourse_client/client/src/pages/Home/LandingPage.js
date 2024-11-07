@@ -468,7 +468,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         ))}
 
                     {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: "4%", left: "40%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
+                    <div style={{ position: 'absolute', top: "6%", left: "40%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
                         <h4>접속 사용자</h4>
                         <ul>
                             {uniqueUsers.map(user => (
