@@ -116,7 +116,7 @@ export default function UpdateTown() {
                 <SelectTown contextTown={setSelectedTown}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
-                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '6%' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
+                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '3.5%' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
                 </Form>  
                 <RecommendContainer>
                     <DepartureContainer>

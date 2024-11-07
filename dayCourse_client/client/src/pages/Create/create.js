@@ -1,12 +1,15 @@
 import { Form, useLoaderData, redirect } from "react-router-dom";
 import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
-import { Link } from 'react-router-dom'; 
+// import { Link } from 'react-router-dom'; 
 import Group from './group';
 import { PageTitle } from '../../commonStyles';
 import MiniCalendar from '../Calendar/MiniCalendar';
 import React, { useState, } from 'react';
+import {Button} from '../../Button';
+
 
 export async function action({ request, params }) {
+  console.log(params);
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
 
@@ -56,44 +59,44 @@ export default function CreateSchedule() {
 
   return (
     <>
-          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
       <div style={{display:'flex', gap: '3rem'}}>
         <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
+          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
           <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
           <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-          <p>
-            <button type="submit">Save</button>
-            <Link to="/main/home">
-              <button type="button">Cancel</button>
-            </Link>
-          </p>
+          
         </div>
         <div style={{flex:'2'}}>
-          <Form style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
-            <div style={{flex:'1'}}>
-              <PageTitle>약속 날짜</PageTitle>
-              <input
-                placeholder="년"
-                aria-label="년"
-                type="date"
-                name="date"
-                defaultValue={date}
-                style={{width:'100%'}}
-                required
-              />
-            </div>
-            <div style={{flex:'1'}}>
-              <PageTitle>약속 이름</PageTitle>
-              <input
-                type="text"
-                name="planName"
-                style={{width:'100%'}}
-                placeholder={'약속의 이름을 입력해주세요.'}
-                defaultValue={planName}
-              />
-            </div>
-          </Form>
-          <Group group={group}/>
+          <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
+            <Form style={{width:'100%'}}method="post" id="schedule-form">
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 날짜</PageTitle>
+                <input
+                  placeholder="년"
+                  aria-label="년"
+                  type="date"
+                  name="date"
+                  defaultValue={date}
+                  style={{width:'100%'}}
+                  required
+                />
+              </div>
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 이름</PageTitle>
+                <input
+                  type="text"
+                  name="planName"
+                  style={{width:'100%'}}
+                  placeholder={'약속의 이름을 입력해주세요.'}
+                  defaultValue={planName}
+                />
+              </div>
+              <Group group={group}/>
+              {/* <div style={{display:'flex', marginTop:'2rem'}}> */}
+                <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button> 
+              {/* </div> */}
+            </Form>
+          </div>
         </div>
       </div>
       </>

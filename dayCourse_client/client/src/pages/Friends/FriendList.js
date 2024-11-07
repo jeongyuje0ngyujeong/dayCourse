@@ -7,9 +7,10 @@ const ResultContainer = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
-    height: 15rem;  
+    height: 14rem;  
     ${'' /* overflow-y: auto; */}
     overflow: auto; 
+    width: 100%;
     
     &::-webkit-scrollbar {
         display: none; 
@@ -64,7 +65,7 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
                 >
                     <p>{friend.friendName} | {friend.friendId}</p>
                     {flag ? 
-                    <button onClick={(e) => handleAdd(e, friend)}>추가</button>
+                    <button onClick={(e) => handleAdd(e, friend)}>+</button>
                     :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>}
                 </ItemContainer>
             ))}
