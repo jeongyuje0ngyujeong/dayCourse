@@ -4,10 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { fetchImage } from './AlbumApi.js';
 
 const Container = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-
-    padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 5px;
+  padding: 20px 0;
+  margin-left: 22%;
 `;
 
 const Box = styled.div`

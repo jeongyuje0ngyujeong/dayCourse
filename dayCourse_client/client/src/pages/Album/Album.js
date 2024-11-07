@@ -48,11 +48,9 @@ const Album = ({userId}) => {
         return <RecentPlan plans={filteredPlans} />;
 
       case 'moments':
-        return <Moment />;
-
-      // case 'videos':
-      //   return <div>동영상</div>;
-
+        return <Moment colums={3} onMomentCountChange={setMomentCount} />;
+      case 'videos':
+        return <div>동영상</div>;
       default:
         return <RecentPlan plans={filteredPlans} />;
     }
