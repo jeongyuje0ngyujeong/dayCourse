@@ -159,7 +159,7 @@ const Album = ({ userId }) => {
       case 'posts':
         return <RecentPlan plans={plans} />;
       case 'moments':
-        return <Moment onMomentCountChange={setMomentCount} />;
+        return <Moment colums={3} onMomentCountChange={setMomentCount} />;
       case 'videos':
         return <div>동영상</div>;
       default:
