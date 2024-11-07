@@ -4,7 +4,7 @@ import { GroupDatesByWeek, } from '../Calendar/CalendarComponent'
 import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
-import Moment from '../Album/moment.js';
+import Moment from '../Album/momentHome.js';
 import Calendar from '../Calendar/Calendar';
 import {PageTitle} from '../../commonStyles';
 import { ReactComponent as Down } from "../../assets/chevron-down-solid.svg";
