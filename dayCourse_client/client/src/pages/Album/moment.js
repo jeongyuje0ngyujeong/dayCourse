@@ -48,7 +48,7 @@ const Box = styled.div`
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%); /* 텍스트 중앙으로 이동 */
-        z-index: 1;
+     
         text-align: center;
     }
 `;
