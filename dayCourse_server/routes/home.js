@@ -439,6 +439,11 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
       WHERE planId = ?;
     `;
 
+    const sql_chat = `
+      DELETE FROM Chat 
+      WHERE planID = ?;
+    `;
+
     const sql = `
       DELETE FROM Plan 
       WHERE planId = ? AND start_userId = ?;
@@ -450,6 +455,7 @@ router.post('/plan/delete', authenticateJWT, async (req, res) => {
         // 첫 번째 쿼리 실행
         await db.promise().query(sql_pu, [planId]);
         await db.promise().query(sql_pl, [planId]);
+        await db.promise().query(sql_chat, [planId]);
 
         // 두 번째 쿼리 실행
         await db.promise().query(sql, values);
