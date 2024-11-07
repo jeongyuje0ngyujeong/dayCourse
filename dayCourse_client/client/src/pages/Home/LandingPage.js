@@ -82,6 +82,62 @@ const UserCursor = styled.div`
     transform: translate(-50%, -50%);
 `;
 
+const Container = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 20px;
+`;
+
+const PlacesBox = styled.div`
+    flex: 2;
+`;
+
+const RecommendButton = styled.button`
+    padding: 5px 10px; /* 버튼 크기를 작게 조정 */
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
+
+    &:hover {
+        background-color: #45a049;
+    }
+
+    &:disabled {
+        background-color: #a5d6a7;
+        cursor: not-allowed;
+    }
+`;
+
+
+
+const RowContainer = styled.div`
+    display: flex;
+    width: 100%;
+    gap: 50px; /* 간격 조정 */
+    margin-top: 20px;
+`;
+
+const SelectedPlacesContainer = styled.div`
+    display: flex; 
+    flex-direction: column;
+`;
+
+const RecommendedRoutesBox = styled.div`
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fefefe;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+    width: 33%;
+    
+`;
+
 const LandingPage = ({ userId, planId, place, context }) => {
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
