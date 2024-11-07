@@ -10,6 +10,7 @@ import Chat from '../Chat/Chat';
 
 // Styled Components (변경 없음)
 const SidebarContainer = styled.div`
+    margin-top:70px;
     width: 20%;
     padding: 20px;
     background-color: #f8f9fa;
