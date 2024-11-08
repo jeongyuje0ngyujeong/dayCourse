@@ -28,7 +28,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         selectedPlaces.forEach((place, index) => {
             const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
             const content = `
-                <div style="color: white; background: #90B54C; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                <div style="color: white; background: #8cd108; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                     ${index + 1}
                 </div>`;
             const overlay = new kakao.maps.CustomOverlay({
