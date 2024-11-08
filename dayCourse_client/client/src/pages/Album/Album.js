@@ -1,7 +1,7 @@
 // import { Outlet} from "react-router-dom";
 import styled from 'styled-components';
 // import { PageTitle } from '../../commonStyles';
-import React, { useState , useEffect} from 'react';
+import React, { useState , useEffect, act} from 'react';
 
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
@@ -125,7 +125,7 @@ const ContentContainer = styled.div`
 `;
 
 const Album = ({ userId }) => {
-  const [activeTab, setActiveTab] = useState('photos');
+  const [activeTab, setActiveTab] = useState('posts');
   // const [searchTerm, setSearchTerm] = useState('');
   const [plans, setPlans] = useState([]);
   const [username, setUsername] = useState('')
@@ -188,9 +188,6 @@ const Album = ({ userId }) => {
             <Bio>{username}</Bio> 
         </ProfileInfo>
       </ProfileHeader>
-
-
-
 
 
 
