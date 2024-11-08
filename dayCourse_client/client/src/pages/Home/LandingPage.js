@@ -8,6 +8,21 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
+
+
+
+const UserCursor = styled(FontAwesomeIcon)`
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    width: 30px; /* 아이콘 크기 조절 */
+    height: 30px;
+    transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
+`;
+
+
 
 // Styled Components
 const PlaceBox = styled.div`
@@ -70,16 +85,6 @@ const Overlay = styled.div`
     z-index: 1000;
 `;
 
-const UserCursor = styled.div`
-    position: absolute;
-    pointer-events: none;
-    z-index: 1000;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: ${props => props.color || 'red'};
-    transform: translate(-50%, -50%);
-`;
 
 const Container = styled.div`
     display: flex;
@@ -362,18 +367,18 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
         //TMAP 거리 계산 API 
 
-        useEffect(() => {
-            const loadDistance = async () => {
-                if (selectedPlaces.length > 1) {
-                    const distances = await fetchDistance(planId, userId);
-                    console.log("받은 거리 정보:", distances);
-                    setDistances(distances.distances);
-                } else {
-                    setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-                }
-            };
-            loadDistance();
-        }, [selectedPlaces, planId, userId]);
+        // useEffect(() => {
+        //     const loadDistance = async () => {
+        //         if (selectedPlaces.length > 1) {
+        //             const distances = await fetchDistance(planId, userId);
+        //             console.log("받은 거리 정보:", distances);
+        //             setDistances(distances.distances);
+        //         } else {
+        //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
+        //         }
+        //     };
+        //     loadDistance();
+        // }, [selectedPlaces, planId, userId]);
 
     return (
         <div className="landing-page">
@@ -456,16 +461,16 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
-                            <div key={userId}>
-                                <UserCursor 
-                                    style={{ top: cursorData.y, left: cursorData.x, backgroundColor: userColors[userId] }}
-                                    title={cursorData.name}
-                                />
-                                <span style={{ position: 'absolute', top: cursorData.y + 15, left: cursorData.x, color: userColors[userId], backgroundColor: 'rgba(255, 255, 255, 0.7)', padding: '2px 4px', borderRadius: '4px', pointerEvents: 'none' }}>
-                                    {cursorData.name}
-                                </span>
-                            </div>
-                        ))}
+                        <div key={userId}>
+                            <UserCursor 
+                                icon={faMousePointer} 
+                                color={userColors[userId]} 
+                                style={{ top: cursorData.y, left: cursorData.x }}
+                                title={cursorData.name}
+                            />
+
+                        </div>
+                    ))}
 
                     {/* 현재 접속한 사용자 목록 표시 */}
                     <div style={{ position: 'absolute', top: "6%", left: "40%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
