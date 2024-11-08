@@ -23,7 +23,7 @@ const Box = styled.div`
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 22px;
     color: white;
     background-image: url(${props => props.background});
     background-size: cover;
