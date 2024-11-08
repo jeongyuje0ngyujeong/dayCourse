@@ -3,7 +3,9 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes} from './PlaceApi'; 
+//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
+
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
@@ -155,7 +157,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
     const [recommendError, setRecommendError] = useState(null);
     const [recommendedRoutes, setRecommendedRoutes] = useState([]);
-    const [distances, setDistances] = useState([]);
+   // const [distances, setDistances] = useState([]);
   
 
     const submitKeyword = (newKeyword) => {
