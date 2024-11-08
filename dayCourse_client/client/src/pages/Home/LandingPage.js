@@ -449,7 +449,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
 
                                                     {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
                                                         <DistanceBox>
-                                                            {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
+                                                            {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
                                                         </DistanceBox>
                                                     )}
                                                 </React.Fragment>
