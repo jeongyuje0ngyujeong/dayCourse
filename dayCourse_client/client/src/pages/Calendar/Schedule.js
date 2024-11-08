@@ -87,9 +87,9 @@ export default function Schedule(props) {
     <>
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
-            <h3>
+            <h2>
               {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
-            </h3>
+            </h2>
 
             {event.groupName && (<p>{event.groupName}</p>)}
             
