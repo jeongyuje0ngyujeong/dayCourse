@@ -43,7 +43,7 @@ const Overlay = styled.div`
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: bold;
   text-align: center;
   z-index: 1;

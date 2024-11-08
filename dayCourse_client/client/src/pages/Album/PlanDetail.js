@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { uploadImage, fetchImage, getPlan } from './AlbumApi.js';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import Checkbox from './Checkbox'; // 추가된 라인
+
 
 const Container = styled.div`
     padding: 20px;
@@ -37,17 +39,16 @@ border-radius: 5px;
 display: block;
 `;
 
-const Checkbox = styled.input`
-    position: absolute;
-    top: 5px;
-    left: 5px;
-    transform: scale(1.5);
-    z-index: 1;
-`;
 
-const DownloadButton = styled.button`
-    display: inline-block;
+const ButtonContainer = styled.div`
+    display: flex;
+    gap: 10px;
     margin-top: 10px;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+`;
+const DownloadButton = styled.button`
     padding: 10px 15px;
     background-color: #007bff;
     color: white;
@@ -57,6 +58,19 @@ const DownloadButton = styled.button`
 
     &:hover {
         background-color: #0056b3;
+    }
+`;
+
+const SelectAllButton = styled.button`
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #218838;
     }
 `;
 
@@ -158,6 +172,12 @@ const PlanDetail = () => {
         }
     };
 
+    const selectAllImages = () => {
+        setSelectedImages(imageUrls.length === selectedImages.length ? [] : [...imageUrls]);
+    }
+
+    
+
     return (
         <Container>
             <h2>일정 이름: {planName}</h2>
@@ -170,6 +190,12 @@ const PlanDetail = () => {
                     </div>
                     <button type="submit">업로드</button>
                 </form>
+                <ButtonContainer>
+                    <SelectAllButton onClick={selectAllImages}>
+                        {imageUrls.length === selectedImages.length ? "전체 해제" : "전체 선택"}
+                    </SelectAllButton>
+                    <DownloadButton onClick={downloadSelectedImages}>선택한 이미지 다운로드</DownloadButton>
+                </ButtonContainer>
             </UploadContainer>
 
             <ImageContainer>
@@ -177,7 +203,6 @@ const PlanDetail = () => {
                     imageUrls.map((url, index) => (
                         <ImageWrapper key={index}>
                             <Checkbox
-                                type="checkbox"
                                 checked={selectedImages.includes(url)}
                                 onChange={() => handleImageSelect(url)}
                             />
@@ -189,7 +214,6 @@ const PlanDetail = () => {
                 )}
             </ImageContainer>
 
-            <DownloadButton onClick={downloadSelectedImages}>선택한 이미지 다운로드</DownloadButton>
         </Container>
     );
 };
