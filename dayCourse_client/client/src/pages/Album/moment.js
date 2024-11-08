@@ -1,20 +1,25 @@
+// Moment.js
+
 import Modal from 'react-modal';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
+
 import { getMoment } from './AlbumApi';
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, minmax(150px, 1fr));
-    gap: 5px;
+    grid-template-columns: repeat(3, minmax(150px, 1fr)); /* 반응형 그리드 */
+    gap: 10px; /* 그리드 간격 */
     padding: 20px 0;
-    margin-left: 22%;
+    max-width: 935px; /* 최대 너비 설정 */
+    margin: 0 auto; /* 중앙 정렬 */
+    width: 100%;
+    box-sizing: border-box;
 `;
 
 const Box = styled.div`
     position: relative;
     width: 100%;
-    height: 150px; /* 고정된 높이로 설정 */
     padding-bottom: 100%; /* 정사각형 비율 유지 */
     background-color: #bfbfbf;
     cursor: pointer;
@@ -23,7 +28,7 @@ const Box = styled.div`
     justify-content: center;
     align-items: center;
     font-weight: bold;
-    font-size: 22px;
+    font-size: 25px;
     color: white;
     background-image: url(${props => props.background});
     background-size: cover;
@@ -46,11 +51,12 @@ const Box = styled.div`
     
     > p {
         position: absolute; /* 부모 요소 기준으로 절대 위치 지정 */
-        top: 50%;
+        top: 40%;
         left: 50%;
         transform: translate(-50%, -50%); /* 텍스트 중앙으로 이동 */
-     
         text-align: center;
+        
+       
     }
 `;
 
@@ -92,17 +98,20 @@ const ImageGrid = styled.div`
 
 const ModalImage = styled.img`
     max-width: 100%;
-    height: auto;
-    object-fit: contain;
+    max-height: 400px; /* 최대 높이를 제한하여 원본 비율 유지 */
+    width: auto; /* 가로 비율을 자동으로 조정 */
+    object-fit: contain; /* 원본 비율 유지하면서 영역에 맞게 조정 */
     border-radius: 5px;
     margin-bottom: 10px;
 
     @media (min-width: 768px) {
-        max-width: 150px;
+        max-width: 200px;
+        max-height: 200px;
     }
 
     @media (min-width: 1024px) {
-        max-width: 200px;
+        max-width: 300px;
+        max-height: 250px; 
     }
 `;
 
@@ -125,7 +134,7 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, columns, onMomentCountChange }) => {
+const Moment = ({ maxItems, onMomentCountChange }) => {
     const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
@@ -155,7 +164,7 @@ const Moment = ({ maxItems, columns, onMomentCountChange }) => {
 
     return (
         <>
-            <Container columns={columns}>
+            <Container>
                 {Object.entries(moments)
                     .slice(0, maxItems || Object.entries(moments).length)
                     .map(([key, images]) => (

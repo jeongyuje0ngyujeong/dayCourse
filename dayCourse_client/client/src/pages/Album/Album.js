@@ -1,41 +1,36 @@
-// import { Outlet} from "react-router-dom";
-import styled from 'styled-components';
-// import { PageTitle } from '../../commonStyles';
-import React, { useState , useEffect, act} from 'react';
+// Album.js
 
+// 필요한 임포트는 동일하게 유지
+import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
 import { getPlan } from './AlbumApi'; // 플랜 가져오는 API 함수
 
-
 const Container = styled.div`
-  width: 80%;
+  width: calc(100% - 17%); /* 화면 너비에서 사이드바 너비를 뺀 값 */
+  margin-left: 17%; /* 사이드바 너비만큼 왼쪽 여백 */
   margin: 0 auto; /* 가로 가운데 정렬 */
   padding: 20px;
   background-color: #fff;
   border-radius: 3px;
   box-sizing: border-box;
   align-items: center;
-  margin-top:20px;
-  
+  margin-top: 20px;
 `;
-const ProfileHeader = styled.div`
 
+const ProfileHeader = styled.div`
   display: flex;
   align-items: center;
-
   margin-bottom: 20px;
 `;
 
 const ProfileInfo = styled.div`
   width: 100%; /* 전체 가로 너비 사용 */
-  
-
 `;
 
-
 const Username = styled.h2`
-  font-size: 32px;
+  font-size: 35px;
   font-weight: 300;
   margin-bottom: 10px;
   width: 30%; /* 원하는 퍼센트로 조정 */
@@ -54,7 +49,7 @@ const ProfileStats = styled.div`
 `;
 
 const Stat = styled.span`
-  font-size: 22px;
+  font-size: 25px;
 
   strong {
     font-weight: bold;
@@ -63,29 +58,25 @@ const Stat = styled.span`
 `;
 
 const Bio = styled.div`
-  font-size: 22px;
+  font-size: 25px;
   color: #8e8e8e;
   width: 100%; /* 전체 너비 사용 */
   margin-top: 20px;
   margin-left: 35%; /* 원하는 위치로 조정 */
-  margin-bottom:40px;
+  margin-bottom: 40px;
 `;
 
 const Tabs = styled.div`
   display: flex;
-  justify-content: space-around;
+  
+  justify-content: center; /* 중앙 정렬 */
   border-top: 1px solid #dbdbdb;
   gap: 30px;
-
-  justify-content: center; /* 중앙 정렬 */
   margin-top: 100px;
-
 `;
-
 
 const TabButton = styled.button`
   width: 100px; /* 버튼 너비를 고정 */
-  
   padding: 10px 0; /* 버튼 크기 조절 */
   background: none;
   border: none;
@@ -121,18 +112,16 @@ const TabButton = styled.button`
 const ContentContainer = styled.div`
   width: 100%;
   max-width: 935px;
-  
+  margin: 0 auto; /* 중앙 정렬 */
 `;
 
 const Album = ({ userId }) => {
   const [activeTab, setActiveTab] = useState('posts');
-  // const [searchTerm, setSearchTerm] = useState('');
   const [plans, setPlans] = useState([]);
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('');
   const [momentCount, setMomentCount] = useState('');
 
   const currentUserId = sessionStorage.getItem('userId');
-
 
   useEffect(() => {
     if (currentUserId) {
@@ -149,10 +138,8 @@ const Album = ({ userId }) => {
     } else {
       console.error('유저 ID를 가져올 수 없습니다.');
     }
-    console.log('userName', currentUserId.userName);
+    // console.log('userName', currentUserId.userName); // 현재 userId는 string이므로 userName을 가져올 수 없음
   }, [currentUserId]);
-
-
 
   const renderContent = () => {
     switch (activeTab) {
@@ -167,13 +154,11 @@ const Album = ({ userId }) => {
     }
   };
 
-
   return (
     <Container>
-      
       <ProfileHeader>
         <ProfileInfo>
-          <Username>{currentUserId}</Username>
+        <Username>{currentUserId}</Username>
           <ProfileStats>
             <Stat>
               <strong>일정 {plans.length}</strong> 
@@ -185,16 +170,11 @@ const Album = ({ userId }) => {
               <strong>동영상 0</strong> 
             </Stat>
           </ProfileStats>
-            <Bio>{username}</Bio> 
+          <Bio>{username}</Bio> 
         </ProfileInfo>
       </ProfileHeader>
 
-
-
       {/* 탭 버튼 */}
-        {/* 검색 */}
-        {/* <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
-
       <Tabs>
         <TabButton isActive={activeTab === 'posts'} onClick={() => setActiveTab('posts')}>
           공유사진
@@ -206,8 +186,6 @@ const Album = ({ userId }) => {
           동영상
         </TabButton>
       </Tabs>
-
-    
 
       {/* 콘텐츠 */}
       <ContentContainer>{renderContent()}</ContentContainer>
