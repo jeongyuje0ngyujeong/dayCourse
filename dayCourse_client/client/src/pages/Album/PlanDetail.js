@@ -172,6 +172,12 @@ const PlanDetail = () => {
         }
     };
 
+    const selectAllImages = () => {
+        setSelectedImages(imageUrls.length === selectedImages.length ? [] : [...imageUrls]);
+    }
+
+    
+
     return (
         <Container>
             <h2>플랜 ID: {planId}</h2>
@@ -207,7 +213,6 @@ const PlanDetail = () => {
                 )}
             </ImageContainer>
 
-            <DownloadButton onClick={downloadSelectedImages}>선택한 이미지 다운로드</DownloadButton>
         </Container>
     );
 };
