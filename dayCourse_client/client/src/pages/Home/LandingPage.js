@@ -3,7 +3,9 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes} from './PlaceApi'; 
+//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
+
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
@@ -154,8 +156,11 @@ const LandingPage = ({ userId, planId, place, context }) => {
     const [users, setUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
-
-    const socketRef = useRef(null);
+    const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
+    const [recommendError, setRecommendError] = useState(null);
+    const [recommendedRoutes, setRecommendedRoutes] = useState([]);
+   // const [distances, setDistances] = useState([]);
+  
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
