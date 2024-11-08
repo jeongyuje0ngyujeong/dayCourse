@@ -35,7 +35,7 @@ const ProfileInfo = styled.div`
 
 
 const Username = styled.h2`
-  font-size: 25px;
+  font-size: 32px;
   font-weight: 300;
   margin-bottom: 10px;
   width: 30%; /* 원하는 퍼센트로 조정 */
@@ -54,7 +54,7 @@ const ProfileStats = styled.div`
 `;
 
 const Stat = styled.span`
-  font-size: 16px;
+  font-size: 22px;
 
   strong {
     font-weight: bold;
@@ -63,7 +63,7 @@ const Stat = styled.span`
 `;
 
 const Bio = styled.div`
-  font-size: 16px;
+  font-size: 22px;
   color: #8e8e8e;
   width: 100%; /* 전체 너비 사용 */
   margin-top: 20px;
@@ -91,7 +91,7 @@ const TabButton = styled.button`
   border: none;
   outline: none;
   box-shadow: none; /* 윤곽선 및 그림자 제거 */
-  font-size: 15px;
+  font-size: 18px;
   color: ${(props) => (props.isActive ? '#262626' : '#8e8e8e')};
   font-weight: ${(props) => (props.isActive ? '600' : 'normal')};
   border-top: ${(props) => (props.isActive ? '2px solid #262626' : 'none')}; /* 선택된 탭에만 검은색 선 */
