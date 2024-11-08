@@ -203,7 +203,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                     {showCalendar?(
                       <>
                       {events.slice(0, 2).map((event, index) => (
-                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.5vh',borderRadius:'10px',opacity:'80%'}}>
+                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>
                         {event.planName}</div>
                       ))}
                       {events.length > 2 && (
