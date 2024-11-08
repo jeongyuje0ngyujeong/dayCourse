@@ -26,7 +26,6 @@ const Checkbox = ({ checked, onChange }) => {
     </StyledWrapper>
   );
 };
-
 const StyledWrapper = styled.div`
   .checkbox-wrapper-12 {
     position: relative;
@@ -51,6 +50,12 @@ const StyledWrapper = styled.div`
     -webkit-tap-highlight-color: transparent;
     cursor: pointer;
     margin: 0;
+    width: 24px;  /* 가로 너비 */
+    height: 24px; /* 세로 높이 */
+    border: 2px solid #bfbfc0;
+    border-radius: 50%; /* 완전한 원형 */
+    position: relative;
+    background-color: transparent;
   }
 
   .checkbox-wrapper-12 input[type="checkbox"]:focus {
@@ -58,31 +63,23 @@ const StyledWrapper = styled.div`
   }
 
   .checkbox-wrapper-12 .cbx {
-    width: 25.5px;
-    height: 25px;
-    top: calc(100px - 12px);
-    left: calc(100px - 12px);
-  }
-
-  .checkbox-wrapper-12 .cbx input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 25.5px;
-    height: 25px;
-    border: 2px solid #bfbfc0;
-    border-radius: 50%;
+    position: relative;
+    width: 24px; /* 체크박스 전체 컨테이너 너비 */
+    height: 24px; /* 체크박스 전체 컨테이너 높이 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .checkbox-wrapper-12 .cbx label {
-    width: 26.3px;
-    height: 25px;
+    width: 100%;
+    height: 100%;
     background: none;
     border-radius: 50%;
     position: absolute;
     top: 0;
     left: 0;
-    transform: trasnlate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
     pointer-events: none;
   }
 
@@ -113,42 +110,6 @@ const StyledWrapper = styled.div`
     stroke-dashoffset: 0;
   }
 
-  @-moz-keyframes splash-12 {
-    40% {
-      background: #90B54C;
-      box-shadow: 0 -18px 0 -8px #90B54C, 16px -8px 0 -8px #90B54C, 16px 8px 0 -8px #90B54C, 0 18px 0 -8px #90B54C, -16px 8px 0 -8px #90B54C, -16px -8px 0 -8px #90B54C;
-    }
-
-    100% {
-      background: #90B54C;
-      box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
-    }
-  }
-
-  @-webkit-keyframes splash-12 {
-    40% {
-      background: #90B54C;
-      box-shadow: 0 -18px 0 -8px #90B54C, 16px -8px 0 -8px #90B54C, 16px 8px 0 -8px #90B54C, 0 18px 0 -8px #90B54C, -16px 8px 0 -8px #90B54C, -16px -8px 0 -8px #90B54C;
-    }
-
-    100% {
-      background: #90B54C;
-      box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
-    }
-  }
-
-  @-o-keyframes splash-12 {
-    40% {
-      background: #90B54C;
-      box-shadow: 0 -18px 0 -8px #90B54C, 16px -8px 0 -8px #90B54C, 16px 8px 0 -8px #90B54C, 0 18px 0 -8px #90B54C, -16px 8px 0 -8px #90B54C, -16px -8px 0 -8px #90B54Cb;
-    }
-
-    100% {
-      background: #90B54C;
-      box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
-    }
-  }
-
   @keyframes splash-12 {
     40% {
       background: #90B54C;
@@ -159,6 +120,7 @@ const StyledWrapper = styled.div`
       background: #90B54C;
       box-shadow: 0 -36px 0 -10px transparent, 32px -16px 0 -10px transparent, 32px 16px 0 -10px transparent, 0 36px 0 -10px transparent, -32px 16px 0 -10px transparent, -32px -16px 0 -10px transparent;
     }
-  }`;
+  }
+`;
 
 export default Checkbox;
