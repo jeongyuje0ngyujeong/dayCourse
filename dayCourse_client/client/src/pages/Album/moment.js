@@ -3,11 +3,11 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
-    display: flex;
-    
-    flex-wrap: wrap;
-    padding:20px;
-   
+    display: grid;
+    grid-template-columns: repeat(3, minmax(150px, 1fr));
+    gap: 5px;
+    padding: 20px 0;
+    margin-left: 22%;
 `;
 
 const Box = styled.div`
@@ -17,7 +17,7 @@ const Box = styled.div`
     padding-bottom: 100%; /* 정사각형 비율 유지 */
     background-color: #bfbfbf;
     cursor: pointer;
-    position: relative;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -118,8 +118,8 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-
-const Moment = () => {
+const Moment = ({ maxItems, columns, onMomentCountChange }) => {
+    const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('')
 

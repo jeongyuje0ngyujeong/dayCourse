@@ -449,15 +449,15 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         </div>
                     ))}
 
-                        {/* 현재 접속한 사용자 목록 표시 */}
-                        <div style={{ position: 'absolute', top: "10%", left: "35%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
-                            <h4>접속 사용자</h4>
-                            <ul>
-                                {uniqueUsers.map(user => (
-                                    <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
-                                ))}
-                            </ul>
-                        </div>
+                    {/* 현재 접속한 사용자 목록 표시 */}
+                    <div style={{ position: 'absolute', top: "6%", left: "40%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
+                        <h4>접속 사용자</h4>
+                        <ul>
+                            {uniqueUsers.map(user => (
+                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                            ))}
+                        </ul>
+                    </div>
 
                         <RecommendedRoutesBox>
                             <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
