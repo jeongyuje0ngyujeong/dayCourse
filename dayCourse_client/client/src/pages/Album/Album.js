@@ -1,8 +1,8 @@
 // import { Outlet} from "react-router-dom";
 import styled from 'styled-components';
 // import { PageTitle } from '../../commonStyles';
-import React, { useState , useEffect} from 'react';
-import Search from './Search.js';
+import React, { useState , useEffect, act} from 'react';
+
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
 import { getPlan } from './AlbumApi'; // 플랜 가져오는 API 함수
@@ -111,7 +111,7 @@ const ContentContainer = styled.div`
 `;
 
 const Album = ({ userId }) => {
-  const [activeTab, setActiveTab] = useState('photos');
+  const [activeTab, setActiveTab] = useState('posts');
   // const [searchTerm, setSearchTerm] = useState('');
   const [plans, setPlans] = useState([]);
 
@@ -147,17 +147,51 @@ const Album = ({ userId }) => {
   };
   
   return (
-    <div>
-    <PageTitle>Album</PageTitle>
-      <div>
-        <button onClick={() => setActiveTab('posts')}>포스팅</button>
-        <button onClick={() => setActiveTab('moments')}>모먼트</button>
-        {/* <button onClick={() => setActiveTab('videos')}>동영상</button> */}
-      </div>
-      <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
-      {renderContent()}
-    </div>
-  )
+    <Container>
+      
+      <ProfileHeader>
+        <ProfileInfo>
+          <Username>{currentUserId}</Username>
+          <ProfileStats>
+            <Stat>
+              <strong>일정 {plans.length}</strong> 
+            </Stat>
+            <Stat>
+              <strong>모먼트 {momentCount}</strong> 
+            </Stat>
+            <Stat>
+              <strong>동영상 0</strong> 
+            </Stat>
+          </ProfileStats>
+            <Bio>{username}</Bio> 
+        </ProfileInfo>
+      </ProfileHeader>
+
+
+
+      {/* 탭 버튼 */}
+        {/* 검색 */}
+        {/* <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
+
+      <Tabs>
+        <TabButton isActive={activeTab === 'posts'} onClick={() => setActiveTab('posts')}>
+          공유사진
+        </TabButton>
+        <TabButton isActive={activeTab === 'moments'} onClick={() => setActiveTab('moments')}>
+          모먼트
+        </TabButton>
+        <TabButton isActive={activeTab === 'videos'} onClick={() => setActiveTab('videos')}>
+          동영상
+        </TabButton>
+      </Tabs>
+
+    
+
+      {/* 콘텐츠 */}
+      <ContentContainer>{renderContent()}</ContentContainer>
+    </Container>
+  );
+};
 
 }
 export default Album;
