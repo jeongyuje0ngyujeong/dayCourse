@@ -403,34 +403,10 @@ const LandingPage = ({ userId, planId, place, context }) => {
                         selectedPlaces={selectedPlaces || []} 
                     />
 
-                    <DragDropContext onDragEnd={onDragEnd}>
-                        <Droppable droppableId="places">
-                            {(provided) => (
-                                <SelectedPlacesContainer 
-                                    ref={provided.innerRef}
-                                    {...provided.droppableProps}
-                                >
-                                    {selectedPlaces.map((place, index) => {
-                                        if (!place || (!place.placeId && !place.id) || !place.place_name) {
-                                            console.warn("Invalid place object:", place);
-                                            return null;
-                                        }
-                                        return (
-                                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
-                                                <Draggable
-                                                    draggableId={place.placeId?.toString() || place.id?.toString()} 
-                                                    index={index}
-                                                >
-                                                    {(provided) => (
-                                                        <PlaceBox 
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                        >
-                                                            <h5>{index + 1}. {place.place_name}</h5>
-                                                            <span>{place.address_name}</span>
-                                                            <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
-                                                        </PlaceBox>
+                                                    {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
+                                                        <DistanceBox>
+                                                            {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
+                                                        </DistanceBox>
                                                     )}
                                                 </React.Fragment>
                                             );
