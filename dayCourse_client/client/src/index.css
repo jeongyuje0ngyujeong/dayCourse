@@ -99,7 +99,8 @@ button:active {
 }
 
 #sidebar {
-  width: 15%;
+  width: 17%;
+  height: 100%;
   background-color: #f7f7f7;
   border-right: solid 1px #eee;
   display: flex;

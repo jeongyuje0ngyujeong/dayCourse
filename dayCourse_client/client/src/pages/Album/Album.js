@@ -1,6 +1,6 @@
 // import { Outlet} from "react-router-dom";
 import styled from 'styled-components';
-
+// import { PageTitle } from '../../commonStyles';
 import React, { useState , useEffect} from 'react';
 
 import Moment from './moment.js';
