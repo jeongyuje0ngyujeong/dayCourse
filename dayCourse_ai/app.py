@@ -257,15 +257,15 @@ def SpotSuggest():
      # 사용자 벡터와 다른 가게들의 벡터 간 코사인 유사도 계산
     user_similarities = linear_kernel(tfidf_matrix, user_vector.reshape(1, -1)).flatten()
 
-    # 유사도가 높은 상위 20개의 가게 추천
+    # 유사도가 높은 상위 10개의 가게 추천
     sim_scores = [(i, score) for i, score in enumerate(user_similarities)]
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:21]  # 자기 자신 제외
+    sim_scores = sim_scores[1:11]  # 자기 자신 제외
 
     # 인덱스 리스트 만들기
     store_indices = [i[0] for i in sim_scores]
 
-    # 상위 20개 스토어 데이터프레임 반환
+    # 상위 10개 스토어 데이터프레임 반환
     recommendations = datas.iloc[store_indices]
     
     # 필드를 삭제
