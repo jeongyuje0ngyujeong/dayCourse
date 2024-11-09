@@ -763,12 +763,16 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
     let previousCategory = null;
     let previousKeyword = null;
 
-    // 모든 장소를 합친 배열 생성
-    let allLocations = [
-        ...restaurants,
-        ...Object.values(cafesByKeyword).flat(),
-        ...others
-    ];
+    let allLocations = []
+
+    if (restaurants != null && cafesByKeyword != null && others != null) {
+        // 모든 장소를 합친 배열 생성
+        allLocations = [
+            ...restaurants,
+            ...Object.values(cafesByKeyword).flat(),
+            ...others
+        ];
+    }
 
     if (planId > 0) {
         const findAllLocations = `
@@ -860,12 +864,13 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         const locations = await getAllLocationsByPlanId(planId);
 
         if (locations.length != 0) {
-            // 장소 분류
             const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
+            const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
+
+        } else {
+            const arrangedLocations = await arrangeLocations(null, null, null, planId);
         }
 
-        // 장소 재배치
-        const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
 
         // const startLocation = arrangedLocations[0];
         // const endLocation = arrangedLocations[arrangedLocations.length - 1];
