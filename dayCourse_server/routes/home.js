@@ -786,7 +786,7 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
 
             results.forEach(result => {
                 const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
-                console.log(`placeId ${result.placeId} exists in allLocations:`, location.placeId);
+                console.log(`placeId ${result.placeId} exists in allLocations:`, result.placeId);
 
                 if (!isItInLocations) {
                     allLocations.push(result);
