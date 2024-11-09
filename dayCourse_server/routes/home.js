@@ -755,7 +755,7 @@ function classifyLocations(locations) {
 }
 
 // 음식점과 같은 키워드의 카페들이 연속으로 루트 추천되지 않도록 재배치
-function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
+async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
     console.log("arrangeLocations 실행");
     const result = [];
     let previousCategory = null;
