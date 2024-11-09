@@ -179,12 +179,12 @@ const PlanDetail = () => {
                     URL.revokeObjectURL(link.href);
                     //경은 추가 코드
 
-                    //folder.file(`image-${index + 1}.jpg`, blob);
+                    folder.file(`image-${index + 1}.jpg`, blob);
                 })
             );
 
-            //const zipBlob = await zip.generateAsync({ type: 'blob' });
-            //saveAs(zipBlob, 'selected-images.zip');
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            saveAs(zipBlob, 'selected-images.zip');
         } catch (error) {
             console.error('다운로드 실패:', error);
             alert('이미지를 다운로드하는 중 오류가 발생했습니다.');
