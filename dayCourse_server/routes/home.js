@@ -1173,6 +1173,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
     console.log("사진 등록");
     const userId = req.user.userId;
 
+    const promises = [];
+
     try {
         const planId = req.params.planId;
 
@@ -1243,7 +1245,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             }
 
             // 비동기 처리 내부 함수 정의
-            (async () => {
+            const promise = (async () => {
                 try {
                     // 이미지 분석 요청
                     const form = new FormData();
@@ -1290,8 +1292,11 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                     }
                 }
             })();
+
+            promises.push(promise);
         }
 
+        await Promise.all(promises);
         analyzeImage(userId);
 
     } catch (err) {
