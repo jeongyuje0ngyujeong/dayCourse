@@ -247,42 +247,64 @@ def SpotSuggest():
     datas['combined_features_c'] = datas['keyword'] + ' ' + datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
     datas['combined_features_k'] = datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
 
-    # TF-IDF 벡터화
-    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf_vectorizer.fit_transform(datas[data_text])
+    print(data_text)
+    print(datas[data_text])
 
-    # 사용자가 방문한 가게들의 벡터 평균 구하기
-    user_vector = get_user_profile_vector(datas, visited_stores, tfidf_matrix)
+    if datas[data_text].isin(["  ", "   ", "    "]).all():
+        # 상위 20개 스토어 데이터프레임 반환
+        recommendations = datas[0:20]
+        
+        # 필드를 삭제
+        del recommendations['combined_features_a']
+        del recommendations['combined_features_c']
+        del recommendations['combined_features_k']
 
-     # 사용자 벡터와 다른 가게들의 벡터 간 코사인 유사도 계산
-    user_similarities = linear_kernel(tfidf_matrix, user_vector.reshape(1, -1)).flatten()
+        test = recommendations.to_dict(orient='records')
+        
+        for item in test:
+            for key, value in item.items():
+                if isinstance(value, float) and np.isnan(value):  # 값이 NaN인 경우
+                    item[key] = None  # 해당 값을 None으로 수정
+                    
+        output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
+        return output_json
+    else:        
+        # TF-IDF 벡터화
+        tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+        tfidf_matrix = tfidf_vectorizer.fit_transform(datas[data_text])
 
-    # 유사도가 높은 상위 10개의 가게 추천
-    sim_scores = [(i, score) for i, score in enumerate(user_similarities)]
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:11]  # 자기 자신 제외
+        # 사용자가 방문한 가게들의 벡터 평균 구하기
+        user_vector = get_user_profile_vector(datas, visited_stores, tfidf_matrix)
 
-    # 인덱스 리스트 만들기
-    store_indices = [i[0] for i in sim_scores]
+        # 사용자 벡터와 다른 가게들의 벡터 간 코사인 유사도 계산
+        user_similarities = linear_kernel(tfidf_matrix, user_vector.reshape(1, -1)).flatten()
 
-    # 상위 10개 스토어 데이터프레임 반환
-    recommendations = datas.iloc[store_indices]
-    
-    # 필드를 삭제
-    del recommendations['combined_features_a']
-    del recommendations['combined_features_c']
-    del recommendations['combined_features_k']
+        # 유사도가 높은 상위 20개의 가게 추천
+        sim_scores = [(i, score) for i, score in enumerate(user_similarities)]
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        sim_scores = sim_scores[0:20]
 
-    test = recommendations.to_dict(orient='records')
-    
-    for item in test:
-        for key, value in item.items():
-            if isinstance(value, float) and np.isnan(value):  # 값이 NaN인 경우
-                item[key] = None  # 해당 값을 None으로 수정
-    #print(test)
-                
-    output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
-    return output_json
+        # 인덱스 리스트 만들기
+        store_indices = [i[0] for i in sim_scores]
+
+        # 상위 데이터프레임 반환
+        recommendations = datas.iloc[store_indices]
+        
+        # 필드를 삭제
+        del recommendations['combined_features_a']
+        del recommendations['combined_features_c']
+        del recommendations['combined_features_k']
+
+        test = recommendations.to_dict(orient='records')
+        
+        for item in test:
+            for key, value in item.items():
+                if isinstance(value, float) and np.isnan(value):  # 값이 NaN인 경우
+                    item[key] = None  # 해당 값을 None으로 수정
+        #print(test)
+                    
+        output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
+        return output_json
 
 if __name__ == '__main__':
      app.run(host='0.0.0.0', port=5000) 
