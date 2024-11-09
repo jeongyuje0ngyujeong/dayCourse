@@ -333,7 +333,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         return () => {
             socketRef.current.disconnect();
         };
-    }, [userId, planId]);
+    }, [socket, planId, joinRoom,setUniqueUsers]);
 
     useEffect(() => {
         if (!socket) return;
