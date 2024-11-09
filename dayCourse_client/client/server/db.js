@@ -6,7 +6,7 @@ const db = mysql.createConnection({
     user: 'daycourse',
     password: 'Gowh241017*',
     database: 'daycourse'
-});
+}).promise();
 
 db.connect();
 console.log('db 연결')

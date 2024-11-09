@@ -218,7 +218,9 @@ export default function ConvexHullCalculator({departurePoints}) {
               try {
                   console.log(`Fetching towns with radius: ${radius}`);
                   const result = await storeZoneInRadius(radius, temp_centroid[0], temp_centroid[1]);
-                  towns = result.body.items;
+                  towns = result.stores.map((town) => town.상권명.split('_')[0]) // '_' 기준으로 지역명만 추출
+                  .filter((value, index, self) => self.indexOf(value) === index) // 중복된 지역 제거
+                  console.log('result: ',towns)
   
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
                       setResultTown(towns);
@@ -354,7 +356,6 @@ export default function ConvexHullCalculator({departurePoints}) {
             <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
           </div>
           
-          
           {/* <Container>
               <Box>추천지역1</Box>
               <Box>추천지역2</Box>
@@ -369,7 +370,7 @@ export default function ConvexHullCalculator({departurePoints}) {
             {resultTowns && resultTowns.length > 0 ? (
               resultTowns.slice(0, 3).map((town, index) => (
                 <Box key={index}>
-                  {town.mainTrarNm}
+                  {town}
                 </Box>
               ))
             ) : loading ? (
