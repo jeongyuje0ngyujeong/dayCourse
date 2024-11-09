@@ -70,7 +70,7 @@ const PlacePage = () => {
                     </ul>
                 </div>
             </div>
-            <LandingPage userId={userId} planId={planId} place={place} context={loaderData} uniqueUsers={uniqueUsers} setUniqueUsers={setUniqueUsers}></LandingPage>
+            <LandingPage userId={userId} planId={planId} place={place} context={loaderData} setUniqueUsers={setUniqueUsers}></LandingPage>
             <KakaoMap></KakaoMap>
         </SocketProvider>
 
