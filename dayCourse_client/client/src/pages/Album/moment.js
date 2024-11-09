@@ -118,9 +118,18 @@ const ModalImage = styled.img`
 const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     return (
         <StyledModal isOpen={isOpen} onRequestClose={onRequestClose} ariaHideApp={false}>
-            <h3>모달 제목</h3>
-            <p> {content} </p>
-            <button onClick={onRequestClose}>닫기</button>
+            <div>
+                <h3>{title}</h3>
+                <ImageGrid>
+                    {images.map((url, idx) => (
+                        <ModalImage key={idx} src={url.imgURL} alt={`${title} 이미지 ${idx + 1}`} loading="lazy" />
+                    ))}
+                </ImageGrid>
+            </div>
+
+            <ButtonContainer>
+                <button onClick={onRequestClose}>닫기</button>
+            </ButtonContainer>
         </StyledModal>
     );
 };

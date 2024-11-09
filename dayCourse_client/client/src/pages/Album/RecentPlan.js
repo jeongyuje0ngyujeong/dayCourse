@@ -88,7 +88,7 @@ const RecentPlan = ({ plans }) => {
       {plans.map((plan) => (
         <Box key={plan.planId} onClick={() => handleBoxClick(plan)}>
           {thumbnails[plan.planId] ? (
-            <Image src={thumbnails[plan.planId]} alt={plan.planName} />
+            <Image src={thumbnails[plan.planId]} alt={plan.planName} loading="lazy" />
           ) : (
            null
           )}
