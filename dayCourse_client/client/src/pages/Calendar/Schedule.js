@@ -1,102 +1,135 @@
-import { Form, useLoaderData, redirect, Link} from "react-router-dom";
-import { getSchedule} from "../../schedules";
+import { Form, redirect, useOutletContext, useNavigate } from "react-router-dom";
+import { deleteSchedule, getSchedule, } from "../../schedules";
 import styled from "styled-components";
 import { Button } from '../../Button';
 
-export async function loader({ params }) {
+// import {useState,useEffect } from 'react';
 
+// import { Button } from '../../Button';
+
+export async function loader({ params }) {
   const { dateKey } = params;
-  console.log(dateKey);
 
   const schedule = await getSchedule(dateKey);
   return { schedule };
 }
 
-// export async function action(params) {
-//   const schedule = getSchedule(params.year,params.month,params.date);
-
-//   return redirect(`/home`);
-// }
+export async function action(params) {
+  const schedule = getSchedule(params.year,params.month,params.date); //eslint-disable-line no-unused-vars
+  // return redirect(`/schedules/${schedule.id}/edit`);
+  return redirect(`/main/home`);
+}
 
 const EventContainer = styled.div `
-  border: 1px, solid;
+  display:flex;
+  border: 2px solid #eee;
   border-radius: 1rem;
-  padding: 1rem;
-  ${'' /* margin-bottom: 1rem; */}
-  margin: 1rem 0;
+  padding: 0.2rem 2rem;
+  background: white;
+  ${'' /* background: white; */}
+  height: 8.5rem;
+  min-height: 8.5rem;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: space-between; 
+  align-items: center;
   ${'' /* background: red; */}
+`
 
+const NoEventContainer = styled.div `
+  display: flex;
+  ${'' /* border: 2px solid #ccc; */}
+  border-radius: 1rem;
+  margin: 1rem 0;
+  ${'' /* min-height: 35rem; */}
+  padding: 1rem;
+  justify-content: center; 
+  align-items: center;
 `
 
 const ButtonContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: center;
-  gap: 1rem;
-  width: 100%;
+  ${'' /* flex:1; */}
 `
 
-
 export default function Schedule(props) {
-  // const { schedule } = useLoaderData();
-  // console.log(schedule);
   
-  const loaderData = useLoaderData();
-  const scheduleData = props.schedule || loaderData.schedule ;
-  // console.log(scheduleData.schedule);
+  // const loaderData = useLoaderData();
+  
+  const [selectedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.setGroupedSchedules];
+  // const [selectedSchedules, groupedSchedules, setGroupedSchedules] = useOutletContext() || [props.selectedSchedules, props.groupedSchedules, props.setGroupedSchedules];
+  // console.log(selectedSchedules);
 
-  // if (scheduleData.schedule)console.log(scheduleData.schedule.length);
+  function updateSchedulesForDate(dateKey, planId, callback) {
+    setGroupedSchedules(prevSchedules => {
+        const filteredEvents = prevSchedules[dateKey]?.filter(event => event.planId !== planId);
+        const newSchedules = {
+            ...prevSchedules,
+            [dateKey]: filteredEvents
+        };
+        
+        if (callback) callback(newSchedules);
+        
+        return newSchedules;
+    });
+
+  }
+
+  const navigation = useNavigate();
+
+  const handleDetail = (e,planId) => {
+      e.preventDefault();
+      navigation(`/main/PlacePage/${planId}`); 
+  };
+
   return (
-    <div>
-      {scheduleData && scheduleData.length > 0 ? scheduleData.map((event, index) => (
+    <>
+      {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
-          <div>
-            <h1>
-              {event.dateKey ? (
-                  <>
-                    {event.dateKey}
-                  </>
-                ) : (
-                  <i>No Date?</i>
-                )}{" "}
-            </h1>
+            <h2 style={{fontFamily: 'NPSfontBold'}} >
+              {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
+            </h2>
 
-            {event.group && (
-              <p>
-                <a
-                  target="_blank"
-                  href='#'
-                >
-                  {event.group}
-                </a>
-              </p>
-            )}
-
-            {event.notes && <p>{event.notes}</p>}
+            {event.groupName && (<p>{event.groupName}</p>)}
             
             <ButtonContainer>
-              <Link to={`/schedules/${event.id}`}>
-                <button type="submit">Edit</button>
-              </Link>
+              <Button onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
               <Form
                 method="post"
-                action="destroy"
-                // onSubmit={(event) => {
-                //   if (
-                //     !confirm(
-                //       "Please confirm you want to delete this record."
-                //     )
-                //   ) {
-                //     event.preventDefault();
-                //   }
-                // }}
+                action={`${event.planId}/destroy`}
+                onSubmit={async(e) => {
+                  e.preventDefault()
+
+                  if (`${event.start_userId}` === sessionStorage.getItem('id')){
+                    const result = await deleteSchedule(event.planId);
+                    // console.log(result);
+                    if (result === 'success') {
+                        updateSchedulesForDate(event.dateKey, event.planId, (newSchedules) => {
+                            if (props.setModalContent) {
+                                const newSchedule = newSchedules[event.dateKey];
+                                props.setModalContent(
+                                    <Schedule 
+                                        selectedSchedules={newSchedule} 
+                                        groupedSchedules={newSchedules} 
+                                        setGroupedSchedules={setGroupedSchedules} 
+                                        setModalContent={props.setModalContent}
+                                    />
+                                );
+                            }
+                        });
+                    }
+                    
+                  }
+                  
+                }}
               >
-                <button type="submit">Delete</button>
+              {String(event.start_userId) === sessionStorage.getItem('id') ?
+                <Button type="submit">X</Button>:null}
               </Form>
             </ButtonContainer>
-          </div>
         </EventContainer>
-      )) : <div>일정 없음</div>}
-    </div>
+      )) : <NoEventContainer><h3>일정 없음</h3></NoEventContainer>}
+    </>
   );
 }

@@ -1,91 +1,104 @@
-import { Form, useLoaderData, redirect, } from "react-router-dom";
-import { createSchedule,updateSchedule,getSchedule,getEvent,} from "../../schedules";
+import { Form, useLoaderData, redirect } from "react-router-dom";
+import { createSchedule, updateSchedule, getEvent,} from "../../schedules";
+// import { Link } from 'react-router-dom'; 
+import Group from './group';
+import { PageTitle } from '../../commonStyles';
+import MiniCalendar from '../Calendar/MiniCalendar';
+import React, { useState, } from 'react';
+import {Button} from '../../Button';
+
 
 export async function action({ request, params }) {
+  console.log(params);
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
 
-  const year= formData.get("year");
-  const month= formData.get("month");
   const date= formData.get("date");
 
-  const dateKey = `${year}-${month}-${date}`;
-  
-  if (params.id)
-    await updateSchedule(dateKey, updates);
-  else{
-    await createSchedule(dateKey);
-    await updateSchedule(dateKey, updates);
-  }
-  return redirect(`/home`);
+  if (date) {
+    const dateObject = new Date(date); 
+    const dateKey = dateObject.toISOString().split('T')[0]; 
+    
+    if (params.id){
+      await updateSchedule(params.id, updates);
+      return redirect(`/main/schedules/${dateKey}/${params.id}/town`);
+    }
+    else{
+      const planId = (await createSchedule(dateKey, formData)).planId;
+      // await updateSchedule(dateKey, updates);
+      return redirect(`/main/schedules/${dateKey}/${planId}/town`);
+    }
+  } 
 }
 
 export async function loader({ params }) {
-
+  // console.log(params);
   const { id } = params;
-  console.log(id);
-
   const event = await getEvent(id);
-  console.log(event);
+
   return { event };
 }
 
 export default function CreateSchedule() {
+  const [currentDate, setCurrentDate] = useState(new Date());
+ 
+  const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2,'0')}`);
+
+  
   const { event } = useLoaderData();
+  console.log('event: ', event);
+
+  let date;
+  let group, planName;
+
+  if (event) {
+    date = event.dateKey;
+    group = event.groupId;
+    planName = event.planName;
+  }
 
   return (
-    <Form method="post" id="schedule-form">
-      <span>약속 날짜</span>
-      <p>
-        <input
-          placeholder="년"
-          aria-label="년"
-          type="text"
-          name="year"
-          defaultValue={event?.year}
-        />
-        <input
-          placeholder="월"
-          aria-label="월"
-          type="text"
-          name="month"
-          defaultValue={event?.month}
-        />
-        <input
-          placeholder="일"
-          aria-label="일"
-          type="text"
-          name="date"
-          defaultValue={event?.date}
-        />
-      </p>
-      <p>
-      <span>그룹</span>
-      <p>
-      <label>
-        <input
-          type="text"
-          name="group"
-          placeholder="누구와의 약속인가요?"
-          defaultValue={event?.group}
-        />
-      </label>
-      </p>
-      </p>
-      <span>Notes</span>
-      <p>
-      <label>
-        <textarea
-          name="notes"
-          defaultValue={event?.notes}
-          rows={6}
-        />
-      </label>
-      </p>
-      <p>
-        <button type="submit">Save</button>
-        <button type="button">Cancel</button>
-      </p>
-    </Form>
+    <>
+      <div style={{display:'flex', gap: '3rem'}}>
+        <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
+          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
+          <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
+          <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          
+        </div>
+        <div style={{flex:'2'}}>
+          <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
+            <Form style={{width:'100%'}}method="post" id="schedule-form">
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 날짜</PageTitle>
+                <input
+                  placeholder="년"
+                  aria-label="년"
+                  type="date"
+                  name="date"
+                  defaultValue={date}
+                  style={{width:'100%'}}
+                  required
+                />
+              </div>
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 이름</PageTitle>
+                <input
+                  type="text"
+                  name="planName"
+                  style={{width:'100%'}}
+                  placeholder={'약속의 이름을 입력해주세요.'}
+                  defaultValue={planName}
+                />
+              </div>
+              <Group group={group}/>
+              {/* <div style={{display:'flex', marginTop:'2rem'}}> */}
+                <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button> 
+              {/* </div> */}
+            </Form>
+          </div>
+        </div>
+      </div>
+      </>
   );
 }
