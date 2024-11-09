@@ -125,3 +125,5 @@ async function analyzeImage(userId){
         console.error('모먼트 분석 데이터 오류:');
     }
 }
+
+module.exports = analyzeImage;
