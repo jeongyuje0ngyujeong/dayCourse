@@ -193,21 +193,20 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                   <div style={{
                     color: day === 6 ? '#F3CD86': day === 0 ? '#F5A281' : 'black', 
                     fontWeight: '700',
-                    opacity: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 1 : 0.3,
+                    opacity: month === MainMonth || endDay.getDate()-startDay.getDate() === 6 ? 1 : 0.3,
                   }}>{String(date)}</div>
                   
                   <div 
-                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '300', display: 'flex', flexDirection:'column', flex:'1',alignItems:'center', gap:'3px'}}>
-                    {/* {events && events.length > 0 ? (
-                      <> */}
+                    style={{  display: 'flex', flexDirection:'column', flex:'1',alignItems:'center', gap:'3px'}}>
+              
                     {showCalendar?(
                       <>
                       {events.slice(0, 2).map((event, index) => (
-                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>
+                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>
                         {event.planName}</div>
                       ))}
                       {events.length > 2 && (
-                        <div style={{width:'1.5rem', background:'#90B54C',color:'white',fontWeight:'100', fontSize:'1.5vh',borderRadius:'10px',opacity:'80%'}}>+{events.length - 2}</div>
+                        <div style={{width:'25%', background:'#90B54C',color:'white', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>+{events.length - 2}</div>
                       )}
                       </>
                     )
@@ -216,8 +215,7 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
                       <div style={{width:'30%',border:'2px solid #90B54C',background:'#90B54C',color:'white', borderRadius:'15px',fontWeight:'700', opacity:'80%'}}></div>
                       )
                     )}
-                      {/* </>
-                    ) : null} */}
+
                   </div>
               </Cell></>
         )

@@ -87,14 +87,14 @@ export default function Schedule(props) {
     <>
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
-            <h2>
+            <h2 style={{fontFamily: 'NPSfontBold'}} >
               {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
             </h2>
 
             {event.groupName && (<p>{event.groupName}</p>)}
             
             <ButtonContainer>
-              <Button style={{fontFamily: 'NPSfontBold'}} onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
+              <Button onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
               <Form
                 method="post"
                 action={`${event.planId}/destroy`}

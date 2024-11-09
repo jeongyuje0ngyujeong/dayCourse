@@ -6,33 +6,53 @@ import TabButton from './TabButton';
 import CategoryButton from './CategoryButton';
 import KeywordButton from './KeywordButton';
 import Chat from '../Chat/Chat';
+import {PageTitle} from '../../commonStyles';
+import { Button } from '../../Button';
 //import SocketContext from '../../SocketContext';
 
 // Styled Components (변경 없음)
 const SidebarContainer = styled.div`
-    margin-top:70px;
+    display: flex;
+    flex-direction: column;
+    margin-top: 5rem;
     width: 20%;
-    padding: 20px;
+    padding: 10px;
     background-color: #f8f9fa;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: fixed; /* 고정된 사이드바 */
+    position: fixed; 
     right: 0; /* 오른쪽에 위치 */
     top: 0; /* 상단에 위치 */
-    height: 100%; /* 전체 높이 */
-    overflow-y: auto;
+    height: 100vh; 
+    overflow-y: scroll;
+`;
+
+const StyledForm = styled.form`
+    display: flex;
+    align-items: center;
+    border: 1px solid #ced4da;
+    height: 6vh;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+    
+    &:focus-within {
+        border: 2px solid #aaa;
+    }
 `;
 
 const SidebarInput = styled.input`
-    width: 100%; /* 전체 폭을 사용 */
+    flex: 1;
+    height:100%;
     padding: 10px;
     margin-top: 10px;
     margin-bottom: 10px;
-    border: 1px solid #ced4da;
+    outline: none;
+    ${'' /* border: 1px solid #ced4da; */}
     border-radius: 4px;
 `;
 
 const SidebarButton = styled.button`
-    width: 100%;
+    ${'' /* width: 5rem; */}
+    height:100%;
     padding: 10px;
     background-color: #90B54C;
     color: white;
@@ -50,6 +70,7 @@ const ListItem = styled.li`
     margin-bottom: 10px;
     padding: 10px;
     border-bottom: 1px solid #ced4da;
+    font-size: 2vh;
     color: #000; /* 텍스트 색상 설정 */
     &:hover {
         background-color: #e6e6e6;
@@ -70,6 +91,13 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
+    
+    const [isVisible, setIsVisible] = useState(false);
+    const toggleVisibility = () => {
+        // 클릭 시 상태 토글
+        setIsVisible(!isVisible);
+        setSelectedKeyword('');
+    };
 
     const [recommendPlaces, setRecommendPlaces] = useState([]); 
     const [error, setError] = useState(null); // 에러 상태 추가
@@ -121,14 +149,14 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     };
 
     const renderPlaceList = (placeList, isRecommended = false) => {
-        console.log('Rendering place list:', placeList); // 디버깅을 위한 로그 추가
+        // console.log('Rendering place list:', placeList);
 
         if (!Array.isArray(placeList)) {
             console.error('placeList is not an array:', placeList);
             return <p>데이터 형식 오류</p>; // 사용자에게 오류 메시지 표시
         }
         return (
-            <ul id="places-list" style={{ listStyle: "none", padding:0 }}>
+            <ul id="places-list" style={{ listStyle: "none", padding:'0'}}>
                 {placeList.map((place, index) => (
                     <ListItem 
                         key={place.id || index} 
@@ -148,8 +176,8 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         switch (activeTab) {
             case 'search':
                 return (
-                    <div>
-                        <form onSubmit={submitKeyword}>
+                    <div style={{display:'flex', flexDirection:'column',width:'100%'}}>
+                        <StyledForm onSubmit={submitKeyword}>
                             <SidebarInput
                                 type="text"
                                 placeholder='검색어를 입력해주세요'
@@ -158,25 +186,34 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                                 required
                             />
                             <SidebarButton type="submit">검색</SidebarButton>
-                        </form>
-                      
-                        <div>
+                        </StyledForm>
+
+                        <Button width='100%' style={{fontSize:'2vh'}} height='4vh' onClick={toggleVisibility}>{isVisible ? '닫기' : '장소추천'}</Button>
+
+                        {isVisible && (
+                        <>
+                            <PageTitle style={{ marginBottom:'1vh', fontSize:'2vh'}}>카테고리</PageTitle>
                             <CategoryButton 
                                 selectedCategory={selectedCategory} 
                                 setSelectedCategory={setSelectedCategory} 
                             />
+    
                             {selectedCategory && (
+                                <>
+                                <PageTitle  style={{marginBottom:'1vh', fontSize:'2vh'}}>키워드</PageTitle>
                                 <KeywordButton 
                                     selectedCategory={selectedCategory} 
                                     selectedKeyword={selectedKeyword} // 선택된 키워드 전달
                                     setSelectedKeyword={setSelectedKeyword} // 키워드 상태 업데이트 함수 전달
-                                />
+                                />       
+                                </>
                             )}
-                        </div>
+                        </>
+                        )}
 
                         {selectedCategory && selectedKeyword ? (
                             <div id="recommend-result">
-                                <h5>추천장소</h5>
+                                <PageTitle style={{marginBottom:'1vh', fontSize:'2vh'}}>추천장소</PageTitle>
                                 {error && <p style={{ color: 'red' }}>{error}</p>}
                                 {recommendPlaces.length === 0 && !error ? (
                                     <p>추천 결과 없음</p>
@@ -206,7 +243,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
 
     return (
         <SidebarContainer>
-            <div style={{ display: 'flex', gap: '10px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', marginBottom: '3vh',  borderRadius:'30px', background:'white',boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'}}>
                 <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>검색</TabButton>
                 <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')}>채팅</TabButton>
             </div>

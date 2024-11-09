@@ -2,15 +2,17 @@ import React, { useState,} from 'react';
 import {Button} from '../../Button';
 import { Form,} from "react-router-dom";
 import styled from "styled-components";
+import {PageTitle} from '../../commonStyles';
 
 const ResultContainer = styled.div`
     position: absolute; 
-    top: 100%; 
+    top: 105%; 
     left: 0; 
     max-height: 30rem;  
     width: 100%; 
     background: white; 
-    border: 1px solid #eee; 
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
     border-top: none;
     z-index: 1000; 
     overflow-y: auto; 
@@ -59,7 +61,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
 
     return(
         <>
-        <h3 style={{marginTop: '1rem'}}>출발지</h3>
+        <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>출발지</PageTitle>
         <StyledForm onSubmit={submitKeywordForm}>
             <input
                 type="text"
