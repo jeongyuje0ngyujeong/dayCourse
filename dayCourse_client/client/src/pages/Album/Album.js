@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
-import { getPlan , getMoment } from './AlbumApi'; // 플랜 가져오는 API 함수
+import { getPlan  } from './AlbumApi'; // 플랜 가져오는 API 함수
 
 const Container = styled.div`
   width: calc(100% - 17%); /* 화면 너비에서 사이드바 너비를 뺀 값 */
@@ -128,7 +128,6 @@ const Album = ({ userId }) => {
   const [plans, setPlans] = useState([]);
   const [username, setUsername] = useState('');
   const [momentCount, setMomentCount] = useState(0);
-  const [momentsData, setMomentsData] = useState([])
 
 
   const currentUserId = sessionStorage.getItem('userId');
@@ -145,20 +144,20 @@ const Album = ({ userId }) => {
         }
       };
 
-      const fetchMoments = async () => {
-        try {
-          const data = await getMoment();
-          setMomentsData(data);
-          const totalCount = Object.keys(data).length;
-          setMomentCount(totalCount);
-        } catch (error) {
-          console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
-        }
-      };
+      // const fetchMoments = async () => {
+      //   try {
+      //     const data = await getMoment();
+      //     setMomentsData(data);
+      //     const totalCount = Object.keys(data).length;
+      //     setMomentCount(totalCount);
+      //   } catch (error) {
+      //     console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
+      //   }
+      // };
 
 
       fetchPlans();
-      fetchMoments();
+      // fetchMoments();
     } else {
       console.error('유저 ID를 가져올 수 없습니다.');
     }
@@ -170,7 +169,7 @@ const Album = ({ userId }) => {
       case 'posts':
         return <RecentPlan plans={plans} />;
       case 'moments':
-        return <Moment onMomentCountChange={setMomentCount} columns={3} />;
+        return <Moment onMomentCountChange={setMomentCount} columns={3}/>;
       case 'videos':
         return <div>동영상</div>;
       default:

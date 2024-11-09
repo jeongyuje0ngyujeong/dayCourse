@@ -1,7 +1,7 @@
 import Modal from 'react-modal';
 import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
-
+import { getMoment } from './AlbumApi'; 
 
 const Container = styled.div`
     display: grid;
@@ -132,12 +132,34 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, onMomentCountChange, columns }) => {
-    console.log('colums: ', columns);
+const Moment = ({ maxItems, onMomentCountChange, columns}) => {
+    // console.log('colums: ', columns);
     const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalImages, setModalImages] = useState([]);
+
+    // const currentUserId = sessionStorage.getItem('userId');
+
+    useEffect(() => {
+        // if (currentUserId) {
+    
+          const fetchMoments = async () => {
+            try {
+              const data = await getMoment();
+              setMoments(data);
+              const totalCount = Object.keys(data).length;
+              onMomentCountChange(totalCount);
+            } catch (error) {
+              console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
+            }
+          };
+    
+          fetchMoments();
+        // } else {
+        //   console.error('유저 ID를 가져올 수 없습니다.');
+        // }
+    }, [onMomentCountChange]);
 
     useEffect(() => {
         // 이미 부모 컴포넌트에서 모먼트를 가져왔으므로, 여기서는 추가로 가져올 필요 없음

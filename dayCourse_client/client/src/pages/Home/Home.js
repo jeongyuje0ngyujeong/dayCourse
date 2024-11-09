@@ -30,13 +30,13 @@ const WeekBar = styled.div`
   height:5rem;
 `
 
-const MonthContainer = styled.div `
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  height: 10%;
-  align-items: center; 
-`
+// const MonthContainer = styled.div `
+//   display: flex;
+//   flex-direction: row;
+//   text-align: center;
+//   height: 10%;
+//   align-items: center; 
+// `
 // const CalendarContainer = styled.div `
   
 //   display: flex;

@@ -10,19 +10,19 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
 
 
 
-// const UserCursor = styled(FontAwesomeIcon)`
-//     position: absolute;
-//     pointer-events: none;
-//     z-index: 1000;
-//     width: 30px; /* 아이콘 크기 조절 */
-//     height: 30px;
-//     transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
-// `;
+const UserCursor = styled(FontAwesomeIcon)`
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    width: 30px; /* 아이콘 크기 조절 */
+    height: 30px;
+    transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
+`;
 
 
 
@@ -151,7 +151,7 @@ const LandingPage = ({ userId, planId, place, context, uniqueUsers, setUniqueUse
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
-    // const [uniqueUsers, setUniqueUsers] = useState([]);
+    const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
@@ -466,12 +466,12 @@ const LandingPage = ({ userId, planId, place, context, uniqueUsers, setUniqueUse
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
                         <div key={userId}>
-                            {/* <UserCursor 
+                            <UserCursor 
                                 icon={faMousePointer} 
                                 color={userColors[userId]} 
                                 style={{ top: cursorData.y, left: cursorData.x }}
                                 title={cursorData.name}
-                            /> */}
+                            />
 
                         </div>
                         ))}
