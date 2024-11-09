@@ -1059,7 +1059,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             },
         });
 
-        console.log("응답 : ", response.data)
+        // console.log("응답 : ", response.data)
         const renamedUsers = response.data.map(row => ({
             id: row.LocationID,
             place_name: row.LocationName,
@@ -1202,7 +1202,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 Metadata: {}
             };
 
-            console.log(uploadParams)
+            
 
             // // 이미지 파일 확장자 확인
             const ext = path.extname(file.originalname).toLowerCase();
@@ -1211,6 +1211,9 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
                 contentType = 'image/jpeg';  // MIME 타입 변경
             }
+
+
+            console.log(uploadParams)
 
             // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
