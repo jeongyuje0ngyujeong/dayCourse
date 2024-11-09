@@ -714,16 +714,18 @@ function getAllLocationsByPlanId(planId) {
         console.log("planId", planId);
         console.log("locationIds", locationIds);
 
-        const queries = locationIds.map(locationId => {
-            return new Promise((resolve, reject) => {
-                console.log("locationId", locationId);
-                db.query(findLocationDetails, [locationId], (err, results) => {
-                    if (err) return reject(err);
-                    if (results.length === 0) return reject(new Error("Location not found for LocationID"));
-                    resolve(results[0]);
+        const queries = locationIds
+            .filter(locationId => locationId !== null) // LocationID가 null이 아닌 경우만 필터링
+            .map(locationId => {
+                return new Promise((resolve, reject) => {
+                    db.query(findLocationDetails, [locationId], (err, results) => {
+                        if (err) return reject(err);
+                        if (results.length === 0) return reject(new Error("Location not found for LocationID"));
+                        console.log(results[0].placeId);
+                        resolve(results[0]);
+                    });
                 });
             });
-        });
 
         return Promise.all(queries);
     });
@@ -753,7 +755,7 @@ function classifyLocations(locations) {
 }
 
 // 음식점과 같은 키워드의 카페들이 연속으로 루트 추천되지 않도록 재배치
-function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
+async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
     console.log("arrangeLocations 실행");
     const result = [];
     let previousCategory = null;
@@ -773,25 +775,24 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         WHERE Plan_Location.planId = ?
         `
 
-        // DB에서 해당 planId의 모든 로케이션 가져와서 placeId 값이 allLocationsdp 없으면 allLocations에 플러스함
-        db.query(findAllLocations, [planId], (err, results) => {
-            if (err) {
-                console.error("Error executing query:", err);
-                return;
-            }
-
-            results.forEach(result => {
-                const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
-                console.log(`LocationID ${result.placeId} exists in allLocations:`, isItInLocations);
-
-                if (!isItInLocations) {
-                    allLocations.push(result);
-                    console.log("allLocations배열에 추가한 값: ", result);
+        // 비동기니까 꼭 promise 사용해서 진행해야함..
+        const queryResults = await new Promise((resolve, reject) => {
+            db.query(findAllLocations, [planId], (err, results) => {
+                if (err) {
+                    console.error("Error executing query:", err);
+                    return reject(err);
                 }
+                resolve(results);
             });
-
         });
 
+        queryResults.forEach(result => {
+            const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
+            if (!isItInLocations) {
+                allLocations.push(result);
+                console.log("allLocations 배열에 추가한 값: ", result);
+            }
+        });
     }
 
     const restaurantsCheck = restaurants.length >= 2;
@@ -864,16 +865,12 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
 
         // 장소 재배치
-        const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, planId);
+        const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
 
-        // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
-        const startLocation = arrangedLocations[0];
-        const endLocation = arrangedLocations[arrangedLocations.length - 1];
-        const waypoints = arrangedLocations.slice(1, -1);
+        // const startLocation = arrangedLocations[0];
+        // const endLocation = arrangedLocations[arrangedLocations.length - 1];
+        // const waypoints = arrangedLocations.slice(1, -1);
 
-        // arrangedLocations.forEach(location => {
-        //     console.log("반환되는 로케이션", location.LocationID);
-        // });
 
         // priority 업데이트
         const setLocationPriority = `
@@ -883,6 +880,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         `;
 
         for (let i = 0; i < arrangedLocations.length; i++) {
+            let placeId = arrangedLocations[i].placeId;
             let values = [i + 1, (version + 1), placeId];
 
             db.query(setLocationPriority, values, (err, result) => {
@@ -898,6 +896,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         res.json({
             result: 'success',
             locationInfo: arrangedLocations.map(location => ({
+                placeId: location.placeId,
                 placeName: location.place_name,
                 placeAddr: location.place
             }))
