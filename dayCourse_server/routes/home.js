@@ -867,12 +867,14 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         console.log("locations: ", locations);
         console.log("locations length: ", locations.length);
 
+        let arrangedLocations = []
+
         if (locations.length != 0) {
             const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
-            const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
+            arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
 
         } else {
-            const arrangedLocations = await arrangeLocations(null, null, null, planId);
+            arrangedLocations = await arrangeLocations(null, null, null, planId);
         }
 
 
