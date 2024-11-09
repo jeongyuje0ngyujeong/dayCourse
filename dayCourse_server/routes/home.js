@@ -726,7 +726,7 @@ function getAllLocationsByPlanId(planId) {
                     });
                 });
             });
-
+        
         return Promise.all(queries);
     });
 }
@@ -857,12 +857,10 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         // Plan_Location에서 planId를 기준으로 사용자가 선택한 순서대로 주소 값 받아옴
         const locations = await getAllLocationsByPlanId(planId);
 
-        if (locations.length === 0) {
-            return res.json({ result: 'failure', message: 'Invalid planId' });
+        if (locations.length != 0) {
+            // 장소 분류
+            const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
         }
-
-        // 장소 분류
-        const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
 
         // 장소 재배치
         const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
