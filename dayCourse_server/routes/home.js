@@ -89,7 +89,7 @@ router.get('/survey', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: 'Database error' });
         }
 
-        if (result === 1) {
+        if (result[0].isExists === 1) {
             return res.status(201).json({ dataPresence: true});
         }
         return res.status(201).json({ dataPresence: false});
