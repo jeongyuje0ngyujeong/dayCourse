@@ -477,6 +477,7 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
 
     console.log("일정장소추가")
     console.log(locationId)
+    console.log(place)
 
     const x = parseFloat(place.x);
     const y = parseFloat(place.y);
