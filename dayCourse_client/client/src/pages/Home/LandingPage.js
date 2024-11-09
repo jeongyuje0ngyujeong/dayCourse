@@ -144,14 +144,14 @@ const RecommendedRoutesBox = styled.div`
     
 `;
 
-const LandingPage = ({ userId, planId, place, context, uniqueUsers, setUniqueUsers }) => {
+const LandingPage = ({ userId, planId, place, context}) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
-    // const [uniqueUsers, setUniqueUsers] = useState([]);
+    const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
