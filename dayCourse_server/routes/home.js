@@ -8,7 +8,7 @@ const { analyzeImage } = require('./moment');
 
 const fs = require('fs'); //파일 저장용
 const path = require('path');
-const sharp = require('sharp');
+// const heicConvert = require('heic-convert');
 
 const authenticateJWT = require('../config/authenticateJWT');
 
@@ -1200,13 +1200,13 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 Metadata: {}
             };
 
-            // 이미지 파일 확장자 확인
-            const ext = path.extname(file.originalname).toLowerCase();
-            if (ext === '.heic') {
-                imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
-                buffer = await sharp(file.buffer).jpeg().toBuffer();  // HEIC -> JPG 변환
-                contentType = 'image/jpeg';  // MIME 타입 변경
-            }
+            // // 이미지 파일 확장자 확인
+            // const ext = path.extname(file.originalname).toLowerCase();
+            // if (ext === '.heic') {
+            //     imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
+            //     // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
+            //     contentType = 'image/jpeg';  // MIME 타입 변경
+            // }
 
             // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
