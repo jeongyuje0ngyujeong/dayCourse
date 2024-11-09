@@ -12,7 +12,7 @@ const TabContainer = styled.div`
 
 const Tab1 = styled.button`
     flex: 1;
-    padding: 8px 20px;
+    ${'' /* padding: 8px 20px; */}
     cursor: pointer;
     border: none;
     ${'' /* outline: none; */}
