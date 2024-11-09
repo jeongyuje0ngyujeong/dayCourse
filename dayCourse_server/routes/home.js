@@ -89,9 +89,9 @@ router.get('/survey', authenticateJWT, async (req, res) => {
         }
 
         if (result[0].isExists === 1) {
-            return res.status(201).json({ dataPresence: true});
+            return res.status(201).json({ dataPresence: true });
         }
-        return res.status(201).json({ dataPresence: false});
+        return res.status(201).json({ dataPresence: false });
     });
 
 });
@@ -509,13 +509,13 @@ router.post('/plan/addPlace', authenticateJWT, async (req, res) => {
 
 
 router.post('/plan/addRecommendedPlace', authenticateJWT, async (req, res) => {
-    const { planId, memo, place_name, address_name, l_priority, x, y , locationId} = req.body;
+    const { planId, memo, place_name, address_name, l_priority, x, y, locationId } = req.body;
     const userId = req.user.userId;
 
     console.log("일정장소추가/추천장소")
     console.log(x, y)
-    
-    
+
+
     const xx = parseFloat(x);
     const yy = parseFloat(y);
     console.log(xx, yy)
@@ -667,7 +667,7 @@ router.post('/plan/place_distance', authenticateJWT, async (req, res) => {
             console.log('distances: ' + distances);
             return res.status(200).json({ msg: 'success', distances });
 
-        // 요청 초과 예외처리용
+            // 요청 초과 예외처리용
         } else {
             return res.status(429).json({ msg: 'api 요청 초과', distances });
         }
@@ -766,34 +766,37 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         ...others
     ];
 
-    const findAllLocations = `
+    if (planId > 0) {
+        const findAllLocations = `
         SELECT Plan_Location.place, Plan_Location.place_name, Plan_Location.placeId
         FROM Plan_Location
         WHERE Plan_Location.planId = ?
-    `
-    
-    // DB에서 해당 planId의 모든 로케이션 가져와서 placeId 값이 allLocationsdp 없으면 allLocations에 플러스함
-    db.query(findAllLocations, [planId], (err, results) => {
-        if (err) {
-            console.error("Error executing query:", err);
-            return;
-        }
-        
-        results.forEach(result => {
-            const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
-            console.log(`LocationID ${result.placeId} exists in allLocations:`, isItInLocations);
+        `
 
-            if (!isItInLocations) {
-                allLocations.push(result);
-                console.log("allLocations배열에 추가한 값: ", result);
+        // DB에서 해당 planId의 모든 로케이션 가져와서 placeId 값이 allLocationsdp 없으면 allLocations에 플러스함
+        db.query(findAllLocations, [planId], (err, results) => {
+            if (err) {
+                console.error("Error executing query:", err);
+                return;
             }
+
+            results.forEach(result => {
+                const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
+                console.log(`LocationID ${result.placeId} exists in allLocations:`, isItInLocations);
+
+                if (!isItInLocations) {
+                    allLocations.push(result);
+                    console.log("allLocations배열에 추가한 값: ", result);
+                }
+            });
+
         });
-        
-    });
+
+    }
 
     const restaurantsCheck = restaurants.length >= 2;
     const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
-                                    .filter(keyword => cafesByKeyword[keyword].length >= 2);
+        .filter(keyword => cafesByKeyword[keyword].length >= 2);
     const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
 
 
@@ -806,11 +809,11 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             }
             // 이전 장소가 음식점인 경우, 음식점 제외
             if (restaurantsCheck && location.category === previousCategory && location.category === 'restaurant') {
-                return false; 
+                return false;
             }
             // 이전 장소가 동일 키워드의 카페인 경우 제외
             if (cafeKeywordsCheck && location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
-                return false; 
+                return false;
             }
             return true;
             // console.log("재배치 중 로케이션: ", candidates);
@@ -881,7 +884,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
 
         for (let i = 0; i < arrangedLocations.length; i++) {
             let values = [i + 1, (version + 1), placeId];
-            
+
             db.query(setLocationPriority, values, (err, result) => {
                 if (err) {
                     console.error('Error inserting data:', err);
@@ -890,20 +893,20 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
                 console.log("priority update success, count: ", i + 1);
             });
         }
-        
+
         // 최종 결과 반환
-        res.json({ 
-            result: 'success', 
+        res.json({
+            result: 'success',
             locationInfo: arrangedLocations.map(location => ({
                 placeName: location.place_name,
                 placeAddr: location.place
-            })) 
+            }))
         });
 
-   } catch (error) {
-       console.error('오류:', error);
-       res.status(500).send('API 요청에 실패했습니다.');
-   }
+    } catch (error) {
+        console.error('오류:', error);
+        res.status(500).send('API 요청에 실패했습니다.');
+    }
 });
 
 function translateKeyword(Keyword) {
@@ -1061,7 +1064,20 @@ router.get('/plan/1234', authenticateJWT, async (req, res) => {
         tempArr.splice(randomIndex, 1); // 선택된 값은 배열에서 제거
     }
 
-    return res.status(200).json({ msg: 'success', place: newArr });
+    // 장소 분류
+    const { restaurants, cafesByKeyword, others } = classifyLocations(tempArr);
+
+    // 장소 재배치
+    const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, -1);
+
+    // 최종 결과 반환
+    return res.status(200).json({
+        result: 'success',
+        locationInfo: arrangedLocations.map(location => ({
+            placeName: location.place_name,
+            placeAddr: location.place
+        }))
+    });
 });
 
 router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) => {
@@ -1364,7 +1380,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
             const isImage = allowedImageExtensions.includes(ext2);
 
-            if(!isImage){
+            if (!isImage) {
                 continue;
             }
 
@@ -1381,14 +1397,14 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                         },
                     });
 
-                    
+
                     // S3 메타데이터 업데이트를 위한 파라미터 설정
                     const uploadParams = {
                         Bucket: bucketName,
                         Key: `plans/${planId}/${imgNAME}`,
                         Metadata: {}
                     };
-                    
+
                     // 태그 메타데이터 추가
                     const tags = response.data.Tags;
                     tags.forEach((tag, index) => {
@@ -1450,7 +1466,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
             return res.status(500).json({ error: '데이터베이스 오류' });
         }
 
-        const formattedResults  = {};
+        const formattedResults = {};
 
         // 입력 배열을 순회하면서 변환
         result.forEach(row => {
