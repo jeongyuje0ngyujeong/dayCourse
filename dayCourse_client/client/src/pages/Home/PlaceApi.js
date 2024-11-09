@@ -179,32 +179,13 @@ export const addRecommendedPlace = async (userId, planId, place) => {
         throw error;
     }
 };
-// //루트 추천
-// export const recommendRoutes = async (planId, version) => {
-//     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-//     try {
-//         const response = await axios.post(`${BASE_URL}/home/plan/recommend_routes`, {
-//             planId, 
-//             version
-//         }, {
-//             headers: {
-//                 Authorization: `Bearer ${token}`,
-//             },
-//         });
-//         return response.data;
-//     } catch (error) {
-//         console.error("루트 추천 실패:", error);
-//         throw error;
-//     }
-// };
-
 //루트 추천
-export const recommendRoutes = async (planId) => {
+export const recommendRoutes = async (planId, version) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
         const response = await axios.post(`${BASE_URL}/home/plan/recommend_routes`, {
             planId, 
-            
+            version
         }, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -216,3 +197,4 @@ export const recommendRoutes = async (planId) => {
         throw error;
     }
 };
+
