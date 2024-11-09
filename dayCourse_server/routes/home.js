@@ -1200,6 +1200,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 Metadata: {}
             };
 
+            console.log(uploadParams)
+
             // // 이미지 파일 확장자 확인
             // const ext = path.extname(file.originalname).toLowerCase();
             // if (ext === '.heic') {
