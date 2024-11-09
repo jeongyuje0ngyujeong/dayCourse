@@ -54,13 +54,12 @@ const ResultContainer = styled.div`
 
 const NewContainer = styled.div`
     display: flex;
+    width: 100%;
     flex-direction: column;
-    flex: 1;
     height: 100%;
     ${'' /* padding: 0 50px; */}
     align-items: center;
     ${'' /* justify-content: center; */}
-    border: 1px solid #ced4da;
     border-radius: 10px;
     padding: 0 0.5rem;
     ${'' /* margin-top: 1rem; */}
@@ -154,19 +153,20 @@ export default function Group({group}) {
             { activeTab === 'Tab1' ? (
                 <>
                 {selectedGroup? (  
-                    <div>
-                        <ResultContainer>
-                            <h4>{selectedGroup.groupName}</h4>
-                            <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
-                            <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
-                        </ResultContainer>
-                    </div>
+
+                    <ResultContainer>
+                        <h4>{selectedGroup.groupName}</h4>
+                        <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
+                        <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+                    </ResultContainer>
+                    
                 ) : (
                     <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
                 )}  
                 </>
             ):(
                 <>
+                <ResultContainer>
                 <NewContainer>
                     <TextButton>
                     <PageTitle>그룹명</PageTitle>
@@ -185,6 +185,7 @@ export default function Group({group}) {
                         <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
                     }  
                 </NewContainer>
+                </ResultContainer>
                 </>
             )
             }
