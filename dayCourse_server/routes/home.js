@@ -718,10 +718,10 @@ function getAllLocationsByPlanId(planId) {
             .filter(locationId => locationId !== null) // LocationID가 null이 아닌 경우만 필터링
             .map(locationId => {
                 return new Promise((resolve, reject) => {
-                    console.log("placeId", placeId);
                     db.query(findLocationDetails, [locationId], (err, results) => {
                         if (err) return reject(err);
                         if (results.length === 0) return reject(new Error("Location not found for LocationID"));
+                        console.log(result[0].placeId);
                         resolve(results[0]);
                     });
                 });
