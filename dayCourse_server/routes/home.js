@@ -955,6 +955,117 @@ function translateCategory(Category) {
 }
 
 
+router.get('/plan/1234', authenticateJWT, async (req, res) => {
+    console.log("완전랜덤추천");
+    const userId = req.user.userId;
+    const l_num = 5;
+
+    const sql_plan = `
+        SELECT Plan.planId
+        FROM groupMembers
+        JOIN Plan ON groupMembers.groupId = Plan.groupId
+        WHERE groupMembers.userId = ?
+        ORDER BY Plan.startDate DESC
+    `;
+
+    const sql_plan_location = `
+        SELECT place, place_name
+        FROM Plan_Location 
+        WHERE planId IN (?);
+    `;
+
+    const sql_locations_a = `
+        SELECT Locations.*
+        FROM Locations
+        WHERE LocationName = ? AND addressFull = ?
+        LIMIT 10;
+    `;
+
+    const [plans] = await db.promise().query(sql_plan, [userId]);
+    const planIds = plans.map(plan => plan.planId);
+    const [plan_locations] = await db.promise().query(sql_plan_location, [planIds]);
+
+    const locationsPromises = plan_locations.map(async (planLocation) => {
+        try {
+            const [result] = await db.promise().query(sql_locations_a, [planLocation.place_name, planLocation.place]);
+            if (result.length > 0) {
+                return result;
+            }
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    });
+
+    let locations = await Promise.all(locationsPromises)
+        .then((results) => {
+            // 결과 배열에서 undefined 값을 제거
+            const filteredResults = results.filter(location => location !== undefined);
+            return filteredResults
+        })
+        .catch(error => {
+            console.error("Error in processing locations:", error);
+        });
+
+    locations = locations.flat();
+
+    let tempArr = []
+
+    if (locations.length > 0) {
+        const text = "a"
+
+        const response = await axios.post('http://13.124.135.96:5000/SpotSuggest', { locations: locations, text: text }, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        const renamedUsers = response.data.map(row => ({
+            id: row.LocationID,
+            place_name: row.LocationName,
+            address_name: row.addressFull,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
+            road_address_name: "12345", // 임시값
+            phone: "01000000000" //필드없음
+        }));
+
+        tempArr = [...renamedUsers]; // 원본 배열을 복사
+
+    } else {
+        const sql_all = `
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            LIMIT 20;
+        `;
+
+        const [result] = await db.promise().query(sql_all);
+
+        // 필드 재명명하기
+        const renamedUsers = result.map(row => ({
+            id: row.LocationID,
+            place_name: row.LocationName,
+            address_name: row.addressFull,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
+            road_address_name: "12345", // 임시값
+            phone: "01000000000" //필드없음
+        }));
+
+        tempArr = [...renamedUsers]; // 원본 배열을 복사
+    }
+
+    let newArr = []
+
+    for (let i = 0; i < l_num; i++) {
+        const randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
+        newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
+        tempArr.splice(randomIndex, 1); // 선택된 값은 배열에서 제거
+    }
+
+    return res.status(200).json({ msg: 'success', place: newArr });
+});
+
 router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) => {
     console.log("카테고리조회");
     const userId = req.user.userId;
@@ -1077,9 +1188,11 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             phone: "01000000000" //필드없음
         }));
 
+        const slicedArr = renamedUsers.slice(0, 10);
+
         //console.log("응답 : ", renamedUsers)
 
-        return res.status(200).json({ msg: 'success', place: renamedUsers });
+        return res.status(200).json({ msg: 'success', place: slicedArr });
     } else {
 
         key = translateKeyword(enKeyword);
@@ -1147,7 +1260,6 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
         return res.status(200).json({ msg: 'success', place: renamedUsers });
     }
 });
-
 
 
 // 이미지 목록을 가져오는 엔드포인트
