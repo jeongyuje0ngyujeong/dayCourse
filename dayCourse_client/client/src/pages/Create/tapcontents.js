@@ -23,6 +23,12 @@ const FriendsContainer = styled.div`
 //     flex-direction: column;
 // `;
 
+// const TextButton = styled.div`
+//     display: flex;
+//     justify-content: center;
+//     flex-direction: column;
+// `;
+
 const TextButton = styled.div`
     display: flex;
     justify-content: space-between;
