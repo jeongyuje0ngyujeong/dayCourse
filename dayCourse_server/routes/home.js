@@ -868,7 +868,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
 
         // 장소 재배치
         const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
-        
+
         // const startLocation = arrangedLocations[0];
         // const endLocation = arrangedLocations[arrangedLocations.length - 1];
         // const waypoints = arrangedLocations.slice(1, -1);
@@ -898,6 +898,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         res.json({
             result: 'success',
             locationInfo: arrangedLocations.map(location => ({
+                placeId: location.placeId,
                 placeName: location.place_name,
                 placeAddr: location.place
             }))
