@@ -1,3 +1,5 @@
+// src/pages/Chat/Chat.js
+import React, { useState, useContext } from 'react';
 import styled from 'styled-components';
 // import {Button} from '../../Button';
 import io from 'socket.io-client';
@@ -20,59 +22,27 @@ const ChatContainer = styled.div`
     height: 85%;
 `;
 
-const ChatName = styled.div`
-    flex: 0 0 5%;
-    display: flex;
-    width: 100%;
-    height: 10%;
-    border-top: 1px solid;
-    border-bottom: 1px solid;
-    border-color: #ced4da;
-    align-items: center;
-`;
-
-// const ChatInputBar = styled.div`
-//     flex:0;
+// const ChatName = styled.div`
+//     flex: 0 0 5%;
 //     display: flex;
-// `
-
-// const ChatInput = styled.input`
-//     flex: 1;
-//     height: 100%;
-//     padding: 10px;
-//     margin-bottom: 10px;
-//     border: 1px solid #ced4da;
-//     border-radius: 4px;
+//     width: 100%;
+//     height: 10%;
+//     border-top: 1px solid;
+//     border-bottom: 1px solid;
+//     border-color: #ced4da;
+//     align-items: center;
 // `;
 
-const ENDPOINT = 'http://13.125.236.177:3030';
-// const ENDPOINT = 'http://localhost:5000';
-let socket;
-
-export default function Chat({userId, planInfo}) {
-    const planId = planInfo.planId;
-    const [name, setName] = useState(userId);
-    const [room, setRoom] = useState(planId);
-    const [users, setUsers] = useState('');
+export default function Chat({ userId, planInfo }) {
+    const { messages, sendMessage } = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
+    // const [name, setName] = useState(userId);
+    // const [room, setRoom] = useState(planInfo.planId);
     const [message, setMessage] = useState('');
-    const [messages, setMessages] = useState([]);
-    const [userNames, setUserNames] = useState('');
+    // const [userNames, setUserNames] = useState('');
 
-    useEffect(() => {
-        // const {name, room} = queryString.parse(window.location.search);
-        
-        socket = io(ENDPOINT);
-        setName(name);
-        setRoom(room);
-        socket.emit('join', {
-          userId: sessionStorage.getItem('id'), 
-          name: name, 
-          room: room
-        }, (err) => {
-          if (err) {
-            alert(err);
-          }
-        });
+    // useEffect(() => {
+    //     setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
+    // }, [users]);
 
         return () => {
           socket.emit();

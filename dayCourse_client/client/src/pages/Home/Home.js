@@ -30,38 +30,14 @@ const WeekBar = styled.div`
   justify-content: space-between;
 `
 
-const Weekly = styled.div`
-  display: flex;
-  flex-direction: row;
-  border-top: 1px solid;
-  border-bottom: 1px solid;
-  border-color: green;
-  margin: 0 auto;
-  width: 100%;
-  height: 15%;
-  align-items: center;
-  justify-content: center; 
-`
-const Cell = styled.div`
-height: 100%;
-width:100%;
-  color: #818181;
-  vertical-align: baseline;
-  text-align: center;
-  padding: 0.5rem;
-  font-weight: 600;
-  &:hover {
-    background-color: #e0e0e0; 
-  }
-`
-const MonthContainer = styled.div `
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  height: 5%;
-  align-items: center; 
-`
-const CalendarContainer = styled.div `
+// const MonthContainer = styled.div `
+//   display: flex;
+//   flex-direction: row;
+//   text-align: center;
+//   height: 10%;
+//   align-items: center; 
+// `
+// const CalendarContainer = styled.div `
   
   display: flex;
   flex-direction: column;

@@ -94,13 +94,13 @@ const TextButton = styled.div`
     align-items: center;
 `;
 
-const Image = styled.img`
-    ${'' /* width: 200px; */}
-    height: 450px;
-    margin: 5px;
-    border-radius: 5px;
-    object-fit: cover; 
-`;
+// const Image = styled.img`
+//     ${'' /* width: 200px; */}
+//     height: 450px;
+//     margin: 5px;
+//     border-radius: 5px;
+//     object-fit: cover; 
+// `;
 
 export default function Group({group}) {
     const [activeTab, setActiveTab] = useState('Tab1');
