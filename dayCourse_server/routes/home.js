@@ -1225,13 +1225,17 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
         // 업로드 결과를 클라이언트에 먼저 반환
         res.json(uploadResults);
 
-        // 비동기 사진 분석 요청 (백그라운드 작업)
-        for (const file of req.files) {
-            const imgNAME = path.basename(file.originalname);
-            const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
+        // const fileQueue = [...req.files];
+        const fileQueue = req.files.map(file => ({ file, retries: 0 }));
+        const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
 
+        // 비동기 사진 분석 요청 (백그라운드 작업)
+        while (fileQueue.length > 0) {
+            // const file = fileQueue.shift();
+            const { file, retries } = fileQueue.shift();
+            const imgNAME = path.basename(file.originalname);
             const ext2 = path.extname(file.originalname).toLowerCase();
-            const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
+            const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
             const isImage = allowedImageExtensions.includes(ext2);
 
             if(!isImage){
@@ -1277,7 +1281,13 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
                     console.log(`메타데이터가 ${imgNAME}에 대해 업데이트되었습니다.`);
 
                 } catch (error) {
-                    console.error('이미지 분석 중 오류 발생:', error);
+                    console.error('이미지 분석 중 오류 발생:', imgNAME);
+                    if (retries < maxRetries) {
+                        console.error(`${imgNAME} 파일 분석 실패. 재시도.`);
+                        fileQueue.push({ file, retries: retries + 1 });
+                    } else {
+                        console.error(`${imgNAME} 파일의 최대 재시도 횟수 초과`);
+                    }
                 }
             })();
         }
