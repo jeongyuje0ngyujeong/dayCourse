@@ -6,6 +6,7 @@ import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import Checkbox from './Checkbox';
 import UploadButton from './UploadButton'; // Import 수정된 UploadButton
+import heic2any from 'heic2any';
 
 const Container = styled.div`
     padding: 20px;
@@ -125,7 +126,33 @@ const PlanDetail = () => {
 
         setIsUploading(true); // 업로드 상태 시작
         try {
-            await uploadImage(validFiles, planId);
+            const processedFiles = await Promise.all(validFiles.map(async (file) => {
+                if (file.type === 'image/heic' || file.type === 'image/heif') {
+                    try {
+                        const convertBlob = await heic2any({
+                            blob: file,
+                            toType: 'image/jpeg',
+                            quality: 0.8,
+                            multiple: false,
+                        })
+                        return new File([convertBlob],file.name.replace(/\.[^/.]+$/, ".jpg"), { type: 'image/jpeg' });
+                    } catch (conversionError) {
+                        console.error('Heic변환실패', conversionError);
+                        alert('변환실패');
+                        return null;
+                    }
+                }
+                return file;
+            }))
+
+            const finalFiles = processedFiles.filter(file => file !== null);
+
+            if (finalFiles.length === 0) {
+                alert('업로드할 파일이 없음');
+                return;
+            }
+
+            await uploadImage(finalFiles, planId);
             await fetchImageUrls();
         } catch (error) {
             console.error('업로드 실패:', error);
@@ -214,7 +241,7 @@ const PlanDetail = () => {
                     id="file-input"
                     type="file"
                     multiple
-                    accept="image/*"
+                    accept="image/*, .heic, .heif"
                     onChange={onFilesSelected}
                     style={{ display: 'none' }}
                 />
