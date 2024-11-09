@@ -2,12 +2,11 @@ import axios from 'axios';
 
 const ODSAY_API = process.env.REACT_APP_ODSAY_KEY;
 // const SANGGWON_API = process.env.REACT_APP_SANGGWON_KEY;
-const SANGGWON_API = `L0rMesNmmH%2FVyF8fnGCVY67L%2BWP6PIqBalzE8bdJ%2Bvjw11RfpEh00iXwZW%2BzNLAgOGd7uH0wVUBQEyfBb688lg%3D%3D`;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function searchPubTransPath(sx, sy, ex, ey) {
   const url = `https://api.odsay.com/v1/api/searchPubTransPathT?SX=${sx}&SY=${sy}&EX=${ex}&EY=${ey}&OPT=${0}&apiKey=${ODSAY_API}`;
-
+  
   try {
     await delay(1000);
     const response = await axios.get(url);
@@ -19,6 +18,7 @@ export async function searchPubTransPath(sx, sy, ex, ey) {
   }
 }
 
+// const SANGGWON_API = `L0rMesNmmH%2FVyF8fnGCVY67L%2BWP6PIqBalzE8bdJ%2Bvjw11RfpEh00iXwZW%2BzNLAgOGd7uH0wVUBQEyfBb688lg%3D%3D`;
 // export async function storeZoneInRadius(radius, x, y) {
 //   const url = `http://apis.data.go.kr/B553077/api/open/sdsc2/storeZoneInRadius?radius=${radius}&cx=${x}&cy=${y}&type=json&serviceKey=${SANGGWON_API}`;
 
