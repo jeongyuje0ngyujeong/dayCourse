@@ -126,4 +126,4 @@ async function analyzeImage(userId){
     }
 }
 
-module.exports = analyzeImage;
+module.exports = { analyzeImage };
