@@ -72,8 +72,7 @@ export default function Schedule(props) {
     <div>
       {selectedSchedules && selectedSchedules.length > 0 ? selectedSchedules.map((event, index) => (
         <EventContainer key={index} id="schedule">
-          <div>
-            <h3>
+            <h2 style={{fontFamily: 'NPSfontBold'}} >
               {event.dateKey ? (<>{event.planName} </>) : (<i>No Date?</i>)}{" "}
             </h3>
 
@@ -81,9 +80,7 @@ export default function Schedule(props) {
             {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
-              <Link to={`/main/PlacePage/${event.planId}`}>
-                <button type="submit">상세일정</button>
-              </Link>
+              <Button onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
               <Form
                 method="post"
                 action={`${event.planId}/destroy`}

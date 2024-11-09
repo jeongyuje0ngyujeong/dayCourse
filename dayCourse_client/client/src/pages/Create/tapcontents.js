@@ -10,7 +10,7 @@ const FriendsContainer = styled.div`
     display: flex;
     flex-direction: column;
     border-radius: 10px;
-    margin: 0 10px;
+    ${'' /* margin: 0 10px; */}
     padding: 0px 10px 10px 10px;
     background: #eee;
 `;
@@ -61,7 +61,7 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
 }
 
 export function ExistGroup({groupsList, setSelectedGroup}) {
-    console.log('ExistGroup: ',groupsList);
+
     return(
         <>
         <FriendsContainer>

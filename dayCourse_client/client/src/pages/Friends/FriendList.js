@@ -11,6 +11,8 @@ const ResultContainer = styled.div`
     ${'' /* overflow-y: auto; */}
     overflow: auto; 
     
+
+    ${'' /* border:1px solid; */}
     &::-webkit-scrollbar {
         display: none; 
     }
@@ -20,11 +22,13 @@ const ResultContainer = styled.div`
 const ItemContainer = styled.div`
     display: flex;
     justify-content: space-between;
-    padding: 0 0 0 5px;
+    padding: 0 0 0 3vh;
     background: white;
-    border-radius: 5px;
+    border-radius: 10px;
     align-items: center;
-    border: 1px solid #eee;
+    border: 1px solid #ddd;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    
     ${'' /* background: #eee; */}
 `
 
@@ -62,7 +66,10 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
                     }} 
                     style={{ cursor: 'pointer' }}
                 >
-                    <h4>{friend.friendName} | {friend.friendId}</h4>
+                    <div style={{display:'flex', justifyContent:'space-between',  alignItems:'center',}}>
+                        <h4 style={{width:'15vh'}}>{friend.friendName}</h4>
+                        <p> | {friend.friendId}</p>
+                    </div>
                     {flag ? 
                     <button onClick={(e) => handleAdd(e, friend)}>추가</button>
                     :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>}
@@ -95,11 +102,13 @@ export function GroupList({groupsList, setSelectedGroup, flag}) {
                     onClick={() => {
                         // selectedFriend(friend);
                     }} 
-                    style={{ cursor: 'pointer' }}
+                    style={{ cursor: 'pointer', gap:'1rem' }}
                 >
-                    <h4>{group.groupName}</h4>
-                    {/* <p>{group.userNames}</p> */}
-                    <p>{group.userNames.map((item) => item).join(', ')}</p>
+                    <div style={{display:'flex', justifyContent:'space-between', width:'80%', alignItems:'center',}}>
+                        <h4>{group.groupName}</h4>
+                        {/* <p>{group.userNames}</p> */}
+                        <p>{group.userNames.map((item) => item).join(', ')}</p>
+                    </div>
                     <button onClick={(e) => handleSelect(e, group)}>선택</button>
                     {/* {flag ? 
                     <button onClick={(e) => handleAdd(e, friend)}>추가</button>

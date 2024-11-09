@@ -192,22 +192,30 @@ export function GroupDatesByWeek({groupedSchedules, setGroupedSchedules, startDa
               >
                   <div style={{
                     color: day === 6 ? '#F3CD86': day === 0 ? '#F5A281' : 'black', 
-                    fontWeight: '500',
-                    opacity: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 1 : 0.3,
+                    fontWeight: '700',
+                    opacity: month === MainMonth || endDay.getDate()-startDay.getDate() === 6 ? 1 : 0.3,
                   }}>{String(date)}</div>
                   
                   <div 
-                    style={{ color: month === MainMonth || endDay.getDate()-startDay.getDate() ===6 ? 'black' : '#ccc', fontWeight: '500' }}>
-                    {events && events.length > 0 ? (
+                    style={{  display: 'flex', flexDirection:'column', flex:'1',alignItems:'center', gap:'3px'}}>
+              
+                    {showCalendar?(
                       <>
-                        {events.slice(0, 3).map((event, index) => (
-                          <div key={index}>{event.planName}</div>
-                        ))}
-                        {events.length > 3 && (
-                          <div>+{events.length - 3}</div>
-                        )}
+                      {events.slice(0, 2).map((event, index) => (
+                        <div key={index} style={{width:'100%',border:'2px solid #90B54C',background:'#90B54C',color:'white', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>
+                        {event.planName}</div>
+                      ))}
+                      {events.length > 2 && (
+                        <div style={{width:'25%', background:'#90B54C',color:'white', fontSize:'1.7vh',borderRadius:'10px',opacity:'80%'}}>+{events.length - 2}</div>
+                      )}
                       </>
-                    ) : null}
+                    )
+                    :(
+                      events.length > 0 && (
+                      <div style={{width:'30%',border:'2px solid #90B54C',background:'#90B54C',color:'white', borderRadius:'15px',fontWeight:'700', opacity:'80%'}}></div>
+                      )
+                    )}
+
                   </div>
               </Cell></>
         )

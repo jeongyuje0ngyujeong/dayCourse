@@ -72,63 +72,46 @@ export default function CreateSchedule() {
 
   return (
     <>
-    <PageTitle>일정</PageTitle>
-    <Form method="post" id="schedule-form">
-      <span>약속 날짜</span>
-      <p>
-        <input
-          placeholder="년"
-          aria-label="년"
-          type="date"
-          name="date"
-          defaultValue={date}
-          style={{width:'15rem'}}
-          required
-        />
-      </p>
-      <p>
-      <label>
-        <input
-          type="text"
-          name="planName"
-          style={{width:'15rem'}}
-          placeholder={'약속의 이름을 입력해주세요.'}
-          defaultValue={planName}
-        />
-      </label>
-      </p>
-      
-      <span>그룹</span>
-      {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
-      {selectedGroup? (  
-        <ResultContainer>
-          <h4>{selectedGroup.groupName}</h4>
-          <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
-          <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
-        </ResultContainer>
-      ) : (
-        <ResultContainer>선택한 그룹이 없습니다.</ResultContainer>
-      )}
-      {/* <p>
-      <label>
-        <input
-          type="text"
-          name="group"
-          placeholder="누구와의 약속인가요?"
-          defaultValue={schedule?.group}
-        />
-      </label>
-      </p> */}
-      <Group setSelectedGroup={setSelectedGroup}/>
-      {/* <input type="hidden" name="groupName" value={selectedGroup} /> */}
-      <input type="hidden" name="groupMembers" value={selectedGroup} />
-
-      <p>
-        <button type="submit">Save</button>
-        <Link to="/main/home">
-          <button type="button">Cancel</button>
-        </Link>
-      </p>
-    </Form>
+      <div style={{display:'flex', gap: '3rem'}}>
+        <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
+          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
+          <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
+          <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
+          
+        </div>
+        <div style={{flex:'2'}}>
+          <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
+            <Form style={{width:'100%'}}method="post" id="schedule-form">
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 날짜</PageTitle>
+                <input
+                  placeholder="년"
+                  aria-label="년"
+                  type="date"
+                  name="date"
+                  defaultValue={date}
+                  style={{width:'100%'}}
+                  required
+                />
+              </div>
+              <div style={{flex:'1'}}>
+                <PageTitle>약속 이름</PageTitle>
+                <input
+                  type="text"
+                  name="planName"
+                  style={{width:'100%'}}
+                  placeholder={'약속의 이름을 입력해주세요.'}
+                  defaultValue={planName}
+                />
+              </div>
+              <Group group={group}/>
+              {/* <div style={{display:'flex', marginTop:'2rem'}}> */}
+                <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button> 
+              {/* </div> */}
+            </Form>
+          </div>
+        </div>
+      </div>
+      </>
   );
 }

@@ -8,6 +8,7 @@ import SelectTown from './SelectTown';
 import styled from "styled-components";
 import {Button} from '../../Button';
 import ConvexHullCalculator from './Recommand/convex_hull'
+import {PageTitle} from '../../commonStyles';
 
 
 export async function loader({ params }) {
@@ -35,9 +36,10 @@ const SidebarContainer = styled.div`
 
 const RecommendContainer = styled.div`
     display: flex;
-    height: 100%;
+    ${'' /* height: 100%; */}
     width: 100%;
     max-height: 31rem;
+    flex: 1;
 `
 
 const DepartureContainer = styled.div`
@@ -45,22 +47,25 @@ const DepartureContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: space-between; 
-    margin-top: 10px;
-    padding-right: 20px;
+    ${'' /* margin-top: 10px; */}
+    border: 1px solid;
+    margin-right: 20px;
     position: relative;
-    max-height: 10rem;
+    height: 65vh;
 `
 const RecommendResult = styled.div`
     display: flex;
     margin-top: 30px;
     flex: 1;
-    height: 33rem;
+    height: 60vh;
+    ${'' /* height: 33rem; */}
 `
 const ScrollContainer = styled.div`
-    flex-grow: 1; 
+    flex: 1; 
+    ${'' /* height: 26vh; */}
     display: flex;
     flex-direction: column;
-    min-height: 13rem;  
+    ${'' /* min-height: 13rem;   */}
     overflow: auto; 
     &::-webkit-scrollbar {
         display: none; 
@@ -82,7 +87,7 @@ const ScrollContainer = styled.div`
 const MapContainer = styled.div`
     display: flex;
     flex: 1;
-    width: 100%;
+    
     ${'' /* border: 1px solid; */}
     border-radius: 10px;
     justify-content: center;
@@ -90,7 +95,8 @@ const MapContainer = styled.div`
 `
 
 const Container = styled.div`
-    flex: 1;
+    height: 30vh;
+    border: 1px solid;
     display: flex;
     gap: 5px;
     margin-top: auto;
@@ -132,16 +138,16 @@ export default function UpdateTown() {
     return (
         <div>
             <SidebarContainer>
-                <h2>약속 지역</h2>
+                <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>약속지역</PageTitle>
                 <SelectTown contextTown={setSelectedTown}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
-                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '6%' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
+                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
                 </Form>  
                 <RecommendContainer>
                     <DepartureContainer>
-                        
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
+                        
                         <ScrollContainer>
                             {departurePoints.map((point, index) => (
                                 <div key={index} style={{ display: 'flex', alignItems: 'center',justifyContent: 'space-between', gap: '5px', marginBottom: '10px'}}>

@@ -121,14 +121,10 @@ export default function Chat({userId, planInfo}) {
     }
 
     return (
-    <ChatContainer>
-        <ChatName>채팅방: {userNames}</ChatName>
-        <Messages messages={messages} name={name}/>
-        <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
-        {/* <ChatInputBar>
-            <ChatInput placeholder="메시지 입력" message={message} setMessage={setMessage} sendMessage={sendMessage}></ChatInput>
-            <Button style={{height:'100%',width:'3rem',border:'none'}}>전송</Button>
-        </ChatInputBar> */}
-    </ChatContainer>
-    )
+        <ChatContainer>
+            {/* <ChatName>채팅방: {userNames}</ChatName> */}
+            <Messages messages={messages} name={userId} />
+            <Input message={message} setMessage={setMessage} sendMessage={handleSendMessage} />
+        </ChatContainer>
+    );
 }

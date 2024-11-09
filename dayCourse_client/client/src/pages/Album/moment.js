@@ -5,7 +5,8 @@ import styled from 'styled-components';
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, minmax(150px, 1fr)); /* 반응형 그리드 */
+
+    grid-template-columns: ${({ columns }) => `repeat(${columns},  minmax(150px, 1fr))`};
     gap: 10px; /* 그리드 간격 */
     padding: 20px 0;
     max-width: 935px; /* 최대 너비 설정 */
@@ -134,8 +135,9 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, onMomentCountChange, moments }) => {
-   
+const Moment = ({ maxItems, onMomentCountChange, columns }) => {
+    console.log('colums: ', columns);
+    const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('')
 
@@ -155,26 +157,26 @@ const Moment = ({ maxItems, onMomentCountChange, moments }) => {
     
       return (
         <>
-          <Container>
-            {Object.entries(moments)
-              .slice(0, maxItems || Object.entries(moments).length)
-              .map(([key, images]) => (
-                <Box
-                  key={key}
-                  onClick={() => handleBoxClick(key, images)}
-                  background={images[0]?.imgURL} // 배경 이미지로 설정
-                >
-                  <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                </Box>
-              ))}
-          </Container>
-    
-          <MomentModal
-            isOpen={modalIsOpen}
-            onRequestClose={() => setModalIsOpen(false)}
-            title={modalTitle}
-            images={modalImages}
-          />
+            <Container columns={columns}>
+                {Object.entries(moments)
+                    .slice(0, maxItems || Object.entries(moments).length)
+                    .map(([key, images]) => (
+                    <Box
+                        key={key}
+                        onClick={() => handleBoxClick(key, images)}
+                        background={images[0]?.imgURL} // 배경 이미지로 설정
+                    >
+                        <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                    </Box>
+                ))}
+            </Container>
+
+            <MomentModal
+                isOpen={modalIsOpen}
+                onRequestClose={() => setModalIsOpen(false)}
+                title={modalTitle}
+                images={modalImages}
+            />
         </>
       );
     };

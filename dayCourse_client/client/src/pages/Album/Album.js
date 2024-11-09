@@ -12,34 +12,41 @@ const Container = styled.div`
   background-color: #fff;
   border-radius: 3px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-top: 20px;
+  ${'' /* margin-top: 20px; */}
 `;
 
 const ProfileHeader = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  gap: 10vh;
+  ${'' /* padding: 0 0 5vh 9vh; */}
+  ${'' /* justify-content: center; */}
 `;
 
 const ProfileInfo = styled.div`
   width: 100%; /* 전체 가로 너비 사용 */
+  display:flex;
+  flex-direction:column;
+  gap:2vh;
+  ${'' /* padding: 0 3vh; */}
+  ${'' /* align-items: center; */}
+  justify-content: center;
 `;
 
-const Username = styled.h2`
+const Username = styled.div`
   font-size: 35px;
   font-weight: 300;
-  margin-bottom: 10px;
-  width: 30%; /* 원하는 퍼센트로 조정 */
-  margin: 0 auto; /* 가운데 정렬 */
 `;
 
 const ProfileStats = styled.div`
   display: flex;
   gap: 20px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-  margin-left: 35%; /* 원하는 위치로 조정 */
+  ${'' /* margin-top: 20px; */}
+  ${'' /* margin-bottom: 10px; */}
+  ${'' /* margin-left: 35%;  */}
   flex-wrap: nowrap; /* 줄 바꿈 방지 */
   white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
   flex-shrink: 0; /* 화면이 줄어들어도 너비를 줄이지 않음 */
@@ -58,22 +65,21 @@ const Bio = styled.div`
   font-size: 25px;
   color: #8e8e8e;
   width: 100%; /* 전체 너비 사용 */
-  margin-top: 20px;
-  margin-left: 35%; /* 원하는 위치로 조정 */
-  margin-bottom: 40px;
+  ${'' /* margin-left: 35%; */}
 `;
 
 const Tabs = styled.div`
   display: flex;
-  
+  width: 100%;
   justify-content: center; /* 중앙 정렬 */
   border-top: 1px solid #dbdbdb;
-  gap: 30px;
-  margin-top: 100px;
+  ${'' /* gap: 20vh; */}
+  padding: 0 30vh;
+  margin-top: 7vh;
 `;
 
 const TabButton = styled.button`
-  width: 100px; /* 버튼 너비를 고정 */
+  flex: 1; /* 버튼 너비를 고정 */
   padding: 10px 0; /* 버튼 크기 조절 */
   background: none;
   border: none;
@@ -110,6 +116,11 @@ const ContentContainer = styled.div`
   width: 100%;
   max-width: 935px;
   margin: 0 auto; /* 중앙 정렬 */
+`;
+
+const Image = styled.img`
+    width: 140px;
+    object-fit: cover; 
 `;
 
 const Album = ({ userId }) => {
@@ -158,8 +169,8 @@ const Album = ({ userId }) => {
     switch (activeTab) {
       case 'posts':
         return <RecentPlan plans={plans} />;
-        case 'moments':
-          return <Moment colums={3} onMomentCountChange={setMomentCount} moments={momentsData} />; // moments 데이터 전달
+      case 'moments':
+        return <Moment onMomentCountChange={setMomentCount} columns={3} />;
       case 'videos':
         return <div>동영상</div>;
       default:
@@ -169,21 +180,22 @@ const Album = ({ userId }) => {
   return (
     <Container>
       <ProfileHeader>
-        <ProfileInfo>
-        <Username>{currentUserId}</Username>
-          <ProfileStats>
-            <Stat>
-              <strong>일정 {plans.length}</strong> 
-            </Stat>
-            <Stat>
-              <strong>모먼트 {momentCount}</strong> 
-            </Stat>
-            <Stat>
-              <strong>동영상 0</strong> 
-            </Stat>
-          </ProfileStats>
-          <Bio>{username}</Bio> 
-        </ProfileInfo>
+          <Image src="/profile.png" alt="Company Logo" className="logo" />
+          <ProfileInfo>
+            <Username>{currentUserId}</Username>
+            <ProfileStats>
+              <Stat>
+                <strong>일정 {plans.length}</strong> 
+              </Stat>
+              <Stat>
+                <strong>모먼트 {momentCount}</strong> 
+              </Stat>
+              <Stat>
+                <strong>동영상 0</strong> 
+              </Stat>
+            </ProfileStats>
+            <Bio>{username}</Bio> 
+          </ProfileInfo>
       </ProfileHeader>
 
       {/* 탭 버튼 */}
