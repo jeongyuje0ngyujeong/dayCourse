@@ -339,7 +339,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
             socket.off('user-mouse-move');
             socket.off('places-updated');
         };
-    }, [socket, planId, joinRoom]);
+    }, [socket, planId, joinRoom,setUniqueUsers]);
 
     useEffect(() => {
         if (!socket) return;
