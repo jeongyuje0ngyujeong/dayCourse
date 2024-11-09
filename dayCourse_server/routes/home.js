@@ -4,6 +4,7 @@ const db = require('../db')
 const axios = require('axios');
 const multer = require('multer'); // 1. multer 추가 (파일 업로드 처리)
 const FormData = require('form-data');
+const { analyzeImage } = require('./moment');
 
 const fs = require('fs'); //파일 저장용
 const path = require('path');
@@ -1168,8 +1169,9 @@ router.get('/plan/:planId/images', async (req, res) => {
     }
 });
 
-router.post('/plan/upload/:planId/images', upload.array('image'), async (req, res) => {
+router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJWT, async (req, res) => {
     console.log("사진 등록");
+    const userId = req.user.userId;
 
     try {
         const planId = req.params.planId;
@@ -1289,6 +1291,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
                 }
             })();
         }
+
+        analyzeImage(userId);
 
     } catch (err) {
         console.error('이미지 처리 중 오류 발생', err);
