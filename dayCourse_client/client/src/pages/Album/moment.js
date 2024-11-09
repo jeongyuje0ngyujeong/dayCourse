@@ -119,7 +119,7 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
                 <h3>{title}</h3>
                 <ImageGrid>
                     {images.map((url, idx) => (
-                        <ModalImage key={idx} src={url.imgURL} alt={`${title} 이미지 ${idx + 1}`} />
+                        <ModalImage key={idx} src={url.imgURL} alt={`${title} 이미지 ${idx + 1}`} loading="lazy" />
                     ))}
                 </ImageGrid>
             </div>
