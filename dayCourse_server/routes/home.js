@@ -867,9 +867,8 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         const { restaurants, cafesByKeyword, others } = classifyLocations(locations);
 
         // 장소 재배치
-        const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, planId);
-
-        // // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
+        const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, planId);
+        
         // const startLocation = arrangedLocations[0];
         // const endLocation = arrangedLocations[arrangedLocations.length - 1];
         // const waypoints = arrangedLocations.slice(1, -1);
