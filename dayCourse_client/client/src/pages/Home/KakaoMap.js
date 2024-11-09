@@ -94,7 +94,8 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
             strokeWeight: strokeWeight,
             strokeColor: '#5c5b5b',
             strokeOpacity: 0.7,
-            strokeStyle: 'dashed',
+            strokeStyle: dashLength ? 'dashed' : 'solid',
+            strokeDashArray: dashLength
         })
         polyline.setMap(map);
         routeLinesRef.current.push(polyline);
