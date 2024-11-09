@@ -28,7 +28,7 @@ const ButtonContainer = styled.div`
     gap: 10px; 
 `;
 
-const KeywordItem = styled.div`
+const KeywordItem = styled.label`
     display:flex;
     flex-direction: column;
     align-items: center;
