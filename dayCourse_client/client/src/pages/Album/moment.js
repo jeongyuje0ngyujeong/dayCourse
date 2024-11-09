@@ -1,10 +1,7 @@
-// Moment.js
-
 import Modal from 'react-modal';
 import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
 
-import { getMoment } from './AlbumApi';
 
 const Container = styled.div`
     display: grid;
@@ -128,57 +125,50 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, onMomentCountChange }) => {
-    const [moments, setMoments] = useState([]); 
+const Moment = ({ maxItems, onMomentCountChange, moments }) => {
+   
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('')
 
     useEffect(() => {
-        const fetchMoments = async () => {
-            try {
-                const data = await getMoment();
-                setMoments(data);
-                const totalCount = Object.keys(data).length;
-                if (onMomentCountChange) {
-                    onMomentCountChange(totalCount);
-                }
-            } catch (err) {
-                console.error('모먼트를 가져오는 중 오류가 발생했습니다:', err);
-            }
-        };
-        fetchMoments();
-    }, [onMomentCountChange]);
-
-    const handleBoxClick = (title, images) => {
+        // 이미 부모 컴포넌트에서 모먼트를 가져왔으므로, 여기서는 추가로 가져올 필요 없음
+        if (onMomentCountChange) {
+          const totalCount = Object.keys(moments).length;
+          onMomentCountChange(totalCount);
+        }
+      }, [moments, onMomentCountChange]);
+    
+      const handleBoxClick = (title, images) => {
         setModalTitle(title);
         setModalImages(images);
         setModalIsOpen(true);
-    };
-
-    return (
+      };
+    
+      return (
         <>
-            <Container>
-                {Object.entries(moments)
-                    .slice(0, maxItems || Object.entries(moments).length)
-                    .map(([key, images]) => (
-                    <Box
-                        key={key}
-                        onClick={() => handleBoxClick(key, images)}
-                        background={images[0]?.imgURL} // 배경 이미지로 설정
-                    >
-                        <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                    </Box>
-                ))}
-            </Container>
-
-            <MomentModal
+          <Container>
+            {Object.entries(moments)
+              .slice(0, maxItems || Object.entries(moments).length)
+              .map(([key, images]) => (
+                <Box
+                  key={key}
+                  onClick={() => handleBoxClick(key, images)}
+                  background={images[0]?.imgURL} // 배경 이미지로 설정
+                >
+                  <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                </Box>
+              ))}
+          </Container>
+    
+          <MomentModal
             isOpen={modalIsOpen}
             onRequestClose={() => setModalIsOpen(false)}
-            content={modalContent}
-            />
-        </div>
-    );
-};
+            title={modalTitle}
+            images={modalImages}
+          />
+        </>
+      );
+    };
 
 export default Moment;
 
