@@ -764,6 +764,9 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
     let previousKeyword = null;
 
     let allLocations = []
+    let restaurantsCheck = false;
+    let cafeKeywordsCheck = false;
+
 
     if (restaurants != null && cafesByKeyword != null && others != null) {
         // 모든 장소를 합친 배열 생성
@@ -772,6 +775,10 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             ...Object.values(cafesByKeyword).flat(),
             ...others
         ];
+        const restaurantsCheck = restaurants.length >= 2;
+        const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
+            .filter(keyword => cafesByKeyword[keyword].length >= 2);
+        const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
     }
 
     if (planId > 0) {
@@ -800,12 +807,6 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             }
         });
     }
-
-    const restaurantsCheck = restaurants.length >= 2;
-    const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
-        .filter(keyword => cafesByKeyword[keyword].length >= 2);
-    const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
-
 
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
