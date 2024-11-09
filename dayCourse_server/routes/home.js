@@ -721,7 +721,7 @@ function getAllLocationsByPlanId(planId) {
                     db.query(findLocationDetails, [locationId], (err, results) => {
                         if (err) return reject(err);
                         if (results.length === 0) return reject(new Error("Location not found for LocationID"));
-                        console.log(result[0].placeId);
+                        console.log(results[0].placeId);
                         resolve(results[0]);
                     });
                 });
