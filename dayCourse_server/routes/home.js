@@ -778,28 +778,23 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         `
 
         // 비동기니까 꼭 promise 사용해서 진행해야함..
-        return new Promise((resolve, reject) => {
+        const queryResults = await new Promise((resolve, reject) => {
             db.query(findAllLocations, [planId], (err, results) => {
                 if (err) {
                     console.error("Error executing query:", err);
                     return reject(err);
                 }
-
-                results.forEach(result => {
-                    const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
-                    console.log(`placeId ${result.placeId} exists in allLocations:`, result.placeId);
-
-                    if (!isItInLocations) {
-                        allLocations.push(result);
-                        console.log("allLocations배열에 추가한 값: ", result);
-                    }
-                });
-
-                resolve(allLocations); // 모든 처리가 끝난 후 allLocations을 resolve
+                resolve(results);
             });
         });
-    } else {
-        return Promise.resolve(allLocations);
+
+        queryResults.forEach(result => {
+            const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
+            if (!isItInLocations) {
+                allLocations.push(result);
+                console.log("allLocations 배열에 추가한 값: ", result);
+            }
+        });
     }
 
     const restaurantsCheck = restaurants.length >= 2;
