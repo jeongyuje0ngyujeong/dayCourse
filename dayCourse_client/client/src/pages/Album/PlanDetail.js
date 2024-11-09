@@ -169,6 +169,16 @@ const PlanDetail = () => {
                 selectedImages.map(async (url, index) => {
                     const response = await fetch(url);
                     const blob = await response.blob();
+                    //경은 추가 코드
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `image-${index + 1}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(link.href);
+                    //경은 추가 코드
+
                     folder.file(`image-${index + 1}.jpg`, blob);
                 })
             );
