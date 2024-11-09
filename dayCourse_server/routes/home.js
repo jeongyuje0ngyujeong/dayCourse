@@ -1205,12 +1205,12 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             console.log(uploadParams)
 
             // // 이미지 파일 확장자 확인
-            // const ext = path.extname(file.originalname).toLowerCase();
-            // if (ext === '.heic') {
-            //     imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
-            //     // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
-            //     contentType = 'image/jpeg';  // MIME 타입 변경
-            // }
+            const ext = path.extname(file.originalname).toLowerCase();
+            if (ext === '.heic') {
+                imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
+                // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
+                contentType = 'image/jpeg';  // MIME 타입 변경
+            }
 
             // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
