@@ -774,26 +774,28 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         FROM Plan_Location
         WHERE Plan_Location.planId = ?
         `
-
-        // DB에서 해당 planId의 모든 로케이션 가져와서 placeId 값이 allLocationsdp 없으면 allLocations에 플러스함
-        db.query(findAllLocations, [planId], (err, results) => {
-            if (err) {
-                console.error("Error executing query:", err);
-                return;
-            }
-
-            results.forEach(result => {
-                const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
-                console.log(`placeId ${result.placeId} exists in allLocations:`, result.placeId);
-
-                if (!isItInLocations) {
-                    allLocations.push(result);
-                    console.log("allLocations배열에 추가한 값: ", result);
+        return new Promise((resolve, reject) => {
+            db.query(findAllLocations, [planId], (err, results) => {
+                if (err) {
+                    console.error("Error executing query:", err);
+                    return reject(err);
                 }
+
+                results.forEach(result => {
+                    const isItInLocations = allLocations.some(location => location.placeId === result.placeId);
+                    console.log(`placeId ${result.placeId} exists in allLocations:`, result.placeId);
+
+                    if (!isItInLocations) {
+                        allLocations.push(result);
+                        console.log("allLocations배열에 추가한 값: ", result);
+                    }
+                });
+
+                resolve(allLocations); // 모든 처리가 끝난 후 allLocations을 resolve
             });
-
         });
-
+    } else {
+        return Promise.resolve(allLocations);
     }
 
     const restaurantsCheck = restaurants.length >= 2;
