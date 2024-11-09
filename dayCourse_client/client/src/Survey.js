@@ -92,6 +92,12 @@ const Survey = () => {
     useEffect(() => {
         const checkOk = async () => {
             const token = sessionStorage.getItem('token'); // 토큰 가져오기
+            console.log('토큰 값:', token);
+            if (!token) {
+                console.error('토큰이 존재하지 않습니다.');
+                setLoading(false); // 토큰이 없으면 서베이를 표시하거나 로그인 페이지로 이동
+                return;
+            }
             try {
                 const response = await axios.get(`${BASE_URL}/home/survey`, {
                     headers: {
@@ -99,18 +105,21 @@ const Survey = () => {
                     }
                 });
 
-                console.log('서버 응답:', response.data); // 서버 응답 로그 확인
+                console.log('서버 응답:', response.data);
 
                 const { dataPresence } = response.data;
 
-                if (dataPresence === false) {
+                // dataPresence가 1인 경우, 서베이를 건너뜁니다.
+                if (dataPresence === true) {
+                    console.log('이미 서베이를 완료한 사용자입니다.');
                     goMain();
                 } else {
-                    setLoading(true);
+                    console.log('서베이를 표시합니다.');
+                    setLoading(false); // 서베이를 표시
                 }
             } catch (error) {
                 console.error('서베이 상태 확인 오류', error);
-                setLoading(false);
+                setLoading(false); // 에러 발생 시 서베이를 표시
             }
         };
         checkOk();
@@ -128,10 +137,19 @@ const Survey = () => {
 
     const submitKeyword = async() => {
         try {
-            await axios.post('/main/home/survey', selectedKeyWords );
-            goMain();
-        } catch(error) {
-            console.error('서버 전송 에러', error);
+            const postResponse = await axios.post(`${BASE_URL}/home/survey`,
+                dataToSend, 
+                {            
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+                    }
+                }
+            );
+            console.log('서베이 전송 성공:', postResponse.data);
+            goMain(); // 성공 시 메인 페이지로 이동
+        } catch (error) {
+            console.error('서베이 전송 에러', error);
+            alert('서버 전송 중 오류가 발생했습니다. 다시 시도해 주세요.');
         }
     };
 
