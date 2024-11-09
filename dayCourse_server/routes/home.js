@@ -776,6 +776,8 @@ function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         FROM Plan_Location
         WHERE Plan_Location.planId = ?
         `
+
+        // 비동기니까 꼭 promise 사용해서 진행해야함..
         return new Promise((resolve, reject) => {
             db.query(findAllLocations, [planId], (err, results) => {
                 if (err) {
@@ -872,14 +874,11 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         // 장소 재배치
         const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, planId);
 
-        // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
-        const startLocation = arrangedLocations[0];
-        const endLocation = arrangedLocations[arrangedLocations.length - 1];
-        const waypoints = arrangedLocations.slice(1, -1);
+        // // 출발지와 도착지 설정 (재배치 된 장소를 기준으로 시작점과 마지막점을 출발지와 도착지로 설정)
+        // const startLocation = arrangedLocations[0];
+        // const endLocation = arrangedLocations[arrangedLocations.length - 1];
+        // const waypoints = arrangedLocations.slice(1, -1);
 
-        // arrangedLocations.forEach(location => {
-        //     console.log("반환되는 로케이션", location.LocationID);
-        // });
 
         // priority 업데이트
         const setLocationPriority = `
