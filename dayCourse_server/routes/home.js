@@ -958,9 +958,11 @@ function translateCategory(Category) {
 }
 
 
-router.get('/plan/1234', authenticateJWT, async (req, res) => {
+// router.get('/plan/1234', authenticateJWT, async (req, res) => {
+router.get('/plan/1234', async (req, res) => {
     console.log("완전랜덤추천");
-    const userId = req.user.userId;
+    // const userId = req.user.userId;
+    const userId = 17;
     const l_num = 5;
 
     const sql_plan = `
