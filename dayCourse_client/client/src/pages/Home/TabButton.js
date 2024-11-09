@@ -6,12 +6,15 @@ const TabButton = ({ active, children, onClick }) => {
             onClick={onClick} // 클릭 핸들러
             style={{
                 padding: '10px',
-                background: 'none',
+                background: active ? '#90B54C':'white',
                 border: 'none',
                 cursor: 'pointer',
-                fontWeight: active ? 'bold' : 'normal', // active에 따라 스타일 조정
-                color:' #36451c',
-                margin:'5px'
+                borderRadius:'30px',
+                boxShadow:  active ? 'inset 0 2px 5px rgba(0, 0, 0, 0.1)':'none',
+                fontWeight: 'bold', 
+                color: active ? ' white ':'#36451c',
+                margin:'5px',
+                flex: 1,
             }}
         >
             {children}

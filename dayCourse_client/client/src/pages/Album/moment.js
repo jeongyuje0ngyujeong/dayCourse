@@ -8,7 +8,8 @@ import { getMoment } from './AlbumApi';
 
 const Container = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, minmax(150px, 1fr)); /* 반응형 그리드 */
+
+    grid-template-columns: ${({ columns }) => `repeat(${columns},  minmax(150px, 1fr))`};
     gap: 10px; /* 그리드 간격 */
     padding: 20px 0;
     max-width: 935px; /* 최대 너비 설정 */
@@ -134,7 +135,8 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, onMomentCountChange }) => {
+const Moment = ({ maxItems, onMomentCountChange, columns }) => {
+    console.log('colums: ', columns);
     const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
@@ -164,7 +166,7 @@ const Moment = ({ maxItems, onMomentCountChange }) => {
 
     return (
         <>
-            <Container>
+            <Container columns={columns}>
                 {Object.entries(moments)
                     .slice(0, maxItems || Object.entries(moments).length)
                     .map(([key, images]) => (

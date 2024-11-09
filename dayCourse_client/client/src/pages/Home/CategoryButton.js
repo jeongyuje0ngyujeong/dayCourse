@@ -5,32 +5,37 @@ import styled from "styled-components";
 
 
 const CategoryContainer = styled.div`
-    margin: 10px 0;
+    display:flex;
+    ${'' /* margin: 10px 0; */}
 `;
 
 const CategoryButton = ({ selectedCategory, setSelectedCategory }) => {
     const categories = ['랜덤', '음식점', '카페', '문화생활'];
 
     return (
-        <div>
-        <h5>카테고리</h5>
-        <CategoryContainer>
-            {categories.map((category) => (
-                
-                <Button 
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    width="4vw" // 원하는 너비를 지정
-                    height="4vh" // 원하는 높이를 지정
-                    color={selectedCategory === category ? 'white' : 'black'}
-                    $background={selectedCategory === category ? '#90B54C' : 'transparent'} 
-                    $border={selectedCategory === category ? 'none' : 'solid 1px darkgray'} // 선택된 경우 테두리 없음, 아니면 검은색 테두리
-                >
-                    {category}
-                </Button>
-             ))}
-        </CategoryContainer>
-        </div>
+        <>
+            <CategoryContainer>
+                {categories.map((category) => (
+                    <Button 
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        style={{
+                            flex: '1',
+                            fontSize: '2vh',
+                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                        height="4vh" // 원하는 높이를 지정
+                        
+                        color={selectedCategory === category ? 'white' : '#343a40'}
+                        $background={selectedCategory === category ? '#90B54C' : 'white'} 
+                        $border={selectedCategory === category ? 'none' : 'solid 1px #ddd'} // 선택된 경우 테두리 없음, 아니면 검은색 테두리
+                        
+                    >
+                        {category}
+                    </Button>
+                ))}
+            </CategoryContainer>
+        </>
     );
 };
 

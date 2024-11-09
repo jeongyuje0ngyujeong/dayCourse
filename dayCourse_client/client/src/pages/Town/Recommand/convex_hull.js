@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {searchPubTransPath, storeZoneInRadius} from './requestTime';
 import styled from "styled-components";
 import {Button} from '../../../Button';
+import {PageTitle} from '../../../commonStyles';
 
 const Box = styled.div`
     width: 100%; /* 너비 조정 */
-    height: 10rem; /* 높이 조정 */
+    height: 100%; /* 높이 조정 */
     background-color: white; /* 배경색을 흰색으로 설정 */
     border: 1px solid #ccc; /* 경계선 추가 */
     border-radius: 10px; /* 둥근 모서리 */
@@ -29,6 +30,7 @@ const Container = styled.div`
     display: flex;
     gap: 5px;
     margin-top: auto;
+    height: 80%;
 `;
 
 // 점 배열을 받아 볼록 다각형을 이루는 점 배열을 반환하는 함수
@@ -350,7 +352,7 @@ export default function ConvexHullCalculator({departurePoints}) {
         <div style={{width:'100%'}}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
-              <h3>추천지역</h3>
+              <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
               {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
             </div>
             <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>

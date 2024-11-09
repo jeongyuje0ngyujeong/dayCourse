@@ -14,13 +14,27 @@ const TabContainer = styled.div`
     ${'' /* border-bottom: 1px solid #ccc; */}
 `;
 
-const Tab = styled.button`
+const Tab1 = styled.button`
     flex: 1;
     ${'' /* padding: 8px 20px; */}
     cursor: pointer;
     border: none;
     ${'' /* outline: none; */}
-    border-radius: 0;
+    border-radius: 10px 0 0 0;
+    ${'' /* background-color: ${({ isActive }) => (isActive ? '#eee' : 'white')}; */}
+    border-bottom: ${({ isActive }) => (isActive ? '1px solid black' : 'none')};
+    color: black;
+    &:hover {
+        background-color: #f9f9f9;
+    }
+`;
+const Tab2 = styled.button`
+    flex: 1;
+    ${'' /* padding: 8px 20px; */}
+    cursor: pointer;
+    border: none;
+    ${'' /* outline: none; */}
+    border-radius: 0 10px 0 0;
     ${'' /* background-color: ${({ isActive }) => (isActive ? '#eee' : 'white')}; */}
     border-bottom: ${({ isActive }) => (isActive ? '1px solid black' : 'none')};
     color: black;
@@ -31,10 +45,10 @@ const Tab = styled.button`
 
 const Content = styled.div`
     display: flex;
-    top: -10px;
+    ${'' /* top: -10px; */}
     padding: 15px 0;
     ${'' /* border: 1px solid #eee; */}
-    border-top: none;
+    ${'' /* border-top: none; */}
     ${'' /* max-height: 20rem; */}
 `;
 
@@ -64,6 +78,18 @@ const NewContainer = styled.div`
     padding: 0 0.5rem;
     ${'' /* margin-top: 1rem; */}
 `
+const ExistContainer = styled.div`
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    height: 100%;
+    ${'' /* padding: 0 50px; */}
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    
+    ${'' /* margin-top: 1rem; */}
+`
 
 const TextButton = styled.div`
     display: flex;
@@ -72,14 +98,13 @@ const TextButton = styled.div`
     align-items: center;
 `;
 
-// const GroupContainer = styled.div`
-//     margin: 0 10px;
-//     ${'' /* padding: 0px 10px 10px 10px; */}
-//     flex: 1;
-//     display: flex;
-//     justify-content: center;
-//     flex-direction: column;
-// `;
+const Image = styled.img`
+    ${'' /* width: 200px; */}
+    height: 450px;
+    margin: 5px;
+    border-radius: 5px;
+    object-fit: cover; 
+`;
 
 export default function Group({group}) {
     const [activeTab, setActiveTab] = useState('Tab1');
@@ -155,9 +180,13 @@ export default function Group({group}) {
                 {selectedGroup? (  
 
                     <ResultContainer>
-                        <h4>{selectedGroup.groupName}</h4>
-                        <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
-                        <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+                        <ExistContainer>
+                            <div style={{display:'flex', width:'100%', alignItems:'center', justifyContent:'space-between', padding: '0 1rem 0 2rem'}}>
+                                <h4>{selectedGroup.groupName}</h4>
+                                <Button onClick={(e) => {handleDelete(e)}} $border='none'>X</Button>
+                            </div>
+                            <p>{selectedGroup.userNames.map((item) => item).join(', ')}</p>  
+                        </ExistContainer>
                     </ResultContainer>
                     
                 ) : (
@@ -169,14 +198,14 @@ export default function Group({group}) {
                 <ResultContainer>
                 <NewContainer>
                     <TextButton>
-                    <PageTitle>그룹명</PageTitle>
-                        <Button 
-                            style={{ height: '2rem', width: '5rem'}} 
-                            onClick={(e) => {handleOnClick(e)}}
-                        >그룹 생성
-                        </Button>
-                    </TextButton>
-                    <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
+                        <PageTitle>그룹명</PageTitle>
+                            <Button 
+                                style={{ height: '2rem', width: '5rem'}} 
+                                onClick={(e) => {handleOnClick(e)}}
+                            >그룹 생성
+                            </Button>
+                        </TextButton>
+                        <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
                     <TextButton>
                         <PageTitle>선택한 친구</PageTitle>
                         <h4>{selectedFriends.length}명</h4>
@@ -189,10 +218,10 @@ export default function Group({group}) {
                 </>
             )
             }
-            <div style={{flex:'2', border:'1px solid #eee', borderRadius:'10px'}}>
+            <div style={{flex:'2', border:'1px solid #ced4da', borderRadius:'10px'}}>
                 <TabContainer>
-                    <Tab isActive={activeTab === 'Tab1'} onClick={(e) => handleTab1Click(e,'Tab1')}>기존 그룹</Tab>
-                    <Tab isActive={activeTab === 'Tab2'} onClick={(e) => handleTab2Click(e,'Tab2')}>새 그룹</Tab>
+                    <Tab1 isActive={activeTab === 'Tab1'} onClick={(e) => handleTab1Click(e,'Tab1')}>기존 그룹</Tab1>
+                    <Tab2 isActive={activeTab === 'Tab2'} onClick={(e) => handleTab2Click(e,'Tab2')}>새 그룹</Tab2>
                 </TabContainer>
                 
                 <Content>

@@ -10,19 +10,19 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
 import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
 
 
 
-const UserCursor = styled(FontAwesomeIcon)`
-    position: absolute;
-    pointer-events: none;
-    z-index: 1000;
-    width: 30px; /* 아이콘 크기 조절 */
-    height: 30px;
-    transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
-`;
+// const UserCursor = styled(FontAwesomeIcon)`
+//     position: absolute;
+//     pointer-events: none;
+//     z-index: 1000;
+//     width: 30px; /* 아이콘 크기 조절 */
+//     height: 30px;
+//     transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
+// `;
 
 
 
@@ -123,9 +123,9 @@ const RecommendButton = styled.button`
 
 const RowContainer = styled.div`
     display: flex;
-    width: 100%;
-    gap: 50px; /* 간격 조정 */
-    margin-top: 20px;
+    width: 75%;
+    gap: 2vh; /* 간격 조정 */
+    ${'' /* margin-top: 20px; */}
 `;
 
 const SelectedPlacesContainer = styled.div`
@@ -140,18 +140,18 @@ const RecommendedRoutesBox = styled.div`
     background-color: #fefefe;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     height: fit-content;
-    width: 33%;
+    flex:1;
     
 `;
 
-const LandingPage = ({ userId, planId, place, context }) => {
+const LandingPage = ({ userId, planId, place, context, uniqueUsers, setUniqueUsers }) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
-    const [uniqueUsers, setUniqueUsers] = useState([]);
+    // const [uniqueUsers, setUniqueUsers] = useState([]);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
@@ -414,6 +414,7 @@ const LandingPage = ({ userId, planId, place, context }) => {
                     
                     {/* RowContainer로 기존 장소와 추천 장소 박스를 감싸서 나란히 배치 */}
                     <RowContainer>
+                        <div style={{flex:'1'}}>
                         <DragDropContext onDragEnd={onDragEnd}>
                             <Droppable droppableId="places">
                                 {(provided) => (
@@ -460,29 +461,21 @@ const LandingPage = ({ userId, planId, place, context }) => {
                                 )}
                             </Droppable>
                         </DragDropContext>
+                        </div>
 
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
                         <div key={userId}>
-                            <UserCursor 
+                            {/* <UserCursor 
                                 icon={faMousePointer} 
                                 color={userColors[userId]} 
                                 style={{ top: cursorData.y, left: cursorData.x }}
                                 title={cursorData.name}
-                            />
+                            /> */}
 
                         </div>
-                    ))}
+                        ))}
 
-                    {/* 현재 접속한 사용자 목록 표시 */}
-                    <div style={{ position: 'absolute', top: "6%", left: "40%", background: 'rgba(255,255,255,0.8)', padding: '10px', borderRadius: '8px' }}>
-                        <h4>접속 사용자</h4>
-                        <ul>
-                            {uniqueUsers.map(user => (
-                                <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
-                            ))}
-                        </ul>
-                    </div>
 
                         <RecommendedRoutesBox>
                             <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>

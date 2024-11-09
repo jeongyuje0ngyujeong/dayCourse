@@ -329,6 +329,7 @@ i {
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
+  /* width: 100%; */
 
   white-space: pre;
   padding: 1rem;
