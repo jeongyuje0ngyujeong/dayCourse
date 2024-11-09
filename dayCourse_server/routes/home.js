@@ -885,6 +885,7 @@ router.post('/plan/recommend_routes', authenticateJWT, async (req, res) => {
         `;
 
         for (let i = 0; i < arrangedLocations.length; i++) {
+            let placeId = arrangedLocations[i].placeId;
             let values = [i + 1, (version + 1), placeId];
 
             db.query(setLocationPriority, values, (err, result) => {
