@@ -716,16 +716,18 @@ function getAllLocationsByPlanId(planId) {
         console.log("planId", planId);
         console.log("locationIds", locationIds);
 
-        const queries = locationIds.map(locationId => {
-            return new Promise((resolve, reject) => {
-                console.log("locationId", locationId);
-                db.query(findLocationDetails, [locationId], (err, results) => {
-                    if (err) return reject(err);
-                    if (results.length === 0) return reject(new Error("Location not found for LocationID"));
-                    resolve(results[0]);
+        const queries = locationIds
+            .filter(locationId => locationId !== null) // LocationID가 null이 아닌 경우만 필터링
+            .map(locationId => {
+                return new Promise((resolve, reject) => {
+                    console.log("locationId", locationId);
+                    db.query(findLocationDetails, [locationId], (err, results) => {
+                        if (err) return reject(err);
+                        if (results.length === 0) return reject(new Error("Location not found for LocationID"));
+                        resolve(results[0]);
+                    });
                 });
             });
-        });
 
         return Promise.all(queries);
     });
