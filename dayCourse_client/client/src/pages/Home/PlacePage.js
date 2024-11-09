@@ -9,6 +9,7 @@ import { getEvent } from "../../schedules";
 import { Form } from "react-router-dom";
 import { SocketProvider } from '../../SocketContext';
 import {PageTitle} from '../../commonStyles';
+import styled from 'styled-components';
 
 
 // const Box = styled.div`
@@ -33,6 +34,21 @@ export async function loader({ params }) {
     console.log(plan);
     return { plan };
 }
+
+const UsersContainer = styled.div`
+    border:1px solid #eee; 
+    width:30vh;
+    height:100%;
+    padding:0 1rem; 
+    borderRadius:10px; 
+    boxShadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    maxHeight:15vh;
+    overflow:auto; 
+
+    &::-webkit-scrollbar {
+    display: none; 
+    }
+`;
   
 const PlacePage = () => {
     const loaderData = useLoaderData().plan;
@@ -58,7 +74,7 @@ const PlacePage = () => {
                     </div>
                     <PageTitle style={{fontSize:'3vh', margin:'0'}}>{loaderData.town}</PageTitle>
                 </div>
-                <div style={{border:'1px solid #eee', width:'30vh',height:'100%', padding:'0 1rem', borderRadius:'10px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',overflow:'auto', maxHeight:'15vh'}}>
+                <UsersContainer>
                     <div style={{display:'flex', justifyContent:'space-between'}}>
                         <PageTitle style={{marginBottom:'1vh', fontSize:'2vh'}}>접속 사용자</PageTitle>
                         <PageTitle style={{marginBottom:'1vh', fontSize:'2vh'}}>{uniqueUsers.length}명</PageTitle>
@@ -68,7 +84,7 @@ const PlacePage = () => {
                             <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
                         ))}
                     </ul>
-                </div>
+                </UsersContainer>
             </div>
             <LandingPage userId={userId} planId={planId} place={place} context={loaderData} setUniqueUsers={setUniqueUsers}></LandingPage>
             <KakaoMap></KakaoMap>
