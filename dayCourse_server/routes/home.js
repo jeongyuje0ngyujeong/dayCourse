@@ -1172,6 +1172,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     console.log("확인", key, Cate)
 
     if (locations.length > 0) {
+        console.log("보내는값", locations)
         let text = ""
 
         if (key !== "random") {
