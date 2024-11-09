@@ -1188,7 +1188,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
             },
         });
 
-        // console.log("응답 : ", response.data)
+        console.log("응답1 : ", response.data)
         const renamedUsers = response.data.map(row => ({
             id: row.LocationID,
             place_name: row.LocationName,
@@ -1201,7 +1201,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
         const slicedArr = renamedUsers.slice(0, 10);
 
-        //console.log("응답 : ", renamedUsers)
+        console.log("응답2 : ", slicedArr)
 
         return res.status(200).json({ msg: 'success', place: slicedArr });
     } else {
