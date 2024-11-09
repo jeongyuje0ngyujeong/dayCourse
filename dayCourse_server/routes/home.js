@@ -1189,7 +1189,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
 
         // 모든 파일에 대해 반복
         for (const file of req.files) {
-            const imgNAME = path.basename(file.originalname);
+            let imgNAME = path.basename(file.originalname);
 
             // S3 업로드 파라미터 설정
             const uploadParams = {
