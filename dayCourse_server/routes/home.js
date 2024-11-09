@@ -1035,7 +1035,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     locations = locations.flat();
 
-    console.log(locations)
+    // console.log(locations)
     console.log("확인", key, Cate)
 
     if (locations.length > 0) {
@@ -1190,6 +1190,15 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
         // 모든 파일에 대해 반복
         for (const file of req.files) {
             let imgNAME = path.basename(file.originalname);
+            let type = file.mimetype
+
+            // // 이미지 파일 확장자 확인
+            const ext = path.extname(file.originalname).toLowerCase();
+            if (ext === '.heic') {
+                imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
+                // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
+                type = 'image/jpeg';  // MIME 타입 변경
+            }
 
             // S3 업로드 파라미터 설정
             const uploadParams = {
@@ -1199,16 +1208,6 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 ContentType: file.mimetype,
                 Metadata: {}
             };
-
-            
-
-            // // 이미지 파일 확장자 확인
-            const ext = path.extname(file.originalname).toLowerCase();
-            if (ext === '.heic') {
-                imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
-                // buffer = fs.readFileSync(inputFilePath);  // HEIC -> JPG 변환
-                contentType = 'image/jpeg';  // MIME 타입 변경
-            }
 
 
             console.log(uploadParams)
