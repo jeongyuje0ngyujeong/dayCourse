@@ -9,6 +9,7 @@ const FormData = require('form-data');
 
 const fs = require('fs'); //파일 저장용
 const path = require('path');
+const sharp = require('sharp');
 
 const authenticateJWT = require('../config/authenticateJWT');
 
@@ -1198,8 +1199,11 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
 
             // 이미지 파일 확장자 확인
             const ext = path.extname(file.originalname).toLowerCase();
-            const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
-            const isImage = allowedImageExtensions.includes(ext);
+            if (ext === '.heic') {
+                imgNAME = imgNAME.replace(/\.heic$/i, '.jpg');  // 파일 이름 확장자 변경
+                buffer = await sharp(file.buffer).jpeg().toBuffer();  // HEIC -> JPG 변환
+                contentType = 'image/jpeg';  // MIME 타입 변경
+            }
 
             // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
@@ -1225,6 +1229,14 @@ router.post('/plan/upload/:planId/images', upload.array('image'), async (req, re
         for (const file of req.files) {
             const imgNAME = path.basename(file.originalname);
             const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
+
+            const ext2 = path.extname(file.originalname).toLowerCase();
+            const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
+            const isImage = allowedImageExtensions.includes(ext2);
+
+            if(!isImage){
+                continue;
+            }
 
             // 비동기 처리 내부 함수 정의
             (async () => {
