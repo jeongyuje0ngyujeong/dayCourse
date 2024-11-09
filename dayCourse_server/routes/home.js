@@ -1204,7 +1204,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
         const slicedArr = renamedUsers.slice(0, 10);
 
-        //console.log("응답 : ", renamedUsers)
+        console.log("응답 : ", slicedArr)
 
         return res.status(200).json({ msg: 'success', place: slicedArr });
     } else {
