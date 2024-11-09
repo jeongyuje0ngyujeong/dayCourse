@@ -14,14 +14,14 @@ const FriendsContainer = styled.div`
     padding: 0px 10px 10px 10px;
     ${'' /* background: #eee; */}
 `;
-const GroupContainer = styled.div`
-    margin: 0 10px;
-    ${'' /* padding: 0px 10px 10px 10px; */}
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-`;
+// const GroupContainer = styled.div`
+//     margin: 0 10px;
+//     ${'' /* padding: 0px 10px 10px 10px; */}
+//     flex: 1;
+//     display: flex;
+//     justify-content: center;
+//     flex-direction: column;
+// `;
 
 // const TextButton = styled.div`
 //     display: flex;
@@ -37,23 +37,6 @@ export function NewGroup({friendsList, selectedFriends ,setSelectedFriends}) {
             {/* <h4>친구 목록</h4> */}
             <FriendList friendsList={friendsList} setSelectedFriends={setSelectedFriends} flag={true}/>
         </FriendsContainer>
-        
-        {/* <GroupContainer> */}
-            {/* <TextButton>
-                <h4>그룹명</h4>
-                <button 
-                    style={{ height: '2.5rem' }} 
-                    onClick={(e) => {handleOnClick(e)}}
-                >그룹 생성
-                </button>
-            </TextButton>
-            <input name="groupName" value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
-            <TextButton>
-                <h4>선택한 친구</h4>
-                <h4>{selectedFriends.length}명</h4>
-            </TextButton>             */}
-            {/* <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/> */}
-        {/* </GroupContainer> */}
         </>
     )
 }
@@ -62,9 +45,9 @@ export function ExistGroup({groupsList, setSelectedGroup}) {
     console.log('ExistGroup: ',groupsList);
     return(
         <>
-        <GroupContainer>
+        <FriendsContainer>
             <GroupList groupsList={groupsList} setSelectedGroup={setSelectedGroup} flag={true}/>
-        </GroupContainer>
+        </FriendsContainer>
         </>
     )
 }

@@ -180,3 +180,4 @@ const Moment = ({ maxItems, columns, onMomentCountChange }) => {
 };
 
 export default Moment;
+

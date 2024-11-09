@@ -19,8 +19,21 @@ export async function searchPubTransPath(sx, sy, ex, ey) {
   }
 }
 
+// export async function storeZoneInRadius(radius, x, y) {
+//   const url = `http://apis.data.go.kr/B553077/api/open/sdsc2/storeZoneInRadius?radius=${radius}&cx=${x}&cy=${y}&type=json&serviceKey=${SANGGWON_API}`;
+
+//   try {
+//     const response = await axios.get(url);
+//     console.log(response.data); // API 응답 데이터 출력
+//     return response.data; // 필요한 경우 데이터를 반환
+//   } catch (error) {
+//     console.error("Error fetching storeZoneInRadius", error);
+//     throw error; // 에러 발생 시 외부에서 처리할 수 있도록 에러를 던짐
+//   }
+// }
+
 export async function storeZoneInRadius(radius, x, y) {
-  const url = `http://apis.data.go.kr/B553077/api/open/sdsc2/storeZoneInRadius?radius=${radius}&cx=${x}&cy=${y}&type=json&serviceKey=${SANGGWON_API}`;
+  const url = `http://localhost:5001/stores-within?&x=${x}&y=${y}&radius=${radius}`;
 
   try {
     const response = await axios.get(url);

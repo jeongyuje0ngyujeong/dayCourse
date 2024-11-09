@@ -63,7 +63,7 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
                     }} 
                     style={{ cursor: 'pointer' }}
                 >
-                    <p>{friend.friendName} | {friend.friendId}</p>
+                    <h4>{friend.friendName} | {friend.friendId}</h4>
                     {flag ? 
                     <button onClick={(e) => handleAdd(e, friend)}>+</button>
                     :<Button onClick={(e) => handleDelete(e, friend)} $border='none'>X</Button>}
