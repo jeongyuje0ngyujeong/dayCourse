@@ -1205,7 +1205,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 Bucket: bucketName,
                 Key: `plans/${planId}/${imgNAME}`,
                 Body: file.buffer,
-                ContentType: file.mimetype,
+                ContentType: type,
                 Metadata: {}
             };
 
