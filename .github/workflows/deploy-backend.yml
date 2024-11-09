@@ -46,21 +46,6 @@ jobs:
                 sudo n 22.0.0
               fi"
 
-        # 3. heic 변환 다운
-        - name: install libheif
-          env:
-            SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-            REMOTE_HOST: ${{ secrets.EC2_HOST }}
-            REMOTE_USER: ubuntu
-          run: |
-            eval "$(ssh-agent -s)"
-            echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-            ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
-              if ! dpkg -l | grep -q libheif-dev; then
-                echo "Installing libheif-dev..."
-                sudo apt-get install -y libheif-dev
-              fi"
-
         # 4. 배포
         - name: ssh + git pull + npm install + pm2 start
           env:
