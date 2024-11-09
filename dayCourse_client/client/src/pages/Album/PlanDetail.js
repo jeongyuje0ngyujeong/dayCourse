@@ -148,7 +148,7 @@ const PlanDetail = () => {
     }, [planId, fetchPlanInfo, fetchImageUrls]);
 
     const handleImageSelect = (url) => {
-        setSelectedImages((prevSelected) => 
+        setSelectedImages((prevSelected) =>
             prevSelected.includes(url)
                 ? prevSelected.filter((imgUrl) => imgUrl !== url)
                 : [...prevSelected, url]
@@ -156,7 +156,9 @@ const PlanDetail = () => {
     };
 
     const downloadSelectedImages = async () => {
-        if (selectedImages.length === 0) {
+        const images_len = selectedImages.length
+
+        if (images_len === 0) {
             alert('다운로드할 이미지를 선택하세요.');
             return;
         }
@@ -165,26 +167,33 @@ const PlanDetail = () => {
         const folder = zip.folder('selected-images');
 
         try {
-            await Promise.all(
-                selectedImages.map(async (url, index) => {
-                    const response = await fetch(url);
-                    const blob = await response.blob();
-                    //경은 추가 코드
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `image-${index + 1}.jpg`;
-                    document.body.appendChild(link);
-                    //link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(link.href);
-                    //경은 추가 코드
+            if (images_len < 11) {
+                await Promise.all(
+                    selectedImages.map(async (url, index) => {
+                        const response = await fetch(url);
+                        const blob = await response.blob();
 
-                    folder.file(`image-${index + 1}.jpg`, blob);
-                })
-            );
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = `image-${index + 1}.jpg`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(link.href);
+                    })
+                );
+            } else {
+                await Promise.all(
+                    selectedImages.map(async (url, index) => {
+                        const response = await fetch(url);
+                        const blob = await response.blob();
+                        folder.file(`image-${index + 1}.jpg`, blob);
+                    })
+                );
+                const zipBlob = await zip.generateAsync({ type: 'blob' });
+                saveAs(zipBlob, 'selected-images.zip');
+            }
 
-            const zipBlob = await zip.generateAsync({ type: 'blob' });
-            saveAs(zipBlob, 'selected-images.zip');
         } catch (error) {
             console.error('다운로드 실패:', error);
             alert('이미지를 다운로드하는 중 오류가 발생했습니다.');
