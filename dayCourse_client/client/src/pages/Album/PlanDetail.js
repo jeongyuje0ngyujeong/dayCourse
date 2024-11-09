@@ -138,7 +138,9 @@ const PlanDetail = () => {
         setIsUploading(true); // 업로드 상태 시작
         try {
             const processedFiles = await Promise.all(validFiles.map(async (file) => {
-                if (file.type === 'image/heic' || file.type === 'image/heif') {
+                if (file.type === 'image/heic' || file.type === 'image/heif'
+               || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))
+             {
                     try {
                         const convertBlob = await heic2any({
                             blob: file,
