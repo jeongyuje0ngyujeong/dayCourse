@@ -5,7 +5,7 @@ import { Button } from '../../Button';
 import { Outlet, Form} from "react-router-dom";
 import { getSchedules } from "../../schedules";
 import Moment from '../Album/moment.js';
-import Calendar from '../Calendar/Calendar';
+// import Calendar from '../Calendar/Calendar';
 import {PageTitle} from '../../commonStyles';
 import { ReactComponent as Down } from "../../assets/chevron-down-solid.svg";
 import { ReactComponent as Up } from "../../assets/chevron-up-solid.svg";
@@ -133,6 +133,20 @@ export default function Home() {
     const endDay = new Date(startDay);
     endDay.setDate(startDay.getDate() + 6);
 
+// 한달 달력 변수
+/////////////////////////
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    
+    const firstDayOfMonth = new Date(year, month, 1);
+    const MonthstartDay = new Date(firstDayOfMonth);
+    MonthstartDay.setDate(1 - firstDayOfMonth.getDay());
+  
+    const lastDayOfMonth = new Date(year, month + 1, 0);
+    const MonthendDay = new Date(lastDayOfMonth);
+    MonthendDay.setDate(lastDayOfMonth.getDate() + (6 - lastDayOfMonth.getDay()));
+///////////////////////////
+
     const handlePrevWeek = () => {
         setCurrentDate(
           new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()-7)
@@ -178,9 +192,18 @@ export default function Home() {
               </div>
             </WeekBar>
 
-            {showCalendar ? (
-              <Calendar showCalendar={showCalendar} currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
-            ) : (
+            {/* {showCalendar ? (
+              <Calendar showCalendar={showCalendar} currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/> */}
+              <GroupDatesByWeek
+                groupedSchedules={groupedSchedules}
+                setGroupedSchedules={setGroupedSchedules}
+                startDay={showCalendar ? MonthstartDay: startDay}
+                endDay={showCalendar ? MonthendDay: endDay}
+                selectedDate={selectedDate}
+                setSelectedDate={setSelectedDate}
+                showCalendar={showCalendar}
+              />
+            {/* ) : (
               <GroupDatesByWeek
                 groupedSchedules={groupedSchedules}
                 setGroupedSchedules={setGroupedSchedules}
@@ -190,7 +213,7 @@ export default function Home() {
                 setSelectedDate={setSelectedDate}
                 showCalendar={showCalendar}
               />
-            )}
+            )} */}
             <div style={{width:'100%', borderTop: '1px solid #ccc'}}>
               <Button  onClick={() => setShowCalendar(!showCalendar)} $border="none" width="100%">
                 {showCalendar ? <Up/> : <Down/>}

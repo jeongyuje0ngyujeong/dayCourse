@@ -14,7 +14,8 @@ const Box = styled.div`
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
     cursor: pointer;
     transition: transform 0.2s; /* 애니메이션 효과 */
-    
+    font-family: 'NPSfontBold', system-ui;
+    font-size: 3vh;
     &:hover {
         transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
     }

@@ -33,8 +33,8 @@ export async function action({ request, params }) {
 
 export async function loader({ params }) {
   // console.log(params);
-  const { id } = params;
-  const event = await getEvent(id);
+  const { planId } = params;
+  const event = await getEvent(planId);
 
   return { event };
 }
