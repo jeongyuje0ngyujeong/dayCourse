@@ -133,16 +133,16 @@ const SelectedPlacesContainer = styled.div`
     flex-direction: column;
 `;
 
-const RecommendedRoutesBox = styled.div`
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 20px;
-    background-color: #fefefe;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: fit-content;
-    flex:1;
+// const RecommendedRoutesBox = styled.div`
+//     border: 1px solid #ddd;
+//     border-radius: 10px;
+//     padding: 20px;
+//     background-color: #fefefe;
+//     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+//     height: fit-content;
+//     flex:1;
     
-`;
+// `;
 
 const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     const { socket, joinRoom } = useContext(SocketContext); 
@@ -155,8 +155,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
     const [recommendError, setRecommendError] = useState(null);
-    const [recommendedRoutes, setRecommendedRoutes] = useState([]);
+   // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
    // const [distances, setDistances] = useState([]);
+    const [version, setVersion] = useState(1);
   
 
     const submitKeyword = (newKeyword) => {
@@ -175,6 +176,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                 }));
                 setSelectedPlaces(newSelectedPlaces);
                 setError(null);
+                setVersion(Math.max(...newSelectedPlaces.map(p=> p.version)) || 1);
                 return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
@@ -195,12 +197,43 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         setIsRecommending(true);
     
         try {
-            const recommended = await recommendRoutes(planId);
+            const recommended = await recommendRoutes(planId, version);
             console.log('추천된 루트', recommended);
     
             // 추천된 루트가 배열 형식으로 올 때, locationInfo 배열을 바로 설정
             if (recommended.result === 'success' && Array.isArray(recommended.locationInfo)) {
-                setRecommendedRoutes(recommended.locationInfo);
+                const recommendedPlaceIds = recommended.locationInfo.map(place => place.placeId);
+                
+                const reorderedPlaces = recommendedPlaceIds.map(placeId => {
+                    return selectedPlaces.find(place => (place.placeId || place.id) === placeId);
+                }).filter(place => place);
+
+                if (reorderedPlaces.length === 0) {
+                    setRecommendError('추천된 장소 없음');
+                    return;
+                }
+
+                const updatedPlaces =reorderedPlaces.map((place, index) => ({
+                    ...place,
+                    l_priority: index + 1,
+                    version : version + 1,
+                }));
+
+                setSelectedPlaces(updatedPlaces);
+                setVersion(prev => prev + 1);
+
+                await Promise.all(updatedPlaces.map(place=>
+                    updatePlacePriority(
+                        place.placeId || place.id,
+                        place.l_priority,
+                        userId,
+                        place.version
+                    )
+                ));
+                if (socket) {
+                    socket.emit('update-places', { room : planId, places: updatedPlaces });
+                }
+                setRecommendError(null);
             } else {
                 console.error("추천 루트 데이터 형식이 올바르지 않습니다:", recommended);
                 setRecommendError("추천 루트 데이터를 불러오는 데 문제가 있습니다.");
@@ -211,7 +244,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         } finally {
             setIsRecommending(false);
         }
-    }, [planId]);
+    }, [planId, selectedPlaces, userId, socket, version]);
 
 
     const handlePlaceClick = async (place, isRecommended = false) => {
@@ -381,52 +414,50 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         //     loadDistance();
         // }, [selectedPlaces, planId, userId]);
 
-    return (
-        <div className="landing-page">
-            {!isPlacesLoaded && (
-                <Overlay>
-                    <Loader />
-                </Overlay>
-            )}
-            {isPlacesLoaded && error ? (
-                <div style={{ padding: '20px', color: 'red' }}>{error}</div>
-            ) : (
-                <>
-                    <KakaoMap 
-                        searchKeyword={keyword} 
-                        setPlaces={setPlaces} 
-                        selectedPlaces={selectedPlaces || []} 
-                    />
-                    <Container>
-                        <PlacesBox>
-                            <RightSidebar 
-                                userId={userId} 
-                                planId={planId} 
-                                planInfo={context}
-                                places={places} 
-                                setPlaces={setPlaces} 
-                                onSubmitKeyword={submitKeyword} 
-                                onPlaceClick={handlePlaceClick}
-                            />
-                        </PlacesBox>
-                    </Container>
-                    
-                    {/* RowContainer로 기존 장소와 추천 장소 박스를 감싸서 나란히 배치 */}
-                    <RowContainer>
-                        <div style={{flex:'1'}}>
-                        <DragDropContext onDragEnd={onDragEnd}>
-                            <Droppable droppableId="places">
-                                {(provided) => (
-                                    <SelectedPlacesContainer 
-                                        ref={provided.innerRef}
-                                        {...provided.droppableProps}
-                                    >
-                                        {selectedPlaces.map((place, index) => {
-                                            if (!place || (!place.placeId && !place.id) || !place.place_name) {
-                                                console.warn("Invalid place object:", place);
-                                                return null;
-                                            }
-                                            return (
+        return (
+            <div className="landing-page">
+                {!isPlacesLoaded && (
+                    <Overlay>
+                        <Loader />
+                    </Overlay>
+                )}
+                {isPlacesLoaded && error ? (
+                    <div style={{ padding: '20px', color: 'red' }}>{error}</div>
+                ) : (
+                    <>
+                        <KakaoMap 
+                            searchKeyword={keyword} 
+                            setPlaces={setPlaces} 
+                            selectedPlaces={selectedPlaces || []} 
+                        />
+                        <Container>
+                            <PlacesBox>
+                                <RightSidebar 
+                                    userId={userId} 
+                                    planId={planId} 
+                                    planInfo={context}
+                                    places={places} 
+                                    setPlaces={setPlaces} 
+                                    onSubmitKeyword={submitKeyword} 
+                                    onPlaceClick={handlePlaceClick}
+                                />
+                            </PlacesBox>
+                        </Container>
+
+                        <RowContainer>
+                        
+                        <SelectedPlacesContainer>
+                            <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
+                                {isRecommending ? '추천 중...' : '루트 추천'}
+                            </RecommendButton>
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="places">
+                                    {(provided) => (
+                                        <div 
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                        >
+                                            {selectedPlaces.map((place, index) => (
                                                 <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
                                                     <Draggable
                                                         draggableId={place.placeId?.toString() || place.id?.toString()} 
@@ -438,74 +469,52 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                             >
-                                                            <div>
-                                                                <h5>{index + 1}. {place.place_name}</h5>
-                                                                <span>{place.place || "주소 정보 없음"}</span>
-                                                            </div>
+                                                                <div>
+                                                                    <h5>{index + 1}. {place.place_name}</h5>
+                                                                    <span>{place.place || "주소 정보 없음"}</span>
+                                                                </div>
                                                                 <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
                                                             </PlaceBox>
                                                         )}
                                                     </Draggable>
-
+    
+                                                    {/* 거리 표시 */}
                                                     {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
                                                         <DistanceBox>
                                                             {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
                                                         </DistanceBox>
                                                     )}
                                                 </React.Fragment>
-                                            );
-                                        })}
-                                        {provided.placeholder}
-                                    </SelectedPlacesContainer>
-                                )}
-                            </Droppable>
-                        </DragDropContext>
-                        </div>
-
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            </DragDropContext>
+    
+                            {isRecommending && <div>추천 중입니다...</div>}
+                            {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
+                        </SelectedPlacesContainer>
+    
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
-                        <div key={userId}>
-                            <UserCursor 
-                                icon={faMousePointer} 
-                                color={userColors[userId]} 
-                                style={{ top: cursorData.y, left: cursorData.x }}
-                                title={cursorData.name}
-                            />
-
-                        </div>
-                        ))}
-
-
-                        <RecommendedRoutesBox>
-                            <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
-                                {isRecommending ? '추천 중...' : '루트 추천'}
-                            </RecommendButton>
-                            <div style={{ marginTop: '10px' }}>
-                                {isRecommending ? (
-                                    <div>추천 중입니다...</div>
-                                ) : recommendError ? (
-                                    <div style={{ color: 'red' }}>{recommendError}</div>
-                                ) : recommendedRoutes.length > 0 ? (
-                                    recommendedRoutes.map((place, index) => (
-                                        <div key={index} style={{ marginBottom: '15px' }}>
-                                            <PlaceBox>
-                                                <div>
-                                                    <h5>{index + 1}. {place.placeName}</h5>
-                                                    <span>{place.placeAddr}</span>
-                                                </div>
-                                            </PlaceBox>
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div>추천된 루트가 없습니다.</div>
-                                )}
+                            <div key={userId}>
+                                <UserCursor 
+                                    icon={faMousePointer} 
+                                    color={userColors[userId]} 
+                                    style={{ top: cursorData.y, left: cursorData.x }}
+                                    title={cursorData.name}
+                                />
                             </div>
-                        </RecommendedRoutesBox>
-                    </RowContainer>
-                </>
-            )}
-        </div>
-    );
-};
+                        ))}
+                        </RowContainer>
+                    </>
+                )}
+            </div>
+        );
+    };
+    
+    export default LandingPage;
 
-export default LandingPage;
+
+
