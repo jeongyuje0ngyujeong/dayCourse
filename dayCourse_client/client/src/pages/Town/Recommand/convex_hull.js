@@ -1,12 +1,14 @@
+// src/pages/Town/Recommand/convex_hull.js
+
 import React, { useState, useEffect } from 'react';
-import {searchPubTransPath, storeZoneInRadius} from './requestTime';
+import { searchPubTransPath, storeZoneInRadius } from './requestTime';
 import styled from "styled-components";
-import {Button} from '../../../Button';
-import {PageTitle} from '../../../commonStyles';
+import { Button } from '../../../Button';
+import { PageTitle } from '../../../commonStyles';
 
 const Box = styled.div`
     width: 100%; /* 너비 조정 */
-    height: 100%; /* 높이 조정 */
+    height: 3rem; /* 고정 높이 */
     background-color: white; /* 배경색을 흰색으로 설정 */
     border: 1px solid #ccc; /* 경계선 추가 */
     border-radius: 10px; /* 둥근 모서리 */
@@ -21,7 +23,6 @@ const Box = styled.div`
     }
 
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
 `;
@@ -29,9 +30,10 @@ const Box = styled.div`
 const Container = styled.div`
     flex: 1;
     display: flex;
+    flex-direction: column; /* 세로 방향 정렬 */
     gap: 5px;
-    margin-top: auto;
-    height: 80%;
+    margin-top: 1rem; /* 상단 여백 */
+    height: auto; /* 높이 자동 조정 */
 `;
 
 // 점 배열을 받아 볼록 다각형을 이루는 점 배열을 반환하는 함수
@@ -71,9 +73,7 @@ function getConvexHull(points) {
 
 function calculateCentroid(points) {
   if (points.length === 0) return [0, 0];
-  // else if (points.length === 1) return points;
-  else if (points.length < 3)
-  {
+  else if (points.length < 3) {
     let sumX = 0;
     let sumY = 0;
     
@@ -147,15 +147,12 @@ function calculateNextPosition(currentPosition, convexHull, weights) {
   return [nextPositionX, nextPositionY];
 }
 
-
 function extractCoordinates(dataArray) {
     if (dataArray && dataArray.length > 0) {
         return dataArray.map(item => [parseFloat(item.x), parseFloat(item.y)]);
     }
     return []; // 빈 배열이나 유효하지 않은 데이터가 제공된 경우 빈 배열 반환
 }
-
-
 
 async function getAllRoutes(convexHull, centroid) {
   // 각 좌표와 targetPoint를 짝 지어 요청
@@ -177,13 +174,10 @@ async function getAllRoutes(convexHull, centroid) {
 const { kakao } = window;
 const geocoder = new kakao.maps.services.Geocoder();
 
-export default function ConvexHullCalculator({departurePoints}) {
-    const [points, setPoints] = useState([]);   // 출발지 좌표
+export default function ConvexHullCalculator({ departurePoints, onSelectTown }) {
     const [convexHull, setConvexHull] = useState([]); // 볼록다각형 꼭지점 좌표
     const [centroid, setCentroid] = useState([0, 0]); // 중간점 
     const [centroidAddress, setCentroidAddress] = useState('');
-    // const [pairVector, setPairVector] = useState([]);
-    const [timeVector, setTimeVector] = useState([]);
     const [resultTowns, setResultTown] = useState([]);
     const [loading, setLoading] = useState(false);
 
@@ -192,10 +186,8 @@ export default function ConvexHullCalculator({departurePoints}) {
       const hull = getConvexHull(coordinates);
       const calculatedCentroid = calculateCentroid(hull);
       
-      setPoints(coordinates);
       setConvexHull(hull);
       setCentroid(calculatedCentroid);
-      // setPairVector(pairCoordinatesWithTarget(hull, calculatedCentroid));
     }, [departurePoints]);
 
     const calculateConvexHull = async () => {
@@ -204,7 +196,6 @@ export default function ConvexHullCalculator({departurePoints}) {
           try {
               console.log('convexHull: ', convexHull, 'centroid: ', temp_centroid);
               const routes = await getAllRoutes(convexHull, temp_centroid);
-              setTimeVector(routes);
               return routes;
           } catch (error) {
               console.error("Error fetching routes:", error);
@@ -216,15 +207,43 @@ export default function ConvexHullCalculator({departurePoints}) {
           let radius = 500; // 초기 반경 값 설정
           let towns = null;
 
+          // Geocoding을 통해 좌표를 가져오는 함수
+          const getCoordinates = (name) => {
+              return new Promise((resolve, reject) => {
+                  geocoder.addressSearch(name, (result, status) => {
+                      if (status === kakao.maps.services.Status.OK) {
+                          const x = parseFloat(result[0].x);
+                          const y = parseFloat(result[0].y);
+                          resolve({ x, y });
+                      } else {
+                          console.warn(`Geocoding failed for town: ${name}`);
+                          resolve({ x: NaN, y: NaN }); // Geocoding 실패 시 NaN 반환
+                      }
+                  });
+              });
+          };
+
           // 반경을 늘려가며 towns 길이가 3 이상일 때까지 반복
           while (radius <= 5000) {
               try {
                   console.log(`Fetching towns with radius: ${radius}`);
                   const result = await storeZoneInRadius(radius, temp_centroid[0], temp_centroid[1]);
-                  towns = result.stores.map((town) => town.상권명.split('_')[0]) // '_' 기준으로 지역명만 추출
-                  .filter((value, index, self) => self.indexOf(value) === index) // 중복된 지역 제거
-                  console.log('result: ',towns)
-  
+                  console.log('storeZoneInRadius result:', result); // 반환 데이터 확인
+
+                  // 추천 지역 이름과 좌표를 함께 저장
+                  const townsWithCoords = await Promise.all(result.stores.map(async (town) => {
+                      const name = town.상권명.split('_')[0]; // '_' 기준으로 지역명만 추출 (필요 없을 경우 제거)
+                      const coords = await getCoordinates(name);
+                      return { name, x: coords.x, y: coords.y };
+                  }));
+
+                  // 중복된 지역 제거 및 유효하지 않은 좌표 필터링
+                  towns = townsWithCoords.filter((town, index, self) => 
+                      self.findIndex(t => t.name === town.name) === index && !isNaN(town.x) && !isNaN(town.y)
+                  );
+
+                  console.log('Parsed towns:', towns); // 파싱된 지역 확인
+
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
                       setResultTown(towns);
                       break;
@@ -300,88 +319,29 @@ export default function ConvexHullCalculator({departurePoints}) {
         geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
     };
 
-    // useEffect(() => {
-        // if (centroid[0] !== 0 || centroid[1] !== 0) {
-        //   // LatLng 객체로 변환하여 Kakao API의 coord2Address 메서드에 전달
-        //   const coords = new kakao.maps.LatLng(centroid[1], centroid[0]);
-        //   searchDetailAddrFromCoords(coords, (result, status) => {
-        //     if (status === kakao.maps.services.Status.OK) {
-        //       setCentroidAddress(result[0].address.address_name);
-        //     }
-        //   })
-        //   const fetchRoutes = async () => {
-        //     try {
-        //         const routes = await getAllRoutes(points, centroid);
-        //         setPairVector(routes); // 결과를 상태로 설정
-        //     } catch (error) {
-        //         console.error("Error fetching routes:", error);
-        //     }
-        //   };
-        //   fetchRoutes();
-        // }
-      // }, [centroid]);
-
-      
-    //지역 주소
-
-    // const searchAddrFromCoords = (coords, callback) => {
-    //     geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
-    // };
-
-    // useEffect(() => {
-    //     if (centroid[0] !== 0 || centroid[1] !== 0) {
-    //       // LatLng 객체로 변환하여 Kakao API의 coord2Address 메서드에 전달
-    //       const coords = new kakao.maps.LatLng(centroid[1], centroid[0]);
-    //       searchAddrFromCoords(coords, (result, status) => {
-    //         if (status === kakao.maps.services.Status.OK) {
-    //           setCentroidAddress(result[0].address_name);
-    //         }
-    //       });
-    //       const fetchRoutes = async () => {
-    //         try {
-    //             const routes = await getAllRoutes(points, centroid);
-    //             setPairVector(routes); // 결과를 상태로 설정
-    //         } catch (error) {
-    //             console.error("Error fetching routes:", error);
-    //         }
-    //       };
-    //       fetchRoutes();
-    //     }
-    // }, [centroid]);
-
     return (
-        <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
-          <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
-              <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
-              {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
+        <div style={{display:'flex', width:'100%', flexDirection:'column', padding: '1rem'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', marginBottom: '1rem' }}>
+                <div style={{ display: 'flex', alignItems:'center', gap: '1rem'}}>
+                    <PageTitle style={{fontSize:'3vh'}}>추천지역</PageTitle>
+                    {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
+                </div>
+                <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
             </div>
-            <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
-          </div>
-          
-          {/* <Container>
-              <Box>추천지역1</Box>
-              <Box>추천지역2</Box>
-              <Box>추천지역3</Box>
-            {resultTowns.slice(0, 3).map((town, index) => (
-              <Box key={index}>
-                {town.mainTrarNm} 
-              </Box>
-            ))}
-          </Container> */}
-          <Container>
-            {resultTowns && resultTowns.length > 0 ? (
-              resultTowns.slice(0, 3).map((town, index) => (
-                <Box key={index}>
-                  {town}
-                </Box>
-              ))
-            ) : loading ? (
-              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <p>추천 지역을 탐색중입니다</p>
-              </Box>
-            ) : null}
-          </Container>
+            
+            <Container>
+                {resultTowns && resultTowns.length > 0 ? (
+                    resultTowns.slice(0, 3).map((town, index) => (
+                        <Box key={index} onClick={() => onSelectTown(town)}>
+                            {town.name}
+                        </Box>
+                    ))
+                ) : loading ? (
+                    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                        <p>추천 지역을 탐색중입니다</p>
+                    </Box>
+                ) : null}
+            </Container>
         </div>
     );
-};
+}
