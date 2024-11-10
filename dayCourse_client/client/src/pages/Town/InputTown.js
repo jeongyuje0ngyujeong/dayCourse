@@ -9,10 +9,13 @@ const MapDiv = styled.div`
     height: 100%;
 `;
 
-function KakaoMap({ searchKeyword, setPlaces, departurePoints }) {
+function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommendedTown }) {
     const mapContainerRef = useRef(null); // 맵 컨테이너 참조
     const mapRef = useRef(null); // 맵 인스턴스 참조
     const markersRef = useRef([]); // 마커 인스턴스 배열 참조
+    const departureMarkersRef = useRef([]); // 출발지 마커 인스턴스 배열 참조
+    const recommendedMarkerRef = useRef(null); // 추천 지역 마커 인스턴스 참조
+    const infowindowRef = useRef(null); // 인포윈도우 참조
 
     // 맵 초기화 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
@@ -94,7 +97,7 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints }) {
                     const marker = new kakao.maps.Marker({
                         position: position,
                         map: mapRef.current,
-                        title: place.place_name
+                        title: place.place_name || place.name
                     });
                     markersRef.current.push(marker);
                     bounds.extend(position);

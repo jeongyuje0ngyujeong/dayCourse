@@ -193,7 +193,7 @@ export default function UpdateTown() {
 
                     <RecommendResult>
                         <MapContainer>
-                            <KakaoMap departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
+                            <KakaoMap selectedRecommendedTown={selectedRecommendedTown} departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
