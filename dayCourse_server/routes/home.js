@@ -1500,7 +1500,41 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
     });
 });
 
-
+app.get('/stores-within', async (req, res) => {
+    try {
+      // x, y 및 반경을 쿼리 파라미터로 받습니다.
+      const { x, y, radius } = req.query;
+  
+      if (!x || !y || !radius) {
+        return res.status(400).json({ error: 'x, y, and radius are required parameters' });
+      }
+  
+      const longitude = parseFloat(x); // 경도
+      const latitude = parseFloat(y);  // 위도
+      const distanceInMeters = parseFloat(radius);
+  
+      // 공간 쿼리 실행
+      const [rows] = await db.query(
+        `
+        SELECT 상권번호, 상권명
+        FROM store_zone
+        WHERE ST_Intersects(
+          ST_Buffer(
+            ST_GeomFromText('POINT(? ?)'),
+            ? / 111320  -- 경도와 위도를 미터로 변환
+          ),
+          coordinates
+        )
+        `,
+        [longitude, latitude, distanceInMeters]  // 쿼리 파라미터 순서
+      );
+  
+      // 결과 반환
+      res.status(200).json({ stores: rows });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
 
 module.exports = router;
