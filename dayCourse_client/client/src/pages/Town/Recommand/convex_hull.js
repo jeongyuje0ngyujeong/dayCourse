@@ -349,8 +349,8 @@ export default function ConvexHullCalculator({departurePoints}) {
     // }, [centroid]);
 
     return (
-        <div style={{width:'100%'}}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center' }}>
+        <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
+          <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
               <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
               {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
