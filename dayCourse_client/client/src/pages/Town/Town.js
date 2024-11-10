@@ -170,7 +170,7 @@ export default function UpdateTown() {
 
                     <RecommendResult>
                         <MapContainer>
-                            <KakaoMap searchKeyword={keyword} setPlaces={setPlaces}/>
+                            <KakaoMap departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
