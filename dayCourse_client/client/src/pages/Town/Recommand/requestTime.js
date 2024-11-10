@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const ODSAY_API = process.env.REACT_APP_ODSAY_KEY;
+const BASE_URL = process.env.REACT_APP_BASE_URL; 
 // const SANGGWON_API = process.env.REACT_APP_SANGGWON_KEY;
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -33,7 +34,8 @@ export async function searchPubTransPath(sx, sy, ex, ey) {
 // }
 
 export async function storeZoneInRadius(radius, x, y) {
-  const url = `http://localhost:5001/stores-within?&x=${x}&y=${y}&radius=${radius}`;
+  const url = `${BASE_URL}/home/stores-within?&x=${x}&y=${y}&radius=${radius}`
+  // const url = `http://localhost:5001/stores-within?&x=${x}&y=${y}&radius=${radius}`;
 
   try {
     const response = await axios.get(url);
