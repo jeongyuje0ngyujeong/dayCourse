@@ -1,4 +1,4 @@
-import { Form, redirect, } from "react-router-dom";
+import { Form, redirect, useLoaderData } from "react-router-dom";
 import { updateSchedule, getEvent,} from "../../schedules";
 import React, { useState, } from 'react';
 import KakaoMap from './InputTown';
@@ -16,7 +16,7 @@ export async function loader({ params }) {
     //   console.log(planId);
       const event = await getEvent(planId);
       return { event };
-    }
+}
 
 export async function action({ request, params }) {
     const formData = await request.formData();
@@ -124,7 +124,11 @@ const Box = styled.div`
 
 
 export default function UpdateTown() {
-    const [selectedTown, setSelectedTown] = useState("");
+    const { event } = useLoaderData();
+    
+    const [selectedTown, setSelectedTown] = useState('');
+    console.log(selectedTown);
+    console.log(event);
     const [departurePoints, setDeparturePoints] = useState([]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
@@ -136,7 +140,8 @@ export default function UpdateTown() {
     return (
         <div>
             <SidebarContainer>
-                <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>약속지역</PageTitle>
+                <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>약속지역</PageTitle>
+                {/* margin: '0.5rem 0', fontSize:'3vh' */}
                 <SelectTown contextTown={setSelectedTown}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
@@ -149,8 +154,9 @@ export default function UpdateTown() {
                         <ScrollContainer>
                             {departurePoints.map((point, index) => (
                                 <div key={index} style={{ display: 'flex', alignItems: 'center',justifyContent: 'space-between', gap: '5px', marginBottom: '10px'}}>
-                                    <div style={{ border: '1px solid #ccc', padding: '5px', width:'100%', borderRadius: '8px',height:'2.5rem'}}>
-                                        {point.place_name}
+                                    <div style={{ border: '1px solid #ccc', padding:'2vh', width:'100%', borderRadius: '8px',height:'2.5rem', display:'flex', alignItems:'center', gap:'2vh', justifyContent:'space-between'}}>
+                                        <PageTitle>{point.place_name}</PageTitle>
+                                        <p> {point.address_name}</p>
                                     </div>
                                     <Button onClick={() => removeDeparturePoint(index)} width='3rem' height='2.5rem'>-</Button>
                                 </div>

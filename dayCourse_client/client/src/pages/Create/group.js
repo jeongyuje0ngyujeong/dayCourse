@@ -205,16 +205,16 @@ export default function Group({group}) {
                             </div>
                             <Container>
                                 <ImageItem>
-                                    <Image src="/profiles/frontTooth.png" alt="Item 1" />
+                                    <Image src="/profiles/frontTooth.PNG" alt="Item 1" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/glasses.png" alt="Item 2" />
+                                    <Image src="/profiles/glasses.PNG" alt="Item 2" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/shyness.png" alt="Item 3" />
+                                    <Image src="/profiles/shyness.PNG" alt="Item 3" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/twoChin.png" alt="Item 4" />
+                                    <Image src="/profiles/twoChin.PNG" alt="Item 4" />
                                 </ImageItem>
                             </Container>
                             <div style={{display:'flex', width:'100%', alignItems:'center', borderRadius:'10px', background:'#ccc', textAlign:'center'}}>

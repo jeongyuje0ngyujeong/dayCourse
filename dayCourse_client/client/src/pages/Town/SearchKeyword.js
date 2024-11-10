@@ -29,6 +29,7 @@ const StyledForm = styled(Form)`
 export default function SearchKeyword({keyword, setKeyword, places, setPlaces, departurePoints, setDeparturePoints}){
     const [value, setValue] = useState(""); // 입력 값 상태
     const [showResult, setShowResult] = useState(false); // 결과 표시 여부
+    // console.log(places);
 
     const keywordChange = (e) => {
         setValue(e.target.value);
@@ -61,7 +62,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
 
     return(
         <>
-        <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>출발지</PageTitle>
+        <PageTitle style={{marginBottom: '1.5vh', fontSize:'3vh'}}>출발지</PageTitle>
         <StyledForm onSubmit={submitKeywordForm}>
             <input
                 type="text"
@@ -95,7 +96,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
                             style={{ cursor: 'pointer' }}
                         >
                             <h5>{place.place_name}</h5>
-                            {place.road_address_name && <span>{place.road_address_name}</span>}
+                            {/* {place.road_address_name && <span>{place.road_address_name}</span>} */}
                             <span>{place.address_name}</span>
                         </li>
                     ))}
