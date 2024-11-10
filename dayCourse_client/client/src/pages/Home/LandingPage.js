@@ -157,6 +157,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     const [recommendError, setRecommendError] = useState(null);
    // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
    // const [distances, setDistances] = useState([]);
+    const [version, setVersion] = useState(1);
   
 
     const submitKeyword = (newKeyword) => {
@@ -175,6 +176,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                 }));
                 setSelectedPlaces(newSelectedPlaces);
                 setError(null);
+                setVersion(Math.max(...newSelectedPlaces.map(p=> p.version)) || 1);
                 return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
@@ -191,27 +193,58 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     }, [userId, planId]);
 
 
-// fetchRecommendedRoutes 함수 내에서 setRecommendedRoutes 호출 제거
-const fetchRecommendedRoutes = useCallback(async () => {
-    setIsRecommending(true);
+    const fetchRecommendedRoutes = useCallback(async () => {
+        setIsRecommending(true);
+    
+        try {
+            const recommended = await recommendRoutes(planId, version);
+            console.log('추천된 루트', recommended);
+    
+            // 추천된 루트가 배열 형식으로 올 때, locationInfo 배열을 바로 설정
+            if (recommended.result === 'success' && Array.isArray(recommended.locationInfo)) {
+                const recommendedPlaceIds = recommended.locationInfo.map(place => place.placeId);
+                
+                const reorderedPlaces = recommendedPlaceIds.map(placeId => {
+                    return selectedPlaces.find(place => (place.placeId || place.id) === placeId);
+                }).filter(place => place);
 
-    try {
-        const recommended = await recommendRoutes(planId);
-        console.log('추천된 루트', recommended);
+                if (reorderedPlaces.length === 0) {
+                    setRecommendError('추천된 장소 없음');
+                    return;
+                }
 
-        if (recommended.result === 'success' && Array.isArray(recommended.locationInfo)) {
-            // setRecommendedRoutes(recommended.locationInfo); // 이 줄 제거
-        } else {
-            console.error("추천 루트 데이터 형식이 올바르지 않습니다:", recommended);
-            setRecommendError("추천 루트 데이터를 불러오는 데 문제가 있습니다.");
+                const updatedPlaces =reorderedPlaces.map((place, index) => ({
+                    ...place,
+                    l_priority: index + 1,
+                    version : version + 1,
+                }));
+
+                setSelectedPlaces(updatedPlaces);
+                setVersion(prev => prev + 1);
+
+                await Promise.all(updatedPlaces.map(place=>
+                    updatePlacePriority(
+                        place.placeId || place.id,
+                        place.l_priority,
+                        userId,
+                        place.version
+                    )
+                ));
+                if (socket) {
+                    socket.emit('update-places', { room : planId, places: updatedPlaces });
+                }
+                setRecommendError(null);
+            } else {
+                console.error("추천 루트 데이터 형식이 올바르지 않습니다:", recommended);
+                setRecommendError("추천 루트 데이터를 불러오는 데 문제가 있습니다.");
+            }
+        } catch (error) {
+            console.error("루트 추천 가져오기 실패:", error);
+            setRecommendError("루트 추천을 가져오는 데 실패했습니다.");
+        } finally {
+            setIsRecommending(false);
         }
-    } catch (error) {
-        console.error("루트 추천 가져오기 실패:", error);
-        setRecommendError("루트 추천을 가져오는 데 실패했습니다.");
-    } finally {
-        setIsRecommending(false);
-    }
-}, [planId]);
+    }, [planId, selectedPlaces, userId, socket, version]);
 
 
     const handlePlaceClick = async (place, isRecommended = false) => {
@@ -482,3 +515,6 @@ const fetchRecommendedRoutes = useCallback(async () => {
     };
     
     export default LandingPage;
+
+
+
