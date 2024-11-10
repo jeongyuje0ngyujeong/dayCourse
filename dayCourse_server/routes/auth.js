@@ -28,7 +28,7 @@ router.post('/signup/id', async (req, res) => {
     const sql = `
       SELECT User.id
       FROM User
-      WHERE User.userId = ?
+      WHERE User.id = ?
       `;
         
     try {
