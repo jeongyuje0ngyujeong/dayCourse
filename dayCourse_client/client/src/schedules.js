@@ -2,9 +2,7 @@ import localforage from "localforage";
 import { matchSorter } from "match-sorter";
 import sortBy from "sort-by";
 import axios from 'axios';
-// http://192.168.1.80:5000
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
-// const BASE_URL = 'http://192.168.1.227:3000'
 
 export async function getToken() {
     try {
