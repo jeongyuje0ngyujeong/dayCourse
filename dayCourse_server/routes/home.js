@@ -1500,7 +1500,10 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
     });
 });
 
-router.get('/stores-within', async (req, res) => {
+router.get('/stores-within', authenticateJWT, async (req, res) => {
+    const userId = req.user.userId;
+    console.log("지역 추천 시작");
+
     try {
       // x, y 및 반경을 쿼리 파라미터로 받습니다.
       const { x, y, radius } = req.query;
@@ -1514,7 +1517,7 @@ router.get('/stores-within', async (req, res) => {
       const distanceInMeters = parseFloat(radius);
   
       // 공간 쿼리 실행
-      const [rows] = await db.query(
+      const [rows] = await db.query (
         `
         SELECT 상권번호, 상권명
         FROM store_zone
@@ -1528,9 +1531,12 @@ router.get('/stores-within', async (req, res) => {
         `,
         [longitude, latitude, distanceInMeters]  // 쿼리 파라미터 순서
       );
+
+      console.log("rows 체크: ", rows);
   
       // 결과 반환
       res.status(200).json({ stores: rows });
+
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
