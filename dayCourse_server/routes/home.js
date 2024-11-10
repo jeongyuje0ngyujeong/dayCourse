@@ -1515,7 +1515,7 @@ router.get('/stores-within', authenticateJWT, async (req, res) => {
       const distanceInMeters = parseFloat(radius);
   
       // 공간 쿼리 실행
-      const [rows] = await db.query (
+      const [rows] = await db.promise().query (
         `
         SELECT 상권번호, 상권명
         FROM store_zone
