@@ -9,10 +9,13 @@ const MapDiv = styled.div`
     height: 100%;
 `;
 
-function KakaoMap({ searchKeyword, setPlaces, departurePoints }) {
+function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommendedTown }) {
     const mapContainerRef = useRef(null); // 맵 컨테이너 참조
     const mapRef = useRef(null); // 맵 인스턴스 참조
     const markersRef = useRef([]); // 마커 인스턴스 배열 참조
+    const departureMarkersRef = useRef([]); // 출발지 마커 인스턴스 배열 참조
+    const recommendedMarkerRef = useRef(null); // 추천 지역 마커 인스턴스 참조
+    const infowindowRef = useRef(null); // 인포윈도우 참조
 
     // 맵 초기화 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
@@ -94,7 +97,7 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints }) {
                     const marker = new kakao.maps.Marker({
                         position: position,
                         map: mapRef.current,
-                        title: place.place_name
+                        title: place.place_name || place.name
                     });
                     markersRef.current.push(marker);
                     bounds.extend(position);
@@ -127,6 +130,54 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints }) {
             });
         }
     }, [searchKeyword, setPlaces]);
+
+  // 추천 지역 마커 업데이트
+  useEffect(() => {
+    if (!mapRef.current || !selectedRecommendedTown) return;
+
+    // 기존 추천 마커 제거
+    if (recommendedMarkerRef.current) {
+        recommendedMarkerRef.current.setMap(null);
+        recommendedMarkerRef.current = null;
+    }
+
+    // 기존 인포윈도우 제거
+    if (infowindowRef.current) {
+        infowindowRef.current.close();
+        infowindowRef.current = null;
+    }
+
+    const { name, x, y } = selectedRecommendedTown;
+    const position = new kakao.maps.LatLng(y, x);
+
+    // 맵 중심 이동
+    mapRef.current.setCenter(position);
+    mapRef.current.setLevel(3); // 원하는 줌 레벨로 조정 가능
+
+    // 추천 지역 마커 추가
+    const marker = new kakao.maps.Marker({
+        position: position,
+        map: mapRef.current,
+        title: name,
+        image: new kakao.maps.MarkerImage(
+            // 마커 이미지 URL (필요에 따라 변경 가능)
+            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+            new kakao.maps.Size(24, 35)
+        )
+    });
+   // 인포윈도우 생성
+   const infowindow = new kakao.maps.InfoWindow({
+    content: `<div style="padding:5px;">추천 지역: ${name}</div>`,
+});
+
+// 마커 클릭 시 인포윈도우 표시
+kakao.maps.event.addListener(marker, 'click', () => {
+    infowindow.open(mapRef.current, marker);
+});
+
+recommendedMarkerRef.current = marker;
+infowindowRef.current = infowindow;
+}, [selectedRecommendedTown]);
 
     return (
         <MapDiv ref={mapContainerRef} id="map"></MapDiv>

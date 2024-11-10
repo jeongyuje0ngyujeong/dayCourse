@@ -108,10 +108,17 @@ export default function UpdateTown() {
     const [departurePoints, setDeparturePoints] = useState([]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
+    const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { name: '', x: , y: }
 
     const removeDeparturePoint = (index) => {
         setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
+
+        // 추천된 지역을 선택했을 때 호출되는 핸들러
+        const handleSelectTown = (town) => {
+            console.log('Selected town:', town); // 디버깅 로그 추가
+            setSelectedRecommendedTown(town);
+        };
 
     return (
         <div>
@@ -119,9 +126,25 @@ export default function UpdateTown() {
                 <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>약속지역</PageTitle>
                 <SelectTown contextTown={setSelectedTown}/>
                 <Form method="post">        
-                    <input type="hidden" name="town" value={selectedTown.full_addr} />
-                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
-                </Form>  
+    {selectedRecommendedTown && (
+        <>
+            <input type="hidden" name="town_name" value={selectedRecommendedTown.name} />
+            <input type="hidden" name="town_x" value={selectedRecommendedTown.x} />
+            <input type="hidden" name="town_y" value={selectedRecommendedTown.y} />
+        </>
+    )}
+    <Button 
+        type='submit' 
+        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
+        width='4rem' 
+        height='3rem' 
+        border='none' 
+        $background='#90B54C' 
+        color='white'
+    > 
+        다음 
+    </Button>                   
+</Form>  
                 <RecommendContainer>
                     <DepartureContainer>
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
@@ -138,13 +161,13 @@ export default function UpdateTown() {
                         </ScrollContainer>
 
                         <Container>
-                            <ConvexHullCalculator departurePoints={departurePoints}/> 
+                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown}/> 
                         </Container>
                     </DepartureContainer>
 
                     <RecommendResult>
                         <MapContainer>
-                            <KakaoMap departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
+                            <KakaoMap selectedRecommendedTown={selectedRecommendedTown} departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
                         </MapContainer>
                     </RecommendResult>
                 </RecommendContainer>
