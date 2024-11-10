@@ -77,7 +77,7 @@ export default function CreateSchedule() {
                   type="date"
                   name="date"
                   defaultValue={date}
-                  style={{width:'100%'}}
+                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'}}
                   required
                 />
               </div>
@@ -86,14 +86,14 @@ export default function CreateSchedule() {
                 <input
                   type="text"
                   name="planName"
-                  style={{width:'100%'}}
+                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'}}
                   placeholder={'약속의 이름을 입력해주세요.'}
                   defaultValue={planName}
                 />
               </div>
               <Group group={group}/>
               {/* <div style={{display:'flex', marginTop:'2rem'}}> */}
-                <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button> 
+              <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button> 
               {/* </div> */}
             </Form>
           </div>

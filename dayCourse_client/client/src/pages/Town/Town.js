@@ -48,7 +48,6 @@ const DepartureContainer = styled.div`
     flex-direction: column;
     justify-content: space-between; 
     ${'' /* margin-top: 10px; */}
-    border: 1px solid;
     margin-right: 20px;
     position: relative;
     height: 65vh;
@@ -96,7 +95,6 @@ const MapContainer = styled.div`
 
 const Container = styled.div`
     height: 30vh;
-    border: 1px solid;
     display: flex;
     gap: 5px;
     margin-top: auto;
