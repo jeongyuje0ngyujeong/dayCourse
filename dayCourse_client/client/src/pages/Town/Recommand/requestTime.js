@@ -38,7 +38,11 @@ export async function storeZoneInRadius(radius, x, y) {
   // const url = `http://localhost:5001/stores-within?&x=${x}&y=${y}&radius=${radius}`;
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${sessionStorage.getItem('token')}` // 토큰을 Authorization 헤더에 추가
+      }
+    });
     console.log(response.data); // API 응답 데이터 출력
     return response.data; // 필요한 경우 데이터를 반환
   } catch (error) {
