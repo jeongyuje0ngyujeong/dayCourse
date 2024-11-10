@@ -75,7 +75,7 @@ export default function CreateSchedule() {
       <div style={{display:'flex', gap: '3rem'}}>
         <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
           <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
-          <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
+  
           <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           
         </div>
