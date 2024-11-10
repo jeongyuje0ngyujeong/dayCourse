@@ -1498,7 +1498,7 @@ router.get('/plan/moment', authenticateJWT, async (req, res) => {
     });
 });
 
-app.get('/stores-within', async (req, res) => {
+router.get('/stores-within', async (req, res) => {
     try {
       // x, y 및 반경을 쿼리 파라미터로 받습니다.
       const { x, y, radius } = req.query;
