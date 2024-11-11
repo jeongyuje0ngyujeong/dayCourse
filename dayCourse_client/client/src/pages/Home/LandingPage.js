@@ -318,9 +318,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
         }
     }, [planId, userId]);
 
-    useEffect(() => {
-        fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
-    }, [fetchFullCourse]);
+    // useEffect(() => {
+    //     fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
+    // }, [fetchFullCourse]);
 
 
 
@@ -443,19 +443,34 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                         selectedPlaces={selectedPlaces} 
                     />
 
-                    <Container>
-                        <PlacesBox>
-                            <RightSidebar 
-                                userId={userId} 
-                                planId={planId} 
-                                planInfo={context}
-                                places={places} 
-                                setPlaces={setPlaces} 
-                                onSubmitKeyword={submitKeyword} 
-                                onPlaceClick={handlePlaceClick}
-                            />
-                        </PlacesBox>
-                    </Container>
+        return (
+            <div className="landing-page">
+                {!isPlacesLoaded ? (
+                    <Overlay>
+                        <Loader />
+                    </Overlay>
+                ) : error ? (
+                    <div style={{ padding: '20px', color: 'red' }}>{error}</div>
+                ) : (
+                    <>
+                        <KakaoMap 
+                            searchKeyword={keyword} 
+                            setPlaces={setPlaces} 
+                            selectedPlaces={selectedPlaces || []} 
+                        />
+                        <Container>
+                            <PlacesBox>
+                                <RightSidebar 
+                                    userId={userId} 
+                                    planId={planId} 
+                                    planInfo={context}
+                                    places={places} 
+                                    setPlaces={setPlaces} 
+                                    onSubmitKeyword={submitKeyword} 
+                                    onPlaceClick={handlePlaceClick}
+                                />
+                            </PlacesBox>
+                        </Container>
 
                     <RowContainer>
                         <SelectedPlacesContainer>
