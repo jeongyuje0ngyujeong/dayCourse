@@ -1091,13 +1091,14 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const sql_locations_restaurant = `
         SELECT Locations.*
         FROM Locations
-        WHERE LocationName = ? AND addressFull = ? AND category = restaurant
+        WHERE LocationName = ? AND addressFull = ? AND category = 'restaurant'
         LIMIT 10;
     `;
 
     const sql_locations_cafe = `
         SELECT Locations.*
-        WHERE LocationName = ? AND addressFull = ? AND category = cafe
+        FROM Locations
+        WHERE LocationName = ? AND addressFull = ? AND category = 'cafe'
         LIMIT 10;
    `;
 
