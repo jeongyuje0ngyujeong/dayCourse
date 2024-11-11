@@ -158,8 +158,25 @@ export default function UpdateTown() {
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
                     <input type="hidden" name="town_cd" value={selectedTown.cd} />
-                    <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
-                </Form>  
+    {selectedRecommendedTown && (
+        <>
+            <input type="hidden" name="town_name" value={selectedRecommendedTown.name} />
+            <input type="hidden" name="town_x" value={selectedRecommendedTown.x} />
+            <input type="hidden" name="town_y" value={selectedRecommendedTown.y} />
+        </>
+    )}
+    <Button 
+        type='submit' 
+        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
+        width='4rem' 
+        height='3rem' 
+        border='none' 
+        $background='#90B54C' 
+        color='white'
+    > 
+        다음 
+    </Button>                   
+</Form>  
                 <RecommendContainer>
                     <DepartureContainer>
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
