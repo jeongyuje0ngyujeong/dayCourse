@@ -69,7 +69,7 @@ const PlacePage = () => {
                 </UsersContainer>
             </div>
             <LandingPage userId={userId} planId={planId} place={place} context={loaderData} setUniqueUsers={setUniqueUsers}></LandingPage>
-            <KakaoMap></KakaoMap>
+            {/* <KakaoMap></KakaoMap> */}
         </SocketProvider>
 
         {/* 현재 접속한 사용자 목록 표시 */}
