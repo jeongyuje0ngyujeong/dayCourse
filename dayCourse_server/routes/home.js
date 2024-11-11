@@ -933,7 +933,7 @@ function translateKeyword(Keyword) {
         case '로스팅': return 'coffee';
         case '디저트': return 'dessert';
         case '감성카페': return 'mood';
-        case '카공': return 'study';
+        case '스터디카페': return 'study';
         case '베이커리': return 'bakery';
         case '애견카페': return 'pet';
 
