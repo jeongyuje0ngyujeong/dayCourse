@@ -268,7 +268,7 @@ def SpotSuggest():
         del recommendations['combined_features_k']
 
         test = recommendations.to_dict(orient='records')
-        logger.info("테스트", test)
+        logger.info("테스트: %s", test)
         
         for item in test:
             for key, value in item.items():
@@ -277,7 +277,9 @@ def SpotSuggest():
                     
         output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
 
-        logger.info("테스2트", output_json)
+        
+        logger.info("테스트2: %s", output_json)
+
         return output_json
     else:        
         # TF-IDF 벡터화
