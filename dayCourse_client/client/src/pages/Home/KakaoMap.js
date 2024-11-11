@@ -28,7 +28,6 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
     };
 
     // 지도 초기화 (한 번만 실행)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         const mapContainer = document.getElementById("map");
         const mapOptions = {
@@ -55,10 +54,10 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
             kakao.maps.event.removeListener(map, 'dragstart');
             kakao.maps.event.removeListener(map, 'zoom_changed');
         };
+        // eslint-disable-next-line
     }, []); // 빈 배열로 설정하여 한 번만 실행
 
     // 선택된 장소 오버레이 렌더링 함수
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     const renderOverlays = useCallback(() => {
         if (!mapRef.current) return;
 
@@ -93,6 +92,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
             }
         }
         renderRouteLines();
+        // eslint-disable-next-line
     }, [selectedPlaces, autoFitBounds]);
 
     // 경로 라인 렌더링 함수
@@ -136,7 +136,6 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
     }, [selectedPlaces]);
 
     // 장소 검색 및 마커 표시
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         if (!mapRef.current || !searchKeyword) return;
 
@@ -154,6 +153,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
                 );
             }
         });
+        // eslint-disable-next-line
     }, [searchKeyword]);
 
     const displayPlaces = useCallback((places) => {
