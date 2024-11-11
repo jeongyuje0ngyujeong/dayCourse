@@ -254,8 +254,9 @@ def SpotSuggest():
     datas['combined_features_k'] = datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
 
     print(data_text)
-    print(datas[data_text])
-    logger.info("This is an info message")
+    print()
+    logger.info(data_text)
+    logger.info(datas[data_text])
 
     if datas[data_text].isin(["  ", "   ", "    "]).all():
         # 상위 20개 스토어 데이터프레임 반환
