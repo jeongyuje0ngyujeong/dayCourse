@@ -6,7 +6,7 @@ import {PageTitle} from '../../commonStyles';
 
 const ResultContainer = styled.div`
     position: absolute; 
-    top: 105%; 
+    top: 110%; 
     left: 0; 
     max-height: 30rem;  
     width: 100%; 
@@ -24,6 +24,42 @@ const StyledForm = styled(Form)`
     justify-content: space-between;
     margin-bottom: 10px;
     position: relative; 
+`;
+
+const Input = styled.input`
+  all: unset;
+  ${'' /* border-right: 2px solid #aaa; */}
+  font-size: 2vh;
+  padding: 2vh;
+
+  box-sizing: border-box;
+  flex: 1;
+
+  &:hover {
+    box-shadow: none; /* hover 시 그림자 제거 */
+    outline: none;    /* hover 시 외곽선 제거 */
+  }
+
+  &:focus {
+    ${'' /* border-right: 3px solid #90B54C; */}
+  }
+`;
+
+const StyledDiv = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 5.5vh;
+  border: 2px solid #ccc;
+  border-radius: 20px;
+  position: relative;
+  z-index: 1000;
+  
+  /* :focus-within 상태에서 스타일 적용 */
+  &:focus-within {
+    box-shadow: 0 0 0 3px #90B54C;
+    ${'' /* border: 3px solid #90B54C; */}
+  }
 `;
 
 export default function SearchKeyword({keyword, setKeyword, places, setPlaces, departurePoints, setDeparturePoints}){
@@ -64,17 +100,18 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
         <>
         <PageTitle style={{marginBottom: '1.5vh', fontSize:'3vh'}}>출발지</PageTitle>
         <StyledForm onSubmit={submitKeywordForm}>
-            <input
-                type="text"
-                placeholder={`출발지를 추가해보세요`}
-                value={value}
-                // onChange={(e) => handleDepartureChange(e.target.value)}
-                onChange={keywordChange}
-                onFocus={() => setShowResult(true)} // 포커스를 얻으면 결과 표시
-                onBlur={() => {setShowResult(false); setPlaces([]);}}
-                style={{ border: '1px solid #ccc', padding: '5px', width:'100%'}}
-            />
-            <Button type='submit'  width='3rem' height='100%'>검색</Button> 
+            <StyledDiv>
+                <Input
+                    type="text"
+                    placeholder={`출발지를 추가해보세요`}
+                    value={value}
+                    // onChange={(e) => handleDepartureChange(e.target.value)}
+                    onChange={keywordChange}
+                    onFocus={() => setShowResult(true)} // 포커스를 얻으면 결과 표시
+                    onBlur={() => {setShowResult(false); setPlaces([]);}}
+                />
+                <Button style={{margin:'0vh', borderRadius:'20px'}} type='submit' width='7vh' height='100%' $border='none'>검색</Button> 
+            </StyledDiv>
             {/* {departurePoints.length <= 10 && ( departurePoints.length !== 10 ?
                 :<Button disabled width='3rem' height='100%'>검색</Button>
             )} */}
