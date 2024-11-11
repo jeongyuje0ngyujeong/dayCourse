@@ -147,18 +147,19 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
         infowindowRef.current = null;
     }
 
-    const { name, x, y } = selectedRecommendedTown;
-    const position = new kakao.maps.LatLng(y, x);
+    const { 상권명, centroid_x, centroid_y } = selectedRecommendedTown;
+    console.log(centroid_x);
+    const position = new kakao.maps.LatLng(centroid_y, centroid_x);
 
     // 맵 중심 이동
     mapRef.current.setCenter(position);
-    mapRef.current.setLevel(3); // 원하는 줌 레벨로 조정 가능
+    mapRef.current.setLevel(6); // 원하는 줌 레벨로 조정 가능
 
     // 추천 지역 마커 추가
     const marker = new kakao.maps.Marker({
         position: position,
         map: mapRef.current,
-        title: name,
+        title: 상권명,
         image: new kakao.maps.MarkerImage(
             // 마커 이미지 URL (필요에 따라 변경 가능)
             'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
@@ -167,7 +168,7 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
     });
    // 인포윈도우 생성
    const infowindow = new kakao.maps.InfoWindow({
-    content: `<div style="padding:5px;">추천 지역: ${name}</div>`,
+    content: `<div style="padding:5px;">추천 지역: ${상권명}</div>`,
 });
 
 // 마커 클릭 시 인포윈도우 표시
