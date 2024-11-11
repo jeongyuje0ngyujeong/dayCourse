@@ -1084,11 +1084,12 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
 
     
     console.log(arrangedLocations)
-    
+    console.log(arrangedLocations.promise)
+
     // 최종 결과 반환
     return res.status(200).json({
         result: 'success',
-        locationInfo: arrangedLocations.map(location => ({
+        locationInfo: arrangedLocation.promise.map(location => ({
             placeName: location.place_name,
             placeAddr: location.place
         }))
