@@ -9,8 +9,8 @@ import { PageTitle } from '../../../commonStyles';
 const Box = styled.div`
     width: 100%; /* 너비 조정 */
     height: 100%; /* 높이 조정 */
-    background-color: white; /* 배경색을 흰색으로 설정 */
-    border: 1px solid #ccc; /* 경계선 추가 */
+    background-color: 'white'; 
+    border: 1px solid #ccc; 
     border-radius: 10px; /* 둥근 모서리 */
     margin-bottom: 10px; /* 여백 */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
@@ -22,7 +22,7 @@ const Box = styled.div`
         transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
     }
 
-    ${'' /* border-color: ${({ isSelected }) => (isSelected ? 'blue' : '#ccc')}; */}
+    border: ${({ isSelected }) => (isSelected ? '0.5vh solid #90B54C' : '1px solid #ccc')};
 
     display: flex;
     flex-direction: column;
@@ -174,7 +174,7 @@ async function getAllRoutes(convexHull, centroid) {
 const { kakao } = window;
 const geocoder = new kakao.maps.services.Geocoder();
 
-export default function ConvexHullCalculator({ departurePoints, onSelectTown}) {
+export default function ConvexHullCalculator({ departurePoints, onSelectTown, selectedButton}) {
     const [convexHull, setConvexHull] = useState([]); // 볼록다각형 꼭지점 좌표
     const [centroid, setCentroid] = useState([0, 0]); // 중간점 
     const [centroidAddress, setCentroidAddress] = useState('');
@@ -341,7 +341,8 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown}) {
               resultTowns.slice(0, 3).map((town, index) => (
                 <Box 
                   key={index} 
-                  onClick={() => onSelectTown(town)}
+                  onClick={() => onSelectTown(town, index)}
+                  isSelected={selectedButton === index}
                 >
                     {town.상권명}
                 </Box>
