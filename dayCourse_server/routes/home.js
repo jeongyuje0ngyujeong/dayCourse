@@ -1004,9 +1004,6 @@ async function SpotSuggest(locations, Cate, key){
 
         return slicedArr
     } else {
-        key = translateKeyword(enKeyword);
-        Cate = translateCategory(enCategory)
-
         console.log("기존문구 시작");
         const sql_category = `
             SELECT addressFull, LocationName, LocationID, latitude, longitude
@@ -1328,6 +1325,8 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     // console.log(locations)
     console.log("확인", key, Cate)
+    key = translateKeyword(enKeyword);
+    Cate = translateCategory(enCategory)
 
     const places = await SpotSuggest(locations, Cate, key)
 
