@@ -79,16 +79,16 @@ export default function CreateSchedule() {
     <>
       <div style={{display:'flex', gap: '3rem'}}>
         <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
-          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
-  
+          <PageTitle style={{fontSize:'3vh', marginBottom:'6vh'}}>일정 만들기</PageTitle>
+
           <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           
         </div>
-        <div style={{flex:'2'}}>
+        <div style={{flex:'2', marginTop:'2vh'}}>
           <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
             <Form style={{width:'100%'}}method="post" id="schedule-form">
               <div style={{flex:'1'}}>
-                <PageTitle>약속 날짜</PageTitle>
+                <PageTitle style={{fontSize:'2vh'}}>약속 날짜</PageTitle>
                 <input
                   placeholder="년"
                   aria-label="년"
@@ -100,7 +100,7 @@ export default function CreateSchedule() {
                 />
               </div>
               <div style={{flex:'1'}}>
-                <PageTitle>약속 이름</PageTitle>
+                <PageTitle style={{fontSize:'2vh'}}>약속 이름</PageTitle>
                 <input
                   type="text"
                   name="planName"

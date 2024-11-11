@@ -190,7 +190,7 @@ export default function Group({group}) {
 
     return (
         <>
-        <PageTitle>함께하는 사람</PageTitle>
+        <PageTitle style={{fontSize:'2vh'}}>함께하는 사람</PageTitle>
         {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
         <div style={{display:'flex', gap:'1rem',height:'40vh'}}>
             { activeTab === 'Tab1' ? (

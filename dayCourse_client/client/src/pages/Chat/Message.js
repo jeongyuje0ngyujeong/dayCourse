@@ -9,7 +9,7 @@ const ChatMessage = styled.div`
     background: #ccc;
     color: black;
     border-radius: 5px;
-    width: fit-content;
+    max-width: 80%;
     word-wrap: break-word;
     position: relative;
     margin-left: 0;
@@ -35,25 +35,20 @@ function Message({  user, text, name  }) {
   
   const trimmedName = name.trim().toLowerCase();
 
-  if(user === trimmedName) {
-    isSentByCurrentUser = true;
-  }
-
-  return isSentByCurrentUser ? (
-    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
-        <p style={{color: 'black'}}>{trimmedName}</p>
-        <ChatMessage>
-            {text}
-        </ChatMessage>
-    </div>
-  ) : (
-    <div style={{justifyContent: isSentByCurrentUser ? 'flex-end' : 'flex-start'}}>
-        <p style={{color: 'black'}}>{user}</p>
-        <ChatMessage2>
-            {text}
-        </ChatMessage2>
-    </div>
-  )
+  return (
+      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}}>
+          <p style={{ color: 'black' }}>{isSentByCurrentUser? name : user}</p>
+          {isSentByCurrentUser? (
+              <ChatMessage2>
+                  {text}
+              </ChatMessage2>
+          ) : (
+              <ChatMessage>
+                  {text}
+              </ChatMessage>
+          )}
+      </MessageContainer>
+  );
 }
 
 export default Message;

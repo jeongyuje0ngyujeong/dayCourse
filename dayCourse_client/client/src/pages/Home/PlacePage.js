@@ -81,7 +81,7 @@ const PlacePage = () => {
                     </div>
                     <ul style={{padding: '0 1rem', margin: '0'}}>
                         {uniqueUsers.map(user => (
-                            <li key={user.userId} style={{ color: user.color }}>{user.name}</li>
+                            <li  key={user.userId} style={{ fontSize:'2vh', color: user.color }}>{user.name}</li>
                         ))}
                     </ul>
                 </UsersContainer>
