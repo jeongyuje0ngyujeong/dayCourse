@@ -1149,7 +1149,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
         }
     });
     
-    let restaurants = await Promise.all(restaurantPromises)
+    let restaurantss = await Promise.all(restaurantPromises)
         .then((results) => {
             const filteredResults = results.filter(location => location !== undefined);
             return filteredResults
@@ -1179,11 +1179,11 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
         });
 
     locations = locations.flat();
-    restaurants = restaurants.flat();
+    restaurantss = restaurantss.flat();
     cafes = cafes.flat();
 
     const promise1 = SpotSuggest(locations, "activities", "random").catch(error => ({ error }));
-    const promise2 = SpotSuggest(restaurants, "restaurant", "random").catch(error => ({ error }));
+    const promise2 = SpotSuggest(restaurantss, "restaurant", "random").catch(error => ({ error }));
     const promise3 = SpotSuggest(cafes, "cate", "random").catch(error => ({ error }));
         
     // 모든 Promise가 완료될 때까지 기다림
