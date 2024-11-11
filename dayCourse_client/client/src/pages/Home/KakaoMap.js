@@ -8,13 +8,14 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     const selectedOverlayRef = useRef([]);
     const [autoFitBounds, setAutoFitBounds] = useState(true);
     const routeLinesRef = useRef([]);
+    const renderRouteLinesRef = useRef();
 
     // 오버레이 제거 함수
     const clearOverlays = (overlays) => {
         overlays.forEach(overlay => overlay.setMap(null));
     };
 
-    const clearLines = (lines) => {
+    const clearLines = useCallback((lines) => {
         lines.forEach(line => {
             if (line && typeof line.setMap === 'function') {
                 line.setMap(null);
@@ -22,75 +23,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
                 console.warn('Invalid line object:', line);
             }
         });
-    };
-
-    // 지도 초기화 (한 번만 실행)
-    useEffect(() => {
-        const mapContainer = document.getElementById("map");
-        const mapOptions = {
-            center: new kakao.maps.LatLng(37.496486063, 127.028361548),
-            level: 5,
-            draggable: true,
-            zoomable: true,
-        };
-
-        const map = new kakao.maps.Map(mapContainer, mapOptions);
-        mapRef.current = map;
-
-        const zoomControl = new kakao.maps.ZoomControl();
-        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-
-        kakao.maps.event.addListener(map, 'dragstart', () => setAutoFitBounds(false));
-        kakao.maps.event.addListener(map, 'zoom_changed', () => {
-            setAutoFitBounds(false);
-            renderRouteLines();
-        });
-
-        // 컴포넌트 언마운트 시 이벤트 리스너 해제
-        return () => {
-            kakao.maps.event.removeListener(map, 'dragstart');
-            kakao.maps.event.removeListener(map, 'zoom_changed');
-        };
-        // eslint-disable-next-line
-    }, []); // 빈 배열로 설정하여 한 번만 실행
-
-    // 선택된 장소 오버레이 렌더링 함수
-    const renderOverlays = useCallback(() => {
-        if (!mapRef.current) return;
-
-        clearOverlays(selectedOverlayRef.current);
-        selectedOverlayRef.current = [];
-
-        const map = mapRef.current;
-        const bounds = new kakao.maps.LatLngBounds();
-
-        selectedPlaces.forEach((place, index) => {
-            const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
-            const content = `
-                <div style="color: white; background: #8cd108; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                    ${index + 1}
-                </div>`;
-            const overlay = new kakao.maps.CustomOverlay({
-                position,
-                content,
-                yAnchor: 1,
-                xAnchor: 0.5,
-            });
-            overlay.setMap(map);
-            selectedOverlayRef.current.push(overlay);
-            bounds.extend(position);
-        });
-
-        if (autoFitBounds && selectedPlaces.length > 0) {
-            if (selectedPlaces.length === 1) {
-                map.setCenter(bounds.getSouthWest());
-            } else {
-                map.setBounds(bounds);
-            }
-        }
-        renderRouteLines();
-        // eslint-disable-next-line
-    }, [selectedPlaces, autoFitBounds]);
+    }, []);
 
     // 경로 라인 렌더링 함수
     const renderRouteLines = useCallback(() => {
@@ -130,7 +63,104 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         });
         polyline.setMap(map);
         routeLinesRef.current.push(polyline);
+         // eslint-disable-next-line
     }, [selectedPlaces]);
+    
+    // 지도 초기화 (한 번만 실행)
+    useEffect(() => {
+        const mapContainer = document.getElementById("map");
+        const mapOptions = {
+            center: new kakao.maps.LatLng(37.496486063, 127.028361548),
+            level: 5,
+            draggable: true,
+            zoomable: true,
+        };
+
+        const map = new kakao.maps.Map(mapContainer, mapOptions);
+        mapRef.current = map;
+
+        const zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+   
+        kakao.maps.event.addListener(map, 'dragstart', () => setAutoFitBounds(false));
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 해제
+        return () => {
+            kakao.maps.event.removeListener(map, 'dragstart');
+        };
+    }, []); // 빈 배열로 설정하여 한 번만 실행
+
+    // `renderRouteLinesRef` 업데이트
+    useEffect(() => {
+        renderRouteLinesRef.current = renderRouteLines;
+    }, [renderRouteLines]);
+
+    // `zoom_changed` 이벤트 핸들러 설정
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const map = mapRef.current;
+
+        const zoomChangeHandler = () => {
+            setAutoFitBounds(false);
+            if (renderRouteLinesRef.current) {
+                renderRouteLinesRef.current();
+            }
+        };
+
+        kakao.maps.event.addListener(map, 'zoom_changed', zoomChangeHandler);
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 해제
+        return () => {
+            kakao.maps.event.removeListener(map, 'zoom_changed', zoomChangeHandler);
+        };
+    }, [mapRef]);
+
+
+    // 선택된 장소 오버레이 렌더링 함수
+    const renderOverlays = useCallback(() => {
+        if (!mapRef.current) return;
+
+        clearOverlays(selectedOverlayRef.current);
+        selectedOverlayRef.current = [];
+
+        const map = mapRef.current;
+        const bounds = new kakao.maps.LatLngBounds();
+
+        selectedPlaces.forEach((place, index) => {
+            const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
+            const content = `
+                <div style="color: white; background: #8cd108; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                    ${index + 1}
+                </div>`;
+            const overlay = new kakao.maps.CustomOverlay({
+                position,
+                content,
+                yAnchor: 1,
+                xAnchor: 0.5,
+            });
+            overlay.setMap(map);
+            selectedOverlayRef.current.push(overlay);
+            bounds.extend(position);
+        });
+
+        if (autoFitBounds && selectedPlaces.length > 0) {
+            if (selectedPlaces.length === 1) {
+                map.setCenter(bounds.getSouthWest());
+            } else {
+                map.setBounds(bounds);
+            }
+        }
+        renderRouteLines();
+        // eslint-disable-next-line
+    }, [selectedPlaces, autoFitBounds]);
+
+
+    useEffect(() => {
+        renderRouteLinesRef.current = renderRouteLines;
+    }, [renderRouteLines]);
+
 
     // 장소 검색 및 마커 표시
     useEffect(() => {
