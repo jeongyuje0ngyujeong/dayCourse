@@ -3,7 +3,8 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, recommendRoutes } from './PlaceApi'; 
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fullCourseRecommend} from './PlaceApi'; 
+//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
@@ -152,8 +153,10 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
     // const [distances, setDistances] = useState([]);
     const [version, setVersion] = useState(1);
-    
 
+    const [isCourseRecommending] = useState(false);
+    const [courseRecommendError] = useState(null);
+    const [recommendedCourses, setRecommendedCourses] = useState([]);
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -304,6 +307,23 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
+
+
+    const fetchFullCourse = useCallback(async () => {
+        try {
+            const data = await fullCourseRecommend(planId, userId); // 서버에서 데이터를 가져오는 함수
+            setRecommendedCourses(data); // 가져온 데이터를 recommendedCourses에 저장
+        } catch (error) {
+            console.error("코스 추천 가져오기 실패:", error);
+        }
+    }, [planId, userId]);
+
+    useEffect(() => {
+        fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
+    }, [fetchFullCourse]);
+
+
+
 
     useEffect(() => {
         fetchExistPlace();
@@ -488,6 +508,27 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                             {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
                         </SelectedPlacesContainer>
 
+                        <SelectedPlacesContainer>
+                            <RecommendButton onClick={fetchFullCourse} disabled={isCourseRecommending}>
+                                {isCourseRecommending ? '코스 추천 중...' : '코스 추천'}
+                            </RecommendButton>
+
+                            {recommendedCourses.map((place, index) => (
+                                <PlaceBox key={`courses-${index}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div style={{ flex: 1 }}>
+                                        <h5>{index + 1}. {place.placeName}</h5>
+                                        <span>{place.placeAddr || "주소 정보 없음"}</span>
+                                    </div>
+                                   
+                            
+                                    {/* <DeleteButton onClick={() => removePlace(place.id)}>삭제</DeleteButton> */}
+                                </PlaceBox>
+                            ))}
+
+                            {isCourseRecommending && <div>코스 추천 중입니다...</div>}
+                            {courseRecommendError && <div style={{ color: 'red' }}>{courseRecommendError}</div>}
+                        </SelectedPlacesContainer>
+    
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
                             <div key={userId}>
