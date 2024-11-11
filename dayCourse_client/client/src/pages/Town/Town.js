@@ -133,9 +133,6 @@ export default function UpdateTown() {
         town_code = event.town_code;
     }
     
-    // console.log(town);
-    // console.log(town_code);
-    
     const [selectedTown, setSelectedTown] = useState('');
     console.log(selectedTown);
     const [departurePoints, setDeparturePoints] = useState([]); 
@@ -143,12 +140,14 @@ export default function UpdateTown() {
     const [places, setPlaces] = useState([]); // 검색 결과 상태
     const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
 
+    const [selectedButton, setSelectedButton] = useState(null);
+
     const removeDeparturePoint = (index) => {
         setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
 
     // 추천된 지역을 선택했을 때 호출되는 핸들러
-    const handleSelectTown = async (town) => {
+    const handleSelectTown = async (town, index) => {
         console.log('Selected town:', town); 
         const result = await getTownCd(town);
         console.log(result);
@@ -157,7 +156,8 @@ export default function UpdateTown() {
             full_addr: result.full_addr,
             cd: result.sido_cd + result.sgg_cd + result.emdong_cd
         };
-        
+
+        setSelectedButton(index);
         setSelectedTown(transformedData);
         setSelectedRecommendedTown(town);
     };
@@ -207,7 +207,7 @@ export default function UpdateTown() {
                         </ScrollContainer>
 
                         <Container>
-                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown} selectedTown={selectedTown}/> 
+                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown} selectedButton={selectedButton}/> 
                         </Container>
                     </DepartureContainer>
 
