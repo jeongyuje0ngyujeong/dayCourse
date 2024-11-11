@@ -1080,6 +1080,9 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     // 장소 재배치
     const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
+    
+    console.log(arrangedLocations)
+    
     // 최종 결과 반환
     return res.status(200).json({
         result: 'success',
