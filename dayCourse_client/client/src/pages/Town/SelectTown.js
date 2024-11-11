@@ -4,19 +4,36 @@ import styled from "styled-components";
 
 const InputContainer = styled.div`
     display: flex;
-   
+    gap: 0.5vh;
 `
 
 const SidebarInput = styled.label`
     flex: 1;
     width: 100%; 
-    border: 1px solid #ced4da;
+    ${'' /* border: 1px solid #ced4da; */}
     border-radius: 4px;
     select {
         width: 100%;
         padding: 10px;
         box-sizing: border-box;
     }
+`;
+
+const Select = styled.select`
+  border: 2px solid #ccc; 
+  border-radius: 5px; 
+  padding: 8px;
+  font-size: 16px;
+  outline: none; 
+  position: relative;
+  z-index: 1000;
+  box-sizing: border-box;
+
+  &:focus {
+    ${'' /* border-color: #90B54C; */}
+    box-shadow: 0 0 0 3px #90B54C;
+    ${'' /* border-width: 0.5vh;  */}
+  }
 `;
 
 export default function SelectTown(props) {
@@ -147,31 +164,31 @@ export default function SelectTown(props) {
     return (
         <InputContainer>
             <SidebarInput>
-                <select name="selectedDo" value={selectedDo} onChange={handleDoChange}>
+                <Select name="selectedDo" value={selectedDo} onChange={handleDoChange}>
                     <option value="" disabled hidden>시/도</option>
 
                     {dos ? dos.map((doe, index) => (
                         <option key={index} value={doe.addr_name}>{doe.addr_name}</option>
                     )) : null}
-                </select>
+                </Select>
             </SidebarInput>
             <SidebarInput>
-                <select name="selectedGu" value={selectedGu} onChange={handleGuChange} disabled={!selectedDo}>
+                <Select name="selectedGu" value={selectedGu} onChange={handleGuChange} disabled={!selectedDo}>
                     <option value="" disabled hidden>시/군/구</option>
 
                     {gus ? gus.map((gu, index) => (
                         <option key={index} value={gu.addr_name}>{gu.addr_name}</option>
                     )) : null}
-                </select>
+                </Select>
             </SidebarInput>
             <SidebarInput>
-                <select name="selectedDong" value={selectedDong} onChange={handleDongChange} disabled={!selectedGu}>
+                <Select name="selectedDong" value={selectedDong} onChange={handleDongChange} disabled={!selectedGu}>
                     <option value="" disabled hidden>읍/면/동</option>
 
                     {dongs ? dongs.map((dong, index) => (
                         <option key={index} value={dong.addr_name}>{dong.addr_name}</option>
                     )) : null}
-                </select>
+                </Select>
             </SidebarInput>
         </InputContainer>
     )
