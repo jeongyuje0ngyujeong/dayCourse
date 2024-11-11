@@ -259,7 +259,7 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
     const { schedule } = req.body;
     const userId = req.user.userId;
 
-    const { planId, dateKey, endDate, planName, town } = schedule;
+    const { planId, dateKey, endDate, planName, town, town_cd } = schedule;
     console.log('계획 수정 planId :', planId)
 
     // Check if required parameters are provided
@@ -275,11 +275,11 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
 
     const sql = `
       UPDATE Plan
-      SET planName = ?, startDate = ?, endDate = ?, town = ?
+      SET planName = ?, startDate = ?, endDate = ?, town = ?, town_code = ?
       WHERE  planId = ? AND start_userId = ?;
     `;
 
-    const values = [planName, dateKey, endDate_new, town, planId, userId];
+    const values = [planName, dateKey, endDate_new, town, town_cd, planId, userId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
