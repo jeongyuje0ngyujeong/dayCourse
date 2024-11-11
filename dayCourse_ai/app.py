@@ -19,6 +19,9 @@ from collections import defaultdict, Counter
 os.environ["LOKY_MAX_CPU_COUNT"] = "4"
 
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -252,6 +255,7 @@ def SpotSuggest():
 
     print(data_text)
     print(datas[data_text])
+    logger.info("This is an info message")
 
     if datas[data_text].isin(["  ", "   ", "    "]).all():
         # 상위 20개 스토어 데이터프레임 반환
