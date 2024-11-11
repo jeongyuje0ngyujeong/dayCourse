@@ -39,7 +39,7 @@ router.get('/', authenticateJWT, async (req, res) => {
     //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?) , Plan.town_code
 
     const sql = `
-        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town AS town_name, Plan.town_code
+        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town AS town_cd, Plan.town_code
         JOIN Plan ON groupMembers.groupId = Plan.groupId
         WHERE groupMembers.userId = ?
         AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
