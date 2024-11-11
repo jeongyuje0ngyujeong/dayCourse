@@ -967,7 +967,7 @@ function translateCategory(Category) {
     }
 }
 
-function SpotSuggest(locations, Cate, key){
+async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
         console.log("보내는값", locations)
@@ -1182,9 +1182,12 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     restaurants = restaurants.flat();
     cafes = cafes.flat();
 
-    let place_1 = SpotSuggest(locations, "activities", "random")
-    let place_2 = SpotSuggest(restaurants, "restaurant", "random")
-    let place_3 = SpotSuggest(cafes, "cate", "random")
+    const promise1 = SpotSuggest(locations, "activities", "random").catch(error => ({ error }));
+    const promise2 = SpotSuggest(restaurants, "restaurant", "random").catch(error => ({ error }));
+    const promise3 = SpotSuggest(cafes, "cate", "random").catch(error => ({ error }));
+        
+    // 모든 Promise가 완료될 때까지 기다림
+    const [place_1, place_2, place_3] = await Promise.all([promise1, promise2, promise3]);
 
     let newArr = []
 
@@ -1327,7 +1330,7 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     // console.log(locations)
     console.log("확인", key, Cate)
 
-    const places = SpotSuggest(locations, Cate, key)
+    const places = await SpotSuggest(locations, Cate, key)
 
     res.status(200).json({ msg: 'success', place: places });
 
