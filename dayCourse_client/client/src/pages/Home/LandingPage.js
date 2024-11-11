@@ -121,11 +121,15 @@ const RowContainer = styled.div`
     width: 75%;
     gap: 2vh; /* 간격 조정 */
     ${'' /* margin-top: 20px; */}
+    justify-content: space-between; /* 내부 요소들을 좌우로 배치 */
+   
 `;
 
 const SelectedPlacesContainer = styled.div`
     display: flex; 
+    flex:1;
     flex-direction: column;
+    max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
 `;
 
 // const RecommendedRoutesBox = styled.div`
