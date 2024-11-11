@@ -34,10 +34,11 @@ router.get('/', authenticateJWT, async (req, res) => {
         return res.status(400).json({ error: 'userId and startDate are required' });
     }
 
-    //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?) , Plan.town_code
+    //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
 
     const sql = `
         SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town, Plan.town_code
+        FROM groupMembers
         JOIN Plan ON groupMembers.groupId = Plan.groupId
         WHERE groupMembers.userId = ?
         AND Plan.startDate BETWEEN DATE_SUB(?, INTERVAL 1 MONTH) AND DATE_ADD(?, INTERVAL 1 MONTH)
