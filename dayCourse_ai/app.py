@@ -235,6 +235,7 @@ def SpotSuggest():
     keyword = locations[0]['keyword']
 
     #print(locations)
+    logger.info(keyword)
 
     visited_stores = [location['LocationName'] for location in locations]
 
