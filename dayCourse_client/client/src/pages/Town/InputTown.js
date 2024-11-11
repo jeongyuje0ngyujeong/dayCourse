@@ -13,7 +13,7 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
     const mapContainerRef = useRef(null); // 맵 컨테이너 참조
     const mapRef = useRef(null); // 맵 인스턴스 참조
     const markersRef = useRef([]); // 마커 인스턴스 배열 참조
-    const departureMarkersRef = useRef([]); // 출발지 마커 인스턴스 배열 참조
+   // const departureMarkersRef = useRef([]); // 출발지 마커 인스턴스 배열 참조
     const recommendedMarkerRef = useRef(null); // 추천 지역 마커 인스턴스 참조
     const infowindowRef = useRef(null); // 인포윈도우 참조
 
