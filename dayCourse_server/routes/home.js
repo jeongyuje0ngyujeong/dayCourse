@@ -1196,6 +1196,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     newArr.push(place_1[randomIndex]);
     place_1.splice(randomIndex, 1);
 
+    console.log(place_2)
     //식당 두개
     randomIndex = Math.floor(Math.random() * place_2.length);
     newArr.push(place_2[randomIndex]);
