@@ -159,8 +159,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
    // const [distances, setDistances] = useState([]);
     const [version, setVersion] = useState(1);
 
-    const [isCourseRecommending] = useState(false);
-    const [courseRecommendError] = useState(null);
+    const [isCourseRecommending, setIsCourseRecommending] = useState(false);
+    const [courseRecommendError, setCourseRecommendError] = useState(null);
+    
     const [recommendedCourses, setRecommendedCourses] = useState([]);
 
     const submitKeyword = (newKeyword) => {
@@ -216,16 +217,16 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                     return;
                 }
 
-                const updatedPlaces =reorderedPlaces.map((place, index) => ({
+                const updatedPlaces = reorderedPlaces.map((place, index) => ({
                     ...place,
                     l_priority: index + 1,
-                    version : version + 1,
+                    version: version + 1,
                 }));
-
+    
                 setSelectedPlaces(updatedPlaces);
                 setVersion(prev => prev + 1);
-
-                await Promise.all(updatedPlaces.map(place=>
+    
+                await Promise.all(updatedPlaces.map(place =>
                     updatePlacePriority(
                         place.placeId || place.id,
                         place.l_priority,
@@ -233,9 +234,12 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                         place.version
                     )
                 ));
+    
+                // 추천 결과를 소켓을 통해 다른 사용자에게 전송
                 if (socket) {
-                    socket.emit('update-places', { room : planId, places: updatedPlaces });
+                    socket.emit('route-recommended', { room: planId, updatedPlaces });
                 }
+    
                 setRecommendError(null);
             } else {
                 console.error("추천 루트 데이터 형식이 올바르지 않습니다:", recommended);
@@ -314,18 +318,29 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     };
 
 
+
     const fetchFullCourse = useCallback(async () => {
+        setIsCourseRecommending(true);
+        setCourseRecommendError(null);
         try {
-            const data = await fullCourseRecommend(planId, userId); // 서버에서 데이터를 가져오는 함수
-            setRecommendedCourses(data); // 가져온 데이터를 recommendedCourses에 저장
+            const data = await fullCourseRecommend(planId, userId);
+            setRecommendedCourses(data);
+    
+            // 코스 추천 결과를 소켓을 통해 다른 사용자에게 전송
+            if (socket) {
+                socket.emit('course-recommended', { room: planId, courses: data });
+            }
         } catch (error) {
             console.error("코스 추천 가져오기 실패:", error);
+            setCourseRecommendError("코스 추천을 가져오는 데 실패했습니다.");
+        } finally {
+            setIsCourseRecommending(false);
         }
-    }, [planId, userId]);
+    }, [planId, userId, socket]);
 
-    useEffect(() => {
-        fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
-    }, [fetchFullCourse]);
+    // useEffect(() => {
+    //     fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
+    // }, [fetchFullCourse]);
 
 
 
@@ -384,12 +399,26 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
             setSelectedPlaces(updatedPlaces);
         });
 
+
+        // 루트 추천 결과 수신
+        socket.on('route-recommended', ({ updatedPlaces }) => {
+            setSelectedPlaces(updatedPlaces);
+        });
+
+        // 코스 추천 결과 수신
+        socket.on('course-recommended', ({ courses }) => {
+            setRecommendedCourses(courses);
+        });
+
+
         return () => {
             socket.off('roomData');
             socket.off('user-joined');
             socket.off('user-left');
             socket.off('user-mouse-move');
             socket.off('places-updated');
+            socket.off('route-recommended'); 
+            socket.off('course-recommended'); 
         };
     }, [socket, planId, joinRoom,setUniqueUsers]);
 
@@ -435,12 +464,11 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
 
         return (
             <div className="landing-page">
-                {!isPlacesLoaded && (
+                {!isPlacesLoaded ? (
                     <Overlay>
                         <Loader />
                     </Overlay>
-                )}
-                {isPlacesLoaded && error ? (
+                ) : error ? (
                     <div style={{ padding: '20px', color: 'red' }}>{error}</div>
                 ) : (
                     <>

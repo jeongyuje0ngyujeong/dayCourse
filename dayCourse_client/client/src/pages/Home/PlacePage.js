@@ -1,7 +1,7 @@
 // PlacePage.js
 import { useLoaderData, } from "react-router-dom";
 import {useState} from 'react';
-import KakaoMap from './KakaoMap';
+//import KakaoMap from './KakaoMap';
 import { Button } from '../../Button';
 import LandingPage from './LandingPage';
 import { getEvent } from "../../schedules";
@@ -69,7 +69,7 @@ const PlacePage = () => {
                 </UsersContainer>
             </div>
             <LandingPage userId={userId} planId={planId} place={place} context={loaderData} setUniqueUsers={setUniqueUsers}></LandingPage>
-            <KakaoMap></KakaoMap>
+            {/* <KakaoMap></KakaoMap> */}
         </SocketProvider>
 
         {/* 현재 접속한 사용자 목록 표시 */}
