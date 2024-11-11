@@ -15,6 +15,7 @@ export async function loader({ params }) {
       const { planId } = params;
     //   console.log(planId);
       const event = await getEvent(planId);
+
       return { event };
 }
 
@@ -105,7 +106,11 @@ const Container = styled.div`
 
 export default function UpdateTown() {
     const { event } = useLoaderData();
-    
+    const town = event.town;
+    const town_code = event.town_code;
+    console.log(town);
+    console.log(town_code);
+
     const [selectedTown, setSelectedTown] = useState('');
     console.log(selectedTown);
     console.log(event);
@@ -122,9 +127,10 @@ export default function UpdateTown() {
             <SidebarContainer>
                 <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>약속지역</PageTitle>
                 {/* margin: '0.5rem 0', fontSize:'3vh' */}
-                <SelectTown contextTown={setSelectedTown}/>
+                <SelectTown contextTown={setSelectedTown} town_code={town_code}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
+                    <input type="hidden" name="town_cd" value={selectedTown.cd} />
                     <Button type='submit' style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} width='4rem' height='3rem' border='none' $background='#90B54C' color='white'> 다음 </Button>                   
                 </Form>  
                 <RecommendContainer>

@@ -57,7 +57,7 @@ export default function Layout() {
     <>
     <UpperBar/>
     <div id="sidebar">
-        <div style={{height:'5rem'}}></div>
+        <div style={{height:'10vh'}}></div>
         {/* <h1>데이코스</h1> */}
         <nav>
             <ul>

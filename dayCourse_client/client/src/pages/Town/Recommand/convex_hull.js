@@ -221,8 +221,19 @@ export default function ConvexHullCalculator({departurePoints}) {
               try {
                   console.log(`Fetching towns with radius: ${radius}`);
                   const result = await storeZoneInRadius(radius, temp_centroid[0], temp_centroid[1]);
-                  towns = result.stores.map((town) => town.상권명.split('_')[0]) // '_' 기준으로 지역명만 추출
-                  .filter((value, index, self) => self.indexOf(value) === index) // 중복된 지역 제거
+                  console.log('store: ', result);
+                  // towns = result.stores.map((town) => town.상권명.split('_')[0]) 
+                  // .filter((value, index, self) => self.indexOf(value) === index) 
+                  towns = result.stores.reduce((acc, town) => {
+                    // 지역명을 추출하여 중복 여부를 판단
+                    const 지역명 = town.상권명.split('_')[0];
+                    // 이미 해당 지역명이 acc에 존재하지 않는 경우에만 추가
+                    if (!acc.some((item) => item.상권명.split('_')[0] === 지역명)) {
+                        acc.push(town);
+                    }
+                    return acc;
+                  }, []);
+                  
                   console.log('result: ',towns)
   
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
@@ -351,12 +362,12 @@ export default function ConvexHullCalculator({departurePoints}) {
 
     return (
         <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
-          <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center' }}>
+          <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center'}}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
               <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
               {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
             </div>
-            <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
+            <Button onClick={calculateConvexHull} style={{height: '3rem', width:'15vh',fontSize:'2vh', color:'white'}} $background='#90B54C'>지역 추천 받기</Button>
           </div>
           
           {/* <Container>
@@ -373,7 +384,7 @@ export default function ConvexHullCalculator({departurePoints}) {
             {resultTowns && resultTowns.length > 0 ? (
               resultTowns.slice(0, 3).map((town, index) => (
                 <Box key={index}>
-                  {town}
+                  {town.상권명}
                 </Box>
               ))
             ) : loading ? (

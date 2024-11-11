@@ -317,6 +317,7 @@ i {
 #sidebar ul {
   padding: 0;
   margin: 0;
+
   list-style: none;
 }
 
@@ -330,12 +331,11 @@ i {
   justify-content: space-between;
   overflow: hidden;
   /* width: 100%; */
-
   white-space: pre;
   padding: 1rem;
   border-radius: 8px;
   color: inherit;
-  font-size: 20px;
+  font-size: 3vh;
   text-decoration: none;
   gap: 1rem;
 }

@@ -20,6 +20,12 @@ const SidebarInput = styled.label`
 `;
 
 export default function SelectTown(props) {
+    // const town_code = props.town_code;
+
+    // const si = town_code.substring(0, 2);
+    // const gu = town_code.substring(2, 5);
+    // const dong = town_code.substring(5, 8);
+
     const [dos, setDos] = useState([]);
     const [gus, setGus] = useState([]);
     const [dongs, setDongs] = useState([]);
