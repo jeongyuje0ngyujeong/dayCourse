@@ -123,11 +123,11 @@ export default function UpdateTown() {
         setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
 
-        // 추천된 지역을 선택했을 때 호출되는 핸들러
-        const handleSelectTown = (town) => {
-            console.log('Selected town:', town); // 디버깅 로그 추가
-            setSelectedRecommendedTown(town);
-        };
+    // 추천된 지역을 선택했을 때 호출되는 핸들러
+    const handleSelectTown = (town) => {
+        console.log('Selected town:', town); // 디버깅 로그 추가
+        setSelectedRecommendedTown(town);
+    };
 
     return (
         <div>
@@ -137,26 +137,26 @@ export default function UpdateTown() {
                 <SelectTown contextTown={setSelectedTown} town_code={town_code}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
-                    <input type="hidden" name="town_cd" value={selectedTown.cd} />
-    {selectedRecommendedTown && (
-        <>
-            <input type="hidden" name="town_name" value={selectedRecommendedTown.name} />
-            <input type="hidden" name="town_x" value={selectedRecommendedTown.x} />
-            <input type="hidden" name="town_y" value={selectedRecommendedTown.y} />
-        </>
-    )}
-    <Button 
-        type='submit' 
-        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
-        width='4rem' 
-        height='3rem' 
-        border='none' 
-        $background='#90B54C' 
-        color='white'
-    > 
-        다음 
-    </Button>                   
-</Form>  
+                    <input type="hidden" name="town_code" value={selectedTown.cd} />
+                    {selectedRecommendedTown && (
+                        <>
+                            <input type="hidden" name="town_name" value={selectedRecommendedTown.상권명} />
+                            <input type="hidden" name="town_x" value={selectedRecommendedTown.centroid_x} />
+                            <input type="hidden" name="town_y" value={selectedRecommendedTown.centroid_y} />
+                        </>
+                    )}
+                    <Button 
+                        type='submit' 
+                        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
+                        width='4rem' 
+                        height='3rem' 
+                        border='none' 
+                        $background='#90B54C' 
+                        color='white'
+                    > 
+                        다음 
+                    </Button>                   
+                </Form>  
                 <RecommendContainer>
                     <DepartureContainer>
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>

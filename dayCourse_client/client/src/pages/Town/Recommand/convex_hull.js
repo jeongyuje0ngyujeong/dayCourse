@@ -206,20 +206,20 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
           let towns = null;
 
           // Geocoding을 통해 좌표를 가져오는 함수
-          const getCoordinates = (name) => {
-              return new Promise((resolve, reject) => {
-                  geocoder.addressSearch(name, (result, status) => {
-                      if (status === kakao.maps.services.Status.OK) {
-                          const x = parseFloat(result[0].x);
-                          const y = parseFloat(result[0].y);
-                          resolve({ x, y });
-                      } else {
-                          console.warn(`Geocoding failed for town: ${name}`);
-                          resolve({ x: NaN, y: NaN }); // Geocoding 실패 시 NaN 반환
-                      }
-                  });
-              });
-          };
+          // const getCoordinates = (name) => {
+          //     return new Promise((resolve, reject) => {
+          //         geocoder.addressSearch(name, (result, status) => {
+          //             if (status === kakao.maps.services.Status.OK) {
+          //                 const x = parseFloat(result[0].x);
+          //                 const y = parseFloat(result[0].y);
+          //                 resolve({ x, y });
+          //             } else {
+          //                 console.warn(`Geocoding failed for town: ${name}`);
+          //                 resolve({ x: NaN, y: NaN }); // Geocoding 실패 시 NaN 반환
+          //             }
+          //         });
+          //     });
+          // };
 
           // 반경을 늘려가며 towns 길이가 3 이상일 때까지 반복
           while (radius <= 5000) {
@@ -339,8 +339,8 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
           <Container>
             {resultTowns && resultTowns.length > 0 ? (
               resultTowns.slice(0, 3).map((town, index) => (
-                <Box key={index}>
-                  {town.상권명}
+                <Box key={index} onClick={() => onSelectTown(town)}>
+                    {town.상권명}
                 </Box>
               ))
             ) : loading ? (
