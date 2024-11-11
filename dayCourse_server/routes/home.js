@@ -1075,7 +1075,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     }
 
     // 장소 분류
-    const { restaurants, cafesByKeyword, others } = classifyLocations(tempArr);
+    const { restaurants, cafesByKeyword, others } = classifyLocations(newArr);
 
     // 장소 재배치
     const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
