@@ -1080,16 +1080,15 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const { restaurants, cafesByKeyword, others } = classifyLocations(tempArr);
 
     // 장소 재배치
-    const arrangedLocations = arrangeLocations(restaurants, cafesByKeyword, others, -1);
+    const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
     
     console.log(arrangedLocations)
-    console.log(arrangedLocations.Promise)
 
     // 최종 결과 반환
     return res.status(200).json({
         result: 'success',
-        locationInfo: arrangedLocation.Promise.map(location => ({
+        locationInfo: arrangedLocation.map(location => ({
             placeName: location.place_name,
             placeAddr: location.place
         }))
