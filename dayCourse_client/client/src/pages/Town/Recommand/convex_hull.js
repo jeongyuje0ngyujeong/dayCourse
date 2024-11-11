@@ -226,22 +226,21 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
               try {
                   console.log(`Fetching towns with radius: ${radius}`);
                   const result = await storeZoneInRadius(radius, temp_centroid[0], temp_centroid[1]);
-                  console.log('storeZoneInRadius result:', result); // 반환 데이터 확인
-
-                  // 추천 지역 이름과 좌표를 함께 저장
-                  const townsWithCoords = await Promise.all(result.stores.map(async (town) => {
-                      const name = town.상권명.split('_')[0]; // '_' 기준으로 지역명만 추출 (필요 없을 경우 제거)
-                      const coords = await getCoordinates(name);
-                      return { name, x: coords.x, y: coords.y };
-                  }));
-
-                  // 중복된 지역 제거 및 유효하지 않은 좌표 필터링
-                  towns = townsWithCoords.filter((town, index, self) => 
-                      self.findIndex(t => t.name === town.name) === index && !isNaN(town.x) && !isNaN(town.y)
-                  );
-
-                  console.log('Parsed towns:', towns); // 파싱된 지역 확인
-
+                  console.log('store: ', result);
+                  // towns = result.stores.map((town) => town.상권명.split('_')[0]) 
+                  // .filter((value, index, self) => self.indexOf(value) === index) 
+                  towns = result.stores.reduce((acc, town) => {
+                    // 지역명을 추출하여 중복 여부를 판단
+                    const 지역명 = town.상권명.split('_')[0];
+                    // 이미 해당 지역명이 acc에 존재하지 않는 경우에만 추가
+                    if (!acc.some((item) => item.상권명.split('_')[0] === 지역명)) {
+                        acc.push(town);
+                    }
+                    return acc;
+                  }, []);
+                  
+                  console.log('result: ',towns)
+  
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
                       setResultTown(towns);
                       break;
@@ -318,28 +317,38 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
     };
 
     return (
-        <div style={{display:'flex', width:'100%', flexDirection:'column', padding: '1rem'}}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', alignItems:'center', gap: '1rem'}}>
-                    <PageTitle style={{fontSize:'3vh'}}>추천지역</PageTitle>
-                    {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
-                </div>
-                <Button onClick={calculateConvexHull} style={{height: '3rem', width:'8rem'}}>지역 추천 받기</Button>
+        <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
+          <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center'}}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
+              <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
+              {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
             </div>
-            
-            <Container>
-                {resultTowns && resultTowns.length > 0 ? (
-                    resultTowns.slice(0, 3).map((town, index) => (
-                        <Box key={index} onClick={() => onSelectTown(town)}>
-                            {town.name}
-                        </Box>
-                    ))
-                ) : loading ? (
-                    <Box style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                        <p>추천 지역을 탐색중입니다</p>
-                    </Box>
-                ) : null}
-            </Container>
+            <Button onClick={calculateConvexHull} style={{height: '3rem', width:'15vh',fontSize:'2vh', color:'white'}} $background='#90B54C'>지역 추천 받기</Button>
+          </div>
+          
+          {/* <Container>
+              <Box>추천지역1</Box>
+              <Box>추천지역2</Box>
+              <Box>추천지역3</Box>
+            {resultTowns.slice(0, 3).map((town, index) => (
+              <Box key={index}>
+                {town.mainTrarNm} 
+              </Box>
+            ))}
+          </Container> */}
+          <Container>
+            {resultTowns && resultTowns.length > 0 ? (
+              resultTowns.slice(0, 3).map((town, index) => (
+                <Box key={index}>
+                  {town.상권명}
+                </Box>
+              ))
+            ) : loading ? (
+              <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
+                <p>추천 지역을 탐색중입니다</p>
+              </Box>
+            ) : null}
+          </Container>
         </div>
     );
 }

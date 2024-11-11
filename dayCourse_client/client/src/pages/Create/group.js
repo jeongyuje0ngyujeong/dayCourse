@@ -264,7 +264,7 @@ export default function Group({group}) {
                 </Content>
             </div>
         </div>
-        <input type="hidden" name="groupId" value={selectedGroup.groupId}/>
+        <input type="hidden" name="groupId" value={selectedGroup ? selectedGroup.groupId:group}/>
         </>
     );
 }

@@ -43,7 +43,8 @@ export default function Layout() {
     return (
     <>
     <div id="sidebar">
-        <h1>데이코스</h1>
+        <div style={{height:'10vh'}}></div>
+        {/* <h1>데이코스</h1> */}
         <nav>
             <ul>
                 <Nav href='home' text='홈'/>
