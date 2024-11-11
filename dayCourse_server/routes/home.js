@@ -261,7 +261,7 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
     const { schedule } = req.body;
     const userId = req.user.userId;
 
-    const { planId, dateKey, endDate, planName, town, town_cd } = schedule;
+    const { planId, dateKey, endDate, planName, town, town_code } = schedule;
     console.log('계획 수정 planId :', planId)
 
     // Check if required parameters are provided
@@ -281,9 +281,9 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
       WHERE  planId = ? AND start_userId = ?;
     `;
 
-    console.log("town_code: ", town_cd);
+    console.log("town_code: ", town_code);
 
-    const values = [planName, dateKey, endDate_new, town, town_cd, planId, userId];
+    const values = [planName, dateKey, endDate_new, town, town_code, planId, userId];
 
     db.query(sql, values, (err, result) => {
         if (err) {
