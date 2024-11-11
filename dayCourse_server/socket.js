@@ -134,6 +134,19 @@ io.on('connection', (socket) => {
   socket.on('update-places', ({room, places}) => {
     socket.to(room).emit('places-updated', places);
   });
+
+  // 루트 추천 결과 수신 및 브로드캐스트
+  socket.on('route-recommended', ({ room, updatedPlaces }) => {
+    // 해당 방의 다른 사용자들에게 이벤트 전송
+    socket.to(room).emit('route-recommended', { updatedPlaces });
+  });
+
+  // 코스 추천 결과 수신 및 브로드캐스트
+  socket.on('course-recommended', ({ room, courses }) => {
+      // 해당 방의 다른 사용자들에게 이벤트 전송
+      socket.to(room).emit('course-recommended', { courses });
+  });
+
   
 })
 
