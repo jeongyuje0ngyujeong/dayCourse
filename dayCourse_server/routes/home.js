@@ -39,7 +39,7 @@ router.get('/', authenticateJWT, async (req, res) => {
     //   AND Plan.startDate BETWEEN DATE_FORMAT(?, '%Y-%m-01') AND LAST_DAY(?)
 
     const sql = `
-        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town
+        SELECT Plan.planId, Plan.startDate, Plan.planName, groupMembers.groupId, Plan.start_userId, Plan.town, Plan.town_code
         FROM groupMembers
         JOIN Plan ON groupMembers.groupId = Plan.groupId
         WHERE groupMembers.userId = ?
@@ -280,6 +280,8 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
       SET planName = ?, startDate = ?, endDate = ?, town = ?, town_code = ?
       WHERE  planId = ? AND start_userId = ?;
     `;
+
+    console.log("town_code: ", town_cd);
 
     const values = [planName, dateKey, endDate_new, town, town_cd, planId, userId];
 
