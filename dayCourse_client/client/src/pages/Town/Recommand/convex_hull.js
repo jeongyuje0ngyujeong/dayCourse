@@ -8,7 +8,7 @@ import { PageTitle } from '../../../commonStyles';
 
 const Box = styled.div`
     width: 100%; /* 너비 조정 */
-    height: 3rem; /* 고정 높이 */
+    height: 100%; /* 높이 조정 */
     background-color: white; /* 배경색을 흰색으로 설정 */
     border: 1px solid #ccc; /* 경계선 추가 */
     border-radius: 10px; /* 둥근 모서리 */
@@ -23,19 +23,17 @@ const Box = styled.div`
     }
 
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 `;
-
 const Container = styled.div`
     flex: 1;
     display: flex;
-    flex-direction: column; /* 세로 방향 정렬 */
     gap: 5px;
-    margin-top: 1rem; /* 상단 여백 */
-    height: auto; /* 높이 자동 조정 */
+    margin-top: auto;
+    height: 80%;
 `;
-
 // 점 배열을 받아 볼록 다각형을 이루는 점 배열을 반환하는 함수
 function getConvexHull(points) {
   if (points.length < 3) return points;
