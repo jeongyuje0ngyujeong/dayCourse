@@ -1083,13 +1083,17 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     
     console.log(arrangedLocations)
 
+    const locationInfos = arrangedLocations.map(location => ({
+        placeName: location.place_name,
+        placeAddr: location.place
+    }))
+
+    console.log(locationInfos)
+
     // 최종 결과 반환
     return res.status(200).json({
         result: 'success',
-        locationInfo: arrangedLocations.map(location => ({
-            placeName: location.place_name,
-            placeAddr: location.place
-        }))
+        locationInfo: locationInfos
     });
 });
 
