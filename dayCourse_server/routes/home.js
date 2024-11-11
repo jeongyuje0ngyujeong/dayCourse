@@ -1532,7 +1532,7 @@ router.get('/stores-within', authenticateJWT, async (req, res) => {
         [longitude, latitude, distanceInMeters]  // 쿼리 파라미터 순서
       );
 
-    //   console.log("rows 체크: ", rows);
+      console.log("rows 체크: ", rows);
   
       // 결과 반환
       res.status(200).json({ stores: rows });
