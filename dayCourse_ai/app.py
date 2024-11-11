@@ -261,6 +261,7 @@ def SpotSuggest():
     if datas[data_text].isin(["  ", "   ", "    "]).all():
         # 상위 20개 스토어 데이터프레임 반환
         recommendations = datas[0:20]
+        logger.info(datas)
         
         # 필드를 삭제
         del recommendations['combined_features_a']
