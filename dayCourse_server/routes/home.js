@@ -1183,7 +1183,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const promise3 = SpotSuggest(cafes, "cate", "random").catch(error => ({ error }));
         
     // 모든 Promise가 완료될 때까지 기다림
-    const [place_1, place_2, place_3] = await Promise.all([promise1, promise2, promise3]);
+    let [place_1, place_2, place_3] = await Promise.all([promise1, promise2, promise3]);
 
     let newArr = []
 
