@@ -5,16 +5,6 @@ import styled from 'styled-components';
 import { getSchedules} from "../../schedules";
 import {GroupDatesByWeek} from './CalendarComponent'
 
-const MonthContainer = styled.div `
-  display: flex;
-  flex-direction: row;
-  justify-content: center; 
-  align-items: center; 
-  color: black;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  margin-bottom: 1rem;
-`
 
 const CalendarContainer = styled.div `
   display: flex;

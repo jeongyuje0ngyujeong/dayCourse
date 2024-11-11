@@ -230,24 +230,24 @@ export default function Group({group}) {
             ):(
                 <>
                 <ResultContainer>
-                <NewContainer>
-                    <TextButton>
-                        <PageTitle>그룹명</PageTitle>
-                            <Button 
-                                style={{ height: '2rem', width: '5rem'}} 
-                                onClick={(e) => {handleOnClick(e)}}
-                            >그룹 생성
-                            </Button>
-                        </TextButton>
-                        <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
-                    <TextButton>
-                        <PageTitle>선택한 친구</PageTitle>
-                        <h4>{selectedFriends.length}명</h4>
-                    </TextButton>            
-                    {selectedFriends.length > 0 && 
-                        <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
-                    }  
-                </NewContainer>
+                    <NewContainer>
+                        <TextButton>
+                            <PageTitle>그룹명</PageTitle>
+                                <Button 
+                                    style={{ height: '2rem', width: '5rem'}} 
+                                    onClick={(e) => {handleOnClick(e)}}
+                                >그룹 생성
+                                </Button>
+                            </TextButton>
+                            <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요' required/>
+                        <TextButton>
+                            <PageTitle>선택한 친구</PageTitle>
+                            <h4>{selectedFriends.length}명</h4>
+                        </TextButton>            
+                        {selectedFriends.length > 0 && 
+                            <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
+                        }  
+                    </NewContainer>
                 </ResultContainer>
                 </>
             )
@@ -264,6 +264,8 @@ export default function Group({group}) {
                 </Content>
             </div>
         </div>
+        <input type="hidden" name="groupId" value={selectedGroup.groupId}/>
+        </>
     );
 }
 
