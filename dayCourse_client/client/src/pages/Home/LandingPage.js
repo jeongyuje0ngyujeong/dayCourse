@@ -323,9 +323,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         }
     }, [planId, userId]);
 
-    useEffect(() => {
-        fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
-    }, [fetchFullCourse]);
+    // useEffect(() => {
+    //     fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
+    // }, [fetchFullCourse]);
 
 
 
@@ -435,12 +435,11 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
 
         return (
             <div className="landing-page">
-                {!isPlacesLoaded && (
+                {!isPlacesLoaded ? (
                     <Overlay>
                         <Loader />
                     </Overlay>
-                )}
-                {isPlacesLoaded && error ? (
+                ) : error ? (
                     <div style={{ padding: '20px', color: 'red' }}>{error}</div>
                 ) : (
                     <>
