@@ -966,7 +966,7 @@ function translateCategory(Category) {
 }
 
 
-router.get('/plan/1234', authenticateJWT, async (req, res) => {
+router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     console.log("완전랜덤추천");
     const userId = req.user.userId;
     const l_num = 5;
