@@ -1519,7 +1519,7 @@ router.get('/stores-within', authenticateJWT, async (req, res) => {
       // 공간 쿼리 실행
       const [rows] = await db.promise().query (
         `
-        SELECT 상권번호, 상권명
+        SELECT 상권번호, 상권명, ST_X(ST_Centroid(coordinates)) AS centroid_x, ST_Y(ST_Centroid(coordinates)) AS centroid_y
         FROM store_zone
         WHERE ST_Intersects(
           ST_Buffer(
