@@ -7,7 +7,7 @@ const ResultContainer = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
-    height: 14rem;  
+    height: 33vh;  
     ${'' /* overflow-y: auto; */}
     overflow: auto; 
     width: 100%;

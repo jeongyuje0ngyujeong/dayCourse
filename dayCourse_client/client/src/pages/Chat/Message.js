@@ -9,7 +9,7 @@ const ChatMessage = styled.div`
     background: #ccc;
     color: black;
     border-radius: 5px;
-    max-width: 70%;
+    max-width: 80%;
     word-wrap: break-word;
 `;
 
@@ -34,7 +34,7 @@ function Message({ user, text, name }) {
   const isSentByCurrentUser = user.trim().toLowerCase() === name.trim().toLowerCase();
 
   return (
-      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start' }}>
+      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}}>
           <p style={{ color: 'black' }}>{isSentByCurrentUser? name : user}</p>
           {isSentByCurrentUser? (
               <ChatMessage2>
