@@ -16,6 +16,9 @@ from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn.cluster import KMeans
 from collections import defaultdict, Counter
 
+os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+
+
 app = Flask(__name__)
 UPLOAD_FOLDER = 'uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
