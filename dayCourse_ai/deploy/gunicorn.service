@@ -9,5 +9,10 @@ WorkingDirectory=/home/ubuntu/dayCourseAi/dayCourse_ai
 Environment="PATH=/home/ubuntu/dayCourseAi/dayCourse_ai/venv/bin"
 ExecStart=/home/ubuntu/dayCourseAi/dayCourse_ai/venv/bin/gunicorn --workers 2 --bind 0.0.0.0:5000 app:app
 
+# 로그 설정 추가
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=gunicorn_flask_ai_app
+
 [Install]
 WantedBy=multi-user.target
