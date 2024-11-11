@@ -58,7 +58,7 @@ const PlacePage = () => {
     const planId = loaderData.planId; // loaderData에서 planId를 가져옴
     const place = loaderData.place;
     const [uniqueUsers, setUniqueUsers] = useState([]);
-    console.log(loaderData.start_userId, userId);
+    // console.log(loaderData.start_userId, userId);
     return (
         <>
         <SocketProvider userId={userId} planId={planId}>

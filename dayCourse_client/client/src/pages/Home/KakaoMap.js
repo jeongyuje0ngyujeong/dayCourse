@@ -18,8 +18,8 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
         overlays.forEach(overlay => overlay.setMap(null));
     }, []);
 
-    const clearLines = useCallback((lines) => {
-        console.log('Clearing lines:', lines);
+    const clearLines = (lines) => {
+        // console.log('Clearing lines:', lines); 
         lines.forEach(line => {
             if (line && typeof line.setMap === 'function') {
                 line.setMap(null);
