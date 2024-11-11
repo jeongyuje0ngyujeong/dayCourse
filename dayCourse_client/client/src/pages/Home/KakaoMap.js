@@ -15,7 +15,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     };
 
     const clearLines = (lines) => {
-        console.log('Clearing lines:', lines); // 디버깅용 로그
+        // console.log('Clearing lines:', lines); 
         lines.forEach(line => {
             if (line && typeof line.setMap === 'function') {
                 line.setMap(null);

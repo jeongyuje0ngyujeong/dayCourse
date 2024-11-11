@@ -1,5 +1,5 @@
 import { Form, redirect, useLoaderData } from "react-router-dom";
-import { updateSchedule, getEvent,} from "../../schedules";
+import { updateSchedule, getEvent, getTownCd} from "../../schedules";
 import React, { useState, } from 'react';
 import KakaoMap from './InputTown';
 import SearchKeyword from './SearchKeyword';
@@ -106,26 +106,39 @@ const Container = styled.div`
 
 export default function UpdateTown() {
     const { event } = useLoaderData();
-    const town = event.town;
-    const town_code = event.town_code;
-    console.log(town);
-    console.log(town_code);
-
+    let town, town_code;
+    
+    if (event) {
+        town = event.town;
+        town_code = event.town_code;
+    }
+    
+    // console.log(town);
+    // console.log(town_code);
+    
     const [selectedTown, setSelectedTown] = useState('');
     console.log(selectedTown);
-    console.log(event);
     const [departurePoints, setDeparturePoints] = useState([]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
-    const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { name: '', x: , y: }
+    const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
 
     const removeDeparturePoint = (index) => {
         setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
 
     // 추천된 지역을 선택했을 때 호출되는 핸들러
-    const handleSelectTown = (town) => {
-        console.log('Selected town:', town); // 디버깅 로그 추가
+    const handleSelectTown = async (town) => {
+        console.log('Selected town:', town); 
+        const result = await getTownCd(town);
+        console.log(result);
+
+        const transformedData = {
+            full_addr: result.full_addr,
+            cd: result.sido_cd + result.sgg_cd + result.emdong_cd
+        };
+        
+        setSelectedTown(transformedData);
         setSelectedRecommendedTown(town);
     };
 
@@ -134,17 +147,17 @@ export default function UpdateTown() {
             <SidebarContainer>
                 <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>약속지역</PageTitle>
                 {/* margin: '0.5rem 0', fontSize:'3vh' */}
-                <SelectTown contextTown={setSelectedTown} town_code={town_code}/>
+                <SelectTown contextTown={setSelectedTown} town={town} town_code={town_code}/>
                 <Form method="post">        
                     <input type="hidden" name="town" value={selectedTown.full_addr} />
                     <input type="hidden" name="town_code" value={selectedTown.cd} />
-                    {selectedRecommendedTown && (
+                    {/* {selectedRecommendedTown && (
                         <>
                             <input type="hidden" name="town_name" value={selectedRecommendedTown.상권명} />
                             <input type="hidden" name="town_x" value={selectedRecommendedTown.centroid_x} />
                             <input type="hidden" name="town_y" value={selectedRecommendedTown.centroid_y} />
                         </>
-                    )}
+                    )} */}
                     <Button 
                         type='submit' 
                         style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
@@ -174,7 +187,7 @@ export default function UpdateTown() {
                         </ScrollContainer>
 
                         <Container>
-                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown}/> 
+                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown} selectedTown={selectedTown}/> 
                         </Container>
                     </DepartureContainer>
 

@@ -20,12 +20,6 @@ const SidebarInput = styled.label`
 `;
 
 export default function SelectTown(props) {
-    // const town_code = props.town_code;
-
-    // const si = town_code.substring(0, 2);
-    // const gu = town_code.substring(2, 5);
-    // const dong = town_code.substring(5, 8);
-
     const [dos, setDos] = useState([]);
     const [gus, setGus] = useState([]);
     const [dongs, setDongs] = useState([]);
@@ -33,6 +27,34 @@ export default function SelectTown(props) {
     const [selectedGu, setSelectedGu] = useState('');
     const [selectedDong, setSelectedDong] = useState('');
     const setSelectedTown = props.contextTown;
+
+    const [selectedDoCd, setSelectedDoCd] = useState(null);
+    const [selectedGuCd, setSelectedGuCd] = useState(null); 
+    // const [selectedDongCd, setSelectedDongCd] = useState(null); 
+    
+    useEffect(() => {
+        if (props.town_code) {
+            const firstSpaceIndex = props.town.indexOf(' ');
+            const lastSpaceIndex = props.town.lastIndexOf(' ');
+
+            const si = props.town.substring(0, firstSpaceIndex); // 첫 번째 공백 앞
+            const dong = props.town.substring(lastSpaceIndex + 1); // 마지막 공백 뒤
+            const gu = props.town.substring(firstSpaceIndex + 1, lastSpaceIndex)
+
+            const si_cd = parseInt(props.town_code.substring(0, 2));
+            const gu_cd = parseInt(props.town_code.substring(0, 5));
+            const dong_cd = parseInt(props.town_code.substring(0, 8));
+            console.log(si_cd,gu_cd,dong_cd);
+            
+            setSelectedDoCd(si_cd);
+            setSelectedGuCd(gu_cd);
+            // setSelectedDongCd(dong_cd);
+
+            setSelectedDo(si);
+            setSelectedGu(gu);
+            setSelectedDong(dong);
+        }
+    }, [props.town_code, props.town]);
 
     useEffect(() => {
         async function loadDos() {
@@ -43,49 +65,28 @@ export default function SelectTown(props) {
             } catch (error) {
                 console.error('Error loading Si:', error);
         }}
+
         loadDos();  
     }, [setDos]);
 
     const handleDoChange = (e) => {
-        async function loadGus(cd) {
-            try {
-                const gus = await getDo(cd); 
-                // console.log('Gus:', gus);
-                setGus(gus.result);  
-            } catch (error) {
-                console.error('Error loading Gus:', error);
-        }}
-
         const selectedItem = dos.find(doItem => doItem.addr_name === e.target.value);
    
         if (selectedItem) {
             setSelectedDo(selectedItem.addr_name); 
-            loadGus(selectedItem.cd);
-            setSelectedGu('');
-            setSelectedDong('');
-            setDongs('');
-            setSelectedTown(selectedItem);
+            setSelectedDoCd(selectedItem.cd);
+            // setSelectedTown(selectedItem);
         }
 
     };
 
     const handleGuChange = (e) => {
-        async function loadDong(cd) {
-            try {
-                const dongs = await getDo(cd); 
-                // console.log('Dongs:', dongs);
-                setDongs(dongs.result);  
-            } catch (error) {
-                console.error('Error loading Dongs:', error);
-        }}
-
         const selectedItem = gus.find(guItem => guItem.addr_name === e.target.value);
 
         if (selectedItem) {
             setSelectedGu(selectedItem.addr_name); 
-            loadDong(selectedItem.cd);
-            setSelectedDong('');
-            setSelectedTown(selectedItem);
+            setSelectedGuCd(selectedItem.cd); 
+            // setSelectedTown(selectedItem);
         }
     };
 
@@ -95,9 +96,53 @@ export default function SelectTown(props) {
         if (selectedItem) {
             setSelectedDong(selectedItem.addr_name);
             setSelectedTown(selectedItem);
-            console.log(selectedItem);
         }
     };
+
+    useEffect(() => {
+        async function loadGusOnChange() {
+            if (selectedDo) {
+                try {
+                    const gusData = await getDo(selectedDoCd); 
+                    console.log('gus: ', gusData);
+                    setGus(gusData.result);  
+                } catch (error) {
+                    console.error('Error loading Gus:', error);
+                }
+            }
+        }
+        loadGusOnChange();
+    }, [selectedDo, selectedDoCd]);
+    
+    useEffect(() => {
+        async function loadDongOnChange() {
+            if (selectedGu) {
+                try {
+                    const dongsData = await getDo(selectedGuCd); 
+                    setDongs(dongsData.result);  
+                } catch (error) {
+                    console.error('Error loading Dongs:', error);
+                }
+            }
+        }
+        loadDongOnChange();
+    }, [selectedGu, selectedGuCd]);
+
+    useEffect(() => {
+        let selectedItem = null;
+
+        if (selectedDong) {
+            selectedItem = dongs.find(dongItem => dongItem.addr_name === selectedDong);
+        } else if (selectedGu) {
+            selectedItem = gus.find(guItem => guItem.addr_name === selectedGu);
+        } else if (selectedDo) {
+            selectedItem = dos.find(doItem => doItem.addr_name === selectedDo);
+        }
+
+        if (selectedItem) {
+            setSelectedTown(selectedItem); 
+        }
+    }, [selectedDo, selectedGu, selectedDong, dos, gus, dongs, setSelectedTown]);
 
     return (
         <InputContainer>

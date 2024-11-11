@@ -22,6 +22,8 @@ const Box = styled.div`
         transform: scale(1.05); /* 마우스 호버 시 확대 효과 */
     }
 
+    ${'' /* border-color: ${({ isSelected }) => (isSelected ? 'blue' : '#ccc')}; */}
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -172,7 +174,7 @@ async function getAllRoutes(convexHull, centroid) {
 const { kakao } = window;
 const geocoder = new kakao.maps.services.Geocoder();
 
-export default function ConvexHullCalculator({ departurePoints, onSelectTown }) {
+export default function ConvexHullCalculator({ departurePoints, onSelectTown}) {
     const [convexHull, setConvexHull] = useState([]); // 볼록다각형 꼭지점 좌표
     const [centroid, setCentroid] = useState([0, 0]); // 중간점 
     const [centroidAddress, setCentroidAddress] = useState('');
@@ -230,16 +232,14 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
                   // towns = result.stores.map((town) => town.상권명.split('_')[0]) 
                   // .filter((value, index, self) => self.indexOf(value) === index) 
                   towns = result.stores.reduce((acc, town) => {
-                    // 지역명을 추출하여 중복 여부를 판단
                     const 지역명 = town.상권명.split('_')[0];
-                    // 이미 해당 지역명이 acc에 존재하지 않는 경우에만 추가
                     if (!acc.some((item) => item.상권명.split('_')[0] === 지역명)) {
                         acc.push(town);
                     }
                     return acc;
                   }, []);
                   
-                  console.log('result: ',towns)
+                  // console.log('result: ',towns)
   
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
                       setResultTown(towns);
@@ -315,7 +315,7 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
     const searchDetailAddrFromCoords = (coords, callback) => {
         geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
     };
-
+ 
     return (
         <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
           <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center'}}>
@@ -339,7 +339,10 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown }) 
           <Container>
             {resultTowns && resultTowns.length > 0 ? (
               resultTowns.slice(0, 3).map((town, index) => (
-                <Box key={index} onClick={() => onSelectTown(town)}>
+                <Box 
+                  key={index} 
+                  onClick={() => onSelectTown(town)}
+                >
                     {town.상권명}
                 </Box>
               ))
