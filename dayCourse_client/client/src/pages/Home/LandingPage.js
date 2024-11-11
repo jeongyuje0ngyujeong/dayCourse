@@ -404,6 +404,12 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             setSelectedPlaces(updatedPlaces);
         });
 
+
+        // 루트 추천 결과 수신
+        socket.on('route-recommended', ({ updatedPlaces }) => {
+            setSelectedPlaces(updatedPlaces);
+        });
+
         // 코스 추천 결과 수신
         socket.on('course-recommended', ({ courses }) => {
             setRecommendedCourses(courses);
