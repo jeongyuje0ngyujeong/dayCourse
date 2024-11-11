@@ -4,17 +4,7 @@ import styled from 'styled-components';
 import { getSchedules} from "../../schedules";
 import {GroupDatesByWeek} from './CalendarComponent'
 
-// const MonthContainer = styled.div `
-//   display: flex;
-//   flex-direction: row;
-//   justify-content: center; 
-//   align-items: center; 
-//   color: black;
-//   border: 1px solid #ccc;
-//   border-radius: 10px;
-//   margin-bottom: 1rem;
-//   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25);
-// `
+
 const CalendarContainer = styled.div `
   display: flex;
   flex-direction: column;

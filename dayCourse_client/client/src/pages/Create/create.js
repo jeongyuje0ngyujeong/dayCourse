@@ -12,6 +12,11 @@ export async function action({ request, params }) {
   console.log(params);
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
+  console.log(updates);
+  if (!updates.groupId) {
+    alert('함께하는 그룹을 선택해주세요');
+    return null;
+  }
 
   const date= formData.get("date");
 
@@ -19,9 +24,9 @@ export async function action({ request, params }) {
     const dateObject = new Date(date); 
     const dateKey = dateObject.toISOString().split('T')[0]; 
     
-    if (params.id){
-      await updateSchedule(params.id, updates);
-      return redirect(`/main/schedules/${dateKey}/${params.id}/town`);
+    if (params.planId){
+      await updateSchedule(params.planId, updates);
+      return redirect(`/main/schedules/${dateKey}/${params.planId}/town`);
     }
     else{
       const planId = (await createSchedule(dateKey, formData)).planId;
