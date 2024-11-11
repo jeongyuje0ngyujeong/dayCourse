@@ -1085,7 +1085,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
 
     const locationInfos = arrangedLocations.map(location => ({
         placeName: location.place_name,
-        placeAddr: location.place
+        placeAddr: location.address_name
     }))
 
     console.log(locationInfos)
