@@ -968,7 +968,7 @@ function translateCategory(Category) {
 async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
-        console.log("보내는값", locations)
+        //console.log("보내는값", locations)
         let text = ""
 
         if (key !== "random") {
@@ -1000,7 +1000,7 @@ async function SpotSuggest(locations, Cate, key){
 
         const slicedArr = renamedUsers.slice(0, 10);
 
-        console.log("응답2 : ", slicedArr)
+        //console.log("응답2 : ", slicedArr)
 
         return slicedArr
     } else {
