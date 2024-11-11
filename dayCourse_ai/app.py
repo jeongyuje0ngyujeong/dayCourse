@@ -235,7 +235,8 @@ def SpotSuggest():
     keyword = locations[0]['keyword']
 
     #print(locations)
-    logger.info(keyword)
+    logger.info("keyword : %s", keyword)
+    
 
     visited_stores = [location['LocationName'] for location in locations]
 
@@ -258,6 +259,7 @@ def SpotSuggest():
     print()
     logger.info(data_text)
     logger.info(datas[data_text])
+    logger.info(datas)
 
     if datas[data_text].isin(["  ", "   ", "    "]).all():
         # 상위 20개 스토어 데이터프레임 반환
