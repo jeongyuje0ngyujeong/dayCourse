@@ -1192,7 +1192,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     newArr.push(place_1[randomIndex]);
     place_1.splice(randomIndex, 1);
 
-    console.log(place_2)
+    console.log("장소 바깥 ", place_1)
     //식당 두개
     randomIndex = Math.floor(Math.random() * place_2.length);
     newArr.push(place_2[randomIndex]);
@@ -1205,6 +1205,9 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     randomIndex = Math.floor(Math.random() * place_3.length);
     newArr.push(place_3[randomIndex]);
     place_3.splice(randomIndex, 1);
+    
+    console.log("추가목록 ", newArr)
+    console.log("장소 카페 ", place_1)
 
     // 활동이랑 카페 합쳐서 하나 뽑음
     let tempArr = []
