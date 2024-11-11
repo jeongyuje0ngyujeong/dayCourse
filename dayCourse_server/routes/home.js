@@ -1086,7 +1086,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     // 최종 결과 반환
     return res.status(200).json({
         result: 'success',
-        locationInfo: arrangedLocation.map(location => ({
+        locationInfo: arrangedLocations.map(location => ({
             placeName: location.place_name,
             placeAddr: location.place
         }))
