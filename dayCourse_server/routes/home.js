@@ -965,6 +965,112 @@ function translateCategory(Category) {
     }
 }
 
+function SpotSuggest(locations, Cate, key){
+
+    if (locations.length > 0) {
+        console.log("보내는값", locations)
+        let text = ""
+
+        if (key !== "random") {
+            text = "k"
+        } else {
+            text = "c"
+            if (Cate === "random") {
+                text = "a"
+            }
+        }
+
+        const response = await axios.post('http://13.124.135.96:5000/SpotSuggest', { locations: locations, text: text }, {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            },
+        });
+
+        // console.log("응답1 : ", response.data)
+        const renamedUsers = response.data.map(row => ({
+            id: row.LocationID,
+            place_name: row.LocationName,
+            address_name: row.addressFull,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
+            road_address_name: "12345", // 임시값
+            phone: "01000000000" //필드없음
+        }));
+
+        const slicedArr = renamedUsers.slice(0, 10);
+
+        console.log("응답2 : ", slicedArr)
+
+        return slicedArr
+    } else {
+        key = translateKeyword(enKeyword);
+        Cate = translateCategory(enCategory)
+
+        console.log("기존문구 시작");
+        const sql_category = `
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            WHERE category = ?
+            LIMIT 10;
+        `;
+
+        const sql_keyword = `
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            WHERE keyword = ?
+            LIMIT 10;
+        `;
+
+        const sql_all = `
+            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            FROM Locations
+            LIMIT 10;
+        `;
+
+        let rows = [];
+
+        if (key !== "random") {
+            // 키워드가 있을 때
+            //console.log("키워드 있음");
+
+            //const [result] = db.query(sql_keyword, [key]);
+            //console.log("쿼리 실행");
+            const [result] = await db.promise().query(sql_keyword, [key]);
+            rows = result;
+
+        } else {
+            // 키워드가 없을 때
+            //console.log("키워드 없음");
+            let sql = sql_category;
+
+            if (Cate === "random") {
+                sql = sql_all;
+                Cate = ""
+            }
+
+            //console.log("쿼리 실행");
+            const [result] = await db.promise().query(sql, [Cate]);
+            rows = result;
+        }
+
+        // 필드 재명명하기
+        const renamedUsers = rows.map(row => ({
+            id: row.LocationID,
+            place_name: row.LocationName,
+            address_name: row.addressFull,
+            x: parseFloat(row.longitude),
+            y: parseFloat(row.latitude),
+            road_address_name: "12345", // 임시값
+            phone: "01000000000" //필드없음
+        }));
+
+        //console.log(renamedUsers);
+        return renamedUsers
+    }
+
+}
+
 
 router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     console.log("완전랜덤추천");
@@ -984,6 +1090,19 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
         FROM Plan_Location 
         WHERE planId IN (?);
     `;
+
+    const sql_locations_restaurant = `
+        SELECT Locations.*
+        FROM Locations
+        WHERE LocationName = ? AND addressFull = ? AND category = restaurant
+        LIMIT 10;
+    `;
+
+    const sql_locations_cafe = `
+        SELECT Locations.*
+        WHERE LocationName = ? AND addressFull = ? AND category = cafe
+        LIMIT 10;
+   `;
 
     const sql_locations_a = `
         SELECT Locations.*
@@ -1017,62 +1136,80 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
             console.error("Error in processing locations:", error);
         });
 
-    locations = locations.flat();
-
-    let tempArr = []
-
-    if (locations.length > 0) {
-        const text = "a"
-
-        const response = await axios.post('http://13.124.135.96:5000/SpotSuggest', { locations: locations, text: text }, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
+    const restaurantPromises = plan_locations.map(async (planLocation) => {
+        try {
+            const [result] = await db.promise().query(sql_locations_restaurant, [planLocation.place_name, planLocation.place]);
+            if (result.length > 0) {
+               return result;
+            }
+        } catch (error) {
+            console.error("Error fetching locations:", error);
+        }
+    });
+    
+    let restaurants = await Promise.all(restaurantPromises)
+        .then((results) => {
+            const filteredResults = results.filter(location => location !== undefined);
+            return filteredResults
+        })
+        .catch(error => {
+           console.error("Error in processing locations:", error);
         });
 
-        const renamedUsers = response.data.map(row => ({
-            id: row.LocationID,
-            place_name: row.LocationName,
-            address_name: row.addressFull,
-            x: parseFloat(row.longitude),
-            y: parseFloat(row.latitude),
-            road_address_name: "12345", // 임시값
-            phone: "01000000000" //필드없음
-        }));
+    const cafePromises = plan_locations.map(async (planLocation) => {
+        try {
+            const [result] = await db.promise().query(sql_locations_cafe, [planLocation.place_name, planLocation.place]);
+            if (result.length > 0) {
+                return result;
+                }
+            } catch (error) {
+                console.error("Error fetching locations:", error);
+            }
+        });
+        
+    let cafes = await Promise.all(cafePromises)
+        .then((results) => {
+            const filteredResults = results.filter(location => location !== undefined);
+            return filteredResults
+        })
+        .catch(error => {
+            console.error("Error in processing locations:", error);
+        });
 
-        tempArr = [...renamedUsers]; // 원본 배열을 복사
+    locations = locations.flat();
+    restaurants = restaurants.flat();
+    cafes = cafes.flat();
 
-    } else {
-        const sql_all = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
-            FROM Locations
-            LIMIT 20;
-        `;
-
-        const [result] = await db.promise().query(sql_all);
-
-        // 필드 재명명하기
-        const renamedUsers = result.map(row => ({
-            id: row.LocationID,
-            place_name: row.LocationName,
-            address_name: row.addressFull,
-            x: parseFloat(row.longitude),
-            y: parseFloat(row.latitude),
-            road_address_name: "12345", // 임시값
-            phone: "01000000000" //필드없음
-        }));
-
-        tempArr = [...renamedUsers]; // 원본 배열을 복사
-    }
+    let place_1 = SpotSuggest(locations, "activities", "random")
+    let place_2 = SpotSuggest(restaurants, "restaurant", "random")
+    let place_3 = SpotSuggest(cafes, "cate", "random")
 
     let newArr = []
 
-    for (let i = 0; i < l_num; i++) {
-        const randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
-        newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
-        tempArr.splice(randomIndex, 1); // 선택된 값은 배열에서 제거
-    }
+    //야외 하나
+    let randomIndex = Math.floor(Math.random() * place_1.length); // 랜덤 인덱스 생성
+    newArr.push(place_1[randomIndex]);
+    place_1.splice(randomIndex, 1);
+
+    //식당 두개
+    randomIndex = Math.floor(Math.random() * place_2.length);
+    newArr.push(place_2[randomIndex]);
+    place_2.splice(randomIndex, 1);
+
+    randomIndex = Math.floor(Math.random() * place_2.length);
+    newArr.push(place_2[randomIndex]);
+
+    //카페 하나
+    randomIndex = Math.floor(Math.random() * place_3.length);
+    newArr.push(place_3[randomIndex]);
+    place_3.splice(randomIndex, 1);
+
+    // 활동이랑 카페 합쳐서 하나 뽑음
+    let tempArr = []
+    tempArr = [...place_1, ...place_3];
+
+    randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
+    newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
 
     // 장소 분류
     const { restaurants, cafesByKeyword, others } = classifyLocations(newArr);
@@ -1080,7 +1217,6 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     // 장소 재배치
     const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
-    
     console.log(arrangedLocations)
 
     const locationInfos = arrangedLocations.map(location => ({
@@ -1189,108 +1325,11 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     // console.log(locations)
     console.log("확인", key, Cate)
 
-    if (locations.length > 0) {
-        console.log("보내는값", locations)
-        let text = ""
+    const places = SpotSuggest(locations, Cate, key)
 
-        if (key !== "random") {
-            text = "k"
-        } else {
-            text = "c"
-            if (Cate === "random") {
-                text = "a"
-            }
-        }
+    res.status(200).json({ msg: 'success', place: places });
 
-        const response = await axios.post('http://13.124.135.96:5000/SpotSuggest', { locations: locations, text: text }, {
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        });
-
-        console.log("응답1 : ", response.data)
-        const renamedUsers = response.data.map(row => ({
-            id: row.LocationID,
-            place_name: row.LocationName,
-            address_name: row.addressFull,
-            x: parseFloat(row.longitude),
-            y: parseFloat(row.latitude),
-            road_address_name: "12345", // 임시값
-            phone: "01000000000" //필드없음
-        }));
-
-        const slicedArr = renamedUsers.slice(0, 10);
-
-        console.log("응답2 : ", slicedArr)
-
-        return res.status(200).json({ msg: 'success', place: slicedArr });
-    } else {
-
-        key = translateKeyword(enKeyword);
-        Cate = translateCategory(enCategory)
-
-        console.log("기존문구 시작");
-        const sql_category = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
-            FROM Locations
-            WHERE category = ?
-            LIMIT 10;
-        `;
-
-        const sql_keyword = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
-            FROM Locations
-            WHERE keyword = ?
-            LIMIT 10;
-        `;
-
-        const sql_all = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
-            FROM Locations
-            LIMIT 10;
-        `;
-
-        let rows = [];
-
-        if (key !== "random") {
-            // 키워드가 있을 때
-            //console.log("키워드 있음");
-
-            //const [result] = db.query(sql_keyword, [key]);
-            //console.log("쿼리 실행");
-            const [result] = await db.promise().query(sql_keyword, [key]);
-            rows = result;
-
-        } else {
-            // 키워드가 없을 때
-            //console.log("키워드 없음");
-            let sql = sql_category;
-
-            if (Cate === "random") {
-                sql = sql_all;
-                Cate = ""
-            }
-
-            //console.log("쿼리 실행");
-            const [result] = await db.promise().query(sql, [Cate]);
-            rows = result;
-        }
-
-        // 필드 재명명하기
-        const renamedUsers = rows.map(row => ({
-            id: row.LocationID,
-            place_name: row.LocationName,
-            address_name: row.addressFull,
-            x: parseFloat(row.longitude),
-            y: parseFloat(row.latitude),
-            road_address_name: "12345", // 임시값
-            phone: "01000000000" //필드없음
-        }));
-
-        //console.log(renamedUsers);
-        return res.status(200).json({ msg: 'success', place: renamedUsers });
-    }
+    
 });
 
 
