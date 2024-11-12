@@ -108,6 +108,8 @@ const RecommendButton = styled.button`
     cursor: pointer;
     font-size: 14px;
     margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
+    font-family: 'NPSfontBold', system-ui;
+    font-size: 2vh;
 
     &:hover {
         background-color: #45a049;
@@ -126,12 +128,15 @@ const RowContainer = styled.div`
     width: 75%;
     gap: 2vh; /* 간격 조정 */
     ${'' /* margin-top: 20px; */}
+    justify-content: space-between; /* 내부 요소들을 좌우로 배치 */
+   
 `;
 
 const SelectedPlacesContainer = styled.div`
     display: flex; 
     flex: 1;
     flex-direction: column;
+    max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
 `;
 
 // const RecommendedRoutesBox = styled.div`
