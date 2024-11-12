@@ -1254,8 +1254,13 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
     const userId = req.user.userId;
     const { enCategory, enKeyword } = req.params;
 
-    let key = translateKeyword(enKeyword);
-    let Cate = translateCategory(enCategory)
+	let key = "random";
+
+	if (enKeyword){
+		key = translateKeyword(enKeyword);
+	}
+
+	let Cate = translateCategory(enCategory)
 
     //여기에 기존.............과거..........방문기록....가져오기
     //가져와서 태그 모음?
