@@ -971,7 +971,7 @@ function translateCategory(Category) {
 async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
-        console.log("보내는값", locations)
+        //console.log("보내는값", locations)
         let text = ""
 
         if (key !== "random") {
