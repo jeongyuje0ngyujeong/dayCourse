@@ -1007,8 +1007,8 @@ async function SpotSuggest(locations, Cate, key){
 
         return slicedArr
     } else {
-        key = translateKeyword(enKeyword);
-        Cate = translateCategory(enCategory)
+        key = translateKeyword(Key);
+        Cate = translateCategory(Cate)
 
         console.log("기존문구 시작");
         const sql_category = `
