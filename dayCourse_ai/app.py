@@ -179,6 +179,8 @@ def cluster_objects2():
             obj_tags = obj["metadata"]
             tag_list += obj_tags.strip().split(',')
         
+        logger.info(cluster_id, "확인", tag_list)
+        
         # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
             tag_counts = Counter(tag_list)
