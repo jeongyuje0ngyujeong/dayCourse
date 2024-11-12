@@ -32,7 +32,7 @@ const PlaceBox = styled.div`
     align-items: center; /* 수직 중앙 정렬 */
     justify-content: space-between; /* 공간을 양쪽 끝에 배치 */
     width: 100%; /* 너비를 줄여 컨테이너 안에서 맞춤 */
-    margin: 5px;
+    ${'' /* margin: 5px; */}
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -101,10 +101,13 @@ const PlacesBox = styled.div`
 
 const RecommendButton = styled.button`
     padding: 5px 10px; /* 버튼 크기를 작게 조정 */
-    background-color: #4CAF50;
-    color: white;
-    border: none;
+    background-color: white;
+    border: 1px solid #90B54C;
+    color: #90B54C;
+    ${'' /* border: none; */}
     border-radius: 5px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    ${'' /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25); */}
     cursor: pointer;
     font-size: 14px;
     margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
@@ -112,11 +115,13 @@ const RecommendButton = styled.button`
     font-size: 2vh;
 
     &:hover {
-        background-color: #45a049;
+        background-color: #90B54C;
+        color: white;
     }
 
     &:disabled {
-        background-color: #a5d6a7;
+        background-color: #90B54C;
+        color: white;
         cursor: not-allowed;
     }
 `;
@@ -483,22 +488,18 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                             setPlaces={setPlaces} 
                             selectedPlaces={selectedPlaces || []} 
                         />
-                        <Container>
-                            <PlacesBox>
-                                <RightSidebar 
-                                    userId={userId} 
-                                    planId={planId} 
-                                    planInfo={context}
-                                    places={places} 
-                                    setPlaces={setPlaces} 
-                                    onSubmitKeyword={submitKeyword} 
-                                    onPlaceClick={handlePlaceClick}
-                                />
-                            </PlacesBox>
-                        </Container>
+                                                
+                        <RightSidebar 
+                            userId={userId} 
+                            planId={planId} 
+                            planInfo={context}
+                            places={places} 
+                            setPlaces={setPlaces} 
+                            onSubmitKeyword={submitKeyword} 
+                            onPlaceClick={handlePlaceClick}
+                        />
 
                         <RowContainer>
-                        
                             <SelectedPlacesContainer>
                                 <RecommendButton onClick={fetchRecommendedRoutes} disabled={isRecommending}>
                                     {isRecommending ? '추천 중...' : '루트 추천'}
@@ -526,7 +527,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                                                         <h5>{index + 1}. {place.place_name}</h5>
                                                                         <span>{place.place || "주소 정보 없음"}</span>
                                                                     </div>
-                                                                    <DeleteButton onClick={() => removePlace(place.placeId)}>삭제</DeleteButton>
+                                                                    <DeleteButton onClick={() => removePlace(place.placeId)}>X</DeleteButton>
                                                                 </PlaceBox>
                                                             )}
                                                         </Draggable>
@@ -553,9 +554,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                 <RecommendButton onClick={fetchFullCourse} disabled={isCourseRecommending}>
                                     {isCourseRecommending ? '코스 추천 중...' : '코스 추천'}
                                 </RecommendButton>
-
+                                
                                 {recommendedCourses.map((place, index) => (
-                                    <PlaceBox key={`courses-${index}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <PlaceBox key={`courses-${index}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom:'1vh'}}>
                                         <div style={{ flex: 1 }}>
                                             <h5>{index + 1}. {place.placeName}</h5>
                                             <span>{place.placeAddr || "주소 정보 없음"}</span>

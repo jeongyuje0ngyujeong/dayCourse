@@ -47,14 +47,16 @@ const PlacePage = () => {
             <div style={{display:'flex', justifyContent: 'space-between', width:'75%', alignItems:'center', height:'15vh', marginBottom:'3vh'}}>
                 <div style={{display:'flex', flexDirection:'column',  height:'100%', padding:'0 1rem 1rem 1rem', borderRadius:'10px'}}>
                     <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', gap: '1rem'}}>
-                        <PageTitle style={{fontSize:'4vh', margin:'0 0 1rem 0'}}>{loaderData.planName}</PageTitle>
+                        <div style={{display:'flex', background:'#90B54C', color:'white', borderRadius:'10vh', alignItems:'center', justifyContent:'center', textAlign:'center',padding:'1vh 5vh', marginLeft:'-1vh'}}>
+                            <PageTitle style={{fontSize:'3vh', margin:'0'}}>{loaderData.planName}</PageTitle>
+                        </div>
                         {String(loaderData.start_userId) === id ?(
-                            <Form style={{fontSize:'4vh', display:'flex', margin:'0 0 1rem 0'}} action={`/main/schedules/create/${planId}`}>
+                            <Form style={{fontSize:'4vh', display:'flex'}} action={`/main/schedules/create/${planId}`}>
                                 <Button style={{  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', fontSize:'2vh'}} type='submit' width='10vh' height='5vh' color='gray' $border='1px solid #eee' >일정 수정</Button>
                             </Form>  
                         ):null}
                     </div>
-                    <PageTitle style={{fontSize:'3vh', margin:'0'}}>{loaderData.town}</PageTitle>
+                    <PageTitle style={{fontSize:'3vh'}}>{loaderData.town}</PageTitle>
                 </div>
                 <UsersContainer>
                     <div style={{display:'flex', justifyContent:'space-between'}}>
