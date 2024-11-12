@@ -30,7 +30,7 @@ export default function Messages({ messages, name }) {
 
         const timer = setTimeout(() => {
             setHighlightMessageIndex(null); // 2초 후 강조 제거
-          }, 500); // 2초 후 강조 제거
+          }, 300); // 2초 후 강조 제거
     
           return () => clearTimeout(timer); // cleanup
       }, [messages]);

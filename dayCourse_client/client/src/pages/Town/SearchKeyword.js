@@ -110,7 +110,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
                     onFocus={() => setShowResult(true)} // 포커스를 얻으면 결과 표시
                     onBlur={() => {setShowResult(false); setPlaces([]);}}
                 />
-                <Button style={{margin:'0vh', borderRadius:'20px'}} type='submit' width='7vh' height='100%' $border='none'>검색</Button> 
+                <Button style={{margin:'0vh', borderRadius:'20px', fontSize:'2vh'}} type='submit' width='7vh' height='100%' $border='none'>검색</Button> 
             </StyledDiv>
             {/* {departurePoints.length <= 10 && ( departurePoints.length !== 10 ?
                 :<Button disabled width='3rem' height='100%'>검색</Button>

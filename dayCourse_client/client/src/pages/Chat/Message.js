@@ -25,14 +25,14 @@ const ChatMessage = styled.div`
         }
     } */}
 
-    animation: ${({ isNewMessage }) => isNewMessage && 'highlightLeft 0.3s ease-out forwards'};
+    animation: ${({ isNewMessage }) => isNewMessage && 'highlightLeft 0.2s ease-out forwards'};
 
     @keyframes highlightLeft {
         0% {
-      transform: translateX(-100%); 
+      transform: translateY(100%); 
     }
     100% {
-      transform: translateX(0); 
+      transform: translateY(0); 
     }
     }
 `;
@@ -61,14 +61,14 @@ const ChatMessage2 = styled.div`
     } */}
 
 
-    animation: ${({ isNewMessage }) => isNewMessage && 'highlightRight 0.3s ease-out forwards'};
+    animation: ${({ isNewMessage }) => isNewMessage && 'highlightRight 0.2s ease-out forwards'};
   
     @keyframes highlightRight {
         0% {
-      transform: translateX(100%);
+      transform: translateY(100%);
     }
     100% {
-      transform: translateX(0); 
+      transform: translateY(0); 
     }
     }
 
@@ -79,14 +79,37 @@ const MessageContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin-bottom: 0vh;
+`
+
+  
+
+const Name = styled.p`
+    color: black;
+    background:white;
+    border:1px solid white;
+    border-radius:20vh;
+    padding:0 1vh;
+    margin-bottom:0;
+
+    animation: ${({ isNewMessage }) => isNewMessage && 'highlightRight 0.2s ease-out forwards'};
+  
+    @keyframes highlightRight {
+        0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0); 
+    }
+    }
 `;
+
 
 function Message({ user, text, name, isNewMessage }) {
   const isSentByCurrentUser = user.trim().toLowerCase() === name.trim().toLowerCase();
 
   return (
-      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}}>
-          <p style={{ color: 'black', background:'white', border:'1px solid white', borderRadius:'20vh', padding:'0 1vh ', marginBottom:'0' }}>{isSentByCurrentUser? name : user}</p>
+      <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}} >
+          <Name isNewMessage={isNewMessage}>{isSentByCurrentUser? name : user}</Name>
           {isSentByCurrentUser? (
               <ChatMessage2 isNewMessage={isNewMessage}>
                   {text}

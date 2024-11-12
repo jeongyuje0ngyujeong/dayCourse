@@ -23,7 +23,7 @@ const Select = styled.select`
   border: 2px solid #ccc; 
   border-radius: 5px; 
   padding: 8px;
-  font-size: 16px;
+  font-size: 2vh;
   outline: none; 
   position: relative;
   z-index: 1000;

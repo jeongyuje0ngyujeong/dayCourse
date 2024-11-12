@@ -114,8 +114,53 @@ export default function UpdateTown() {
     }
     
     const [selectedTown, setSelectedTown] = useState('');
-    console.log(selectedTown);
-    const [departurePoints, setDeparturePoints] = useState([]); 
+    // console.log(selectedTown);
+    const [departurePoints, setDeparturePoints] = useState([
+        {
+            "address_name": "서울 강동구 상일동 산 73",
+            "category_group_code": "SW8",
+            "category_group_name": "지하철역",
+            "category_name": "교통,수송 > 지하철,전철 > 수도권5호선",
+            "distance": "",
+            "id": "500054763",
+            "phone": "",
+            "place_name": "강일역 5호선",
+            "place_url": "http://place.map.kakao.com/500054763",
+            "road_address_name": "서울 강동구 고덕로 지하 456",
+            "x": "127.175680183486",
+            "y": "37.5574259795986"
+        },
+        
+        {
+            "address_name": "경기 고양시 덕양구 원흥동 569-15",
+            "category_group_code": "SW8",
+            "category_group_name": "지하철역",
+            "category_name": "교통,수송 > 지하철,전철 > 수도권3호선",
+            "distance": "",
+            "id": "26102869",
+            "phone": "1544-7788",
+            "place_name": "원흥역 3호선",
+            "place_url": "http://place.map.kakao.com/26102869",
+            "road_address_name": "경기 고양시 덕양구 권율대로 681",
+            "x": "126.87302523491",
+            "y": "37.6506921774602"
+        },
+        
+        {
+            "address_name": "경기 수원시 영통구 이의동 산 94-6",
+            "category_group_code": "SC4",
+            "category_group_name": "학교",
+            "category_name": "교육,학문 > 학교 > 대학교",
+            "distance": "",
+            "id": "9673131",
+            "phone": "031-249-9114",
+            "place_name": "경기대학교 수원캠퍼스",
+            "place_url": "http://place.map.kakao.com/9673131",
+            "road_address_name": "경기 수원시 영통구 광교산로 154-42",
+            "x": "127.03514122548546",
+            "y": "37.30114907752158"
+        }        
+    ]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
     const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
