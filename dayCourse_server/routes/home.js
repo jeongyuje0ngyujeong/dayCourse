@@ -935,7 +935,7 @@ function translateKeyword(Keyword) {
         case '로스팅': return 'coffee';
         case '디저트': return 'dessert';
         case '감성카페': return 'mood';
-        case '스터디카페': return 'study';
+        case '카공': return 'study';
         case '베이커리': return 'bakery';
         case '애견카페': return 'pet';
 
@@ -996,38 +996,38 @@ async function SpotSuggest(locations, Cate, key){
             address_name: row.addressFull,
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
-            road_address_name: "12345", // 임시값
 			category: row.category,
+            road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
         }));
 
         const slicedArr = renamedUsers.slice(0, 10);
 
-        //console.log("응답2 : ", slicedArr)
+        console.log("응답2 : ", slicedArr)
 
         return slicedArr
     } else {
         key = translateKeyword(enKeyword);
         Cate = translateCategory(enCategory)
 
-        //console.log("기존문구 시작");
+        console.log("기존문구 시작");
         const sql_category = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
+            SELECT *
             FROM Locations
             WHERE category = ?
             LIMIT 10;
         `;
 
         const sql_keyword = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
-            FROM Locations
+			SELECT *
+			FROM Locations
             WHERE keyword = ?
             LIMIT 10;
         `;
 
         const sql_all = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
-            FROM Locations
+			SELECT *
+			FROM Locations
             LIMIT 10;
         `;
 
@@ -1218,14 +1218,15 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
     newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
 
-	console.log("추천 : ", newArr)
+	console.log(newArr)
+
     // 장소 분류
     const { restaurants, cafesByKeyword, others } = classifyLocations(newArr);
 
     // 장소 재배치
     const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
-    console.log(arrangedLocations)
+    
 
     const locationInfos = arrangedLocations.map(location => ({
         placeName: location.place_name,
@@ -1332,8 +1333,6 @@ router.post('/plan/:enCategory/:enKeyword?', authenticateJWT, async (req, res) =
 
     // console.log(locations)
     console.log("확인", key, Cate)
-    key = translateKeyword(enKeyword);
-    Cate = translateCategory(enCategory)
 
     const places = await SpotSuggest(locations, Cate, key)
 
