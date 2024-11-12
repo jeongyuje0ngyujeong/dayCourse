@@ -6,3 +6,4 @@ numpy==1.26.4
 gensim==4.3.3
 pandas==2.2.3
 simplejson==3.19.3
+googletrans==4.0.0-rc1

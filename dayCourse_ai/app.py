@@ -15,8 +15,11 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity, linear_kernel
 from sklearn.cluster import KMeans
 from collections import defaultdict, Counter
+from googletrans import Translator
 
 os.environ["LOKY_MAX_CPU_COUNT"] = "4"
+# 번역기 객체 생성
+translator = Translator()
 
 
 logging.basicConfig(level=logging.INFO)
@@ -203,7 +206,9 @@ def cluster_objects2():
         if filtered_objects:
             filtered_clusters[cluster_id] = {
                 'objects': filtered_objects,
-                'core_tag': core_tags[cluster_id],
+                # 태그 번역
+                'core_tag': translator.translate(core_tags[cluster_id], src='en', dest='ko').text
+                #'core_tag': core_tags[cluster_id],
             }
 
     # 결과 반환
