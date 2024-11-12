@@ -188,12 +188,12 @@ export const recommendRoutes = async (planId, version) => {
 };
 
 //코스추천
-export const fullCourseRecommend = async (planId, userId) => {
+export const fullCourseRecommend = async (planId, userId, version) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
         const response = await axios.get(`${BASE_URL}/home/plan/fullCourse`, {
             paramse : {planId,
-            userId
+            userId, version
              },    
                 headers: {
                 Authorization: `Bearer ${token}`,
