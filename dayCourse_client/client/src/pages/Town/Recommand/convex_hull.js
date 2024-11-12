@@ -36,6 +36,54 @@ const Container = styled.div`
     margin-top: auto;
     height: 80%;
 `;
+
+const LoadingText = styled.div`
+  display: inline-block;
+  font-size: 5vh;
+  color: #90B54C;
+
+  .loading span {
+    display: inline-block;
+    margin: 0 0.3rem;
+    animation: loading 0.7s infinite alternate;
+  }
+
+  .loading span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+
+  .loading span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+
+  .loading span:nth-child(4) {
+    animation-delay: 0.3s;
+  }
+
+  .loading span:nth-child(5) {
+    animation-delay: 0.4s;
+  }
+
+  .loading span:nth-child(6) {
+    animation-delay: 0.5s;
+  }
+
+  .loading span:nth-child(7) {
+    animation-delay: 0.6s;
+  }
+
+  @keyframes loading {
+  0% {
+    transform: translateY(0); /* 크기 확대 및 기본 위치 */
+  }
+  50% {
+    transform: translateY(-2vh); /* 크기 축소 및 위로 튀는 효과 */
+  }
+  100% {
+    transform: translateY(0); /* 크기 확대 및 기본 위치 */
+  }
+}
+`;
 // 점 배열을 받아 볼록 다각형을 이루는 점 배열을 반환하는 함수
 function getConvexHull(points) {
   if (points.length < 3) return points;
@@ -353,7 +401,17 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown, se
               ))
             ) : loading ? (
               <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100%">
-                <p>추천 지역을 탐색중입니다</p>
+              <LoadingText>
+                <div className="loading">
+                  <span>추 </span>
+                  <span>천 </span>
+                  <span>지 </span>
+                  <span>역 </span>
+                  <span>탐 </span>
+                  <span>색 </span>
+                  <span>중 </span>
+                </div>
+              </LoadingText>
               </Box>
             ) : null}
           </Container>
