@@ -182,17 +182,15 @@ def cluster_objects2():
         logger.info(cluster_id, "확인", tag_list)
         
         # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
+            
+		# 빈도수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
             tag_counts = Counter(tag_list)
-            most_common_tag = None
-            for tag, _ in tag_counts.most_common():
-                if tag not in used_tags:
-                    most_common_tag = tag
-                    used_tags.add(tag)
-                    break
+            most_common_tag = tag_counts.most_common(1)[0][0]  # 가장 빈도가 높은 태그 선택
             core_tags[cluster_id] = most_common_tag
         else:
             core_tags[cluster_id] = '123456'  # 태그가 없는 경우
+
 
     # 결과 반환
     result = {
