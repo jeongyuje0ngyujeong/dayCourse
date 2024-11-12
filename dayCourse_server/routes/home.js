@@ -1410,7 +1410,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
 
 			const outputBuffer = await sharp(file.buffer)
 				.resize(800) // 너비 800px로 조정
-				.jpeg({ quality: 80 }) // JPEG 품질 80%로 압축
+				.jpeg({ quality: 50 }) // JPEG 품질 80%로 압축
 				.toBuffer();
 
             // S3 업로드 파라미터 설정
