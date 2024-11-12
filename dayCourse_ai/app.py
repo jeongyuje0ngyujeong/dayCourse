@@ -255,9 +255,9 @@ def SpotSuggest():
     datas['combined_features_c'] = datas['keyword'] + ' ' + datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
     datas['combined_features_k'] = datas['tag1'] + ' ' + datas['tag2'] + ' ' + datas['tag3']
 
-    logger.info(data_text)
-    logger.info(datas[data_text])
-    logger.info("로그 : %s", datas)
+    #logger.info(data_text)
+    #logger.info(datas[data_text])
+    #logger.info("로그 : %s", datas)
 
     if datas[data_text].isin(["  ", "   ", "    "]).all():
         # 상위 20개 스토어 데이터프레임 반환
@@ -270,7 +270,7 @@ def SpotSuggest():
         del recommendations['combined_features_k']
 
         test = recommendations.to_dict(orient='records')
-        logger.info("테스트: %s", test)
+        #logger.info("테스트: %s", test)
         
         for item in test:
             for key, value in item.items():
@@ -280,7 +280,7 @@ def SpotSuggest():
         output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
 
         
-        logger.info("테스트2: %s", output_json)
+        #logger.info("테스트2: %s", output_json)
 
         return output_json
     else:        
