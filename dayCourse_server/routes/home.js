@@ -970,7 +970,7 @@ function translateCategory(Category) {
 async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
-        //console.log("보내는값", locations)
+        console.log("보내는값", locations)
         let text = ""
 
         if (key !== "random") {
@@ -997,6 +997,7 @@ async function SpotSuggest(locations, Cate, key){
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
             road_address_name: "12345", // 임시값
+			category: row.category,
             phone: "01000000000" //필드없음
         }));
 
@@ -1006,23 +1007,26 @@ async function SpotSuggest(locations, Cate, key){
 
         return slicedArr
     } else {
-        console.log("기존문구 시작");
+        key = translateKeyword(enKeyword);
+        Cate = translateCategory(enCategory)
+
+        //console.log("기존문구 시작");
         const sql_category = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
             FROM Locations
             WHERE category = ?
             LIMIT 10;
         `;
 
         const sql_keyword = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
             FROM Locations
             WHERE keyword = ?
             LIMIT 10;
         `;
 
         const sql_all = `
-            SELECT addressFull, LocationName, LocationID, latitude, longitude
+            SELECT addressFull, LocationName, LocationID, latitude, longitude, category,
             FROM Locations
             LIMIT 10;
         `;
@@ -1060,6 +1064,7 @@ async function SpotSuggest(locations, Cate, key){
             address_name: row.addressFull,
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
+			category: row.category,
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
         }));
@@ -1093,14 +1098,13 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const sql_locations_restaurant = `
         SELECT Locations.*
         FROM Locations
-        WHERE LocationName = ? AND addressFull = ? AND category = 'restaurant'
+        WHERE LocationName = ? AND addressFull = ? AND category = restaurant
         LIMIT 10;
     `;
 
     const sql_locations_cafe = `
         SELECT Locations.*
-        FROM Locations
-        WHERE LocationName = ? AND addressFull = ? AND category = 'cafe'
+        WHERE LocationName = ? AND addressFull = ? AND category = cafe
         LIMIT 10;
    `;
 
@@ -1185,7 +1189,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const promise3 = SpotSuggest(cafes, "cate", "random").catch(error => ({ error }));
         
     // 모든 Promise가 완료될 때까지 기다림
-    let [place_1, place_2, place_3] = await Promise.all([promise1, promise2, promise3]);
+    const [place_1, place_2, place_3] = await Promise.all([promise1, promise2, promise3]);
 
     let newArr = []
 
@@ -1194,7 +1198,6 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     newArr.push(place_1[randomIndex]);
     place_1.splice(randomIndex, 1);
 
-    //console.log("장소 바깥 ", place_1)
     //식당 두개
     randomIndex = Math.floor(Math.random() * place_2.length);
     newArr.push(place_2[randomIndex]);
@@ -1207,9 +1210,6 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     randomIndex = Math.floor(Math.random() * place_3.length);
     newArr.push(place_3[randomIndex]);
     place_3.splice(randomIndex, 1);
-    
-    //console.log("추가목록 ", newArr)
-    //console.log("장소 카페 ", place_1)
 
     // 활동이랑 카페 합쳐서 하나 뽑음
     let tempArr = []
@@ -1218,13 +1218,14 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
     newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
 
+	console.log("추천 : ", newArr)
     // 장소 분류
     const { restaurants, cafesByKeyword, others } = classifyLocations(newArr);
 
     // 장소 재배치
     const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
-    //console.log(arrangedLocations)
+    console.log(arrangedLocations)
 
     const locationInfos = arrangedLocations.map(location => ({
         placeName: location.place_name,
