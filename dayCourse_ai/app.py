@@ -110,7 +110,7 @@ def analyze_image_file(image):
         tags_list = []
         for tag in result.tags.list:
             logger.info(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
-            if tag.confidence > 0.7 :
+            if tag.confidence > 0.5 and tag.name != "indoor":
                 tags_list.append({
 					'name': tag.name,
 					'confidence': tag.confidence
