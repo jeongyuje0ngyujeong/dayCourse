@@ -180,8 +180,6 @@ def cluster_objects2():
             tag_list += obj_tags.strip().split(',')
         
         logger.info(cluster_id, "확인", tag_list)
-        
-        # 빈도 수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
             
 		# 빈도수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
@@ -190,16 +188,29 @@ def cluster_objects2():
             core_tags[cluster_id] = most_common_tag
         else:
             core_tags[cluster_id] = '123456'  # 태그가 없는 경우
-
+            
+	 # 핵심 태그와 관련된 객체들만 필터링
+    filtered_clusters = {}
+    for cluster_id, obj_list in clustered_objects.items():
+        core_tag = core_tags[cluster_id]
+        
+        # 핵심 태그와 관련된 객체들만 필터링
+        filtered_objects = [
+            obj for obj in obj_list if core_tag in obj["metadata"]
+        ]
+        
+        # 필터링된 객체만 포함
+        if filtered_objects:
+            filtered_clusters[cluster_id] = {
+                'objects': filtered_objects,
+                'core_tag': core_tags[cluster_id],
+            }
 
     # 결과 반환
     result = {
-        'clusters': {cluster_id: {
-            'objects': obj_list,
-            'core_tag': core_tags[cluster_id],
-        } for cluster_id, obj_list in clustered_objects.items()}
+        'clusters': filtered_clusters
     }
-    
+
     return jsonify(result)
 
 def get_user_profile_vector(datas, visited_stores, tfidf_matrix):
