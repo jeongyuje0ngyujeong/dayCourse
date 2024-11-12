@@ -88,16 +88,16 @@ const Overlay = styled.div`
 `;
 
 
-const Container = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 20px;
-`;
+// const Container = styled.div`
+//     display: flex;
+//     flex-direction: row;
+//     justify-content: space-between;
+//     padding: 20px;
+// `;
 
-const PlacesBox = styled.div`
-    flex: 2;
-`;
+// const PlacesBox = styled.div`
+//     flex: 2;
+// `;
 
 const RecommendButton = styled.button`
     padding: 5px 10px; /* 버튼 크기를 작게 조정 */
