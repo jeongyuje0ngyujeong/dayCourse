@@ -10,6 +10,7 @@ const { analyzeImage } = require('./moment');
 
 const fs = require('fs'); //파일 저장용
 const path = require('path');
+const sharp = require('sharp');
 // const heicConvert = require('heic-convert');
 
 const authenticateJWT = require('../config/authenticateJWT');
@@ -1004,7 +1005,7 @@ async function SpotSuggest(locations, Cate, key){
 
         const slicedArr = renamedUsers.slice(0, 10);
 
-        console.log("응답2 : ", slicedArr)
+        //console.log("응답2 : ", slicedArr)
 
         return slicedArr
     } else {
@@ -1407,11 +1408,16 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 type = 'image/jpeg';  // MIME 타입 변경
             }
 
+			const outputBuffer = await sharp(file.buffer)
+				.resize(800) // 너비 800px로 조정
+				.jpeg({ quality: 80 }) // JPEG 품질 80%로 압축
+				.toBuffer();
+
             // S3 업로드 파라미터 설정
             const uploadParams = {
                 Bucket: bucketName,
                 Key: `plans/${planId}/${imgNAME}`,
-                Body: file.buffer,
+                Body: outputBuffer,
                 ContentType: type,
                 Metadata: {}
             };
