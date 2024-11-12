@@ -109,7 +109,7 @@ def analyze_image_file(image):
         print(" Tags:")
         tags_list = []
         for tag in result.tags.list:
-            print(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
+            logger.info(f"   '{tag.name}', Confidence {tag.confidence:.4f}")
             if tag.confidence > 0.7 :
                 tags_list.append({
 					'name': tag.name,
@@ -138,7 +138,7 @@ def cluster_objects2():
     
     # 요청에서 이미지 리스트를 가져옴
     img_list1 = request.json.get('images', [])
-    logger.info(img_list1)
+    #logger.info(img_list1)
     
     # 태그 벡터화
     tag_vectors = []
@@ -155,7 +155,7 @@ def cluster_objects2():
     
     # K-means 클러스터링 수행
     X = np.array([item["vector"] for item in tag_vectors])
-    n_clusters = min(8, (len(X)/5) )
+    n_clusters = min(8, (len(X)//5) )
     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
     labels = kmeans.fit_predict(X)
     
