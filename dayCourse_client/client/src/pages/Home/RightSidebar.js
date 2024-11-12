@@ -1,5 +1,5 @@
 // RightSidebar.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { recommendPlace } from './PlaceApi'; 
 import TabButton from './TabButton';
@@ -8,9 +8,34 @@ import KeywordButton from './KeywordButton';
 import Chat from '../Chat/Chat';
 import {PageTitle} from '../../commonStyles';
 import { Button } from '../../Button';
-//import SocketContext from '../../SocketContext';
+import SocketContext from '../../SocketContext';
 
 // Styled Components (변경 없음)
+
+
+const UnreadBadge = styled.span`
+    background-color: #e8290c;
+    color: white;
+    border-radius: 50%;
+    width: 2em;
+    height: 2em;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute; // 절대 위치 설정
+    top: 0.5em; // 배지 위치 조정 (필요에 따라 미세 조정)
+    right: 1.5em; // 배지 위치 조정 (필요에 따라 미세 조정)
+    font-weight: bold;
+    animation: ${props => props.animate ? 'pop 0.3s ease-in-out' : 'none'};
+    
+    @keyframes pop {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+        100% { transform: scale(1); }
+    }
+`;
+
 const SidebarContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -96,6 +121,12 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const [activeTab, setActiveTab] = useState('search');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
+
+    const { messages } = useContext(SocketContext); // SocketContext에서 messages 가져오기
+    const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 메시지 수 추적
+    const lastMessageCountRef = useRef(0); // 마지막 메시지 수 추적을 위한 useRef
+    const [animateBadge, setAnimateBadge] = useState(false);
+  //  const prevUnreadCountRef = useRef(unreadCount);
     
     const [isVisible, setIsVisible] = useState(false);
     const toggleVisibility = () => {
@@ -134,6 +165,35 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         };
         fetchRecommend();
     }, [selectedCategory, selectedKeyword]);
+    useEffect(() => {
+        if (activeTab !== 'chat') {
+            const newMessages = messages.length - lastMessageCountRef.current;
+            if (newMessages > 0) {
+                setUnreadCount(prev => prev + newMessages);
+                // 애니메이션 트리거
+                setAnimateBadge(true);
+            }
+        }
+        lastMessageCountRef.current = messages.length;
+    }, [messages, activeTab]);
+
+    // 애니메이션 상태 초기화
+    useEffect(() => {
+        if (animateBadge) {
+            const timer = setTimeout(() => {
+                setAnimateBadge(false);
+            }, 300); // 애니메이션 지속 시간과 일치
+            return () => clearTimeout(timer);
+        }
+    }, [animateBadge]);
+
+    const setActiveTabWithUnread = (tab) => {
+        setActiveTab(tab);
+        if (tab === 'chat') {
+            setUnreadCount(0); // 채팅 탭으로 전환 시 읽지 않은 메시지 수 초기화
+        }
+    };
+
 
     // 입력값 변화 감지
     const keywordChange = (e) => {
@@ -250,7 +310,13 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         <SidebarContainer>
             <div style={{ display: 'flex', marginBottom: '3vh',  borderRadius:'30px', background:'white',boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)'}}>
                 <TabButton active={activeTab === 'search'} onClick={() => setActiveTab('search')}>검색</TabButton>
-                <TabButton active={activeTab === 'chat'} onClick={() => setActiveTab('chat')}>채팅</TabButton>
+                <TabButton 
+                    active={activeTab === 'chat'} 
+                    onClick={() => setActiveTabWithUnread('chat')}
+                >
+                    채팅
+                    {unreadCount > 0 && <UnreadBadge animate={animateBadge}>+{unreadCount > 99 ? '99+' : unreadCount}</UnreadBadge>}
+                </TabButton>
             </div>
             {renderTab()}
         </SidebarContainer>

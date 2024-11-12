@@ -5,6 +5,8 @@ const TabButton = ({ active, children, onClick }) => {
         <button
             onClick={onClick} // 클릭 핸들러
             style={{
+             
+                alignItems: 'center', // 수직 중앙 정렬
                 padding: '10px',
                 background: active ? '#90B54C':'white',
                 border: 'none',
@@ -16,6 +18,8 @@ const TabButton = ({ active, children, onClick }) => {
                 color: active ? ' white ':'#36451c',
                 margin:'5px',
                 flex: 1,
+                position: 'relative', // 배지 위치 조정을 위해 relative 설정
+              
             }}
         >
             {children}
