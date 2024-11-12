@@ -146,6 +146,16 @@ io.on('connection', (socket) => {
     // 해당 방의 다른 사용자들에게 이벤트 전송
     socket.to(room).emit('course-recommended', { updatedPlaces });
   });
+
+   // 드래그 시작 이벤트 처리
+   socket.on('drag-start', ({ room, draggableId }) => {
+	socket.to(room).emit('drag-start', { draggableId });
+});
+
+	// 드래그 종료 이벤트 처리
+	socket.on('drag-end', ({ room, updatedPlaces }) => {
+		socket.to(room).emit('places-updated', updatedPlaces);
+	});
   
 })
 
