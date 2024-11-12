@@ -20,7 +20,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: >
+            ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ secrets.REACT_APP_KAKAOMAP_API_KEY }}-${{ secrets.REACT_APP_SERVICE_KEY }}-
+            ${{ secrets.REACT_APP_BASE_URL }}-${{ secrets.REACT_APP_CONSUMER_KEY }}-${{ secrets.REACT_APP_CONSUMER_SECRET }}-
+            ${{ secrets.REACT_APP_BASE_URLSS }}-${{ secrets.REACT_APP_ODSAY_KEY }}
+          # key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
