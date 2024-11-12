@@ -434,7 +434,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                     <RowContainer>
                         <SelectedPlacesContainer>
                             <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
-                                {isRecommending ? '추천 중...' : '코스 추천'}
+                                {isRecommending ? '추천 중...' : '일정 추천'}
                             </RecommendButton>
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId="places">
