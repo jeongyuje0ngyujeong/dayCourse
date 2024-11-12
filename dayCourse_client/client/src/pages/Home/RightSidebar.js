@@ -17,12 +17,13 @@ const SidebarContainer = styled.div`
     margin-top: 5rem;
     width: 20%;
     padding: 10px;
+    padding-bottom: 9vh;
     background-color: #f8f9fa;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     position: fixed; 
-    right: 0; /* 오른쪽에 위치 */
-    top: 0; /* 상단에 위치 */
-    height: 100vh; 
+    right: 0; 
+    top: 0; 
+    height: calc(100vh - 10px); 
     overflow-y: scroll;
 `;
 
