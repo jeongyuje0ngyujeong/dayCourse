@@ -20,19 +20,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: >
-            ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}-${{ secrets.REACT_APP_KAKAOMAP_API_KEY }}-${{ secrets.REACT_APP_SERVICE_KEY }}-
-            ${{ secrets.REACT_APP_BASE_URL }}-${{ secrets.REACT_APP_CONSUMER_KEY }}-${{ secrets.REACT_APP_CONSUMER_SECRET }}-
-            ${{ secrets.REACT_APP_BASE_URLSS }}-${{ secrets.REACT_APP_ODSAY_KEY }}
-          # key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
 
-      - name: Verify API URL in Build Files
-        run: |
-          grep "https://api.daycourse.net" build/static/js/*.js && echo "API URL is set correctly." || echo "API URL is missing or incorrect."
-            
       - name: Install dependencies    
         run: npm install
 
@@ -47,7 +39,8 @@ jobs:
           REACT_APP_ODSAY_KEY: ${{ secrets.REACT_APP_ODSAY_KEY }}
         run: |
           npm run build
-          echo ${{ github.workspace }}
+          echo "Build completed at ${{ github.workspace }}"
+          ls -R build || echo "Build directory not found!"
 
 
       - name: Deploy                  # Upload build file to S3
