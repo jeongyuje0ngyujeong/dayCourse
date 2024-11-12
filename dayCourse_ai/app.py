@@ -132,9 +132,11 @@ def analyze_image():
 @app.route('/cluster', methods=['POST'])
 def cluster_objects2():
     print("요청들어옴.")
+    logger.info("모먼트 분석")
     
     # 요청에서 이미지 리스트를 가져옴
     img_list1 = request.json.get('images', [])
+    logger.info(img_list1)
     
     # 태그 벡터화
     tag_vectors = []
