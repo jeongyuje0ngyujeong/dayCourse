@@ -996,6 +996,7 @@ async function SpotSuggest(locations, Cate, key){
             address_name: row.addressFull,
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
+			l_priority: 1,
 			category: row.category,
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
@@ -1064,6 +1065,7 @@ async function SpotSuggest(locations, Cate, key){
             address_name: row.addressFull,
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
+			l_priority: 1,
 			category: row.category,
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
@@ -1219,7 +1221,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     randomIndex = Math.floor(Math.random() * tempArr.length); // 랜덤 인덱스 생성
     newArr.push(tempArr[randomIndex]); // 랜덤으로 선택된 값 추가
 
-	console.log(newArr)
+	//console.log(newArr)
 
     // 장소 분류
     const { restaurants, cafesByKeyword, others } = classifyLocations(newArr);
@@ -1227,11 +1229,14 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     // 장소 재배치
     const arrangedLocations = await arrangeLocations(restaurants, cafesByKeyword, others, -1);
 
-    
+	for (let i = 0; i < arrangedLocations.length; i++) {
+		arrangedLocations[i].l_priority = i + 1
+	}
 
     const locationInfos = arrangedLocations.map(location => ({
         placeName: location.place_name,
-        placeAddr: location.address_name
+        placeAddr: location.address_name,
+		...location
     }))
 
     console.log(locationInfos)
