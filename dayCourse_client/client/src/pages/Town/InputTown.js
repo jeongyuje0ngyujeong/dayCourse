@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import './InputTown.css';
+// import { ReactComponent as AddUser } from "./assets/location-dot-solid.svg";
 
 const { kakao } = window;
 
