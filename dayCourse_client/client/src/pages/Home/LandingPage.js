@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
@@ -11,26 +10,48 @@ import SocketContext from '../../SocketContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
 
-const UserCursor = styled(FontAwesomeIcon)`
-    position: absolute;
-    pointer-events: none;
-    z-index: 1000;
-    width: 30px; /* 아이콘 크기 조절 */
-    height: 30px;
-    transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
+import { motion, AnimatePresence } from 'framer-motion';
+
+
+
+const itemVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 20 },
+};
+
+const NonAnimatedPlaceBox = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    transition: box-shadow 0.3s ease;
+    margin:-1%;
+
+    h5 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: normal;
+    }
+
+    span {
+        font-size: 14px;
+        color: #666;
+    }
 `;
 
-// Styled Components (기존 스타일 유지)
-const PlaceBox = styled.div`
+const PlaceBox = styled(motion.div)`
     display: flex;
-    align-items: center; /* 수직 중앙 정렬 */
-    justify-content: space-between; /* 공간을 양쪽 끝에 배치 */
-    width: 100%; /* 너비를 줄여 컨테이너 안에서 맞춤 */
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
+    margin:1%;
 
     &:hover {
         box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
@@ -47,6 +68,26 @@ const PlaceBox = styled.div`
         color: #666;
     }
 `;
+
+const ButtonContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px; /* 버튼 사이의 간격 */
+    margin-bottom: 10px; 
+    flex-wrap: nowrap; 
+`;
+const UserCursor = styled(FontAwesomeIcon)`
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+    width: 30px; /* 아이콘 크기 조절 */
+    height: 30px;
+    transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
+`;
+
+
+
 
 const DeleteButton = styled.button`
     margin-left: 10px; 
@@ -87,7 +128,7 @@ const Overlay = styled.div`
 `;
 
 const RecommendButton = styled.button`
-    padding: 5px 10px; /* 버튼 크기를 작게 조정 */
+    padding: 10px 20px; /* 버튼 크기 조정 */
     background-color: white;
     border: 1px solid #90B54C;
     color: #90B54C;
@@ -95,9 +136,9 @@ const RecommendButton = styled.button`
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
     font-size: 14px;
-    margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
     font-family: 'NPSfontBold', system-ui;
-    font-size: 2vh;
+    box-sizing: border-box;
+    height: 40px; /* 동일한 높이 설정 */
 
     &:hover {
         background-color: #90B54C;
@@ -107,6 +148,29 @@ const RecommendButton = styled.button`
     &:disabled {
         background-color: #90B54C;
         color: white;
+        cursor: not-allowed;
+    }
+`;
+
+const ApplyButton = styled.button`
+    padding: 10px 20px; /* 버튼 크기 조정 */
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'NPSfontBold', system-ui;
+    box-sizing: border-box;
+    height: 40px; /* 동일한 높이 설정 */
+
+    &:hover {
+        background-color: #45a049;
+    }
+
+    &:disabled {
+        background-color: #4CAF50;
+        opacity: 0.6;
         cursor: not-allowed;
     }
 `;
@@ -125,11 +189,21 @@ const SelectedPlacesContainer = styled.div`
     max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
 `;
 
+
+const RecommendedPlacesContainer = styled.div`
+    display: flex; 
+    flex: 1;
+    flex-direction: column;
+    max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
+    
+`;
+
 const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
     const [selectedPlaces, setSelectedPlaces] = useState([]);
+    const [recommendedPlaces, setRecommendedPlaces] = useState([]); // 추천 장소 상태 추가
     const [isPlacesLoaded, setIsPlacesLoaded] = useState(false);
     const [error, setError] = useState(null);
     const [userColors, setUserColors] = useState({});
@@ -139,6 +213,8 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const [recommendError, setRecommendError] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false); // 삭제 로딩 상태
     const [deleteError, setDeleteError] = useState(null); // 삭제 에러 상태
+    const [isApplying, setIsApplying] = useState(false); // 적용 로딩 상태
+    const [applyError, setApplyError] = useState(null); // 적용 에러 상태
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -246,6 +322,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
+
     const fetchFullCourse = useCallback(async () => {
         setIsRecommending(true);
         try {
@@ -253,35 +330,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             console.log('추천된 코스', recommended);
     
             if (recommended && Array.isArray(recommended)) {
-                // 추천된 장소를 데이터베이스에 추가
-                await Promise.all(recommended.map(place => {
-                    console.log('Adding recommended place:', place);
-                    return addRecommendedPlace(userId, planId, place);
-                }));
-    
-                // 업데이트된 장소 목록을 다시 불러옴
-                const updatedPlaces = await fetchExistPlace();
-                console.log('Updated Places:', updatedPlaces);
-    
-                setSelectedPlaces(updatedPlaces);
-                setVersion(prev => prev + 1);
-    
-                // 모든 장소의 우선순위를 업데이트
-                await Promise.all(updatedPlaces.map(place => {
-                    console.log('Updating priority for place:', place);
-                    return updatePlacePriority(
-                        place.placeId || place.id,
-                        place.l_priority,
-                        userId,
-                        place.version
-                    );
-                }));
-    
-                if (socket) {
-                    console.log('Emitting course-recommended event:', updatedPlaces);
-                    socket.emit('course-recommended', { room: planId, updatedPlaces });
-                }
-    
+                setRecommendedPlaces(recommended); // 추천 장소 상태 업데이트
                 setRecommendError(null);
             } else {
                 console.error("추천 코스 데이터 형식이 올바르지 않습니다:", recommended);
@@ -293,8 +342,48 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
         } finally {
             setIsRecommending(false);
         }
-    }, [planId, userId, socket, version, fetchExistPlace]); 
+    }, [planId, userId, version]);
 
+    const applyRecommendedPlaces = async () => {
+        if (recommendedPlaces.length === 0) return;
+
+        setIsApplying(true);
+        setApplyError(null);
+
+        try {
+            // 기존 모든 선택된 장소 삭제
+            await Promise.all(selectedPlaces.map(place => deletePlace(place.placeId || place.id, userId, place.isRecommended ? planId : null)));
+
+            // 추천된 장소를 추가
+            await Promise.all(recommendedPlaces.map(place => addPlace(userId, planId, place)));
+
+            // 업데이트된 장소 목록을 다시 불러옴
+            const updatedPlaces = await fetchExistPlace();
+            setVersion(prev => prev + 1);
+
+            // 모든 장소의 우선순위를 업데이트
+            await Promise.all(updatedPlaces.map(place => {
+                return updatePlacePriority(
+                    place.placeId || place.id,
+                    place.l_priority,
+                    userId,
+                    place.version
+                );
+            }));
+
+            if (socket) {
+                socket.emit('update-places', { room: planId, places: updatedPlaces });
+            }
+
+            // 추천 장소 목록 초기화
+            setRecommendedPlaces([]);
+        } catch (error) {
+            console.error("추천 장소 적용 실패:", error);
+            setApplyError("추천 장소를 적용하는 데 실패했습니다.");
+        } finally {
+            setIsApplying(false);
+        }
+    };
 
     useEffect(() => {
         fetchExistPlace();
@@ -355,7 +444,6 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 setSelectedPlaces([]);
             }
         });
-    
 
         socket.on('course-recommended', ({ updatedPlaces, socketId }) => {
             // 자신의 이벤트가 아닌 경우에만 상태 업데이트
@@ -432,10 +520,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                     />
 
                     <RowContainer>
+                        {/* 기존 장소 목록 */}
                         <SelectedPlacesContainer>
-                            <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
-                                {isRecommending ? '추천 중...' : '일정 추천'}
-                            </RecommendButton>
+                            <h3>선택된 장소</h3>
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId="places">
                                     {(provided) => (
@@ -443,18 +530,27 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
                                         >
+                                            <AnimatePresence>
+                               
                                             {(selectedPlaces || [] ).map((place, index) => (
                                                 <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
                                                     <Draggable
                                                         draggableId={place.placeId?.toString() || place.id?.toString()}
                                                         index={index}
                                                     >
-                                                        {(provided) => (
-                                                            <PlaceBox 
+                                                      
+                                                      {(provided) => (
+                                                            <NonAnimatedPlaceBox
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
                                                                 {...provided.dragHandleProps}
                                                             >
+                                                                 <PlaceBox
+                                                                    variants={itemVariants}
+                                                                    initial="hidden"
+                                                                    animate="visible"
+                                                                    exit="exit"
+                                                                >
                                                                 <div>
                                                                     <h5>{index + 1}. {place.place_name}</h5>
                                                                     <span>{place.placeAddr || place.place || "주소 정보 없음"}</span>
@@ -465,7 +561,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                                 >
                                                                     X
                                                                 </DeleteButton>
-                                                            </PlaceBox>
+                                                                </PlaceBox>
+                                                            </NonAnimatedPlaceBox>
+                                                          
                                                         )}
                                                     </Draggable>
 
@@ -479,16 +577,46 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                 </React.Fragment>
                                             ))}
                                             {provided.placeholder}
+                                            </AnimatePresence>
                                         </div>
                                     )}
                                 </Droppable>
                             </DragDropContext>
+                            <AnimatePresence>
+                                {isDeleting && <div>삭제 중입니다...</div>}
+                                {deleteError && <div style={{ color: 'red' }}>{deleteError}</div>}
+                            </AnimatePresence>
+                        </SelectedPlacesContainer>
 
+                        {/* 추천 장소 목록 */}
+                        <RecommendedPlacesContainer>
+                        <ButtonContainer>
+                                <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
+                                    {isRecommending ? '추천 중...' : '일정 추천'}
+                                </RecommendButton>
+                                <ApplyButton 
+                                    onClick={applyRecommendedPlaces} 
+                                    disabled={recommendedPlaces.length === 0 || isRecommending || isApplying}
+                                >
+                                    {isApplying ? '적용 중...' : '적용'}
+                                </ApplyButton>
+                            </ButtonContainer>
                             {isRecommending && <div>추천 중입니다...</div>}
                             {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
-                            {isDeleting && <div>삭제 중입니다...</div>}
-                            {deleteError && <div style={{ color: 'red' }}>{deleteError}</div>}
-                        </SelectedPlacesContainer>
+                            {isApplying && <div>적용 중입니다...</div>}
+                            {applyError && <div style={{ color: 'red' }}>{applyError}</div>}
+                            <div>
+                                {recommendedPlaces.map((place, index) => (
+                                    <PlaceBox key={place.placeId?.toString() || place.id?.toString()}>
+                                        <div>
+                                            <h5>{index + 1}. {place.place_name}</h5>
+                                            <span>{place.placeAddr || place.place || "주소 정보 없음"}</span>
+                                        </div>
+                                        {/* 추천 장소에는 삭제 버튼 없음 */}
+                                    </PlaceBox>
+                                ))}
+                            </div>
+                        </RecommendedPlacesContainer>
 
                         {/* 다른 사용자의 마우스 커서 표시 */}
                         {Object.entries(userCursors).map(([userId, cursorData]) => (
