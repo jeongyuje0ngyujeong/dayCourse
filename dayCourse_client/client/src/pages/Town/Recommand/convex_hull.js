@@ -234,12 +234,16 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown, se
                   towns = result.stores.reduce((acc, town) => {
                     const 지역명 = town.상권명.split('_')[0];
                     if (!acc.some((item) => item.상권명.split('_')[0] === 지역명)) {
-                        acc.push(town);
+                        acc.push({
+                          상권명: 지역명, 
+                          centroid_x: town.centroid_x,
+                          centroid_y: town.centroid_y
+                        });
                     }
                     return acc;
                   }, []);
                   
-                  // console.log('result: ',towns)
+                  console.log('왜 안 나와: ',towns);
   
                   if (towns && towns.length >= 3) { // 조건 만족 시 반복 종료
                       setResultTown(towns);
