@@ -76,8 +76,11 @@ const LoadingText = styled.div`
   0% {
     transform: translateY(0); /* 크기 확대 및 기본 위치 */
   }
-  50% {
+  33% {
     transform: translateY(-2vh); /* 크기 축소 및 위로 튀는 효과 */
+  }
+  66% {
+    transform: translateY(2vh); /* 크기 축소 및 위로 튀는 효과 */
   }
   100% {
     transform: translateY(0); /* 크기 확대 및 기본 위치 */
@@ -372,22 +375,12 @@ export default function ConvexHullCalculator({ departurePoints, onSelectTown, se
         <div style={{display:'flex', width:'100%', flexDirection:'column'}}>
           <div style={{ display: 'flex', flex:'0', justifyContent: 'space-between', alignItems:'center'}}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems:'center', gap: '1rem'}}>
-              <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>추천지역</PageTitle>
+              <PageTitle style={{fontSize:'3vh'}}>추천지역</PageTitle>
               {centroidAddress && <p>중간 지점 | {centroidAddress}</p>}
             </div>
             <Button onClick={calculateConvexHull} style={{height: '3rem', width:'15vh',fontSize:'2vh', color:'white'}} $background='#90B54C'>지역 추천 받기</Button>
           </div>
           
-          {/* <Container>
-              <Box>추천지역1</Box>
-              <Box>추천지역2</Box>
-              <Box>추천지역3</Box>
-            {resultTowns.slice(0, 3).map((town, index) => (
-              <Box key={index}>
-                {town.mainTrarNm} 
-              </Box>
-            ))}
-          </Container> */}
           <Container>
             {resultTowns && resultTowns.length > 0 ? (
               resultTowns.slice(0, 3).map((town, index) => (

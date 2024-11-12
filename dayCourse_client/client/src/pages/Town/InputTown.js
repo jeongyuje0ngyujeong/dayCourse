@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import './InputTown.css';
 
 const { kakao } = window;
 
@@ -15,7 +16,7 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
     const markersRef = useRef([]); // 마커 인스턴스 배열 참조
    // const departureMarkersRef = useRef([]); // 출발지 마커 인스턴스 배열 참조
     const recommendedMarkerRef = useRef(null); // 추천 지역 마커 인스턴스 참조
-    const infowindowRef = useRef(null); // 인포윈도우 참조
+    const customOverlayRef = useRef(null);
 
     // 맵 초기화 (컴포넌트 마운트 시 한 번만 실행)
     useEffect(() => {
@@ -131,10 +132,10 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
             recommendedMarkerRef.current = null;
         }
 
-        // 기존 인포윈도우 제거
-        if (infowindowRef.current) {
-            infowindowRef.current.close();
-            infowindowRef.current = null;
+
+        if (customOverlayRef.current) {
+            customOverlayRef.current.setMap(null);
+            customOverlayRef.current = null;
         }
 
         // 출발지 마커 추가
@@ -156,17 +157,17 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
                 )
             });
 
-            // 인포윈도우 생성
-            const infowindow = new kakao.maps.InfoWindow({
-                content: `<div style="width: 100%; text-align: center; margin: 0 auto;">추천지역: ${상권명}</div>`,
+
+            const customOverlay = new kakao.maps.CustomOverlay({
+                position: position,
+                content: `<div class="info-title">${상권명}</div>` 
             });
 
-            // kakao.maps.event.addListener(marker, 'click', () => {
-                infowindow.open(mapRef.current, marker);
-            // });
+            customOverlay.setMap(mapRef.current);
 
             recommendedMarkerRef.current = marker;
-            infowindowRef.current = infowindow;
+            customOverlayRef.current = customOverlay;
+            
             bounds.extend(position); // bounds 확장
         }
 
