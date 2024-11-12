@@ -29,10 +29,9 @@ jobs:
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
 
-      - name: Debug REACT_APP_BASE_URL
-        run: echo "REACT_APP_BASE_URL=${{ secrets.REACT_APP_BASE_URL }}"
-        env:
-          REACT_APP_BASE_URL: ${{ secrets.REACT_APP_BASE_URL }}
+      - name: Verify API URL in Build Files
+        run: |
+          grep "https://api.daycourse.net" build/static/js/*.js && echo "API URL is set correctly." || echo "API URL is missing or incorrect."
             
       - name: Install dependencies    
         run: npm install
