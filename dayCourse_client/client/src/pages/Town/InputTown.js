@@ -41,41 +41,6 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
         }
     }, []); // 빈 배열로 초기화 한번만 실행
 
-    // 출발지 마커 업데이트
-    useEffect(() => {
-        if (!mapRef.current) return;
-
-        // 기존 마커 제거
-        markersRef.current.forEach(marker => marker.setMap(null));
-        markersRef.current = [];
-
-        // 새로운 마커 추가
-        const bounds = new kakao.maps.LatLngBounds();
-
-        departurePoints.forEach(place => {
-            if (place.y && place.x) { // y와 x 값이 존재하는지 확인
-                const position = new kakao.maps.LatLng(place.y, place.x);
-                const marker = new kakao.maps.Marker({
-                    position: position,
-                    map: mapRef.current,
-                    title: place.place_name
-                });
-                markersRef.current.push(marker);
-                bounds.extend(position);
-            } else {
-                console.warn(`유효하지 않은 좌표: ${JSON.stringify(place)}`);
-            }
-        });
-
-        // 맵의 경계를 설정
-        if (departurePoints.length > 0) {
-            mapRef.current.setBounds(bounds);
-        } else {
-            // 마커가 없으면 기본 중심으로 재설정
-            mapRef.current.setCenter(new kakao.maps.LatLng(37.566826, 126.9786567));
-            mapRef.current.setLevel(3);
-        }
-    }, [departurePoints]);
 
     // 검색 키워드에 따른 장소 검색 및 마커 업데이트
     useEffect(() => {
@@ -131,54 +96,85 @@ function KakaoMap({ searchKeyword, setPlaces, departurePoints, selectedRecommend
         }
     }, [searchKeyword, setPlaces]);
 
-  // 추천 지역 마커 업데이트
-  useEffect(() => {
-    if (!mapRef.current || !selectedRecommendedTown) return;
+    // bounds를 전역으로 선언
+    const bounds = new kakao.maps.LatLngBounds();
 
-    // 기존 추천 마커 제거
-    if (recommendedMarkerRef.current) {
-        recommendedMarkerRef.current.setMap(null);
-        recommendedMarkerRef.current = null;
-    }
+    // 출발지 마커 추가 함수
+    const addMarkersToBounds = (points, mapInstance, markersArray) => {
+        points.forEach(place => {
+            if (place.y && place.x) {
+                const position = new kakao.maps.LatLng(place.y, place.x);
+                const marker = new kakao.maps.Marker({
+                    position: position,
+                    map: mapInstance,
+                    title: place.place_name
+                });
+                markersArray.push(marker);
+                bounds.extend(position); // bounds 확장
+            } else {
+                console.warn(`유효하지 않은 좌표: ${JSON.stringify(place)}`);
+            }
+        });
+    };
 
-    // 기존 인포윈도우 제거
-    if (infowindowRef.current) {
-        infowindowRef.current.close();
-        infowindowRef.current = null;
-    }
+    // 출발지 및 추천 지역 마커 업데이트
+    useEffect(() => {
+        if (!mapRef.current || !selectedRecommendedTown) return;
 
-    const { 상권명, centroid_x, centroid_y } = selectedRecommendedTown;
-    console.log(centroid_x);
-    const position = new kakao.maps.LatLng(centroid_y, centroid_x);
+        // 기존 마커 제거
+        markersRef.current.forEach(marker => marker.setMap(null));
+        markersRef.current = [];
 
-    // 맵 중심 이동
-    mapRef.current.setCenter(position);
-    mapRef.current.setLevel(6); // 원하는 줌 레벨로 조정 가능
+        // 기존 추천 마커 제거
+        if (recommendedMarkerRef.current) {
+            recommendedMarkerRef.current.setMap(null);
+            recommendedMarkerRef.current = null;
+        }
 
-    // 추천 지역 마커 추가
-    const marker = new kakao.maps.Marker({
-        position: position,
-        map: mapRef.current,
-        title: 상권명,
-        image: new kakao.maps.MarkerImage(
-            // 마커 이미지 URL (필요에 따라 변경 가능)
-            'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-            new kakao.maps.Size(24, 35)
-        )
-    });
-   // 인포윈도우 생성
-   const infowindow = new kakao.maps.InfoWindow({
-    content: `<div style="padding:5px;">추천 지역: ${상권명}</div>`,
-});
+        // 기존 인포윈도우 제거
+        if (infowindowRef.current) {
+            infowindowRef.current.close();
+            infowindowRef.current = null;
+        }
 
-// 마커 클릭 시 인포윈도우 표시
-kakao.maps.event.addListener(marker, 'click', () => {
-    infowindow.open(mapRef.current, marker);
-});
+        // 출발지 마커 추가
+        addMarkersToBounds(departurePoints, mapRef.current, markersRef.current);
 
-recommendedMarkerRef.current = marker;
-infowindowRef.current = infowindow;
-}, [selectedRecommendedTown]);
+        // 추천 지역 마커 추가
+        if (selectedRecommendedTown) {
+            const { 상권명, centroid_x, centroid_y } = selectedRecommendedTown;
+            const position = new kakao.maps.LatLng(centroid_y, centroid_x);
+
+            // 추천 지역 마커 생성
+            const marker = new kakao.maps.Marker({
+                position: position,
+                map: mapRef.current,
+                title: 상권명,
+                image: new kakao.maps.MarkerImage(
+                    'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
+                    new kakao.maps.Size(30, 40)
+                )
+            });
+
+            // 인포윈도우 생성
+            const infowindow = new kakao.maps.InfoWindow({
+                content: `<div style="width: 100%; text-align: center; margin: 0 auto;">추천지역: ${상권명}</div>`,
+            });
+
+            // kakao.maps.event.addListener(marker, 'click', () => {
+                infowindow.open(mapRef.current, marker);
+            // });
+
+            recommendedMarkerRef.current = marker;
+            infowindowRef.current = infowindow;
+            bounds.extend(position); // bounds 확장
+        }
+
+        // 경계 설정
+        mapRef.current.setBounds(bounds);
+        // eslint-disable-next-line
+    }, [departurePoints, selectedRecommendedTown]); 
+
 
     return (
         <MapDiv ref={mapContainerRef} id="map"></MapDiv>
