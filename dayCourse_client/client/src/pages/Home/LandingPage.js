@@ -105,6 +105,8 @@ const RecommendButton = styled.button`
     cursor: pointer;
     font-size: 14px;
     margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
+    font-family: 'NPSfontBold', system-ui;
+    font-size: 2vh;
 
     &:hover {
         background-color: #45a049;
