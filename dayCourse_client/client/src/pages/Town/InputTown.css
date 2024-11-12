@@ -10,6 +10,7 @@
     border-radius: 4px;
     padding: 0 10px;
     font-family: 'NPSfontBold', system-ui;
-    margin: 0 auto; /* 수직 중앙 정렬이 필요하지 않다면 margin-top만 사용 */
+    /* margin: 0 auto;  */
+    margin-top: 3vh;
     font-size: 2vh;
 }
