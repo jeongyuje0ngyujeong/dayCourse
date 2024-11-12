@@ -2,20 +2,18 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './KakaoMap.css';
 const { kakao } = window;
 
-const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
-    console.log('KakaoMap 렌더링');
-
-    const mapContainerRef = useRef(null); // map container ref
+function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     const mapRef = useRef(null);
     const searchMarkerRef = useRef([]);
     const selectedOverlayRef = useRef([]);
+    const [autoFitBounds, setAutoFitBounds] = useState(true);
     const routeLinesRef = useRef([]);
     const renderRouteLinesRef = useRef();
 
     // 오버레이 제거 함수
-    const clearOverlays = useCallback((overlays) => {
+    const clearOverlays = (overlays) => {
         overlays.forEach(overlay => overlay.setMap(null));
-    }, []);
+    };
 
     const clearLines = useCallback((lines) => {
         lines.forEach(line => {
@@ -238,9 +236,9 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
 
     return (
         <div className="map-container">
-            <div ref={mapContainerRef} style={{ width: '100%', height: '100%' }}></div>
+            <div id="map"></div>
         </div>
     );
-});
+}
 
 export default KakaoMap;
