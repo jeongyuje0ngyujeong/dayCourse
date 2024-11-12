@@ -1,11 +1,9 @@
-// LandingPage.js
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+
+import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, fullCourseRecommend} from './PlaceApi'; 
-//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
-
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, fullCourseRecommend } from './PlaceApi'; 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import io from 'socket.io-client';
 import throttle from 'lodash/throttle';
@@ -13,8 +11,6 @@ import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
-
-
 
 const UserCursor = styled(FontAwesomeIcon)`
     position: absolute;
@@ -25,19 +21,12 @@ const UserCursor = styled(FontAwesomeIcon)`
     transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
 `;
 
-
-
-// Styled Components
-const SelectedPlacesContainer = styled.div`
-    display: flex; 
-    flex-direction: column; 
-`;
+// Styled Components (기존 스타일 유지)
 const PlaceBox = styled.div`
     display: flex;
     align-items: center; /* 수직 중앙 정렬 */
     justify-content: space-between; /* 공간을 양쪽 끝에 배치 */
     width: 100%; /* 너비를 줄여 컨테이너 안에서 맞춤 */
-    ${'' /* margin: 5px; */}
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
@@ -71,6 +60,12 @@ const DeleteButton = styled.button`
     &:hover {
         background-color: #e60000;
     }
+
+    &:disabled {
+        background-color: #ff4d4d;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 `;
 const DistanceBox = styled.div`
     margin: 10px 0;
@@ -89,27 +84,13 @@ const Overlay = styled.div`
     z-index: 1000;
 `;
 
-
-// const Container = styled.div`
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: space-between;
-//     padding: 20px;
-// `;
-
-// const PlacesBox = styled.div`
-//     flex: 2;
-// `;
-
 const RecommendButton = styled.button`
     padding: 5px 10px; /* 버튼 크기를 작게 조정 */
     background-color: white;
     border: 1px solid #90B54C;
     color: #90B54C;
-    ${'' /* border: none; */}
     border-radius: 5px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    ${'' /* box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.25); */}
     cursor: pointer;
     font-size: 14px;
     margin-bottom: 10px; /* 버튼과 루트 목록 사이 간격 추가 */
@@ -128,15 +109,11 @@ const RecommendButton = styled.button`
     }
 `;
 
-
-
 const RowContainer = styled.div`
     display: flex;
     width: 75%;
     gap: 2vh; /* 간격 조정 */
-    ${'' /* margin-top: 20px; */}
     justify-content: space-between; /* 내부 요소들을 좌우로 배치 */
-   
 `;
 
 const SelectedPlacesContainer = styled.div`
@@ -146,18 +123,7 @@ const SelectedPlacesContainer = styled.div`
     max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
 `;
 
-// const RecommendedRoutesBox = styled.div`
-//     border: 1px solid #ddd;
-//     border-radius: 10px;
-//     padding: 20px;
-//     background-color: #fefefe;
-//     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-//     height: fit-content;
-//     flex:1;
-    
-// `;
-
-const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
+const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
@@ -166,16 +132,11 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     const [error, setError] = useState(null);
     const [userColors, setUserColors] = useState({});
     const [userCursors, setUserCursors] = useState({});
-    
-   // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
-   // const [distances, setDistances] = useState([]);
     const [version, setVersion] = useState(1);
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
     const [recommendError, setRecommendError] = useState(null);
-    const [isCourseRecommending, setIsCourseRecommending] = useState(false);
-    const [courseRecommendError, setCourseRecommendError] = useState(null);
-    
-
+    const [isDeleting, setIsDeleting] = useState(false); // 삭제 로딩 상태
+    const [deleteError, setDeleteError] = useState(null); // 삭제 에러 상태
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -209,8 +170,6 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         }
     };
 
-
-
     const handlePlaceClick = async (place, isRecommended = false) => {
         console.log('추가할 장소:', place);
         try {
@@ -230,15 +189,27 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         }
     };
 
-    const removePlace = async (placeId) => {
+    const removePlace = async (placeId, isRecommended) => {
+        setIsDeleting(true);
+        setDeleteError(null);
         try {
-            await deletePlace(placeId, userId);
+            const validPlaceId = placeId || place.id;
+            console.log("삭제할 placeId:", validPlaceId);
+            if (isRecommended) {
+                console.log("관련 planId:", planId);
+            }
+
+            await deletePlace(validPlaceId, userId, isRecommended ? planId : null);
+
             const updatedPlaces = await fetchExistPlace();
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
         } catch (error) {
             console.error("장소 삭제 실패!", error);
+            setDeleteError("장소 삭제에 실패했습니다.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -273,46 +244,42 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
             console.error("우선 순위 업데이트 실패:", error);
         }
     };
-
-
-
     const fetchFullCourse = useCallback(async () => {
         setIsRecommending(true);
         try {
             const recommended = await fullCourseRecommend(planId, userId, version);
             console.log('추천된 코스', recommended);
-
-            // 서버가 통합된 추천을 반환한다고 가정
+    
             if (recommended && Array.isArray(recommended)) {
-                const recommendedPlaces = recommended;
-
-                // 기존 선택된 장소와 병합
-                const updatedPlaces = [
-                    ...selectedPlaces,
-                    ...recommendedPlaces.map(place => ({
-                        ...place,
-                        l_priority: selectedPlaces.length + 1 + recommendedPlaces.indexOf(place),
-                        version: version + 1,
-                    }))
-                ];
-
+                // 추천된 장소를 데이터베이스에 추가
+                await Promise.all(recommended.map(place => {
+                    console.log('Adding recommended place:', place);
+                    return addRecommendedPlace(userId, planId, place);
+                }));
+    
+                // 업데이트된 장소 목록을 다시 불러옴
+                const updatedPlaces = await fetchExistPlace();
+                console.log('Updated Places:', updatedPlaces);
+    
                 setSelectedPlaces(updatedPlaces);
                 setVersion(prev => prev + 1);
-
-                await Promise.all(updatedPlaces.map(place =>
-                    updatePlacePriority(
+    
+                // 모든 장소의 우선순위를 업데이트
+                await Promise.all(updatedPlaces.map(place => {
+                    console.log('Updating priority for place:', place);
+                    return updatePlacePriority(
                         place.placeId || place.id,
                         place.l_priority,
                         userId,
                         place.version
-                    )
-                ));
-
-                // 추천 결과를 소켓을 통해 다른 사용자에게 전송
+                    );
+                }));
+    
                 if (socket) {
+                    console.log('Emitting course-recommended event:', updatedPlaces);
                     socket.emit('course-recommended', { room: planId, updatedPlaces });
                 }
-
+    
                 setRecommendError(null);
             } else {
                 console.error("추천 코스 데이터 형식이 올바르지 않습니다:", recommended);
@@ -324,13 +291,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         } finally {
             setIsRecommending(false);
         }
-    }, [planId, selectedPlaces, userId, socket, version]);
-
-    // useEffect(() => {
-    //     fetchFullCourse(); // 컴포넌트가 처음 렌더링될 때 코스 추천 데이터를 불러옵니다.
-    // }, [fetchFullCourse]);
-
-
+    }, [planId, userId, socket, version, fetchExistPlace]); 
 
 
     useEffect(() => {
@@ -338,25 +299,13 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     }, [fetchExistPlace]);
 
     useEffect(() => {
-        socketRef.current = io(process.env.REACT_APP_BASE_URLSS);
-
-        socketRef.current.on('connect', () => {
-            console.log('서버에 연결됨');
-            
-            socketRef.current.emit('join', { userId, name: `User_${userId}`, room: planId },
-                (error) => {
-                    if (error) {
-                        alert(error.error);
-                    } 
-                }
-            );
-        });
-
-        socketRef.current.on('disconnect', () => {
-            console.log('서버 연결 끊어짐');
-        });
-
-        socketRef.current.on('roomData', ({ room, users }) => {
+        if (!socket) return;
+    
+        // 방에 참여
+        joinRoom(planId);
+    
+        // 소켓 이벤트 리스너 설정
+        socket.on('roomData', ({ room, users }) => {
             console.log('수신한 roomData:', { room, users });
             setUsers(users);
             const colorMapping = {};
@@ -365,60 +314,70 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
             });
             setUserColors(colorMapping);
         });
-        
-        socketRef.current.on('user-mouse-move', ({ userId, name, cursor }) => {
+    
+        socket.on('user-joined', (user) => {
+            console.log('새로운 사용자加入:', user);
+            setUniqueUsers(prevUsers => [...prevUsers, user]);
+            setUserColors(prevColors => ({ ...prevColors, [user.userId]: user.color }));
+        });
+    
+        socket.on('user-left', ({ userId }) => {
+            console.log('사용자 나감:', userId);
+            setUniqueUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
+            setUserColors(prevColors => {
+                const updatedColors = { ...prevColors };
+                delete updatedColors[userId];
+                return updatedColors;
+            });
+            setUserCursors(prev => {
+                const updated = { ...prev };
+                delete updated[userId];
+                return updated;
+            });
+        });
+    
+        socket.on('user-mouse-move', ({ userId, name, cursor }) => {
             console.log('수신한 user-mouse-move:', { userId, name, cursor });
             setUserCursors(prev => ({
                 ...prev,
                 [userId]: { ...cursor, name }
             }));
         });
-
-        socketRef.current.on('message', (message) => {
-            console.log('수신한 메세지:', message);
+    
+        socket.on('places-updated', (updatedPlaces) => {
+            console.log('places-updated 수신:', updatedPlaces);
+            if (Array.isArray(updatedPlaces)) {
+                setSelectedPlaces(updatedPlaces);
+            } else {
+                console.error('Invalid updatedPlaces received:', updatedPlaces);
+                setSelectedPlaces([]);
+            }
         });
+    
 
-        socketRef.current.on('places-updated', (updatedPlaces) => {
-            setSelectedPlaces(updatedPlaces);
-        }); 
-
-        socketRef.current.on('user-left', ({ userId }) => {
-            setUserCursors(prev => {
-                const updated = {...prev};
-                delete updated[userId];
-                return updated;
-            });
-            setUsers(prevUsers => prevUsers.filter(user => user.userId !== userId));
+        socket.on('course-recommended', ({ updatedPlaces, socketId }) => {
+            // 자신의 이벤트가 아닌 경우에만 상태 업데이트
+            if (socketId !== socket.id) {
+                console.log('course-recommended 수신:', updatedPlaces);
+                console.log('Type of updatedPlaces:', typeof updatedPlaces);
+                if (Array.isArray(updatedPlaces)) {
+                    setSelectedPlaces(updatedPlaces);
+                } else {
+                    console.error('Invalid updatedPlaces received:', updatedPlaces);
+                    setSelectedPlaces([]);
+                }
+            }
         });
-
-
-        // 루트 추천 결과 수신
-        socket.on('route-recommended', ({ updatedPlaces }) => {
-            setSelectedPlaces(updatedPlaces);
-        });
-
-
-        // // 루트 추천 결과 수신
-        // socket.on('route-recommended', ({ updatedPlaces }) => {
-        //     setSelectedPlaces(updatedPlaces);
-        // });
-
-        // **코스 추천 결과 수신**
-        socket.on('course-recommended', ({ updatedPlaces }) => {
-            setSelectedPlaces(updatedPlaces);
-        });
-
-
+    
         return () => {
             socket.off('roomData');
             socket.off('user-joined');
             socket.off('user-left');
             socket.off('user-mouse-move');
             socket.off('places-updated');
-            socket.off('route-recommended'); 
-            socket.off('course-recommended'); 
+            socket.off('course-recommended');
         };
-    }, [socket, planId, joinRoom,setUniqueUsers]);
+    }, [socket, planId, joinRoom, setUniqueUsers]);
 
     useEffect(() => {
         if (!socket) return;
@@ -444,49 +403,33 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
         }
     }, [isPlacesLoaded]);
 
+    return (
+        <div className="landing-page">
+            {!isPlacesLoaded ? (
+                <Overlay>
+                    <Loader />
+                </Overlay>
+            ) : error ? (
+                <div style={{ padding: '20px', color: 'red' }}>{error}</div>
+            ) : (
+                <>
+                    <KakaoMap 
+                        searchKeyword={keyword} 
+                        setPlaces={setPlaces} 
+                        selectedPlaces={selectedPlaces || []} 
+                    />
+                                            
+                    <RightSidebar 
+                        userId={userId} 
+                        planId={planId} 
+                        planInfo={context}
+                        places={places} 
+                        setPlaces={setPlaces} 
+                        onSubmitKeyword={submitKeyword} 
+                        onPlaceClick={handlePlaceClick}
+                    />
 
-        //TMAP 거리 계산 API 
-
-        // useEffect(() => {
-        //     const loadDistance = async () => {
-        //         if (selectedPlaces.length > 1) {
-        //             const distances = await fetchDistance(planId, userId);
-        //             console.log("받은 거리 정보:", distances);
-        //             setDistances(distances.distances);
-        //         } else {
-        //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-        //         }
-        //     };
-        //     loadDistance();
-        // }, [selectedPlaces, planId, userId]);
-
-        return (
-            <div className="landing-page">
-                {!isPlacesLoaded ? (
-                    <Overlay>
-                        <Loader />
-                    </Overlay>
-                ) : error ? (
-                    <div style={{ padding: '20px', color: 'red' }}>{error}</div>
-                ) : (
-                    <>
-                        <KakaoMap 
-                            searchKeyword={keyword} 
-                            setPlaces={setPlaces} 
-                            selectedPlaces={selectedPlaces || []} 
-                        />
-                                                
-                        <RightSidebar 
-                            userId={userId} 
-                            planId={planId} 
-                            planInfo={context}
-                            places={places} 
-                            setPlaces={setPlaces} 
-                            onSubmitKeyword={submitKeyword} 
-                            onPlaceClick={handlePlaceClick}
-                        />
-
-<RowContainer>
+                    <RowContainer>
                         <SelectedPlacesContainer>
                             <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
                                 {isRecommending ? '추천 중...' : '코스 추천'}
@@ -498,10 +441,10 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                             ref={provided.innerRef}
                                             {...provided.droppableProps}
                                         >
-                                            {selectedPlaces.map((place, index) => (
+                                            {(selectedPlaces || [] ).map((place, index) => (
                                                 <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
                                                     <Draggable
-                                                        draggableId={place.placeId?.toString() || place.id?.toString()} 
+                                                        draggableId={place.placeId?.toString() || place.id?.toString()}
                                                         index={index}
                                                     >
                                                         {(provided) => (
@@ -512,9 +455,14 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                                             >
                                                                 <div>
                                                                     <h5>{index + 1}. {place.place_name}</h5>
-                                                                    <span>{place.place || "주소 정보 없음"}</span>
+                                                                    <span>{place.placeAddr || place.place || "주소 정보 없음"}</span>
                                                                 </div>
-                                                                <DeleteButton onClick={() => removePlace(place.placeId)}>X</DeleteButton>
+                                                                <DeleteButton 
+                                                                    onClick={() => removePlace(place.placeId || place.id, place.isRecommended)}
+                                                                    disabled={isDeleting}
+                                                                >
+                                                                    X
+                                                                </DeleteButton>
                                                             </PlaceBox>
                                                         )}
                                                     </Draggable>
@@ -533,9 +481,11 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                                     )}
                                 </Droppable>
                             </DragDropContext>
-                    
+
                             {isRecommending && <div>추천 중입니다...</div>}
                             {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
+                            {isDeleting && <div>삭제 중입니다...</div>}
+                            {deleteError && <div style={{ color: 'red' }}>{deleteError}</div>}
                         </SelectedPlacesContainer>
 
                         {/* 다른 사용자의 마우스 커서 표시 */}
@@ -550,10 +500,10 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
                             </div>
                         ))}
                     </RowContainer>
-                    </>
-                )}
-            </div>
-        );
-    };
-    
-    export default LandingPage;
+                </>
+            )}
+        </div>
+    );
+};
+
+export default LandingPage;
