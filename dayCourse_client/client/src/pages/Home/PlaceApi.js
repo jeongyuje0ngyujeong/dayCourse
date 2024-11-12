@@ -45,21 +45,25 @@ export const addPlace = async (userId, planId, place) => {
     }
 };
 
-// 장소 삭제
-export const deletePlace = async (placeId, userId) => {
+// 장소 삭제 (planId를 옵션으로 받음)
+export const deletePlace = async (placeId, userId, planId = null) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
+        // 기본 파라미터 설정
+        const params = { placeId, userId };
+        
+        // planId가 제공되면 파라미터에 추가
+        if (planId) {
+            params.planId = planId;
+        }
+
         const response = await axios.delete(`${BASE_URL}/home/plan/place`, {
             headers: {
-                Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+                Authorization: `Bearer ${token}`,
             },
-            params: { // params에 placeId와 userId를 포함
-                placeId,
-                userId,
-            },
+            params, // 조건부로 planId 포함
         });
         return response.data;
-
     } catch (error) {
         console.error("장소 삭제 실패:", error.response?.data || error.message); // 에러 메시지 추가
         throw error;
@@ -180,30 +184,30 @@ export const addRecommendedPlace = async (userId, planId, place) => {
     }
 };
 //루트 추천
-export const recommendRoutes = async (planId, version) => {
-    const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
-    try {
-        const response = await axios.post(`${BASE_URL}/home/plan/recommend_routes`, {
-            planId, 
-            version
-        }, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("루트 추천 실패:", error);
-        throw error;
-    }
-};
+// export const recommendRoutes = async (planId, version) => {
+//     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
+//     try {
+//         const response = await axios.post(`${BASE_URL}/home/plan/recommend_routes`, {
+//             planId, 
+//             version
+//         }, {
+//             headers: {
+//                 Authorization: `Bearer ${token}`,
+//             },
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("루트 추천 실패:", error);
+//         throw error;
+//     }
+// };
 
 //코스추천
 export const fullCourseRecommend = async (planId, userId, version) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
         const response = await axios.get(`${BASE_URL}/home/plan/fullCourse`, {
-            paramse : {planId,
+            params : {planId,
             userId, version
              },    
                 headers: {
