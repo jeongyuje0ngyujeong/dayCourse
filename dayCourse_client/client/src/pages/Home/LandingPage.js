@@ -13,6 +13,8 @@ import SocketContext from '../../SocketContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
 
+
+
 const UserCursor = styled(FontAwesomeIcon)`
     position: absolute;
     pointer-events: none;
@@ -21,6 +23,8 @@ const UserCursor = styled(FontAwesomeIcon)`
     height: 30px;
     transform: translate(-50%, -50%); /* 아이콘을 정확히 커서 위치에 맞추기 */
 `;
+
+
 
 // Styled Components
 const PlaceBox = styled.div`
@@ -122,6 +126,8 @@ const RecommendButton = styled.button`
     }
 `;
 
+
+
 const RowContainer = styled.div`
     display: flex;
     width: 75%;
@@ -149,7 +155,7 @@ const SelectedPlacesContainer = styled.div`
     
 // `;
 
-const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
+const LandingPage = ({ userId, planId, place, context, setUniqueUsers}) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
     const [places, setPlaces] = useState([]);
@@ -160,8 +166,8 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const [userCursors, setUserCursors] = useState({});
     const [isRecommending, setIsRecommending] = useState(false); // 추천 로딩 상태
     const [recommendError, setRecommendError] = useState(null);
-    // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
-    // const [distances, setDistances] = useState([]);
+   // const [recommendedRoutes, setRecommendedRoutes] = useState([]);
+   // const [distances, setDistances] = useState([]);
     const [version, setVersion] = useState(1);
 
     const [isCourseRecommending, setIsCourseRecommending] = useState(false);
@@ -185,7 +191,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 }));
                 setSelectedPlaces(newSelectedPlaces);
                 setError(null);
-                setVersion(Math.max(...newSelectedPlaces.map(p => p.version)) || 1);
+                setVersion(Math.max(...newSelectedPlaces.map(p=> p.version)) || 1);
                 return newSelectedPlaces;
             } else {
                 console.error("Invalid data format:", existPlace);
@@ -425,7 +431,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             socket.off('route-recommended'); 
             socket.off('course-recommended'); 
         };
-    }, [socket, planId, joinRoom, setUniqueUsers]);
+    }, [socket, planId, joinRoom,setUniqueUsers]);
 
     useEffect(() => {
         if (!socket) return;
@@ -452,7 +458,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     }, [isPlacesLoaded]);
 
 
-    // TMAP 거리 계산 API 
+        //TMAP 거리 계산 API 
 
         // useEffect(() => {
         //     const loadDistance = async () => {
@@ -584,6 +590,3 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     };
     
     export default LandingPage;
-
-
-
