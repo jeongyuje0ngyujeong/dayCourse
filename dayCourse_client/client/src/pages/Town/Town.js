@@ -1,5 +1,5 @@
-import { Form, redirect, } from "react-router-dom";
-import { updateSchedule, getEvent,} from "../../schedules";
+import { Form, redirect, useLoaderData } from "react-router-dom";
+import { updateSchedule, getEvent, getTownCd} from "../../schedules";
 import React, { useState, } from 'react';
 import KakaoMap from './InputTown';
 import SearchKeyword from './SearchKeyword';
@@ -15,8 +15,9 @@ export async function loader({ params }) {
       const { planId } = params;
     //   console.log(planId);
       const event = await getEvent(planId);
+
       return { event };
-    }
+}
 
 export async function action({ request, params }) {
     const formData = await request.formData();
@@ -104,47 +105,71 @@ const Container = styled.div`
 
 
 export default function UpdateTown() {
-    const [selectedTown, setSelectedTown] = useState("");
+    const { event } = useLoaderData();
+    let town, town_code;
+    
+    if (event) {
+        town = event.town;
+        town_code = event.town_code;
+    }
+    
+    const [selectedTown, setSelectedTown] = useState('');
+    console.log(selectedTown);
     const [departurePoints, setDeparturePoints] = useState([]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
-    const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { name: '', x: , y: }
+    const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
+
+    const [selectedButton, setSelectedButton] = useState(null);
 
     const removeDeparturePoint = (index) => {
         setDeparturePoints(departurePoints.filter((_, i) => i !== index));
     };
 
-        // 추천된 지역을 선택했을 때 호출되는 핸들러
-        const handleSelectTown = (town) => {
-            console.log('Selected town:', town); // 디버깅 로그 추가
-            setSelectedRecommendedTown(town);
+    // 추천된 지역을 선택했을 때 호출되는 핸들러
+    const handleSelectTown = async (town, index) => {
+        console.log('Selected town:', town); 
+        const result = await getTownCd(town);
+        console.log(result);
+
+        const transformedData = {
+            full_addr: result.full_addr,
+            cd: result.sido_cd + result.sgg_cd + result.emdong_cd
         };
+
+        setSelectedButton(index);
+        setSelectedTown(transformedData);
+        setSelectedRecommendedTown(town);
+    };
 
     return (
         <div>
             <SidebarContainer>
-                <PageTitle style={{marginTop: '1rem', fontSize:'3vh'}}>약속지역</PageTitle>
-                <SelectTown contextTown={setSelectedTown}/>
+                <PageTitle style={{margin: '0.5rem 0', fontSize:'3vh'}}>약속지역</PageTitle>
+                {/* margin: '0.5rem 0', fontSize:'3vh' */}
+                <SelectTown contextTown={setSelectedTown} town={town} town_code={town_code}/>
                 <Form method="post">        
-    {selectedRecommendedTown && (
-        <>
-            <input type="hidden" name="town_name" value={selectedRecommendedTown.name} />
-            <input type="hidden" name="town_x" value={selectedRecommendedTown.x} />
-            <input type="hidden" name="town_y" value={selectedRecommendedTown.y} />
-        </>
-    )}
-    <Button 
-        type='submit' 
-        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
-        width='4rem' 
-        height='3rem' 
-        border='none' 
-        $background='#90B54C' 
-        color='white'
-    > 
-        다음 
-    </Button>                   
-</Form>  
+                    <input type="hidden" name="town" value={selectedTown.full_addr} />
+                    <input type="hidden" name="town_code" value={selectedTown.cd} />
+                    {/* {selectedRecommendedTown && (
+                        <>
+                            <input type="hidden" name="town_name" value={selectedRecommendedTown.상권명} />
+                            <input type="hidden" name="town_x" value={selectedRecommendedTown.centroid_x} />
+                            <input type="hidden" name="town_y" value={selectedRecommendedTown.centroid_y} />
+                        </>
+                    )} */}
+                    <Button 
+                        type='submit' 
+                        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
+                        width='4rem' 
+                        height='3rem' 
+                        border='none' 
+                        $background='#90B54C' 
+                        color='white'
+                    > 
+                        다음 
+                    </Button>                   
+                </Form>  
                 <RecommendContainer>
                     <DepartureContainer>
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
@@ -152,8 +177,9 @@ export default function UpdateTown() {
                         <ScrollContainer>
                             {departurePoints.map((point, index) => (
                                 <div key={index} style={{ display: 'flex', alignItems: 'center',justifyContent: 'space-between', gap: '5px', marginBottom: '10px'}}>
-                                    <div style={{ border: '1px solid #ccc', padding: '5px', width:'100%', borderRadius: '8px',height:'2.5rem'}}>
-                                        {point.place_name}
+                                    <div style={{ border: '1px solid #ccc', padding:'2vh', width:'100%', borderRadius: '8px',height:'2.5rem', display:'flex', alignItems:'center', gap:'2vh', justifyContent:'space-between'}}>
+                                        <PageTitle>{point.place_name}</PageTitle>
+                                        <p> {point.address_name}</p>
                                     </div>
                                     <Button onClick={() => removeDeparturePoint(index)} width='3rem' height='2.5rem'>-</Button>
                                 </div>
@@ -161,7 +187,7 @@ export default function UpdateTown() {
                         </ScrollContainer>
 
                         <Container>
-                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown}/> 
+                            <ConvexHullCalculator departurePoints={departurePoints} onSelectTown={handleSelectTown} selectedButton={selectedButton}/> 
                         </Container>
                     </DepartureContainer>
 

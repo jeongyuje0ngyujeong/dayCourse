@@ -12,6 +12,11 @@ export async function action({ request, params }) {
   console.log(params);
   const formData = await request.formData();
   const updates = Object.fromEntries(formData);
+  console.log(updates);
+  if (!updates.groupId) {
+    alert('함께하는 그룹을 선택해주세요');
+    return null;
+  }
 
   const date= formData.get("date");
 
@@ -19,9 +24,9 @@ export async function action({ request, params }) {
     const dateObject = new Date(date); 
     const dateKey = dateObject.toISOString().split('T')[0]; 
     
-    if (params.id){
-      await updateSchedule(params.id, updates);
-      return redirect(`/main/schedules/${dateKey}/${params.id}/town`);
+    if (params.planId){
+      await updateSchedule(params.planId, updates);
+      return redirect(`/main/schedules/${dateKey}/${params.planId}/town`);
     }
     else{
       const planId = (await createSchedule(dateKey, formData)).planId;
@@ -33,8 +38,8 @@ export async function action({ request, params }) {
 
 export async function loader({ params }) {
   // console.log(params);
-  const { id } = params;
-  const event = await getEvent(id);
+  const { planId } = params;
+  const event = await getEvent(planId);
 
   return { event };
 }
@@ -61,16 +66,16 @@ export default function CreateSchedule() {
     <>
       <div style={{display:'flex', gap: '3rem'}}>
         <div style={{display:'flex', flexDirection:'column',  flex:'1'}}>
-          <PageTitle style={{fontSize:'3vh'}}>일정 만들기</PageTitle>
-          <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
+          <PageTitle style={{fontSize:'3vh', marginBottom:'6vh'}}>일정 만들기</PageTitle>
+
           <MiniCalendar currentDate={currentDate} setCurrentDate={setCurrentDate} selectedDate={selectedDate} setSelectedDate={setSelectedDate}/>
           
         </div>
-        <div style={{flex:'2'}}>
+        <div style={{flex:'2', marginTop:'2vh'}}>
           <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
             <Form style={{width:'100%'}}method="post" id="schedule-form">
               <div style={{flex:'1'}}>
-                <PageTitle>약속 날짜</PageTitle>
+                <PageTitle style={{fontSize:'2vh'}}>약속 날짜</PageTitle>
                 <input
                   placeholder="년"
                   aria-label="년"
@@ -82,7 +87,7 @@ export default function CreateSchedule() {
                 />
               </div>
               <div style={{flex:'1'}}>
-                <PageTitle>약속 이름</PageTitle>
+                <PageTitle style={{fontSize:'2vh'}}>약속 이름</PageTitle>
                 <input
                   type="text"
                   name="planName"

@@ -216,7 +216,7 @@ export default function Group({group}) {
 
     return (
         <>
-        <PageTitle>함께하는 사람</PageTitle>
+        <PageTitle style={{fontSize:'2vh'}}>함께하는 사람</PageTitle>
         {/* users.length > 0 ? users.map((item) => item.name).join(', ') : '' */}
         <div style={{display:'flex', gap:'1rem',height:'40vh'}}>
             { activeTab === 'Tab1' ? (
@@ -231,16 +231,16 @@ export default function Group({group}) {
                             </div>
                             <Container>
                                 <ImageItem>
-                                    <Image src="/profiles/frontTooth.png" alt="Item 1" />
+                                    <Image src="/profiles/frontTooth.PNG" alt="Item 1" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/glasses.png" alt="Item 2" />
+                                    <Image src="/profiles/glasses.PNG" alt="Item 2" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/shyness.png" alt="Item 3" />
+                                    <Image src="/profiles/shyness.PNG" alt="Item 3" />
                                 </ImageItem>
                                 <ImageItem>
-                                    <Image src="/profiles/twoChin.png" alt="Item 4" />
+                                    <Image src="/profiles/twoChin.PNG" alt="Item 4" />
                                 </ImageItem>
                             </Container>
                             <div style={{display:'flex', width:'100%', alignItems:'center', borderRadius:'10px', background:'#ccc', textAlign:'center'}}>
@@ -256,24 +256,24 @@ export default function Group({group}) {
             ):(
                 <>
                 <ResultContainer>
-                <NewContainer>
-                    <TextButton>
-                        <PageTitle>그룹명</PageTitle>
-                            <Button 
-                                style={{ height: '2rem', width: '5rem'}} 
-                                onClick={(e) => {handleOnClick(e)}}
-                            >그룹 생성
-                            </Button>
-                        </TextButton>
-                        <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요'/>
-                    <TextButton>
-                        <PageTitle>선택한 친구</PageTitle>
-                        <h4>{selectedFriends.length}명</h4>
-                    </TextButton>            
-                    {selectedFriends.length > 0 && 
-                        <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
-                    }  
-                </NewContainer>
+                    <NewContainer>
+                        <TextButton>
+                            <PageTitle>그룹명</PageTitle>
+                                <Button 
+                                    style={{ height: '2rem', width: '5rem'}} 
+                                    onClick={(e) => {handleOnClick(e)}}
+                                >그룹 생성
+                                </Button>
+                            </TextButton>
+                            <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요' required/>
+                        <TextButton>
+                            <PageTitle>선택한 친구</PageTitle>
+                            <h4>{selectedFriends.length}명</h4>
+                        </TextButton>            
+                        {selectedFriends.length > 0 && 
+                            <FriendList friendsList={selectedFriends} setSelectedFriends={setSelectedFriends} flag={false}/>
+                        }  
+                    </NewContainer>
                 </ResultContainer>
                 </>
             )
@@ -290,7 +290,7 @@ export default function Group({group}) {
                 </Content>
             </div>
         </div>
-        <input type="hidden" name="groupId" value={selectedGroup.groupId} />
+        <input type="hidden" name="groupId" value={selectedGroup ? selectedGroup.groupId:group}/>
         </>
     );
 }

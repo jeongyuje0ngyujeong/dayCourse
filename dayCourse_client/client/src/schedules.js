@@ -59,6 +59,42 @@ export async function getDo(props) {
     }
 }
 
+export async function getTownCd(props) {
+    try {
+        let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json`, {
+            params: {
+                accessToken : sessionStorage.getItem('SGISToken'),
+                x_coor: props.centroid_x,
+                y_coor: props.centroid_y,
+                addr_type: 20
+            },
+        });
+        let Town = response.data.result[0];
+        return Town;
+
+    } catch (error) {
+        console.error('Error fetching the TownCd:', error);
+        try {  
+        const newToken = await getToken();
+        let response = await axios.get(`https://sgisapi.kostat.go.kr/OpenAPI3/addr/rgeocodewgs84.json`, {
+            params: {
+                accessToken : newToken,
+                x_coor: props.centroid_x,
+                y_coor: props.centroid_y,
+                addr_type: 20
+            },
+        });
+
+        let Town = response.data.result[0];
+
+        return Town;
+        } catch (error) {
+            console.error('Error fetching the TownCd with refreshed token:', error);
+            return null; // 최종 실패 시 null 반환
+        }
+    }
+}
+
 
 export async function getSchedules(query, startDate) {
     // let schedules = await localforage.getItem("schedules");

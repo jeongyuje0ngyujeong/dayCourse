@@ -1,5 +1,4 @@
-// KakaoMap.js
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import './KakaoMap.css';
 const { kakao } = window;
 
@@ -11,7 +10,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
     const searchMarkerRef = useRef([]);
     const selectedOverlayRef = useRef([]);
     const routeLinesRef = useRef([]);
-    const autoFitBoundsRef = useRef(true); // useRef로 autoFitBounds 관리
+    const renderRouteLinesRef = useRef();
 
     // 오버레이 제거 함수
     const clearOverlays = useCallback((overlays) => {
@@ -19,7 +18,6 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
     }, []);
 
     const clearLines = useCallback((lines) => {
-        console.log('Clearing lines:', lines);
         lines.forEach(line => {
             if (line && typeof line.setMap === 'function') {
                 line.setMap(null);
@@ -29,7 +27,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
         });
     }, []);
 
-    // 라인 렌더링 함수 먼저 정의
+    // 경로 라인 렌더링 함수
     const renderRouteLines = useCallback(() => {
         if (!mapRef.current || selectedPlaces.length < 2) {
             clearLines(routeLinesRef.current);
@@ -67,15 +65,67 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
         });
         polyline.setMap(map);
         routeLinesRef.current.push(polyline);
-    }, [selectedPlaces, clearLines]);
+         // eslint-disable-next-line
+    }, [selectedPlaces]);
+    
+    // 지도 초기화 (한 번만 실행)
+    useEffect(() => {
+        const mapContainer = document.getElementById("map");
+        const mapOptions = {
+            center: new kakao.maps.LatLng(37.496486063, 127.028361548),
+            level: 5,
+            draggable: true,
+            zoomable: true,
+        };
 
-    // 오버레이 렌더링 함수
+        const map = new kakao.maps.Map(mapContainer, mapOptions);
+        mapRef.current = map;
+
+        const zoomControl = new kakao.maps.ZoomControl();
+        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
+
+   
+        kakao.maps.event.addListener(map, 'dragstart', () => setAutoFitBounds(false));
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 해제
+        return () => {
+            kakao.maps.event.removeListener(map, 'dragstart');
+        };
+    }, []); // 빈 배열로 설정하여 한 번만 실행
+
+    // `renderRouteLinesRef` 업데이트
+    useEffect(() => {
+        renderRouteLinesRef.current = renderRouteLines;
+    }, [renderRouteLines]);
+
+    // `zoom_changed` 이벤트 핸들러 설정
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        const map = mapRef.current;
+
+        const zoomChangeHandler = () => {
+            setAutoFitBounds(false);
+            if (renderRouteLinesRef.current) {
+                renderRouteLinesRef.current();
+            }
+        };
+
+        kakao.maps.event.addListener(map, 'zoom_changed', zoomChangeHandler);
+
+        // 컴포넌트 언마운트 시 이벤트 리스너 해제
+        return () => {
+            kakao.maps.event.removeListener(map, 'zoom_changed', zoomChangeHandler);
+        };
+    }, [mapRef]);
+
+
+    // 선택된 장소 오버레이 렌더링 함수
     const renderOverlays = useCallback(() => {
-        console.log('Rendering overlays with selectedPlaces:', selectedPlaces);
-        if (!mapRef.current || selectedPlaces.length === 0) return;
+        if (!mapRef.current) return;
 
         clearOverlays(selectedOverlayRef.current);
-        selectedOverlayRef.current = []; // 배열 초기화
+        selectedOverlayRef.current = [];
 
         const map = mapRef.current;
         const bounds = new kakao.maps.LatLngBounds();
@@ -83,7 +133,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
         selectedPlaces.forEach((place, index) => {
             const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
             const content = `
-                <div style="pointer-events: none; color: white; background: #8cd108; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                <div style="color: white; background: #8cd108; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
                     ${index + 1}
                 </div>`;
             const overlay = new kakao.maps.CustomOverlay({
@@ -97,7 +147,7 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
             bounds.extend(position);
         });
 
-        if (autoFitBoundsRef.current && selectedPlaces.length > 0) {
+        if (autoFitBounds && selectedPlaces.length > 0) {
             if (selectedPlaces.length === 1) {
                 map.setCenter(bounds.getSouthWest());
             } else {
@@ -105,201 +155,86 @@ const KakaoMap = React.memo(function KakaoMap({ searchKeyword, setPlaces, select
             }
         }
         renderRouteLines();
-    }, [selectedPlaces, clearOverlays, renderRouteLines]);
+        // eslint-disable-next-line
+    }, [selectedPlaces, autoFitBounds]);
 
-    const handleZoomChange = useCallback(() => {
-        renderRouteLines();
+
+    useEffect(() => {
+        renderRouteLinesRef.current = renderRouteLines;
     }, [renderRouteLines]);
 
+
+    // 장소 검색 및 마커 표시
     useEffect(() => {
-        if (mapRef.current) return; // 맵이 이미 초기화되었으면 중단
-
-        // 지도 생성
-        const mapOptions = {
-            center: new kakao.maps.LatLng(37.496486063, 127.028361548),
-            level: 5,
-            draggable: true,
-            zoomable: true,
-        };
-
-        const map = new kakao.maps.Map(mapContainerRef.current, mapOptions);
-        mapRef.current = map;
-
-        const zoomControl = new kakao.maps.ZoomControl();
-        map.addControl(zoomControl, kakao.maps.ControlPosition.RIGHT);
-
-        kakao.maps.event.addListener(map, 'tilesloaded', () => {
-            console.log('Tiles loaded, rendering overlays and routes.');
-            renderOverlays();
-            renderRouteLines();
-        });
-
-        kakao.maps.event.addListener(map, 'dragstart', () => {
-            console.log('Map drag started, setting autoFitBounds to false.');
-            autoFitBoundsRef.current = false;
-        });
-
-        kakao.maps.event.addListener(map, 'zoom_changed', () => {
-            console.log('Map zoom changed, setting autoFitBounds to false.');
-            autoFitBoundsRef.current = false;
-            handleZoomChange();
-        });
+        if (!mapRef.current || !searchKeyword) return;
 
         const ps = new kakao.maps.services.Places();
+        setAutoFitBounds(true);
 
-        // 검색 마커 표시 함수
-        const displayPlaces = (places) => {
-            console.log('Displaying places:', places);
-            const bounds = new kakao.maps.LatLngBounds();
-            clearOverlays(searchMarkerRef.current);
-            searchMarkerRef.current = [];
-
-            places.forEach((place) => {
-                const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
-
-                const isAlreadySelected = selectedPlaces.some(selected => {
-                    return (
-                        selected.place_name === place.place_name ||
-                        selected.name === place.place_name ||
-                        (selected.id && selected.id === place.id) ||
-                        (selected.placeId && selected.placeId === place.id)
-                    );
-                });
-
-                if (!isAlreadySelected) {
-                    const marker = new kakao.maps.Marker({ position });
-                    marker.setMap(map);
-                    searchMarkerRef.current.push(marker);
-                }
-
-                bounds.extend(position);
-            });
-
-            if (searchKeyword) {
-                // 사용자가 검색을 수행했으므로 autoFitBoundsRef.current를 true로 설정
-                autoFitBoundsRef.current = true;
-            }
-
-            if (autoFitBoundsRef.current) {
-                if (places.length === 1) {
-                    const singlePlace = places[0];
-                    const singlePosition = new kakao.maps.LatLng(singlePlace.y || singlePlace.Y, singlePlace.x || singlePlace.X);
-                    map.setCenter(singlePosition);
-                } else {
-                    map.setBounds(bounds);
-                }
-            }
-            setPlaces(places);
-        };
-
-        // 검색 실행
-        if (searchKeyword) {
-            console.log('Executing keyword search:', searchKeyword);
-            autoFitBoundsRef.current = true; // 검색 시 autoFitBoundsRef.current를 true로 설정
-            ps.keywordSearch(searchKeyword, (data, status) => {
-                if (status === kakao.maps.services.Status.OK) {
-                    displayPlaces(data);
-                } else {
-                    alert(status === kakao.maps.services.Status.ZERO_RESULT
+        ps.keywordSearch(searchKeyword, (data, status) => {
+            if (status === kakao.maps.services.Status.OK) {
+                displayPlaces(data);
+            } else {
+                alert(
+                    status === kakao.maps.services.Status.ZERO_RESULT
                         ? '검색 결과가 존재하지 않음'
                         : '검색 중 오류 발생!'
-                    );
-                }
-            });
-        }
+                );
+            }
+        });
+        // eslint-disable-next-line
+    }, [searchKeyword]);
 
-        return () => {
-            clearOverlays(searchMarkerRef.current);
-            clearOverlays(selectedOverlayRef.current);
-            clearLines(routeLinesRef.current);
-            searchMarkerRef.current = [];
-            selectedOverlayRef.current = [];
-            routeLinesRef.current = [];
-        };
-    }, [renderOverlays, renderRouteLines, handleZoomChange, searchKeyword, setPlaces]);
-
-    // 검색 키워드가 변경될 때마다 검색 실행
-    useEffect(() => {
+    const displayPlaces = useCallback((places) => {
         if (!mapRef.current) return;
 
-        const ps = new kakao.maps.services.Places();
+        const map = mapRef.current;
+        const bounds = new kakao.maps.LatLngBounds();
 
-        const displayPlaces = (places) => {
-            console.log('Displaying places:', places);
-            const bounds = new kakao.maps.LatLngBounds();
-            clearOverlays(searchMarkerRef.current);
-            searchMarkerRef.current = [];
+        clearOverlays(searchMarkerRef.current);
+        searchMarkerRef.current = [];
 
-            places.forEach((place) => {
-                const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
+        places.forEach((place) => {
+            const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
 
-                const isAlreadySelected = selectedPlaces.some(selected => {
-                    return (
-                        selected.place_name === place.place_name ||
-                        selected.name === place.place_name ||
-                        (selected.id && selected.id === place.id) ||
-                        (selected.placeId && selected.placeId === place.id)
-                    );
-                });
-
-                if (!isAlreadySelected) {
-                    const marker = new kakao.maps.Marker({ position });
-                    marker.setMap(mapRef.current);
-                    searchMarkerRef.current.push(marker);
-                }
-
-                bounds.extend(position);
+            const isAlreadySelected = selectedPlaces.some(selected => {
+                return (
+                    selected.place_name === place.place_name ||
+                    selected.name === place.place_name ||
+                    (selected.id && selected.id === place.id) ||
+                    (selected.placeId && selected.placeId === place.id)
+                );
             });
 
-            if (searchKeyword) {
-                // 사용자가 검색을 수행했으므로 autoFitBoundsRef.current를 true로 설정
-                autoFitBoundsRef.current = true;
+            if (!isAlreadySelected) {
+                const marker = new kakao.maps.Marker({ position });
+                marker.setMap(map);
+                searchMarkerRef.current.push(marker);
             }
 
-            if (autoFitBoundsRef.current) {
-                if (places.length === 1) {
-                    const singlePlace = places[0];
-                    const singlePosition = new kakao.maps.LatLng(singlePlace.y || singlePlace.Y, singlePlace.x || singlePlace.X);
-                    mapRef.current.setCenter(singlePosition);
-                } else {
-                    mapRef.current.setBounds(bounds);
-                }
-            }
-            setPlaces(places);
-        };
+            bounds.extend(position);
+        });
 
-        if (searchKeyword) {
-            console.log('Executing keyword search:', searchKeyword);
-            autoFitBoundsRef.current = true; // 검색 시 autoFitBoundsRef.current를 true로 설정
-            ps.keywordSearch(searchKeyword, (data, status) => {
-                if (status === kakao.maps.services.Status.OK) {
-                    displayPlaces(data);
-                } else {
-                    alert(status === kakao.maps.services.Status.ZERO_RESULT
-                        ? '검색 결과가 존재하지 않음'
-                        : '검색 중 오류 발생!'
-                    );
-                }
-            });
-        } else {
-            // 검색 키워드가 비어있을 경우 모든 검색 마커 제거
-            clearOverlays(searchMarkerRef.current);
-            searchMarkerRef.current = [];
+        if (autoFitBounds) {
+            if (places.length === 1) {
+                const singlePlace = places[0];
+                const singlePosition = new kakao.maps.LatLng(singlePlace.y || singlePlace.Y, singlePlace.x || singlePlace.X);
+                map.setCenter(singlePosition);
+            } else {
+                map.setBounds(bounds);
+            }
         }
+        setPlaces(places);
+    }, [selectedPlaces, autoFitBounds, setPlaces]);
 
-    }, [searchKeyword, setPlaces]);
-
-    // selectedPlaces 변경 시 오버레이와 라인 렌더링 및 검색 마커 클리어
+    // 선택된 장소가 변경될 때 오버레이 및 라인 업데이트
     useEffect(() => {
-        console.log('selectedPlaces changed, rendering overlays and routes.');
-        if (mapRef.current) {
-            renderOverlays();
-            renderRouteLines();
-            // 선택된 장소가 변경되면 검색 마커도 클리어
-            clearOverlays(searchMarkerRef.current);
-            searchMarkerRef.current = [];
-        }
-    }, [selectedPlaces, renderOverlays, renderRouteLines, clearOverlays]);
+        renderOverlays();
+
+        // 검색 마커 제거
+        clearOverlays(searchMarkerRef.current);
+        searchMarkerRef.current = [];
+    }, [selectedPlaces, renderOverlays]);
 
     return (
         <div className="map-container">
