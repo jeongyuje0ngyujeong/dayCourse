@@ -67,6 +67,13 @@ const DeleteButton = styled.button`
         cursor: not-allowed;
     }
 `;
+
+    &:disabled {
+        background-color: #ff4d4d;
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+`;
 const DistanceBox = styled.div`
     margin: 10px 0;
     font-weight: bold;
@@ -168,7 +175,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
         } finally {
             setIsPlacesLoaded(true);
         }
-    };
+    }, [userId, planId]);
 
     const handlePlaceClick = async (place, isRecommended = false) => {
         console.log('추가할 장소:', place);
