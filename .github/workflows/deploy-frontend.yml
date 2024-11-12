@@ -42,7 +42,10 @@ jobs:
           echo "Build completed at ${{ github.workspace }}"
           ls -R build || echo "Build directory not found!"
 
-
+      - name: Verify API URL in Build Files
+        run: |
+          grep "https://api.daycourse.net" build/static/js/main.*.js && echo "API URL is set correctly." || echo "API URL is missing or incorrect."
+        
       - name: Deploy                  # Upload build file to S3
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
