@@ -1112,7 +1112,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
     const sql_locations_a = `
         SELECT Locations.*
         FROM Locations
-        WHERE LocationName = ? AND addressFull = ?
+        WHERE LocationName = ? AND addressFull = ? AND category = 'activities'
         LIMIT 10;
     `;
 
