@@ -13,7 +13,7 @@ import SocketContext from '../../SocketContext';
 // Styled Components (변경 없음)
 
 
-const UnreadBadge = styled.span`
+const UnreadBadge = styled.div`
     background-color: #e8290c;
     color: white;
     border-radius: 50%;
@@ -23,9 +23,9 @@ const UnreadBadge = styled.span`
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute; // 절대 위치 설정
-    top: 0.5em; // 배지 위치 조정 (필요에 따라 미세 조정)
-    right: 1.5em; // 배지 위치 조정 (필요에 따라 미세 조정)
+    ${'' /* position: absolute; */}
+    ${'' /* top: 0.8em; 
+    right: 1.5em;  */}
     font-weight: bold;
     animation: ${props => props.animate ? 'pop 0.3s ease-in-out' : 'none'};
     
@@ -310,8 +310,15 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                     active={activeTab === 'chat'} 
                     onClick={() => setActiveTabWithUnread('chat')}
                 >
-                    채팅
-                    {unreadCount > 0 && <UnreadBadge animate={animateBadge}>+{unreadCount > 99 ? '99+' : unreadCount}</UnreadBadge>}
+                    <div style={{display:'flex', justifyContent:'center', alignItems:'center', gap:'1vh'}}>
+                        {unreadCount > 0 ? (
+                            <>
+                            <div style={{height:'100%', marginLeft:'4vh'}}>채팅</div>
+                            <UnreadBadge animate={animateBadge}>+{unreadCount > 99 ? '99+' : unreadCount}</UnreadBadge>
+                            </>
+                        ):(<div style={{height:'100%'}}>채팅</div>)
+                        }
+                    </div>
                 </TabButton>
             </div>
             {renderTab()}

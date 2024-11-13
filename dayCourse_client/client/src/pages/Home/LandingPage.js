@@ -9,10 +9,9 @@ import Loader from './Loader'; // 로딩 스피너 컴포넌트
 import SocketContext from '../../SocketContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
+import {PageTitle} from '../../commonStyles';
 
 import { motion, AnimatePresence } from 'framer-motion';
-
-
 
 const itemVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -24,9 +23,7 @@ const NonAnimatedPlaceBox = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 100%;
     transition: box-shadow 0.3s ease;
-    margin:-1%;
 
     h5 {
         margin: 0;
@@ -51,7 +48,9 @@ const PlaceBox = styled(motion.div)`
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease;
-    margin:1%;
+    ${'' /* margin:1%; */}
+    ${'' /* margin-bottom: 1vh; */}
+    
 
     &:hover {
         box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
@@ -71,12 +70,13 @@ const PlaceBox = styled(motion.div)`
 
 const ButtonContainer = styled.div`
     display: flex;
-    flex-direction: row;
+    flex: 1;
     align-items: center;
-    gap: 10px; /* 버튼 사이의 간격 */
-    margin-bottom: 10px; 
-    flex-wrap: nowrap; 
+    gap: 1vh; 
+    margin: 1vh 0 2vh 0; 
+    ${'' /* flex-wrap: nowrap;  */}
 `;
+
 const UserCursor = styled(FontAwesomeIcon)`
     position: absolute;
     pointer-events: none;
@@ -135,10 +135,10 @@ const RecommendButton = styled.button`
     border-radius: 5px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    font-size: 14px;
+    font-size: 2vh;
     font-family: 'NPSfontBold', system-ui;
     box-sizing: border-box;
-    height: 40px; /* 동일한 높이 설정 */
+    ${'' /* margin-top:1vh; */}
 
     &:hover {
         background-color: #90B54C;
@@ -159,10 +159,10 @@ const ApplyButton = styled.button`
     color: white;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 2vh;
     font-family: 'NPSfontBold', system-ui;
     box-sizing: border-box;
-    height: 40px; /* 동일한 높이 설정 */
+    ${'' /* margin-top:1vh; */}
 
     &:hover {
         background-color: #45a049;
@@ -186,7 +186,7 @@ const SelectedPlacesContainer = styled.div`
     display: flex; 
     flex: 1;
     flex-direction: column;
-    max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
+    gap: 1.5vh;
 `;
 
 
@@ -194,8 +194,7 @@ const RecommendedPlacesContainer = styled.div`
     display: flex; 
     flex: 1;
     flex-direction: column;
-    max-width: 48%; /* 최대 너비를 설정하여 컨테이너가 너무 커지지 않도록 */
-    
+    gap: 1.5vh;
 `;
 
 const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
@@ -518,11 +517,26 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                         onSubmitKeyword={submitKeyword} 
                         onPlaceClick={handlePlaceClick}
                     />
+                    <div style={{display:'flex', width:'75%', alignItems:'center', gap:'2vh'}}>
+                            <div style={{flex:'1'}}>
+                                <PageTitle style={{fontSize:'3vh', margin: '1vh 0 2vh 0'}}>선택된 장소</PageTitle>
+                            </div>
+                            <ButtonContainer>
+                                <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
+                                    {isRecommending ? '추천 중...' : '일정 추천'}
+                                </RecommendButton>
+                                <ApplyButton 
+                                    onClick={applyRecommendedPlaces} 
+                                    disabled={recommendedPlaces.length === 0 || isRecommending || isApplying}
+                                >
+                                    {isApplying ? '적용 중...' : '적용'}
+                                </ApplyButton>
+                            </ButtonContainer>
 
+                    </div>
                     <RowContainer>
                         {/* 기존 장소 목록 */}
                         <SelectedPlacesContainer>
-                            <h3>선택된 장소</h3>
                             <DragDropContext onDragEnd={onDragEnd}>
                                 <Droppable droppableId="places">
                                     {(provided) => (
@@ -540,20 +554,21 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                     >
                                                       
                                                       {(provided) => (
-                                                            <NonAnimatedPlaceBox
-                                                                ref={provided.innerRef}
-                                                                {...provided.draggableProps}
-                                                                {...provided.dragHandleProps}
+                                                        <NonAnimatedPlaceBox
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                        >
+                                                        
+                                                            <PlaceBox
+                                                                variants={itemVariants}
+                                                                initial="hidden"
+                                                                animate="visible"
+                                                                exit="exit"
                                                             >
-                                                                 <PlaceBox
-                                                                    variants={itemVariants}
-                                                                    initial="hidden"
-                                                                    animate="visible"
-                                                                    exit="exit"
-                                                                >
                                                                 <div>
-                                                                    <h5>{index + 1}. {place.place_name}</h5>
-                                                                    <span>{place.placeAddr || place.place || "주소 정보 없음"}</span>
+                                                                    <h5  style={{fontSize: '2vh'}}>{index + 1}. {place.place_name}</h5>
+                                                                    <span  style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
                                                                 </div>
                                                                 <DeleteButton 
                                                                     onClick={() => removePlace(place.placeId || place.id, place.isRecommended)}
@@ -561,9 +576,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                                 >
                                                                     X
                                                                 </DeleteButton>
-                                                                </PlaceBox>
-                                                            </NonAnimatedPlaceBox>
-                                                          
+                                                            </PlaceBox>
+                                                        
+                                                        </NonAnimatedPlaceBox> 
                                                         )}
                                                     </Draggable>
 
@@ -590,32 +605,21 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 
                         {/* 추천 장소 목록 */}
                         <RecommendedPlacesContainer>
-                        <ButtonContainer>
-                                <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
-                                    {isRecommending ? '추천 중...' : '일정 추천'}
-                                </RecommendButton>
-                                <ApplyButton 
-                                    onClick={applyRecommendedPlaces} 
-                                    disabled={recommendedPlaces.length === 0 || isRecommending || isApplying}
-                                >
-                                    {isApplying ? '적용 중...' : '적용'}
-                                </ApplyButton>
-                            </ButtonContainer>
                             {isRecommending && <div>추천 중입니다...</div>}
                             {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
                             {isApplying && <div>적용 중입니다...</div>}
                             {applyError && <div style={{ color: 'red' }}>{applyError}</div>}
-                            <div>
-                                {recommendedPlaces.map((place, index) => (
-                                    <PlaceBox key={place.placeId?.toString() || place.id?.toString()}>
-                                        <div>
-                                            <h5>{index + 1}. {place.place_name}</h5>
-                                            <span>{place.placeAddr || place.place || "주소 정보 없음"}</span>
-                                        </div>
-                                        {/* 추천 장소에는 삭제 버튼 없음 */}
-                                    </PlaceBox>
-                                ))}
-                            </div>
+                            
+                            {recommendedPlaces.map((place, index) => (
+                                <PlaceBox key={place.placeId?.toString() || place.id?.toString()}>
+                                    <div>
+                                        <h5 style={{fontSize: '2vh'}}>{index + 1}. {place.place_name}</h5>
+                                        <span style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
+                                    </div>
+                                    {/* 추천 장소에는 삭제 버튼 없음 */}
+                                </PlaceBox>
+                                
+                            ))}
                         </RecommendedPlacesContainer>
 
                         {/* 다른 사용자의 마우스 커서 표시 */}

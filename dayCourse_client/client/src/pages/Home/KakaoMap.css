@@ -6,7 +6,7 @@
     /* height: 50%; */
     height: 45vh;
     overflow: hidden; /* 지도 외부 요소가 잘리지 않도록 설정 */
-    margin-bottom: 3vh;
+    margin-bottom: 2vh;
 }
 
 #map {
