@@ -204,12 +204,40 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
                 );
             });
 
+      
             if (!isAlreadySelected) {
-                const marker = new kakao.maps.Marker({ position });
-                marker.setMap(map);
-                searchMarkerRef.current.push(marker);
+                const markerContent = document.createElement('div');
+                markerContent.className = 'marker-animated'; // 애니메이션 클래스 추가
+                markerContent.style.width = '24px';
+                markerContent.style.height = '24px';
+                markerContent.style.backgroundColor = '#FF6B6B';
+                markerContent.style.borderRadius = '50%';
+                markerContent.style.display = 'flex';
+                markerContent.style.alignItems = 'center';
+                markerContent.style.justifyContent = 'center';
+                markerContent.style.color = 'white';
+                markerContent.style.fontWeight = 'bold';
+    
+                const overlay = new kakao.maps.CustomOverlay({
+                    position,
+                    content: markerContent,
+                    yAnchor: 1,
+                });
+    
+                overlay.setMap(map);
+                searchMarkerRef.current.push(overlay);
+    
+                // 애니메이션 적용
+                setTimeout(() => {
+                    markerContent.classList.add('marker-animated');
+                }, 10);
+    
+                // 애니메이션이 끝난 후 클래스 제거 (애니메이션 반복 방지)
+                setTimeout(() => {
+                    markerContent.classList.remove('marker-animated');
+                }, 300);
             }
-
+    
             bounds.extend(position);
         });
 
