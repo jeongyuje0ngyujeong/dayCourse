@@ -124,6 +124,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
     const { messages, enableSound } = useContext(SocketContext); // SocketContext에서 messages 가져오기
+	const [isInitialLoad, setIsInitialLoad] = useState(true); // 처음 로딩 여부를 추적하는 상태
     const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 메시지 수 추적
     const lastMessageCountRef = useRef(0); // 마지막 메시지 수 추적을 위한 useRef
     const [animateBadge, setAnimateBadge] = useState(false);
@@ -141,6 +142,17 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
 
 
     const chatSound = useRef(new Audio('/chatSound_copy.wav')).current;
+
+	useEffect(() => {
+		if (isInitialLoad && messages.length > 0) {
+		  // messages가 처음 로드될 때만 실행될 코드
+		  console.log("Messages initially loaded:", messages);
+		  lastMessageCountRef.current = messages.length;
+	
+		  // 이후에는 다시 실행되지 않도록 isInitialLoad를 false로 설정
+		  setIsInitialLoad(false);
+		}
+	  }, [messages, isInitialLoad]);
 
     // 사용자 상호작용 시 사운드 활성화
     useEffect(() => {
