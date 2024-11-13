@@ -351,7 +351,10 @@ def SpotSuggest():
                     item[key] = None  # 해당 값을 None으로 수정
         #print(test)
                     
+		
+                    
         output_json = json.dumps(test, default=custom_serializer, ensure_ascii=False)
+        logger.info("output_json : %s", output_json)
         return output_json
 
 if __name__ == '__main__':
