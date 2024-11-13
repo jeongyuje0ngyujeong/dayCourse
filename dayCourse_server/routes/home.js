@@ -1460,7 +1460,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             const { file, retries } = fileQueue.shift();
             const imgNAME = path.basename(file.originalname);
             const ext2 = path.extname(file.originalname).toLowerCase();
-            const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME)).location;
+            const s3ImageUrl = uploadResults.location.find(result => result.location.endsWith(imgNAME));
             const isImage = allowedImageExtensions.includes(ext2);
 
             if (!isImage) {
