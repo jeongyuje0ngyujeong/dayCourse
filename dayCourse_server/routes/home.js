@@ -1442,27 +1442,28 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             });
 
             // 업로드된 위치를 결과 배열에 추가
-            uploadResults.push({ msg: "성공", location: data.Location });
+            uploadResults.push({ name: imgNAME, type: ext, location: data.Location });
         }
 
         // 업로드 결과를 클라이언트에 먼저 반환
-        res.json(uploadResults);
+        res.json({msg: "성공"});
 
         // const fileQueue = [...req.files];
-        const fileQueue = req.files.map(file => ({ file, retries: 0 }));
+        const fileQueue = uploadResults;
         const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
 
-		console.log(uploadResults)
+		console.log(fileQueue)
+
 
         // 비동기 사진 분석 요청 (백그라운드 작업)
         while (fileQueue.length > 0) {
             // const file = fileQueue.shift();
 			
-            const { file, retries } = fileQueue.shift();
-            const imgNAME = path.basename(file.originalname);
-            const ext2 = path.extname(file.originalname).toLowerCase();
+            const { name, type, location } = fileQueue.shift();
+            const imgNAME = name;
+            const ext2 = type;
 			console.log(imgNAME)
-            const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME))?.location;
+            const s3ImageUrl = location;
 			const isImage = allowedImageExtensions.includes(ext2);
 
             if (!isImage) {
