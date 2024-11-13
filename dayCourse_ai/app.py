@@ -188,6 +188,8 @@ def cluster_objects2():
         if tag_list:
             tag_counts = Counter(tag_list)
             most_common_tag = tag_counts.most_common(1)[0][0]  # 가장 빈도가 높은 태그 선택
+            if most_common_tag == "felidae":
+                most_common_tag = "고양잇과"
             core_tags[cluster_id] = most_common_tag
         else:
             core_tags[cluster_id] = '123456'  # 태그가 없는 경우
