@@ -1,7 +1,7 @@
-// import React from 'react';
+// src/pages/Chat/Messages.js
 import styled from 'styled-components';
 import Message from "./Message";
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const ChatContent = styled.div`
     flex: 1;
@@ -9,7 +9,6 @@ const ChatContent = styled.div`
     flex-direction: column-reverse;
     width: 100%;
     margin: 0.5rem 0;
-   
     color: white;
     overflow: auto; 
     
@@ -18,24 +17,50 @@ const ChatContent = styled.div`
     }
 `;
 
-
-export default function Messages({ messages, name }) {
+export default function Messages({ messages, name, chatSound }) {
+    const previousMessagesCountRef = useRef(messages.length);
+    const [messagesWithStatus, setMessagesWithStatus] = useState([]);
+    const [highlightMessageIndex, setHighlightMessageIndex] = useState(0);
 
     useEffect(() => {
-        if (messages) {
-            console.log('Messages component - 전체 메시지:', messages);
-            messages.forEach((msg, index) => {
-                console.log(`Message at index ${index} - color:`, msg.color);
+        if (messages.length > previousMessagesCountRef.current) {
+            chatSound.play().catch((error) => {
+                console.error("Sound playback failed:", error);
             });
+
+            const updatedMessages = messages.map((message, index) => ({
+                ...message,
+                isNewMessage: index >= previousMessagesCountRef.current
+            }));
+
+            setMessagesWithStatus(updatedMessages);
+            previousMessagesCountRef.current = messages.length;
+        } else {
+            setMessagesWithStatus(messages.map(message => ({ ...message, isNewMessage: false })));
         }
-    }, [messages]);
+    }, [messages, chatSound]);
+
+    useEffect(() => {
+        setHighlightMessageIndex(0);
+
+        const timer = setTimeout(() => {
+            setHighlightMessageIndex(null); // 2초 후 강조 제거
+          }, 300); // 2초 후 강조 제거
+    
+          return () => clearTimeout(timer); // cleanup
+      }, [messages]);
 
     return (
         <ChatContent>
-            {messages.length>0 && messages.map((message, index) => (
+            {messagesWithStatus.map((message, index) => (
                 <div key={index}>
-                    <Message user={message.user} text={message.text} name={name} color={message.color}/>
-                  
+                    <Message 
+                        user={message.user} 
+                        text={message.text} 
+                        name={name} 
+                        isNewMessage={index === highlightMessageIndex}
+                        color={message.color} 
+                    />
                 </div>
             ))}
         </ChatContent>
