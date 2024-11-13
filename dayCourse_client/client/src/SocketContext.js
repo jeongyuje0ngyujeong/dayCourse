@@ -4,6 +4,8 @@ import socket from './socket';
 
 const SocketContext = createContext();
 
+const chatSound = new Audio('/chatSound_copy.wav');
+
 export const SocketProvider = ({ children, userId }) => {
     const [messages, setMessages] = useState([]);
     const [users, setUsers] = useState([]);
@@ -19,6 +21,10 @@ export const SocketProvider = ({ children, userId }) => {
 
         socket.on('message', (incomingMessages) => {
             console.log('받은 메시지:', incomingMessages);
+
+            notificationSound.play();
+
+
             if (Array.isArray(incomingMessages)) {
                 setMessages(incomingMessages.reverse());
             } else if (typeof incomingMessages === 'object') {
