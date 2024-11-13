@@ -36,7 +36,7 @@ const ChatContainer = styled.div`
 const chatSound = new Audio('/chatSound_copy.wav');
 
 export default function Chat({ userId, planInfo }) {
-    const { messages, sendMessage } = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
+    const { messages, sendMessage, enableSound } = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
     // const [name, setName] = useState(userId);
     // const [room, setRoom] = useState(planInfo.planId);
     const [message, setMessage] = useState('');
@@ -60,7 +60,11 @@ export default function Chat({ userId, planInfo }) {
         if (message) {
             socket.emit('sendMessage', message, () => setMessage(''));
         }
-    }
+    };
+    // useEffect(() => {
+    //     enableSound(); // 첫 번째 상호작용 이후 소리 활성화
+    // }, [enableSound]);
+
 
     return (
         <ChatContainer>
