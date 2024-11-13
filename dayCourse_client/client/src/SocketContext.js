@@ -10,6 +10,9 @@ export const SocketProvider = ({ children, userId }) => {
     const [messages, setMessages] = useState([]);
     const [users, setUsers] = useState([]);
     const currentRoom = useRef(null);
+    const [isSoundEnabled, setIsSoundEnabled] = useState(false); // 사운드 활성화 상태
+
+    const enableSound = () => setIsSoundEnabled(true); // 외부에서 호출 가능
 
     useEffect(() => {
         socket.connect();
@@ -20,11 +23,10 @@ export const SocketProvider = ({ children, userId }) => {
         });
 
         socket.on('message', (incomingMessages) => {
-            console.log('받은 메시지:', incomingMessages);
-
-            chatSound.play();
-
-
+            if (isSoundEnabled) { // 사운드가 활성화된 경우에만 재생
+                chatSound.play().catch((error) => console.error("Sound playback failed:", error));
+            }
+            
             if (Array.isArray(incomingMessages)) {
                 setMessages(incomingMessages.reverse());
             } else if (typeof incomingMessages === 'object') {
@@ -48,6 +50,7 @@ export const SocketProvider = ({ children, userId }) => {
             console.log('SocketProvider: 소켓 연결 해제');
             socket.disconnect();
         };
+        // eslint-disable-next-line
     }, [userId]);
 
     const leaveRoom = useCallback(() => {
@@ -77,7 +80,7 @@ export const SocketProvider = ({ children, userId }) => {
 
 
     return (
-        <SocketContext.Provider value={{ socket:socket, messages, users, sendMessage, joinRoom, leaveRoom }}>
+        <SocketContext.Provider value={{ socket:socket, messages, users, sendMessage, joinRoom, leaveRoom, enableSound }}>
             {children}
         </SocketContext.Provider>
     );

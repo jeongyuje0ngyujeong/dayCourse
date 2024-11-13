@@ -6,8 +6,8 @@ const ChatMessage = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 1vh 1vh;
-    background: ${(props) => props.color || '#ccc'}; 
-    color: white;
+    background: #ccc;
+    color: black;
     border-radius: 2vh;
     max-width: 80%;
     word-wrap: break-word;
@@ -41,7 +41,7 @@ const ChatMessage2 = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 1vh 1vh;
-    background: ${(props) => props.color || '#ccc'}; // color 적용 확인
+    background: #90B54C;
     color: white;
     border-radius: 2vh;
     max-width: 70%;
@@ -103,20 +103,19 @@ const Name = styled.p`
     }
 `;
 
-
 function Message({ user, text, name, isNewMessage, color }) {
-  console.log('Message component - color prop:', color); // 전달된 color prop 확인
   const isSentByCurrentUser = user.trim().toLowerCase() === name.trim().toLowerCase();
+
 
   return (
       <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}} >
           <Name isNewMessage={isNewMessage}>{isSentByCurrentUser? name : user}</Name>
           {isSentByCurrentUser? (
-              <ChatMessage2 color={color} isNewMessage={isNewMessage}>
+              <ChatMessage2 isNewMessage={isNewMessage}>
                   {text}
               </ChatMessage2>
           ) : (
-              <ChatMessage color={color} isNewMessage={isNewMessage}>
+              <ChatMessage isNewMessage={isNewMessage}>
                   {text}
               </ChatMessage>
           )}

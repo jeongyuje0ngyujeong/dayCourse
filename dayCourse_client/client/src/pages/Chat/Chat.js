@@ -33,15 +33,32 @@ export default function Chat({ userId, planInfo }) {
     // const [userNames, setUserNames] = useState('');
     const [previousMessagesCount, setPreviousMessagesCount] = useState(0); // 이전 메시지 수 상태 추가
 
+
     // useEffect(() => {
     //     setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
     // }, [users]);
 
+
     useEffect(() => {
-        if (messages.length > previousMessagesCount) { // 새로운 메시지가 도착했는지 확인
-            chatSound.play();
+        const handleUserInteraction = () => {
+            enableSound(); // 첫 상호작용 시 사운드 활성화
+            document.removeEventListener('click', handleUserInteraction);
+        };
+        document.addEventListener('click', handleUserInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+        };
+    }, [enableSound]);
+
+    // 새로운 메시지가 도착하면 사운드 재생
+    useEffect(() => {
+        if (messages.length > previousMessagesCount) {
+            chatSound.play().catch((error) => {
+                console.error("Sound playback failed:", error);
+            });
         }
-        setPreviousMessagesCount(messages.length); // 현재 메시지 수를 상태에 저장
+        setPreviousMessagesCount(messages.length);
     }, [messages, previousMessagesCount]);
 
 
@@ -59,7 +76,8 @@ export default function Chat({ userId, planInfo }) {
     return (
         <ChatContainer>
             {/* <ChatName>채팅방: {userNames}</ChatName> */}
-            <Messages messages={messages} name={userId} />
+            <Messages messages={messages} name={userId}  previousMessagesCount={previousMessagesCount}
+                setPreviousMessagesCount={setPreviousMessagesCount} chatSound={chatSound}/>
             <Input message={message} setMessage={setMessage} sendMessage={handleSendMessage} />
         </ChatContainer>
     );
