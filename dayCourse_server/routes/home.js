@@ -1455,11 +1455,11 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
         // 비동기 사진 분석 요청 (백그라운드 작업)
         while (fileQueue.length > 0) {
             // const file = fileQueue.shift();
-			console.log(imgNAME)
 			
             const { file, retries } = fileQueue.shift();
             const imgNAME = path.basename(file.originalname);
             const ext2 = path.extname(file.originalname).toLowerCase();
+			console.log(imgNAME)
             const s3ImageUrl = uploadResults.find(result => result.location.endsWith(imgNAME))?.location;
 			const isImage = allowedImageExtensions.includes(ext2);
 
