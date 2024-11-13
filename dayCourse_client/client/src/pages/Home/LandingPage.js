@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback, useContext } from 'react';
 import KakaoMap from './KakaoMap';
 import RightSidebar from './RightSidebar';
 import styled from "styled-components";
-import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, fullCourseRecommend } from './PlaceApi';
-//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace,recommendRoutes, fetchDistance } from './PlaceApi'; 
+//import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, fullCourseRecommend } from './PlaceApi';
+import { fetchPlace, addPlace, deletePlace, updatePlacePriority, addRecommendedPlace, fullCourseRecommend , fetchDistance } from './PlaceApi'; 
 
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import throttle from 'lodash/throttle';
@@ -216,6 +216,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const [deleteError, setDeleteError] = useState(null); // 삭제 에러 상태
     const [isApplying, setIsApplying] = useState(false); // 적용 로딩 상태
     const [applyError, setApplyError] = useState(null); // 적용 에러 상태
+    const [distances, setDistances] = useState([]);
 
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
@@ -496,18 +497,18 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 
             //TMAP 거리 계산 API 
 
-        // useEffect(() => {
-        //     const loadDistance = async () => {
-        //         if (selectedPlaces.length > 1) {
-        //             const distances = await fetchDistance(planId, userId);
-        //             console.log("받은 거리 정보:", distances);
-        //             setDistances(distances.distances);
-        //         } else {
-        //             setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
-        //         }
-        //     };
-        //     loadDistance();
-        // }, [selectedPlaces, planId, userId]);
+        useEffect(() => {
+            const loadDistance = async () => {
+                if (selectedPlaces.length > 1) {
+                    const distances = await fetchDistance(planId, userId);
+                    console.log("받은 거리 정보:", distances);
+                    setDistances(distances.distances);
+                } else {
+                    setDistances([]); // 선택된 장소가 1개 이하일 경우 거리 정보를 빈 배열로 초기화
+                }
+            };
+            loadDistance();
+        }, [selectedPlaces, planId, userId]);
     
 
     return (
@@ -603,8 +604,8 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                     {/* 거리 표시 */}
                                                     {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
                                                         <DistanceBox>
-                                                            {/* 거리 정보 필요 시 활성화 */}
-                                                            {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
+
+                                                             {`거리 : ${(distances[index] / 1000).toFixed(2)} km`}
                                                         </DistanceBox>
                                                     )}
                                                 </React.Fragment>
