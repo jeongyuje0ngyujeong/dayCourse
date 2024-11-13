@@ -21,6 +21,9 @@ const itemVariants = {
     exit: { opacity: 0, y: 20 },
 };
 
+const screenWidth = window.innerWidth;
+const screenHeight = window.innerHeight;
+
 const NonAnimatedPlaceBox = styled.div`
     display: flex;
     align-items: center;
@@ -475,8 +478,13 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
         if (!socket) return;
 
         const throttledMouseMove = throttle((e) => {
-            const x = e.clientX;
-            const y = e.clientY;
+			const scrrenW = document.getElementById('places_container')?.getBoundingClientRect().width;			
+			const x = e.pageX / screenWidth;
+			let y = e.pageY / screenHeight;
+			if((screenWidth-scrrenW) < e.pageX){
+				y = e.clientY / screenHeight;
+			}
+    
             socket.emit('mouse-move', { room: planId, x, y });
         }, 80);
 
@@ -512,7 +520,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     
 
     return (
-        <div className="landing-page">
+        <div id="landing-page" className="landing-page">
             {!isPlacesLoaded ? (
                 <Overlay>
                     <Loader />
@@ -623,7 +631,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                         </SelectedPlacesContainer>
 
                         {/* 추천 장소 목록 */}
-                        <RecommendedPlacesContainer>
+                        <RecommendedPlacesContainer id="places_container">
                             {isRecommending && <div>추천 중입니다...</div>}
                             {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
                             {isApplying && <div>적용 중입니다...</div>}
@@ -647,7 +655,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                 <UserCursor 
                                     icon={faMousePointer} 
                                     color={userColors[userId]} 
-                                    style={{ top: cursorData.y, left: cursorData.x }}
+                                    style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}
                                     title={cursorData.name}
                                 />
                             </div>
