@@ -24,3 +24,19 @@
     right: 10px;
     transform: translate(-10px, 10px); /* 필요에 따라 위치 조정 */
 }
+/* KakaoMap.css */
+
+/* fade-out 애니메이션 */
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+/* marker-animated 클래스로 fade-out 애니메이션 적용 */
+.marker-fade-out {
+    animation: fadeOut 1s forwards;
+}

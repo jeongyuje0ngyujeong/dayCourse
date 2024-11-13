@@ -50,26 +50,53 @@ const Overlay = styled.div`
   z-index: 1;
 `;
 
+const Spinner = styled.div`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 2s linear infinite;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+
 const RecentPlan = ({ plans }) => {
   const navigate = useNavigate();
   const [thumbnails, setThumbnails] = useState({});
+  const [loading, setLoading] = useState(true);
 
   // 썸네일 이미지를 가져오는 함수
   const fetchThumbnails = useCallback(async () => {
     const newThumbnails = {};
 
-    for (const plan of plans) {
-      try {
+    try {
+      // 이미지들을 병렬로 가져오기
+      const imagePromises = plans.map(async (plan) => {
         const images = await fetchImage(plan.planId);
         if (images && images.length > 0) {
-          newThumbnails[plan.planId] = images[0];
+          newThumbnails[plan.planId] = images[0]; // 썸네일만 우선 가져옴
         }
-      } catch (error) {
-        console.error('썸네일 이미지를 가져오는 중 오류:', error);
-      }
+      });
+      
+      // 모든 이미지 요청을 기다림
+      await Promise.all(imagePromises);
+
+      setThumbnails(newThumbnails);
+      setLoading(false);  // 썸네일 로딩 완료
+    } catch (error) {
+      console.error('썸네일 이미지를 가져오는 중 오류:', error);
+      setLoading(false);
     }
-    setThumbnails(newThumbnails);
   }, [plans]);
+
 
   useEffect(() => {
     if (plans && plans.length > 0) {
@@ -86,11 +113,13 @@ const RecentPlan = ({ plans }) => {
   return (
     <Container>
       {plans.map((plan) => (
-        <Box key={plan.planId} onClick={() => handleBoxClick(plan)}>
-          {thumbnails[plan.planId] ? (
-            <Image src={thumbnails[plan.planId]} alt={plan.planName} loading="lazy" />
+          <Box key={plan.planId} onClick={() => handleBoxClick(plan)}>
+          {loading ? (
+            <Spinner />  // When loading, show the spinner
           ) : (
-           null
+            thumbnails[plan.planId] ? (
+              <Image src={thumbnails[plan.planId]} alt={plan.planName} loading="lazy" />
+            ) : null
           )}
           <Overlay>
             <div>{plan.planName}</div>
