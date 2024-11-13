@@ -1,5 +1,5 @@
 // src/pages/Chat/Chat.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 // import {Button} from '../../Button';
 import io from 'socket.io-client';
@@ -36,8 +36,8 @@ const ChatContainer = styled.div`
 const chatSound = new Audio('/chatSound_copy.wav');
 
 export default function Chat({ userId, planInfo }) {
-    const { messages, sendMessage} = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
-    // const [name, setName] = useState(userId);
+    const { messages, sendMessage, enableSound } = useContext(SocketContext);
+	// const [name, setName] = useState(userId);
     // const [room, setRoom] = useState(planInfo.planId);
     const [message, setMessage] = useState('');
     // const [userNames, setUserNames] = useState('');
@@ -47,6 +47,17 @@ export default function Chat({ userId, planInfo }) {
     // useEffect(() => {
     //     setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
     // }, [users]);
+
+	useEffect(() => {
+        const handleUserInteraction = () => {
+            enableSound(); // 첫 상호작용 시 사운드 활성화
+            document.removeEventListener('click', handleUserInteraction);
+        };
+        document.addEventListener('click', handleUserInteraction);
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+        };
+    }, [enableSound]);
 
 
     // 새로운 메시지가 도착하면 사운드 재생
