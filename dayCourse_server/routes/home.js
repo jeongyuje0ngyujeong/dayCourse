@@ -1399,9 +1399,11 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
 
         // 모든 파일에 대해 반복
         for (const file of req.files) {
-            let imgNAME = path.basename(file.originalname);
-			imgNAME = encodeURIComponent(imgNAME);
+            const fileExtension = path.extname(file.originalname);
+			let imgNAME = `${uuidv4()}${fileExtension}`;
             let type = file.mimetype
+
+			console.log("이름: ", imgNAME)
 
             // // 이미지 파일 확장자 확인
             const ext = path.extname(file.originalname).toLowerCase();
