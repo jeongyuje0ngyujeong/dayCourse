@@ -2,6 +2,7 @@ const express = require('express')
 const socketio = require('socket.io')
 const db = require('./db.js');
 const http = require('http')
+const { v4: uuidv4 } = require('uuid');
 
 const cors = require('cors')
 const { addUser, removeUser, getUser, getUsersInRoom } = require('./users')
@@ -94,9 +95,11 @@ io.on('connection', (socket) => {
 
       // 저장이 완료되면 클라이언트로 메시지 전송
       io.to(user.room).emit('message', {
+		id: uuidv4(),
         user: user.name,
         text: message,
-        color: user.color
+        color: user.color,
+		timestamp: Date.now()
       });
 
       callback(); // 콜백 호출
