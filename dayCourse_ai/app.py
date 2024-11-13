@@ -136,7 +136,6 @@ def analyze_image():
 
 @app.route('/cluster', methods=['POST'])
 def cluster_objects2():
-    print("요청들어옴.")
     logger.info("모먼트 분석")
     
     # 요청에서 이미지 리스트를 가져옴
@@ -182,17 +181,22 @@ def cluster_objects2():
             obj_tags = obj["metadata"]
             tag_list += obj_tags.strip().split(',')
         
-        logger.info(cluster_id, "확인", tag_list)
+        
             
 		# 빈도수로 태그 정렬 후 사용되지 않은 태그 중 가장 빈도 높은 태그 선택
         if tag_list:
             tag_counts = Counter(tag_list)
-            most_common_tag = tag_counts.most_common(1)[0][0]  # 가장 빈도가 높은 태그 선택
-            if most_common_tag == "felidae":
-                most_common_tag = "고양잇과"
+            most_common_tag = None
+            for tag, _ in tag_counts.most_common():
+            	if tag not in used_tags:
+                    most_common_tag = tag
+                    used_tags.add(tag)
+                    break
             core_tags[cluster_id] = most_common_tag
         else:
             core_tags[cluster_id] = '123456'  # 태그가 없는 경우
+            
+    logger.info("확인", core_tags)
             
 	 # 핵심 태그와 관련된 객체들만 필터링
     filtered_clusters = {}
@@ -203,6 +207,10 @@ def cluster_objects2():
         filtered_objects = [
             obj for obj in obj_list if core_tag in obj["metadata"]
         ]
+        
+		# 특정 태그가 "felidae"일 경우 "고양잇과"로 변경
+        if core_tags[cluster_id] == "felidae":
+            core_tags[cluster_id] = "고양잇과"
         
         # 필터링된 객체만 포함
         if filtered_objects:
@@ -217,6 +225,8 @@ def cluster_objects2():
     result = {
         'clusters': filtered_clusters
     }
+    
+    logger.info("확인2", result)
 
     return jsonify(result)
 
