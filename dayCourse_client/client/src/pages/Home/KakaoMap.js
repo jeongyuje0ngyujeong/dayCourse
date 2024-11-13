@@ -74,7 +74,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
             } else {
                 clearInterval(animationInterval); // 애니메이션 종료
             }
-        }, 30); // 50ms 간격으로 경로 추가 (속도 조절 가능)
+        }, 100); 
          // eslint-disable-next-line
     }, [selectedPlaces]);
     
