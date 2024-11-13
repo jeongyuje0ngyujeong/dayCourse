@@ -1452,6 +1452,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
         const fileQueue = req.files.map(file => ({ file, retries: 0 }));
         const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
 
+		console.log(uploadResults)
+
         // 비동기 사진 분석 요청 (백그라운드 작업)
         while (fileQueue.length > 0) {
             // const file = fileQueue.shift();
