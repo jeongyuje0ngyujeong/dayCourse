@@ -62,14 +62,14 @@ export default function Chat({ userId, planInfo }) {
     }, [enableSound]);
 
     // 새로운 메시지가 도착하면 사운드 재생
-    useEffect(() => {
-        if (messages.length > previousMessagesCount) {
-            chatSound.play().catch((error) => {
-                console.error("Sound playback failed:", error);
-            });
-        }
-        setPreviousMessagesCount(messages.length);
-    }, [messages, previousMessagesCount]);
+    // useEffect(() => {
+    //     if (messages.length > previousMessagesCount) {
+    //         chatSound.play().catch((error) => {
+    //             console.error("Sound playback failed:", error);
+    //         });
+    //     }
+    //     setPreviousMessagesCount(messages.length);
+    // }, [messages, previousMessagesCount]);
 
 
     const handleSendMessage = (event) => {

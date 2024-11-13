@@ -27,7 +27,7 @@ const UnreadBadge = styled.div`
     ${'' /* top: 0.8em; 
     right: 1.5em;  */}
     font-weight: bold;
-    margin-left:2%;
+    margin-left:2%;;
     animation: ${props => props.animate ? 'pop 0.3s ease-in-out' : 'none'};
     
     @keyframes pop {
@@ -123,7 +123,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedKeyword, setSelectedKeyword] = useState(''); // 선택된 키워드 상태 추가
 
-    const { messages } = useContext(SocketContext); // SocketContext에서 messages 가져오기
+    const { messages, enableSound } = useContext(SocketContext); // SocketContext에서 messages 가져오기
     const [unreadCount, setUnreadCount] = useState(0); // 읽지 않은 메시지 수 추적
     const lastMessageCountRef = useRef(0); // 마지막 메시지 수 추적을 위한 useRef
     const [animateBadge, setAnimateBadge] = useState(false);
@@ -138,6 +138,23 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
 
     const [recommendPlaces, setRecommendPlaces] = useState([]); 
     const [error, setError] = useState(null); // 에러 상태 추가
+
+
+    const chatSound = useRef(new Audio('/chatSound_copy.wav')).current;
+
+    // 사용자 상호작용 시 사운드 활성화
+    useEffect(() => {
+        const handleUserInteraction = () => {
+            enableSound(); // 첫 상호작용 시 사운드 활성화
+            document.removeEventListener('click', handleUserInteraction);
+        };
+        document.addEventListener('click', handleUserInteraction);
+
+        return () => {
+            document.removeEventListener('click', handleUserInteraction);
+        };
+    }, [enableSound]);
+
 
     useEffect(() => {
         const fetchRecommend = async () => {
@@ -166,6 +183,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
         };
         fetchRecommend();
     }, [selectedCategory, selectedKeyword]);
+
     useEffect(() => {
         if (activeTab !== 'chat') {
             const newMessages = messages.length - lastMessageCountRef.current;
@@ -173,10 +191,15 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                 setUnreadCount(prev => prev + newMessages);
                 // 애니메이션 트리거
                 setAnimateBadge(true);
+                // 알림음 재생
+                chatSound.currentTime = 0; // 오디오 시작점 초기화
+                chatSound.play().catch((error) => {
+                    console.error("Sound playback failed:", error);
+                });
             }
         }
         lastMessageCountRef.current = messages.length;
-    }, [messages, activeTab]);
+    }, [messages, activeTab, chatSound]);
 
     // 애니메이션 상태 초기화
     useEffect(() => {
