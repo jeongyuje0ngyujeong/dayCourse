@@ -22,7 +22,7 @@ export const SocketProvider = ({ children, userId }) => {
         socket.on('message', (incomingMessages) => {
             console.log('받은 메시지:', incomingMessages);
 
-            notificationSound.play();
+            chatSound.play();
 
 
             if (Array.isArray(incomingMessages)) {
