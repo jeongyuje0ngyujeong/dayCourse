@@ -1399,6 +1399,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
         // 모든 파일에 대해 반복
         for (const file of req.files) {
             let imgNAME = path.basename(file.originalname);
+			imgNAME = encodeURIComponent(imgNAME);
             let type = file.mimetype
 
             // // 이미지 파일 확장자 확인
@@ -1440,27 +1441,25 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             });
 
             // 업로드된 위치를 결과 배열에 추가
-            uploadResults.push({ name: imgNAME, type: ext, location: data.Location });
+			uploadResults.push({ name: imgNAME, type: ext, location: data.Location, retries: 0 });
         }
 
         // 업로드 결과를 클라이언트에 먼저 반환
-        res.json({msg: "성공"});
+        res.json({mag: "성공"});
 
         // const fileQueue = [...req.files];
-        const fileQueue = uploadResults;
+        const fileQueue = uploadResults
         const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
 
-		console.log(fileQueue)
-
+		console.log(uploadResults)
 
         // 비동기 사진 분석 요청 (백그라운드 작업)
         while (fileQueue.length > 0) {
             // const file = fileQueue.shift();
 			
-            const { name, type, location } = fileQueue.shift();
+            const { name, type, location, retries } = fileQueue.shift();
             const imgNAME = name;
             const ext2 = type;
-			console.log(imgNAME)
             const s3ImageUrl = location;
 			const isImage = allowedImageExtensions.includes(ext2);
 
@@ -1510,7 +1509,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                     console.error('이미지 분석 중 오류 발생:', imgNAME);
                     if (retries < maxRetries) {
                         console.error(`${imgNAME} 파일 분석 실패. 재시도.`);
-                        fileQueue.push({ file, retries: retries + 1 });
+                        fileQueue.push({ name: name, type: type, location: location, retries: retries+1 });
                     } else {
                         console.error(`${imgNAME} 파일의 최대 재시도 횟수 초과`);
                     }
