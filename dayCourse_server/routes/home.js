@@ -12,6 +12,7 @@ const fs = require('fs'); //파일 저장용
 const path = require('path');
 const sharp = require('sharp');
 // const heicConvert = require('heic-convert');
+const { v4: uuidv4 } = require('uuid');
 
 const authenticateJWT = require('../config/authenticateJWT');
 
