@@ -27,6 +27,7 @@ const UnreadBadge = styled.div`
     ${'' /* top: 0.8em; 
     right: 1.5em;  */}
     font-weight: bold;
+    margin-left:2%;
     animation: ${props => props.animate ? 'pop 0.3s ease-in-out' : 'none'};
     
     @keyframes pop {
@@ -314,7 +315,7 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
                         {unreadCount > 0 ? (
                             <>
                             <div style={{height:'100%', marginLeft:'4vh'}}>채팅</div>
-                            <UnreadBadge animate={animateBadge}>+{unreadCount > 99 ? '99+' : unreadCount}</UnreadBadge>
+                            <UnreadBadge animate={animateBadge}>+{unreadCount > 99 ? '99' : unreadCount}</UnreadBadge>
                             </>
                         ):(<div style={{height:'100%'}}>채팅</div>)
                         }

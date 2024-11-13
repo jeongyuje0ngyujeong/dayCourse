@@ -6,8 +6,8 @@ const ChatMessage = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 1vh 1vh;
-    background: #ccc;
-    color: black;
+    background: ${(props) => props.color || '#ccc'}; 
+    color: white;
     border-radius: 2vh;
     max-width: 80%;
     word-wrap: break-word;
@@ -41,7 +41,7 @@ const ChatMessage2 = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 1vh 1vh;
-    background: #90B54C;
+    background: ${(props) => props.color || '#ccc'}; 
     color: white;
     border-radius: 2vh;
     max-width: 70%;
@@ -111,11 +111,11 @@ function Message({ user, text, name, isNewMessage, color }) {
       <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}} >
           <Name isNewMessage={isNewMessage}>{isSentByCurrentUser? name : user}</Name>
           {isSentByCurrentUser? (
-              <ChatMessage2 isNewMessage={isNewMessage}>
+              <ChatMessage2  color={color} isNewMessage={isNewMessage}>
                   {text}
               </ChatMessage2>
           ) : (
-              <ChatMessage isNewMessage={isNewMessage}>
+              <ChatMessage  color={color} isNewMessage={isNewMessage}>
                   {text}
               </ChatMessage>
           )}
