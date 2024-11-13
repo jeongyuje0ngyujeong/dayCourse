@@ -129,12 +129,12 @@ export default function Home() {
               {/* <MonthContainer> */}
                 <PageTitle style={{fontSize:'3vh'}}>{currentDate.getFullYear()}. {String(currentDate.getMonth() + 1).padStart(2, '0')}</PageTitle>
               {/* </MonthContainer> */}
-              <div style={{display:'flex', gap:'1rem'}}>
+              <div style={{display:'flex', gap:'1rem', alignItems:'center'}}>
                 <Form action="/main/schedules/create">
-                    <Button style={{fontFamily: 'NPSfontBold'}} type='submit' width='6rem' $background='#90B54C' color='white'>+ 일정추가</Button>
+                    <Button style={{fontFamily: 'NPSfontBold', fontSize:'2vh'}} type='submit' width='12vh' height='4vh' $background='#90B54C' color='white'>+ 일정추가</Button>
                 </Form>
-                <Button style={{fontFamily: 'NPSfontBold'}} onClick={() => {showCalendar ? handlePrevMonth(): handlePrevWeek()}} $background='#90B54C' $border='none' color='white'>{'<'}</Button>
-                <Button style={{fontFamily: 'NPSfontBold'}} onClick={() => {showCalendar ? handleNextMonth(): handleNextWeek()}} $background='#90B54C' $border='none' color='white'>{'>'}</Button>
+                <Button style={{fontFamily: 'NPSfontBold', fontSize:'2vh'}} onClick={() => {showCalendar ? handlePrevMonth(): handlePrevWeek()}} height='4vh' width='4vh' $background='#90B54C' $border='none' color='white'>{'<'}</Button>
+                <Button style={{fontFamily: 'NPSfontBold', fontSize:'2vh'}} onClick={() => {showCalendar ? handleNextMonth(): handleNextWeek()}} height='4vh' width='4vh' $background='#90B54C' $border='none' color='white'>{'>'}</Button>
               </div>
             </WeekBar>
 
@@ -166,12 +166,11 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div style={{border:'1px solid #eee',padding:'0rem 1rem 0 1rem',  borderRadius:'15px', flex:'1', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', display:'flex', flexDirection:'column', overflow:'hidden', justifyContent:'center', alignItems:'center'}}>
-            
+          <div style={{border:'1px solid #eee',padding:'0rem 1rem 0 1rem',  borderRadius:'15px', flex:'1', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', display:'flex', flexDirection:'column', overflow:'hidden', alignItems:'flex-start'}}>
             <WeekBar>
               <PageTitle style={{ fontWeight:'1000', fontSize:'3vh'}}>모먼트</PageTitle>
               <Form action="/main/album">
-                <Button style={{fontFamily: 'NPSfontBold'}} type='submit' width='6rem' $background='#90B54C' color='white'>모든 모먼트</Button>
+                <Button style={{fontFamily: 'NPSfontBold',fontSize:'2vh'}} type='submit' height='4vh' width='12vh' $background='#90B54C' color='white'>모든 모먼트</Button>
               </Form>
             </WeekBar>
             <Moment maxItems={maxItems} columns={column}/>

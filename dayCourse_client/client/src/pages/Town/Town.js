@@ -87,7 +87,7 @@ const ScrollContainer = styled.div`
 const MapContainer = styled.div`
     display: flex;
     flex: 1;
-    
+    margin-top: 1vh;
     ${'' /* border: 1px solid; */}
     border-radius: 10px;
     justify-content: center;
@@ -98,7 +98,6 @@ const Container = styled.div`
     height: 30vh;
     display: flex;
     gap: 5px;
-    margin-top: auto;
     width: 100%;
 `;
 
@@ -136,22 +135,24 @@ export default function UpdateTown() {
     const [selectedTown, setSelectedTown] = useState('');
     // console.log(selectedTown);
     const [departurePoints, setDeparturePoints] = useState([
-        {
-            "address_name": "서울 강동구 상일동 산 73",
-            "category_group_code": "SW8",
-            "category_group_name": "지하철역",
-            "category_name": "교통,수송 > 지하철,전철 > 수도권5호선",
-            "distance": "",
-            "id": "500054763",
-            "phone": "",
-            "place_name": "강일역 5호선",
-            "place_url": "http://place.map.kakao.com/500054763",
-            "road_address_name": "서울 강동구 고덕로 지하 456",
-            "x": "127.175680183486",
-            "y": "37.5574259795986"
-        },
+        // {
+        //     "user": "김민경",
+        //     "address_name": "서울 강동구 상일동 산 73",
+        //     "category_group_code": "SW8",
+        //     "category_group_name": "지하철역",
+        //     "category_name": "교통,수송 > 지하철,전철 > 수도권5호선",
+        //     "distance": "",
+        //     "id": "500054763",
+        //     "phone": "",
+        //     "place_name": "강일역 5호선",
+        //     "place_url": "http://place.map.kakao.com/500054763",
+        //     "road_address_name": "서울 강동구 고덕로 지하 456",
+        //     "x": "127.175680183486",
+        //     "y": "37.5574259795986"
+        // },
         
         {
+            "user": "정유정",
             "address_name": "경기 고양시 덕양구 원흥동 569-15",
             "category_group_code": "SW8",
             "category_group_name": "지하철역",
@@ -167,6 +168,7 @@ export default function UpdateTown() {
         },
         
         {
+            "user": "김경은",
             "address_name": "경기 수원시 영통구 이의동 산 94-6",
             "category_group_code": "SC4",
             "category_group_name": "학교",
@@ -179,7 +181,23 @@ export default function UpdateTown() {
             "road_address_name": "경기 수원시 영통구 광교산로 154-42",
             "x": "127.03514122548546",
             "y": "37.30114907752158"
-        }        
+        },
+        {
+            "user": "하혜민",
+            "address_name": "경기 수원시 영통구 이의동 산 94-6",
+            "category_group_code": "SC4",
+            "category_group_name": "학교",
+            "category_name": "교육,학문 > 학교 > 대학교",
+            "distance": "",
+            "id": "9673131",
+            "phone": "031-249-9114",
+            "place_name": "경기대학교 수원캠퍼스",
+            "place_url": "http://place.map.kakao.com/9673131",
+            "road_address_name": "경기 수원시 영통구 광교산로 154-42",
+            "x": "127.03514122548546",
+            "y": "37.30114907752158"
+        }                
+
     ]); 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
@@ -225,7 +243,7 @@ export default function UpdateTown() {
                     )} */}
                     <Button 
                         type='submit' 
-                        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000' }} 
+                        style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000', fontSize:'2vh' }} 
                         width='4rem' 
                         height='3rem' 
                         border='none' 
@@ -242,8 +260,13 @@ export default function UpdateTown() {
                         <ScrollContainer>
                             {departurePoints.map((point, index) => (
                                 <div key={index} style={{ display: 'flex', alignItems: 'center',justifyContent: 'space-between', gap: '5px', marginBottom: '10px'}}>
-                                    <div style={{ border: '1px solid #ccc', padding:'2vh', width:'100%', borderRadius: '8px',height:'2.5rem', display:'flex', alignItems:'center', gap:'2vh', justifyContent:'space-between'}}>
-                                        <PageTitle>{point.place_name}</PageTitle>
+                                    {point.user && 
+                                    <div style={{display:'flex', background: '#90B54C', height:'100%', alignItems:'center', borderRadius:'20vh'}}>
+                                        <PageTitle style={{fontSize:'2vh', margin:'0 1vh', color:'white'}}>{point.user}</PageTitle>
+                                    </div>
+                                    }
+                                    <div style={{ flex:'1', border: '1px solid #ccc', padding:'2vh', width:'100%', borderRadius: '8px',height:'2.5rem', display:'flex', alignItems:'center', gap:'2vh', justifyContent:'space-between'}}>
+                                        <PageTitle style={{fontSize:'2vh'}}>{point.place_name}</PageTitle>
                                         <p> {point.address_name}</p>
                                     </div>
                                     <Button onClick={() => removeDeparturePoint(index)} width='3rem' height='2.5rem'>-</Button>
