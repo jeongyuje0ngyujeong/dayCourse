@@ -96,6 +96,7 @@ io.on('connection', (socket) => {
       io.to(user.room).emit('message', {
         user: user.name,
         text: message,
+        color: user.color
       });
 
       callback(); // 콜백 호출
