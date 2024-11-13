@@ -1,5 +1,5 @@
 // src/pages/Chat/Chat.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import styled from 'styled-components';
 // import {Button} from '../../Button';
 import io from 'socket.io-client';
@@ -33,57 +33,29 @@ const ChatContainer = styled.div`
 //     align-items: center;
 // `;
 
+const chatSound = new Audio('/chatSound_copy.wav');
+
 export default function Chat({ userId, planInfo }) {
     const { messages, sendMessage } = useContext(SocketContext); // 소켓 컨텍스트에서 메시지 및 함수 가져오기
     // const [name, setName] = useState(userId);
     // const [room, setRoom] = useState(planInfo.planId);
     const [message, setMessage] = useState('');
     // const [userNames, setUserNames] = useState('');
+    const [previousMessagesCount, setPreviousMessagesCount] = useState(0); // 이전 메시지 수 상태 추가
 
     // useEffect(() => {
     //     setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
     // }, [users]);
 
-        return () => {
-          socket.emit();
-          socket.off();
-        }
-    }, [name, room]);
-    // [ENDPOINT, window.location.search]
-
     useEffect(() => {
-      socket.on('message', (incomingMessages) => {
-        console.log('받은 메시지:', incomingMessages); // 수신된 메시지 로그
-        
-        // 수신된 메시지가 배열인 경우
-        if (Array.isArray(incomingMessages)) {
-            setMessages(incomingMessages.reverse()); // 기존 메시지와 합침
-        } 
-        // 수신된 메시지가 객체인 경우
-        else if (typeof incomingMessages === 'object') {
-            setMessages((prevMessages) => [incomingMessages, ...prevMessages, ]); // 기존 메시지에 추가
-        } 
-        else {
-            console.error('수신된 메시지가 배열이나 객체가 아닙니다:', incomingMessages); // 오류 로그
+        if (messages.length > previousMessagesCount) { // 새로운 메시지가 도착했는지 확인
+            chatSound.play();
         }
-      });
-  
-      socket.on('roomData', ({ users }) => {
-          setUsers(users);
-          setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
-      });
+        setPreviousMessagesCount(messages.length); // 현재 메시지 수를 상태에 저장
+    }, [messages, previousMessagesCount]);
 
-      return () => {
-          socket.off('message'); 
-          socket.off('roomData'); 
-      };
-  }, []); 
 
-    useEffect(() => {
-      setUserNames(users.length > 0 ? users.map((item) => item.name).join(', ') : '');
-    }, [users]);
-    
-    const sendMessage = (event) => {
+    const handleSendMessage = (event) => {
         event.preventDefault();
         if (message) {
             socket.emit('sendMessage', message, () => setMessage(''));
