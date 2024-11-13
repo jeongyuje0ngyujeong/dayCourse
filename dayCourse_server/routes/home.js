@@ -1403,7 +1403,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
 			let imgNAME = `${uuidv4()}${fileExtension}`;
             let type = file.mimetype
 
-			console.log("이름: ", imgNAME)
+			//console.log("이름: ", imgNAME)
 
             // // 이미지 파일 확장자 확인
             const ext = path.extname(file.originalname).toLowerCase();
@@ -1428,7 +1428,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
             };
 
 
-            console.log(uploadParams)
+            //console.log(uploadParams)
 
             // S3에 이미지 업로드
             const data = await new Promise((resolve, reject) => {
@@ -1454,7 +1454,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
         const fileQueue = uploadResults
         const allowedImageExtensions = ['.jpg', '.jpeg', '.png'];
 
-		console.log(uploadResults)
+		//console.log(uploadResults)
 
         // 비동기 사진 분석 요청 (백그라운드 작업)
         while (fileQueue.length > 0) {
