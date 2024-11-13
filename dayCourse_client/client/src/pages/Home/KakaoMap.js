@@ -54,7 +54,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         }
 
         const polyline = new kakao.maps.Polyline({
-            path: linePath,
+            path: [linePath[0]], // 시작 지점만 설정
             strokeWeight: strokeWeight,
             strokeColor: '#5c5b5b',
             strokeOpacity: 0.7,
@@ -63,6 +63,18 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         });
         polyline.setMap(map);
         routeLinesRef.current.push(polyline);
+        
+        let currentIndex = 1;
+        const animationInterval = setInterval(() => {
+            if (currentIndex < linePath.length) {
+                const newPath = polyline.getPath();
+                newPath.push(linePath[currentIndex]); // 경로에 다음 지점 추가
+                polyline.setPath(newPath);
+                currentIndex += 1;
+            } else {
+                clearInterval(animationInterval); // 애니메이션 종료
+            }
+        }, 100); 
          // eslint-disable-next-line
     }, [selectedPlaces]);
     
