@@ -1,15 +1,14 @@
 // import React from 'react';
 import styled from 'styled-components';
 import Message from "./Message";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 
 const ChatContent = styled.div`
     flex: 1;
     display: flex;
     flex-direction: column-reverse;
     width: 100%;
-    margin: 2vh 0;
-    padding: 1vh;
+    margin: 0.5rem 0;
    
     color: white;
     overflow: auto; 
@@ -21,24 +20,22 @@ const ChatContent = styled.div`
 
 
 export default function Messages({ messages, name }) {
-    
-    // const latestMessageIndex = 0;
-    const [highlightMessageIndex, setHighlightMessageIndex] = useState(0); 
-    
-    useEffect(() => {
-        setHighlightMessageIndex(0);
 
-        const timer = setTimeout(() => {
-            setHighlightMessageIndex(null); // 2초 후 강조 제거
-          }, 300); // 2초 후 강조 제거
-    
-          return () => clearTimeout(timer); // cleanup
-      }, [messages]);
+    useEffect(() => {
+        if (messages) {
+            console.log('Messages component - 전체 메시지:', messages);
+            messages.forEach((msg, index) => {
+                console.log(`Message at index ${index} - color:`, msg.color);
+            });
+        }
+    }, [messages]);
+
     return (
         <ChatContent>
             {messages.length>0 && messages.map((message, index) => (
                 <div key={index}>
-                    <Message user={message.user} text={message.text} name={name} isNewMessage={index === highlightMessageIndex}/>
+                    <Message user={message.user} text={message.text} name={name} color={message.color}/>
+                  
                 </div>
             ))}
         </ChatContent>
