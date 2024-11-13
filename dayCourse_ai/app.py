@@ -157,7 +157,7 @@ def cluster_objects2():
     
     # K-means 클러스터링 수행
     X = np.array([item["vector"] for item in tag_vectors])
-    n_clusters = min(8, (len(X)//5) )
+    n_clusters = min(9, (len(X)//5) )
     n_clusters = max(1, n_clusters)
     kmeans = KMeans(n_clusters=n_clusters, random_state=0)
     labels = kmeans.fit_predict(X)
