@@ -12,7 +12,6 @@ const ResultContainer = styled.div`
     width: 100%; 
     background: white; 
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-
     border-top: none;
     z-index: 1000; 
     overflow-y: auto; 
@@ -119,7 +118,7 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
                 {showResult && (
                 <>
                 {places.length === 0 && ( // 검색 결과가 없을 때
-                    <p className="result-text">검색 결과가 없습니다.</p>
+                    <p style={{fontSize:'2vh'}} className="result-text">검색 결과가 없습니다.</p>
                 )}
                 <ul id="places-list">
                     {places.map((place, index) => (
@@ -130,9 +129,9 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
                                 setPlaces([]);
                                 // setShowResult(false);
                             }} 
-                            style={{ cursor: 'pointer' }}
+                            style={{ cursor: 'pointer', marginBottom:'1vh'}}
                         >
-                            <h5>{place.place_name}</h5>
+                            <h5 style={{fontSize:'2vh', marginBottom:'1vh'}}>{place.place_name}</h5>
                             {/* {place.road_address_name && <span>{place.road_address_name}</span>} */}
                             <span>{place.address_name}</span>
                         </li>

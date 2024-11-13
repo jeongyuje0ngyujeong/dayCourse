@@ -523,7 +523,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                             </div>
                             <ButtonContainer>
                                 <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
-                                    {isRecommending ? '추천 중...' : '일정 추천'}
+                                    {isRecommending ? '추천 중...' : '코스 추천'}
                                 </RecommendButton>
                                 <ApplyButton 
                                     onClick={applyRecommendedPlaces} 
