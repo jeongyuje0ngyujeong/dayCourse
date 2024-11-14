@@ -146,21 +146,20 @@ export default function UpdateTown() {
             "x": "126.87302523491",
             "y": "37.6506921774602"
         },
-        
         {
             "user": "김경은",
-            "address_name": "경기 수원시 영통구 이의동 산 94-6",
-            "category_group_code": "SC4",
-            "category_group_name": "학교",
-            "category_name": "교육,학문 > 학교 > 대학교",
+            "address_name": "서울 종로구 묘동 20-5",
+            "category_group_code": "SW8",
+            "category_group_name": "지하철역",
+            "category_name": "교통,수송 > 지하철,전철 > 수도권3호선",
             "distance": "",
-            "id": "9673131",
-            "phone": "031-249-9114",
-            "place_name": "경기대학교 수원캠퍼스",
-            "place_url": "http://place.map.kakao.com/9673131",
-            "road_address_name": "경기 수원시 영통구 광교산로 154-42",
-            "x": "127.03514122548546",
-            "y": "37.30114907752158"
+            "id": "21160545",
+            "phone": "02-6110-3291",
+            "place_name": "종로3가역 3호선",
+            "place_url": "http://place.map.kakao.com/21160545",
+            "road_address_name": "서울 종로구 돈화문로 지하 30",
+            "x": "126.9918757981544",
+            "y": "37.571563287751246"
         },
         {
             "user": "하혜민",
@@ -179,6 +178,7 @@ export default function UpdateTown() {
         }                
 
     ]); 
+
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
     const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
