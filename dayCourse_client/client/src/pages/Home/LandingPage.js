@@ -488,7 +488,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 			const x = e.pageX / screenWidth;
 			let y = e.pageY / screenHeight;
 			if((screenWidth-scrrenW) < e.pageX){
-				y = e.clientY / screenHeight;
+				y = (e.pageY-window.scrollY) / screenHeight;
 			}
     
             socket.emit('mouse-move', { room: planId, x, y });
