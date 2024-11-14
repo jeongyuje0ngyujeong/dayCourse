@@ -450,6 +450,8 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 [userId]: { x: x, y: y, name }
             }));
 
+			console.log("Updated userCursors:", userCursors);
+
 			
         });
     
@@ -461,8 +463,6 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 console.error('Invalid updatedPlaces received:', updatedPlaces);
                 setSelectedPlaces([]);
             }
-
-			console.log("Updated userCursors:", userCursors);
 
         });
 
