@@ -447,7 +447,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             setUserCursors(prev => ({
                 ...prev,
 				//style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}              
-                [userId]: { cursor: {x: x, y: y}, name }
+                [userId]: { x: x, y: y, name }
             }));
         });
     
@@ -666,7 +666,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                 <UserCursor 
                                     icon={faMousePointer} 
                                     color={userColors[userId]} 
-                                    style={{ top: (cursor.y), left: (cursor.x)}}
+                                    style={{ top: (cursorData.y), left: (cursorData.x)}}
                                     title={cursorData.name}
                                 />
                             </div>
