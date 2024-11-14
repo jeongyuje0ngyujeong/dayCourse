@@ -449,6 +449,8 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 				//style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}              
                 [userId]: { x: x, y: y, name }
             }));
+
+			console.log("Updated userCursors:", userCursors);
         });
     
         socket.on('places-updated', (updatedPlaces) => {
