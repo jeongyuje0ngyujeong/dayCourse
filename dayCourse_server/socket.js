@@ -162,12 +162,12 @@ io.on('connection', (socket) => {
 	});
 
 	// 클라이언트가 'notification' 이벤트를 보낼 때 이를 같은 방에 있는 모든 사용자에게 전송
-    socket.on('notification', ({ room, message }) => {
-        console.log(`Sending notification to room ${room}:`, message);
+    // socket.on('notification', ({ room, message }) => {
+    //     console.log(`Sending notification to room ${room}:`, message);
         
-        // 같은 방에 있는 다른 사용자에게 알림 전송
-        socket.to(room).emit('notification', { message });
-    });
+    //     // 같은 방에 있는 다른 사용자에게 알림 전송
+    //     socket.to(room).emit('notification', { message });
+    // });
   
 })
 
