@@ -14,7 +14,7 @@ const authenticateJWT = async (req, res, next) => {
   }
 
   try {
-      const blacklisted = await redisClient.get(token); // 클라이언트 재사용
+      const blacklisted = await redisClient.get(token);
       if (blacklisted) {
           return res.status(401).json({ error: 'Unauthorized: Token is blacklisted' });
       }
