@@ -440,9 +440,19 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     
         socket.on('user-mouse-move', ({ userId, name, cursor }) => {
             console.log('수신한 user-mouse-move:', { userId, name, cursor });
+			console.log(cursor.x)
+			console.log(cursor.y)
+
+			const scrrenW = document.getElementById('places_container')?.getBoundingClientRect().width;			
+			// const x = e.pageX / screenWidth;
+			let y = cursor.y;
+			if((screenWidth-scrrenW) < cursor.x){
+				y = (cursor.y+window.scrollY);
+			}
             setUserCursors(prev => ({
                 ...prev,
-                [userId]: { ...cursor, name }
+				//style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}              
+                [userId]: { cursor: {x: cursor.x, y: y}, name }
             }));
         });
     
