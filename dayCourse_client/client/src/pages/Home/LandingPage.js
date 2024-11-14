@@ -149,6 +149,7 @@ const RecommendButton = styled.button`
     font-size: 2vh;
     font-family: 'NPSfontBold', system-ui;
     box-sizing: border-box;
+    margin-left:10px;
     ${'' /* margin-top:1vh; */}
 
     &:hover {
@@ -314,7 +315,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
-            addNotification(`장소 "${place.place_name}"이(가) 추가되었습니다.`);
+            addNotification(`"${place.place_name}"이(가) 추가!`);
 
         } catch (error) {
             console.error("장소 추가 실패:", error);
@@ -333,7 +334,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             await deletePlace(validPlaceId, userId, isRecommended ? planId : null);
     
             const updatedPlaces = await fetchExistPlace();
-            addNotification(`장소 "${placeName}"이(가) 삭제되었습니다.`);
+            addNotification(`"${placeName}" 삭제!`);
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -630,12 +631,12 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                         onSubmitKeyword={submitKeyword} 
                         onPlaceClick={handlePlaceClick}
                     />
-                    <div style={{display:'flex', width:'75%', alignItems:'center', gap:'2vh'}}>
-                            <div style={{flex:'1'}}>
-                                <PageTitle style={{fontSize:'3vh', margin: '1vh 0 2vh 0'}}>선택된 장소</PageTitle>
-                            </div>
-
-                            <NotificationContainer>
+                <div style={{ display: 'flex', width: '75%', alignItems: 'center', gap: '1vh' }}>
+                    <div style={{ flex: '1', display: 'flex', alignItems: 'center' }}>
+                        <PageTitle style={{ fontSize: '3vh', margin: '1vh 0 2vh 0' }}>선택된 장소</PageTitle>
+                        
+                        {/* 알림을 선택된 장소 텍스트 바로 오른쪽에 배치 */}
+                        <NotificationContainer style={{ marginLeft: '10px' }}> {/* 필요한 만큼 간격 조정 */}
                             <AnimatePresence>
                                 {notifications.map((notification) => (
                                     <NotificationBox
@@ -650,6 +651,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                 ))}
                             </AnimatePresence>
                         </NotificationContainer>
+                    </div>
+
+
 
                             <ButtonContainer>
                                 <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
