@@ -208,6 +208,22 @@ const RecommendedPlacesContainer = styled.div`
     gap: 1.5vh;
 `;
 
+const NotificationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 5px; // 간격 줄이기
+    margin-left: 10px; // 필요시 왼쪽으로 약간 이동
+`;
+
+const NotificationBox = styled(motion.div)`
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1.5vh;
+`;
+
+
 const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const { socket, joinRoom } = useContext(SocketContext); 
     const [keyword, setKeyword] = useState("");
@@ -226,7 +242,32 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const [isApplying, setIsApplying] = useState(false); // 적용 로딩 상태
     const [applyError, setApplyError] = useState(null); // 적용 에러 상태
    // const [distances, setDistances] = useState([]);
+   const [notifications, setNotifications] = useState([]);
+    
 
+    // 알림 애니메이션 설정
+    const notificationVariants = {
+        hidden: { opacity: 0, y: -20 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }, // 표시 속도 조정
+        exit: { opacity: 0, y: -20, transition: { duration: 0.5 } }   // 사라질 때 속도 조정
+    };
+
+    const addNotification = (message) => {
+        console.log("알림 추가 및 전송:", message); // 전송 로그 확인
+        const newNotification = { id: Date.now(), message };
+        setNotifications((prev) => [newNotification, ...prev]);
+    
+        if (socket) {
+            // 알림을 다른 사용자에게 전송
+            socket.emit('notification', { room: planId, message });
+        }
+    
+        // 알림을 잠시 후 제거
+        setTimeout(() => {
+            setNotifications((prev) => prev.filter((n) => n.id !== newNotification.id));
+        }, 2000);
+    };
+    
     const submitKeyword = (newKeyword) => {
         setKeyword(newKeyword);
     };
@@ -273,12 +314,13 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
 
+            addNotification(`장소 "${place.place_name}"이(가) 추가되었습니다.`);
+
         } catch (error) {
             console.error("장소 추가 실패:", error);
         }
     };
-
-    const removePlace = async (placeId, isRecommended) => {
+    const removePlace = async (placeId, isRecommended, placeName) => {
         setIsDeleting(true);
         setDeleteError(null);
         try {
@@ -287,10 +329,11 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
             if (isRecommended) {
                 console.log("관련 planId:", planId);
             }
-
+    
             await deletePlace(validPlaceId, userId, isRecommended ? planId : null);
-
+    
             const updatedPlaces = await fetchExistPlace();
+            addNotification(`장소 "${placeName}"이(가) 삭제되었습니다.`);
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -326,6 +369,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                     place.version
                 )
             ));
+            addNotification("장소 순서가 변경되었습니다.");
             if (socket) {
                 socket.emit('update-places', { room: planId, places: updatedPlaces });
             }
@@ -522,6 +566,29 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
         }
     }, [isPlacesLoaded]);
 
+
+    useEffect(() => {
+        if (!socket) return;
+        
+        // 다른 사용자로부터 알림 수신
+        socket.on('notification', ({ message }) => {
+            console.log("수신한 알림:", message); // 수신 로그 확인
+            const newNotification = { id: Date.now(), message };
+            setNotifications((prev) => [newNotification, ...prev]);
+            
+            // 일정 시간이 지나면 알림 제거
+            setTimeout(() => {
+                setNotifications((prev) => prev.filter((n) => n.id !== newNotification.id));
+            }, 2000);
+        });
+    
+        // 컴포넌트가 언마운트될 때 리스너 정리
+        return () => {
+            socket.off('notification');
+        };
+    }, [socket]);
+
+
             //TMAP 거리 계산 API 
 
         // useEffect(() => {
@@ -567,6 +634,23 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                             <div style={{flex:'1'}}>
                                 <PageTitle style={{fontSize:'3vh', margin: '1vh 0 2vh 0'}}>선택된 장소</PageTitle>
                             </div>
+
+                            <NotificationContainer>
+                            <AnimatePresence>
+                                {notifications.map((notification) => (
+                                    <NotificationBox
+                                        key={notification.id}
+                                        variants={notificationVariants}
+                                        initial="hidden"
+                                        animate="visible"
+                                        exit="exit"
+                                    >
+                                        {notification.message}
+                                    </NotificationBox>
+                                ))}
+                            </AnimatePresence>
+                        </NotificationContainer>
+
                             <ButtonContainer>
                                 <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
                                     {isRecommending ? '추천 중...' : '코스 추천'}
@@ -617,7 +701,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                                     <span  style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
                                                                 </div>
                                                                 <DeleteButton 
-                                                                    onClick={() => removePlace(place.placeId || place.id, place.isRecommended)}
+                                                                    onClick={() => removePlace(place.placeId || place.id, place.isRecommended, place.place_name)}
                                                                     disabled={isDeleting}
                                                                 >
                                                                     X
