@@ -445,14 +445,15 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 
 			const scrrenW = document.getElementById('places_container')?.getBoundingClientRect().width;			
 			// const x = e.pageX / screenWidth;
-			let y = cursor.y;
-			if((screenWidth-scrrenW) < cursor.x){
-				y = (cursor.y+window.scrollY);
+			let y = (cursor.y * screenHeight);
+			const x = (cursor.x*screenWidth)
+			if((screenWidth-scrrenW) < x){
+				y = y+window.scrollY;
 			}
             setUserCursors(prev => ({
                 ...prev,
 				//style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}              
-                [userId]: { cursor: {x: cursor.x, y: y}, name }
+                [userId]: { cursor: {x: x, y: y}, name }
             }));
         });
     
@@ -671,7 +672,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                 <UserCursor 
                                     icon={faMousePointer} 
                                     color={userColors[userId]} 
-                                    style={{ top: (cursorData.y * screenHeight), left: (cursorData.x*screenWidth)}}
+                                    style={{ top: (cursor.y), left: (cursor.x)}}
                                     title={cursorData.name}
                                 />
                             </div>
