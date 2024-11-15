@@ -1,9 +1,5 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-const passport = require('passport');
-const bcrypt = require('bcrypt');
 const db = require('../db')
-const { analyzeImage } = require('./moment');
 
 const router = express.Router();
 const authenticateJWT = require('../config/authenticateJWT');
@@ -16,9 +12,15 @@ router.get('/load', authenticateJWT, async (req, res) => {
     const sql = `
         SELECT User.*, User_survey.*
         FROM User
-        INNER JOIN User_survey ON User.userId = User_survey.userId
         WHERE User.userId = ?
     `;
+
+    // const sql = `
+    //     SELECT User.*, User_survey.*
+    //     FROM User
+    //     INNER JOIN User_survey ON User.userId = User_survey.userId
+    //     WHERE User.userId = ?
+    // `;
 
     console.log("유저 정보 조회 : ",  userId)
     
