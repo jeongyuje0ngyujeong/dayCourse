@@ -1,7 +1,9 @@
 const express = require('express');
 const db = require('./db.js');
+const authRoutes = require('./routes/auth');
 const apiHome = require('./routes/home.js');
 const groupRoutes = require('./routes/group.js');
+const mypageRoutes = require('./routes/mypage.js');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const passport = require('passport');
@@ -28,10 +30,11 @@ app.use(passport.initialize());
 // /home 경로에 있는 모든 라우트에 인증 미들웨어 적용
 app.use('/home', authenticateJWT, apiHome);
 
-const authRoutes = require('./routes/auth');
+
 app.use('/auth', authRoutes);
 app.use("/home", apiHome);
 app.use("/group", groupRoutes);
+app.use("/mypage", mypageRoutes);
 
 app.get('/', (req, res) => {
   res.send('테스트')
