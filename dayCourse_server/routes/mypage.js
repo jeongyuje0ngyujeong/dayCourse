@@ -10,8 +10,9 @@ router.get('/load', authenticateJWT, async (req, res) => {
     const userId = req.user.userId;
 
     const sql = `
-        SELECT User.*
+        SELECT User.userName, User.userAge User.userGender, User_survey.*
         FROM User
+        LEFT JOIN User_survey ON User.userId = User_survey.userId;
         WHERE User.userId = ?
     `;
 
