@@ -24,6 +24,7 @@ const Tab1 = styled.button`
     &:hover {
         background-color: #f9f9f9;
     }
+    font-size: 2vh;
 `;
 const Tab2 = styled.button`
     flex: 1;
@@ -38,6 +39,7 @@ const Tab2 = styled.button`
     &:hover {
         background-color: #f9f9f9;
     }
+    font-size: 2vh;
 `;
 
 const Content = styled.div`
@@ -62,7 +64,8 @@ const ResultContainer = styled.div`
     min-width:15.7rem;
     height: 100%;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 1vh
+    padding: 1vh;
+    font-size: 2vh;
     ${'' /* margin-top: 1rem; */}
 `
 
@@ -234,12 +237,12 @@ export default function Group({group}) {
                         <TextButton>
                             <PageTitle>그룹명</PageTitle>
                                 <Button 
-                                    style={{ height: '2rem', width: '5rem'}} 
+                                    style={{ height: '2rem', width: '6rem', fontSize:'2vh'}} 
                                     onClick={(e) => {handleOnClick(e)}}
                                 >그룹 생성
                                 </Button>
                             </TextButton>
-                            <input name="groupName" style={{width:'100%'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요' required/>
+                            <input name="groupName" style={{width:'100%', fontSize:'2vh'}} value = {groupName} onChange={(e) => setGroupName(e.target.value)}  placeholder='그룹명을 입력해주세요' required/>
                         <TextButton>
                             <PageTitle>선택한 친구</PageTitle>
                             <h4>{selectedFriends.length}명</h4>

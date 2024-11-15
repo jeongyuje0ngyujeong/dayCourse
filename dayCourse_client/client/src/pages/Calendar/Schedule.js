@@ -80,7 +80,7 @@ export default function Schedule(props) {
             {event.notes && <p>{event.notes}</p>}
             
             <ButtonContainer>
-              <Button onClick={(e)=>handleDetail(e, event.planId)}  width='5rem'>상세일정</Button>
+              <Button style={{fontSize:'2vh'}} onClick={(e)=>handleDetail(e, event.planId)}  width='6rem'>상세일정</Button>
               <Form
                 method="post"
                 action={`${event.planId}/destroy`}

@@ -86,7 +86,7 @@ export default function CreateSchedule() {
         </div>
         <div style={{flex:'2', marginTop:'2vh'}}>
           <div style={{display:'flex', width:'inherit', gap:'1rem'}} method="post" id="schedule-form">
-            <Form style={{width:'100%'}}method="post" id="schedule-form">
+            <Form style={{width:'100%'}} method="post" id="schedule-form">
               <div style={{flex:'1'}}>
                 <PageTitle style={{fontSize:'2vh'}}>약속 날짜</PageTitle>
                 <input
@@ -95,7 +95,7 @@ export default function CreateSchedule() {
                   type="date"
                   name="date"
                   defaultValue={date}
-                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'}}
+                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', fontSize:'2vh'}}
                   required
                 />
               </div>
@@ -104,7 +104,7 @@ export default function CreateSchedule() {
                 <input
                   type="text"
                   name="planName"
-                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'}}
+                  style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',fontSize:'2vh'}}
                   placeholder={'약속의 이름을 입력해주세요.'}
                   defaultValue={planName}
                 />
