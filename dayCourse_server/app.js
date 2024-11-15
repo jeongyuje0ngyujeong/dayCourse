@@ -27,14 +27,11 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 
 
-// /home 경로에 있는 모든 라우트에 인증 미들웨어 적용
-app.use('/home', authenticateJWT, apiHome);
-
-
 app.use('/auth', authRoutes);
-app.use("/home", apiHome);
-app.use("/group", groupRoutes);
-app.use("/mypage", mypageRoutes);
+app.use("/home", authenticateJWT, apiHome);
+app.use("/group", authenticateJWT, groupRoutes);
+app.use("/mypage", authenticateJWT, mypageRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('테스트')
