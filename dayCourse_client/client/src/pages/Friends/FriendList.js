@@ -29,7 +29,7 @@ const ItemContainer = styled.div`
     align-items: center;
     border: 1px solid #ddd;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    
+    font-size:2vh;
     ${'' /* background: #eee; */}
 `
 
@@ -67,7 +67,7 @@ export default function FriendList({friendsList, setSelectedFriends, flag}) {
                     }} 
                     style={{ cursor: 'pointer' }}
                 >
-                    <div style={{display:'flex', justifyContent:'space-between',  alignItems:'center',}}>
+                    <div style={{display:'flex', justifyContent:'space-between',  alignItems:'center'}}>
                         <h4 style={{width:'15vh'}}>{friend.friendName}</h4>
                         <p> | {friend.friendId}</p>
                     </div>

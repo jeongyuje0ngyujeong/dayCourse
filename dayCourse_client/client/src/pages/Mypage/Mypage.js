@@ -3,7 +3,7 @@ import { PageTitle } from '../../commonStyles';
 export default function Home() {
   return (
     <>
-    <PageTitle style={{fontSize:'20px'}}>My Page</PageTitle>
+    <PageTitle style={{fontSize:'3vh'}}>My Page</PageTitle>
     </>
   );
 }

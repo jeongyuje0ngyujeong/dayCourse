@@ -184,8 +184,14 @@ export async function updateSchedule(planId, updates) {
     console.log('updates: ',updates);
     let schedules = await localforage.getItem("schedules");
     let schedule = schedules.find(schedule => String(schedule.planId) === planId);
-    if (!schedule) throw new Error("No schedule found for", planId);
-    Object.assign(schedule, updates);
+
+    if (schedule){
+        Object.assign(schedule, updates);
+    }
+    // else{
+    
+    // }
+    // if (!schedule) throw new Error(`No schedule found for planId: ${planId}`);
   
     await set(schedules);
 

@@ -41,7 +41,7 @@ const ChatMessage2 = styled.div`
     display: inline-flex;
     align-items: center;
     padding: 1vh 1vh;
-    background: ${(props) => props.color || '#ccc'}; 
+    background: ${(props) => props.color || '#90B54C'}; 
     color: white;
     border-radius: 2vh;
     max-width: 70%;

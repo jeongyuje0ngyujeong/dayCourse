@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './register.css';
 import axios from 'axios';
+import { Button } from '../../Button';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
@@ -76,34 +77,37 @@ export default function Register() {
         <div className="regi_box">
             <h1 className='bagel-fat-one-regular'>회원가입</h1>
             <form onSubmit={handleRegi}>
-                <p>
-                    <input 
-                        type="text" 
-                        placeholder='이름 입력' 
-                        value={userName} 
-                        onChange={(event)=>setUserName(event.target.value)}
-                        className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
-                        required    
-                    />
-                </p>
-                <div id='info_id' className='mt-5'>
+                
+                <input 
+                    type="text" 
+                    placeholder='이름 입력' 
+                    value={userName} 
+                    onChange={(event)=>setUserName(event.target.value)}
+                    style={{width:'30vh'}}
+                    className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                    required    
+                />
+                
+                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
                         value={userId} 
                         onChange={(event)=>setUserId(event.target.value)}
+                        style={{width:'30vh', height:'100%'}}
                         className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
                         required    
                     />
-                    <button 
+                    <Button 
                         type="button" 
                         onClick={(event)=>{
                             event.preventDefault();
                             doubleCheck();
                         }}
-                        className=" text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-md text-sm text-center">
+                        style={{height:'100%'}}
+                    >
                         중복 확인
-                    </button>
+                    </Button>
                 </div>
                 <p style={{ color: checkId ? 'green' : 'red', textAlign: 'left', marginLeft:'90px'}}>{message}</p>
                 <p>
