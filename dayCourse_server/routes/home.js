@@ -818,9 +818,14 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         });
     }
 
+    let num = 0;
+
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
-        console.log("previousCategory: ",previousCategory)
+        console.log(++num + "번째");
+        console.log("previousCategory: ",previousCategory);
+        console.log("location.category: ",location.category);
+
         let candidates = allLocations.filter(location => {
             // 검색해서 카테고리를 모르는 경우엔 무조건 true로 return
             if (!location.category) {
