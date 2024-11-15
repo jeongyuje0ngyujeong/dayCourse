@@ -44,6 +44,15 @@ export const SocketProvider = ({ children, userId }) => {
             console.log('소켓 연결 끊어짐');
         });
 
+        socket.on('newMoment', (newMoment) => {
+            console.log('새로운 모먼트 수신:', newMoment);
+            setMoments((prevMoments) => ({
+                ...prevMoments,
+                [newMoment.id]: newMoment.images, // 새 모먼트를 추가
+            }));
+        });
+    
+
         // 기타 전역 이벤트 리스너 추가 가능
 
         return () => {
