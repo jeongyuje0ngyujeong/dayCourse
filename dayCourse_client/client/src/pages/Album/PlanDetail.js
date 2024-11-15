@@ -124,20 +124,27 @@ const PlanDetail = () => {
         }
 
         // 이미지 파일만 허용
-        const validFiles = Array.from(files).filter(file =>
-             file.type.startsWith('image/') ||
-             file.name.toLowerCase().endsWith('.heic') ||
-             file.name.toLowerCase().endsWith('.heif')
-            );
+        // const validFiles = Array.from(files).filter(file =>
+        //      file.type.startsWith('image/') ||
+        //      file.name.toLowerCase().endsWith('.heic') ||
+        //      file.name.toLowerCase().endsWith('.heif')
+        //     );
 
-        if (validFiles.length !== files.length) {
-            alert('이미지 파일만 업로드할 수 있습니다.');
-            return;
-        }
+        // if (validFiles.length !== files.length) {
+        //     alert('이미지 파일만 업로드할 수 있습니다.');
+        //     return;
+        // }
 
         setIsUploading(true); // 업로드 상태 시작
         try {
             const processedFiles = await Promise.all(validFiles.map(async (file) => {
+
+                if(file.type.startsWith('image/') || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')){
+                    alert('이미지 파일만 업로드할 수 있습니다.');
+                    return null;
+                }
+
+
                 if (file.type === 'image/heic' || file.type === 'image/heif'
                || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))
              {
