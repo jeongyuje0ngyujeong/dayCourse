@@ -172,7 +172,7 @@ const PlanDetail = () => {
 
             console.log("업로드 시작")
 
-            await uploadImage(finalFiles, planId);
+            await uploadImage(processedFiles, planId);
             await fetchImageUrls();
         } catch (error) {
             console.error('업로드 실패:', error);
