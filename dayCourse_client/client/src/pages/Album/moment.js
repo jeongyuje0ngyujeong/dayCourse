@@ -1,7 +1,6 @@
 import Modal from 'react-modal';
 import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
-import { getMoment } from './AlbumApi'; 
 import SocketContext from '../../SocketContext';
 
 const Container = styled.div`
