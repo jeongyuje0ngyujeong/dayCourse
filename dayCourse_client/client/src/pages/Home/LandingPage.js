@@ -240,7 +240,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
    // const [distances, setDistances] = useState([]);
    const [notifications, setNotifications] = useState([]);
 
-   console.log('selectedPlaces: ', selectedPlaces);
+   console.log('recommendedPlaces: ', recommendedPlaces);
     
     // 알림 애니메이션 설정
     const notificationVariants = {

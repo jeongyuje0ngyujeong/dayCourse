@@ -7,6 +7,7 @@ import { saveAs } from 'file-saver';
 import Checkbox from './Checkbox';
 import UploadButton from './UploadButton'; // Import 수정된 UploadButton
 import heic2any from 'heic2any';
+import {PageTitle} from '../../commonStyles';
 
 const Container = styled.div`
     padding: 20px;
@@ -247,8 +248,8 @@ const PlanDetail = () => {
 
     return (
         <Container>
-            <h2>일정 이름: {planName}</h2>
-            <p>생성 날짜: {new Date(creationDate).toLocaleDateString()}</p>
+            <PageTitle style={{fontSize:'3vh'}}>일정 이름: {planName}</PageTitle>
+            <PageTitle>생성 날짜: {new Date(creationDate).toLocaleDateString()}</PageTitle>
             <UploadContainer>
                 {/* 숨겨진 파일 입력 요소 */}
                 <input
