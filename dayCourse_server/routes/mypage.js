@@ -20,6 +20,8 @@ router.get('/load', authenticateJWT, async (req, res) => {
         WHERE User.userId = ?
     `;
 
+    console.log("유저 정보 조회 : ",  userId)
+    
     try {
         db.query(sql, [userId], async (err, result) => {
             if (err) {
@@ -27,6 +29,7 @@ router.get('/load', authenticateJWT, async (req, res) => {
                 return res.status(500).json({ error: 'Database error' });
             }
             
+            console.log("결과: ",  result)
             return res.status(201).json(result);
         });
 
