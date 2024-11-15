@@ -973,6 +973,18 @@ function translateCategory(Category) {
     }
 }
 
+
+function translateCategory2(Category) {
+    switch (Category) {
+        case 'restaurant': return '음식점';
+        case 'cafe': return '카페';
+        case 'activities': return '문화생활';
+
+        // 기본 값
+        default: return '미분류';
+    }
+}
+
 async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
@@ -1240,9 +1252,10 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
 	}
 
     const locationInfos = arrangedLocations.map(location => ({
+        ...location,
         placeName: location.place_name,
         placeAddr: location.address_name,
-		...location
+        category: translateCategory2(location.category),
     }))
 
     console.log(locationInfos)
