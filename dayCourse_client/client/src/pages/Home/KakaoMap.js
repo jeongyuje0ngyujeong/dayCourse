@@ -133,30 +133,48 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     // 선택된 장소 오버레이 렌더링 함수
     const renderOverlays = useCallback(() => {
         if (!mapRef.current) return;
-
+    
         clearOverlays(selectedOverlayRef.current);
         selectedOverlayRef.current = [];
-
+    
         const map = mapRef.current;
         const bounds = new kakao.maps.LatLngBounds();
-
+    
         selectedPlaces.forEach((place, index) => {
             const position = new kakao.maps.LatLng(place.y || place.Y, place.x || place.X);
-            const content = `
-                <div style="color: white; background: #ff3f21; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                    ${index + 1}
-                </div>`;
+            
+            // 오버레이를 감쌀 컨테이너 div 생성
+            const container = document.createElement('div');
+            container.className = 'overlay-container';
+    
+            // 애니메이션 클래스가 포함된 콘텐츠 div 생성
+            const content = document.createElement('div');
+            content.className = `overlay-animated overlay-delay-${index + 1}`; // 인덱스에 따라 지연 클래스 할당
+            content.style.color = 'white';
+            content.style.background = '#ff3f21';
+            content.style.borderRadius = '50%';
+            content.style.width = '24px';
+            content.style.height = '24px';
+            content.style.display = 'flex';
+            content.style.alignItems = 'center';
+            content.style.justifyContent = 'center';
+            content.style.fontWeight = 'bold';
+            content.textContent = index + 1;
+    
+            container.appendChild(content);
+    
             const overlay = new kakao.maps.CustomOverlay({
                 position,
-                content,
+                content: container, // 애니메이션이 적용된 콘텐츠를 포함한 컨테이너 사용
                 yAnchor: 1,
                 xAnchor: 0.5,
             });
+    
             overlay.setMap(map);
             selectedOverlayRef.current.push(overlay);
             bounds.extend(position);
         });
-
+    
         if (autoFitBounds && selectedPlaces.length > 0) {
             if (selectedPlaces.length === 1) {
                 map.setCenter(bounds.getSouthWest());

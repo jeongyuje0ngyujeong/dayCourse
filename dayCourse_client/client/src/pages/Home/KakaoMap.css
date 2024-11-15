@@ -40,3 +40,39 @@
 .marker-fade-out {
     animation: fadeOut 1s forwards;
 }
+
+/* KakaoMap.css */
+
+/* 팝인 애니메이션 정의 */
+@keyframes popIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+
+  .overlay-animated {
+    animation: popIn 0.5s ease forwards;
+  }
+  
+  /* 오버레이마다 지연 시간을 주기 위한 클래스 (필요 시 추가) */
+  .overlay-delay-1 {
+    animation-delay: 0.1s;
+  }
+  
+  .overlay-delay-2 {
+    animation-delay: 0.2s;
+  }
+  
+  .overlay-delay-3 {
+    animation-delay: 0.3s;
+  }
+  
