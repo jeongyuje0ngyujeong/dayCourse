@@ -983,6 +983,39 @@ function translateCategory2(Category) {
     }
 }
 
+function translateKeyword2(Keyword) {
+    switch (Keyword) {
+        // 음식 관련
+        case 'random': return '랜덤';
+        case 'korean': return '한식';
+        case 'chinese': return '중식';
+        case 'japanese': return '일식';
+        case 'western': return '양식';
+        case 'asian': return '아시안';
+
+        // 카페 관련
+        case 'coffee': return '로스팅';
+        case 'dessert': return '디저트';
+        case 'mood': return '감성카페';
+        case 'study': return '스터디카페';
+        case 'bakery': return '베이커리';
+        case 'pet': return '애견카페';
+
+        // 액티비티 관련
+        case 'studio': return '공방';
+        case 'book_store': return '서점';
+        case 'escape_room': return '방탈출';
+        case 'cartoonCafe': return '만화카페';
+        case 'cinema': return '영화관';
+        case 'park': return '공원';
+        case 'shopping': return '쇼핑몰';
+        //case '전시회': return 'Exhibition';
+
+        // 기본 값
+        default: return '랜덤';
+    }
+}
+
 async function SpotSuggest(locations, Cate, key){
 
     if (locations.length > 0) {
@@ -1254,6 +1287,7 @@ router.get('/plan/fullCourse', authenticateJWT, async (req, res) => {
         placeName: location.place_name,
         placeAddr: location.address_name,
         category: translateCategory2(location.category),
+        keyword: translateKeyword2(location.keyword),
     }))
 
     console.log(locationInfos)
