@@ -263,6 +263,8 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
     const { schedule } = req.body;
     const userId = req.user.userId;
 
+    console.log("schedule: ", schedule);
+
     const { planId, dateKey, endDate, planName, town, town_code } = schedule;
     console.log('계획 수정 planId :', planId)
     console.log('계획 수정 dateKey :', dateKey)
