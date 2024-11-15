@@ -10,7 +10,7 @@ import Calendar from "./pages/Calendar/Calendar";
 import Schedule, {loader as scheduleLoader,} from "./pages/Calendar/Schedule";
 import CreateSchedule, {action as createAction, loader as createLoader,} from "./pages/Create/create";
 import Album from "./pages/Album/Album";
-import Mypage from "./pages/Mypage/Mypage";
+import Mypage, { loader as mypageLoader } from "./pages/Mypage/Mypage";
 import ErrorPage from "./error-page";
 import Friends from "./pages/Friends/Friends";
 import PlacePage, { loader as emptyLoader } from "./pages/Home/PlacePage"; // 빈 페이지 컴포넌트 가져오기
@@ -90,6 +90,7 @@ const router = createBrowserRouter([
           {
             path: "mypage",
             element: <Mypage/>,
+            loader: mypageLoader,
           },
           {
             path: "PlacePage/:planId",
