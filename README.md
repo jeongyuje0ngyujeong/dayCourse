@@ -1,5 +1,5 @@
 
-  <h1 >데이코스</h1>
+  <h1 align="center" >데이코스</h1>
 
 
 <h3 align="center">일정을 함께 계획하고, 추억을 편리하게 공유할 수 있는 서비스</h3>
@@ -11,10 +11,10 @@
 
 
 
-데이코스는 모임을 계획하고, 친구들과의 만남에서 즐거움을 극대화할 수 있도록 돕는 서비스입니다. 사용자는 데이코스를 통해 모임 참여자들과 일정을 함께 계획하고, 모임 중에 찍은 사진들을 한곳에 모아 공유할 수 있습니다. 데이코스를 통해 모임에 대한 고민을 줄이고, 모임의 즐거움에 집중할 수 있습니다.
-- [dayCourse](http://daycourse-front-deploy.s3-website.ap-northeast-2.amazonaws.com/)
-- dayCourse 소개 영상
-- dayCourse 발표 영상
+데이코스는 모임을 계획하고, 모임의 즐거움을 극대화할 수 있도록 돕는 서비스입니다. <br>사용자는 데이코스를 통해 모임 참여자들과 일정을 함께 계획하고, 일정동안 찍은 사진들을 공유할 수 있습니다. <br>데이코스를 통해 모임에 대한 고민은 줄이고, 즐거움에 집중해보세요!
+- [데이코스 접속](http://daycourse-front-deploy.s3-website.ap-northeast-2.amazonaws.com/)
+- 데이코스 소개 영상
+- 데이코스 발표 영상
 
 
 
@@ -29,11 +29,10 @@
 
 
 
-
 | Name      | 정유정     | 하혜민     | 김경은      | 김민경      |
 |-----------|-----------|-----------|-----------|-----------|
 | Profile   | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1L7BGRTHH80zzy6FvbqZJZ4kpVkcJ70bk" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1nvMU-Rm3fGY4R2LEqQhT1jXOgZaGzxdc" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1X5j_bAN3q3VhRCF9JjWZVuuDAqUpj1YK" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1Tz5SnbuHF4p1PC7hMQmOpFnyuvqD4Dxk" alt="이미지 설명" width="100"></p> |
-| Position  | Backend(팀장)   | Frontend   | Backend   | Frontend  |
+| Role  | Backend(팀장)<br>CI/CD 구축<br>데이터 처리<br>API 설계 및 구현<br>데이터베이스 설계   | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 실시간 마우스 트래킹 구현   | Backend<br>장소 추천 알고리즘 구현<br>사진 업로드 및 분석<br>API 설계 및 구현<br>데이터베이스 설계  | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 채팅 구현  |
 | Git       | <small>[@jeongyuje0ngyujeong](https://github.com/jeongyuje0ngyujeong)</small> | <small>[@aehyemin](https://github.com/aehyemin)</small> | <small>[@kimkeongeun](https://github.com/kimkeongeun)</small> | <small>[@Minkyoung00](https://github.com/Minkyoung00)</small> |
 
 
