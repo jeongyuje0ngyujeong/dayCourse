@@ -187,9 +187,9 @@ const Album = ({ userId }) => {
               <Stat>
                 <strong>모먼트 {momentCount}</strong> 
               </Stat>
-              <Stat>
+              {/* <Stat>
                 <strong>동영상 0</strong> 
-              </Stat>
+              </Stat> */}
             </ProfileStats>
             <Bio>{username}</Bio> 
           </ProfileInfo>
@@ -203,9 +203,9 @@ const Album = ({ userId }) => {
         <TabButton isActive={activeTab === 'moments'} onClick={() => setActiveTab('moments')}>
           모먼트
         </TabButton>
-        <TabButton isActive={activeTab === 'videos'} onClick={() => setActiveTab('videos')}>
+        {/* <TabButton isActive={activeTab === 'videos'} onClick={() => setActiveTab('videos')}>
           동영상
-        </TabButton>
+        </TabButton> */}
       </Tabs>
 
       {/* 콘텐츠 */}
