@@ -260,6 +260,7 @@ router.post('/plan/town_update', authenticateJWT, async (req, res) => {
 
 
 router.post('/plan/update', authenticateJWT, async (req, res) => {
+    console.log("req.body: ", req.body);
     const { schedule } = req.body;
     const userId = req.user.userId;
 
