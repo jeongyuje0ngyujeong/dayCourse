@@ -784,11 +784,10 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             ...Object.values(cafesByKeyword).flat(),
             ...others
         ];
-        const restaurantsCheck = restaurants.length >= 2;
-        console.log("restaurantsCheck: ", restaurantsCheck)
+        restaurantsCheck = restaurants.length >= 2;
         const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
             .filter(keyword => cafesByKeyword[keyword].length >= 2);
-        const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
+        cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
     }
 
     if (planId > 0) {
@@ -845,7 +844,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             
         });
         console.log("재배치 중 로케이션: ", candidates);
-        
+
         // 후보가 없을 경우 조건을 완화하여 모든 장소를 후보로 설정
         if (candidates.length === 0) {
             candidates = allLocations;
