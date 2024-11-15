@@ -6,6 +6,7 @@ const db = require('../db')
 const { analyzeImage } = require('./moment');
 
 const router = express.Router();
+const authenticateJWT = require('../config/authenticateJWT');
 
 // 유저 정보 조회
 router.get('/load', authenticateJWT, async (req, res) => {

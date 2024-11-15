@@ -26,7 +26,6 @@ const authenticateJWT = require('./config/authenticateJWT');
 require('./config/passport')(passport);
 app.use(passport.initialize());
 
-
 app.use('/auth', authRoutes);
 app.use("/home", authenticateJWT, apiHome);
 app.use("/group", authenticateJWT, groupRoutes);
