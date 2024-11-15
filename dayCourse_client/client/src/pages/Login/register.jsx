@@ -1,15 +1,17 @@
 // import {Form} from "react-router-dom";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Form } from 'react-router-dom';
 import { useState } from 'react';
 import './register.css';
 import axios from 'axios';
 import { Button } from '../../Button';
 import styled from "styled-components";
 import {PageTitle} from '../../commonStyles';
+// import SearchKeyword from '../Town/SearchKeyword';
+// import KakaoMap from '../Town/InputTown';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
 
-const StyledForm = styled.form`
+const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -22,7 +24,6 @@ const RegiBox = styled.div`
     display: flex;
     flex-direction: column;
 
-    text-align: center;
     justify-content: center; 
     align-items: center;
     padding:8vh;
@@ -35,7 +36,18 @@ const RegiBox = styled.div`
     border-radius: 10px;
     background-color: white;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+    overflow:auto;
 `
+
+// const MapContainer = styled.div`
+//     display: flex;
+//     flex: 1;
+//     margin-top: 1vh;
+//     ${'' /* border: 1px solid; */}
+//     border-radius: 10px;
+//     justify-content: center;
+//     align-items: center;
+// `
 
 export default function Register() {
     const [userName , setUserName] = useState('');
@@ -49,6 +61,10 @@ export default function Register() {
     const [checkpass, setCheckPass] = useState('');
     const [identPass, setIdentPass] = useState(false);
     const [passMess, setPassMess] = useState('비밀번호를 다시 한 번 입력해주세요');
+
+    // const [keyword, setKeyword] = useState(""); 
+    // const [places, setPlaces] = useState([]); 
+    // const [departurePoints, setDeparturePoints] = useState([])
 
     const navigate = useNavigate(); 
 
@@ -104,6 +120,7 @@ export default function Register() {
         }
     };
 
+
     return (
         <RegiBox>
             <PageTitle style={{fontSize:'5vh', margin:'2vh'}}>회원가입</PageTitle>
@@ -117,7 +134,7 @@ export default function Register() {
                     required    
                 />
                 
-                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', height:'6vh'}}>
+                <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'6vh'}}>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
@@ -156,7 +173,7 @@ export default function Register() {
                             setIdentPass(false);
                         }
                     }}
-                    style={{width:'100%'}}
+                    style={{width:'100%',height:'6vh'}}
                     required
                 />
                
@@ -177,24 +194,26 @@ export default function Register() {
                             setIdentPass(false);
                         }
                     }}
-                    style={{width:'100%'}}
+                    style={{width:'100%', height:'6vh'}}
                     required    
                 />
                 <div style={{ color: identPass ? 'green' : 'red', textAlign: 'left', marginLeft:'1vh'}}>{passMess}</div>
                 
-                <select 
-                    value={userGender} 
-                    onChange={(event)=>setUserGender(event.target.value)}
-                    style={{width:'100%', height:'6vh', paddingLeft:'1vh', borderRadius:'1vh', border:'1px solid #ccc'}}
-                    required    
-                >
-                    <option disabled hidden value=''>
-                        성별
-                    </option>
-                    <option value="남">남</option>
-                    <option value="여">여</option>
-                </select>
-                <input type="hidden" name="userGender" value={userGender} />
+                <div style={{display:'flex', alignItems:'center', justifyContent:'center', height:'6vh'}}>
+                    <select 
+                        value={userGender} 
+                        onChange={(event)=>setUserGender(event.target.value)}
+                        style={{width:'100%', height:'6vh', paddingLeft:'1vh', borderRadius:'1vh', border:'1px solid #ccc'}}
+                        required    
+                    >
+                        <option disabled hidden value=''>
+                            성별
+                        </option>
+                        <option value="남">남</option>
+                        <option value="여">여</option>
+                    </select>
+                    <input type="hidden" name="userGender" value={userGender} />
+                </div>
 
                 <input 
                     type="text" 
@@ -204,25 +223,27 @@ export default function Register() {
                     style={{width:'100%'}}
                     required    
                 />
-                    
-                
-                <Button 
+     
+          
+                <button 
                     type="submit"
                     disabled={!checkId || !identPass} 
-                    width='100%'
-                    height='5vh'
-                    style={{background:'#90B54C', color:'white'}}
-                    
+                    style={{background:'#90B54C', color:'white', marginTop:'2vh'}}
                 >
                     가입하기
-                </Button>
+                </button>
                 
-                <div>
-                    <Link to="/">
-                        <p className="text-center mt-5">메인으로</p>
-                    </Link>
-                </div>
             </StyledForm>
+            {/* <div>
+                <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
+                <MapContainer>
+                    <KakaoMap  departurePoints={departurePoints} searchKeyword={keyword} setPlaces={setPlaces}/>
+                </MapContainer>
+            </div> */}
+            <Link to="/">
+                <p className="text-center mt-5">메인으로</p>
+            </Link>
+                
         </RegiBox>
     );
 } 

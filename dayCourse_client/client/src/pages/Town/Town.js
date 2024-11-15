@@ -201,6 +201,7 @@ export default function UpdateTown() {
 
     const [keyword, setKeyword] = useState(""); // 제출한 검색어
     const [places, setPlaces] = useState([]); // 검색 결과 상태
+
     const [selectedRecommendedTown, setSelectedRecommendedTown] = useState(null); // { 상권명: '', centroid_x: , centroid_y: }
 
     const [selectedButton, setSelectedButton] = useState(null);
@@ -255,6 +256,7 @@ export default function UpdateTown() {
                 </Form>  
                 <RecommendContainer>
                     <DepartureContainer>
+                        <PageTitle style={{marginBottom: '1.5vh', fontSize:'3vh'}}>출발지</PageTitle>
                         <SearchKeyword keyword={keyword} setKeyword={setKeyword} places={places} setPlaces={setPlaces} departurePoints={departurePoints} setDeparturePoints={setDeparturePoints}/>
                         
                         <ScrollContainer>
