@@ -141,7 +141,7 @@ const PlanDetail = () => {
                 const isHeicOrHeif = file.type.startsWith('image/heic') || file.type.startsWith('image/heif')
                                      || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
             
-                if (file.type.startsWith('image/') && !isHeicOrHeif) {
+                if (!file.type.startsWith('image/') && !isHeicOrHeif) {
                     alert('이미지 파일만 업로드할 수 있습니다.');
                     return;
                 }
