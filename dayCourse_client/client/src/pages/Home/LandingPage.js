@@ -13,7 +13,7 @@ import SocketContext from '../../SocketContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMousePointer } from '@fortawesome/free-solid-svg-icons';
 import {PageTitle} from '../../commonStyles';
-
+import DeleteButton from './DeleteButton';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const itemVariants = {
@@ -96,25 +96,25 @@ const UserCursor = styled(FontAwesomeIcon)`
 
 
 
-const DeleteButton = styled.button`
-    margin-left: 10px; 
-    background-color: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    padding: 5px 10px;
+// const DeleteButton = styled.button`
+//     margin-left: 10px; 
+//     background-color: #ff4d4d;
+//     color: white;
+//     border: none;
+//     border-radius: 4px;
+//     cursor: pointer;
+//     padding: 5px 10px;
 
-    &:hover {
-        background-color: #e60000;
-    }
+//     &:hover {
+//         background-color: #e60000;
+//     }
 
-    &:disabled {
-        background-color: #ff4d4d;
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-`;
+//     &:disabled {
+//         background-color: #ff4d4d;
+//         opacity: 0.6;
+//         cursor: not-allowed;
+//     }
+// `;
 
     &:disabled {
         background-color: #ff4d4d;
@@ -708,12 +708,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                                                 </div>
                                                                 <span  style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
                                                             </div>
-                                                            <DeleteButton 
+                                                            <DeleteButton
                                                                 onClick={() => removePlace(place.placeId || place.id, place.isRecommended, place.place_name)}
-                                                                disabled={isDeleting}
-                                                            >
-                                                                X
-                                                            </DeleteButton>
+                                                            />
                                                         </PlaceBox>
                                                     
                                                     </NonAnimatedPlaceBox> 
