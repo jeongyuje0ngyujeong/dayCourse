@@ -744,7 +744,7 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
                                 <div style={{display:'flex', flexDirection:'column', width:'100%'}}>
                                     <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
                                         <span style={{fontSize: '2vh', fontWeight:'800'}}>{index + 1}. {place.place_name}</span>
-                                        <span style={{fontSize: '2vh'}}>{place.category}</span>
+                                        <span style={{fontSize: '2vh'}}>{place.keyword}</span>
                                     </div>
                                     <span style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
                                 </div>

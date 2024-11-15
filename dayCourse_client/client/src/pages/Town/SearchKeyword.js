@@ -2,7 +2,7 @@ import React, { useState,} from 'react';
 import {Button} from '../../Button';
 import { Form,} from "react-router-dom";
 import styled from "styled-components";
-import {PageTitle} from '../../commonStyles';
+// import {PageTitle} from '../../commonStyles';
 
 const ResultContainer = styled.div`
     position: absolute; 
@@ -64,7 +64,6 @@ const StyledDiv = styled.div`
 export default function SearchKeyword({keyword, setKeyword, places, setPlaces, departurePoints, setDeparturePoints}){
     const [value, setValue] = useState(""); // 입력 값 상태
     const [showResult, setShowResult] = useState(false); // 결과 표시 여부
-    // console.log(places);
 
     const keywordChange = (e) => {
         setValue(e.target.value);
@@ -97,7 +96,6 @@ export default function SearchKeyword({keyword, setKeyword, places, setPlaces, d
 
     return(
         <>
-        <PageTitle style={{marginBottom: '1.5vh', fontSize:'3vh'}}>출발지</PageTitle>
         <StyledForm onSubmit={submitKeywordForm}>
             <StyledDiv>
                 <Input
