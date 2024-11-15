@@ -7,6 +7,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
     const mapRef = useRef(null);
     const searchMarkerRef = useRef([]); // 검색 결과 마커를 저장할 배열
     const selectedOverlayRef = useRef([]); // 선택된 장소 오버레이를 저장할 배열
+    // eslint-disable-next-line
     const [autoFitBounds, setAutoFitBounds] = useState(true);
     const routeLinesRef = useRef([]);
     const animationIntervalRef = useRef(null); // 애니메이션 인터벌 추적
@@ -122,7 +123,7 @@ function KakaoMap({ searchKeyword, setPlaces, selectedPlaces = [] }) {
         };
 
         
-    }, [renderRouteLines, autoFitBounds]);
+    }, [renderRouteLines]);
 
     // 선택된 장소 오버레이 렌더링 함수
     const renderOverlays = useCallback(() => {
