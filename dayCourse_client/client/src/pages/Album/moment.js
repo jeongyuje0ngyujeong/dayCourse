@@ -1,7 +1,7 @@
 import Modal from 'react-modal';
 import React, { useState, useEffect} from 'react';
 import styled from 'styled-components';
-import SocketContext from '../../SocketContext';
+import { getMoment } from './AlbumApi'; 
 
 const Container = styled.div`
     display: grid;
@@ -116,7 +116,6 @@ const ModalImage = styled.img`
     }
 `;
 
-
 const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     return (
         <StyledModal isOpen={isOpen} onRequestClose={onRequestClose} ariaHideApp={false}>
@@ -136,39 +135,62 @@ const MomentModal = ({ isOpen, onRequestClose, title, images }) => {
     );
 };
 
-const Moment = ({ maxItems, onMomentCountChange, columns }) => {
-    const { moments } = useContext(SocketContext); // SocketContext에서 moments 가져오기
+const Moment = ({ maxItems, onMomentCountChange, columns}) => {
+    // console.log('colums: ', columns);
+    const [moments, setMoments] = useState([]); 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [modalContent, setModalContent] = useState('')
 
-    useEffect(() => {
-        if (onMomentCountChange) {
-            const totalCount = Object.keys(moments).length;
-            onMomentCountChange(totalCount);
-        }
-    }, [moments, onMomentCountChange]);
+    // const currentUserId = sessionStorage.getItem('userId');
 
-    const handleBoxClick = (title, images) => {
+    useEffect(() => {
+        // if (currentUserId) {
+    
+          const fetchMoments = async () => {
+            try {
+              const data = await getMoment();
+              setMoments(data);
+              const totalCount = Object.keys(data).length;
+              onMomentCountChange(totalCount);
+            } catch (error) {
+              console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
+            }
+          };
+    
+          fetchMoments();
+        // } else {
+        //   console.error('유저 ID를 가져올 수 없습니다.');
+        // }
+    }, [onMomentCountChange]);
+
+    useEffect(() => {
+        // 이미 부모 컴포넌트에서 모먼트를 가져왔으므로, 여기서는 추가로 가져올 필요 없음
+        if (onMomentCountChange) {
+          const totalCount = Object.keys(moments).length;
+          onMomentCountChange(totalCount);
+        }
+      }, [moments, onMomentCountChange]);
+    
+      const handleBoxClick = (title, images) => {
         setModalTitle(title);
         setModalImages(images);
         setModalIsOpen(true);
-        console.log('hello');
-    };
-
-    return (
+      };
+    
+      return (
         <>
             <Container columns={columns}>
                 {Object.entries(moments)
                     .slice(0, maxItems || Object.entries(moments).length)
                     .map(([key, images]) => (
-                        <Box
-                            key={key}
-                            onClick={() => handleBoxClick(key, images)}
-                            background={images[0]?.imgURL} // 배경 이미지로 설정
-                        >
-                            <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
-                        </Box>
-                    ))}
+                    <Box
+                        key={key}
+                        onClick={() => handleBoxClick(key, images)}
+                        background={images[0]?.imgURL} // 배경 이미지로 설정
+                    >
+                        <p>{key.charAt(0).toUpperCase() + key.slice(1)}</p>
+                    </Box>
+                ))}
             </Container>
 
             <MomentModal
@@ -178,5 +200,7 @@ const Moment = ({ maxItems, onMomentCountChange, columns }) => {
                 images={modalImages}
             />
         </>
-    );
-};
+      );
+    };
+
+export default Moment;
