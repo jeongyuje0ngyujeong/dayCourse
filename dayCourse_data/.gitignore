@@ -1,0 +1,9 @@
+# Python virtual environment
+crawling_env/
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# IDE files
+.vscode/
