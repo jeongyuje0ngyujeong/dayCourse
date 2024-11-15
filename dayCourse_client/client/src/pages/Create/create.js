@@ -18,7 +18,7 @@ export async function action({ request, params }) {
     return null;
   }
 
-  const date= formData.get("date");
+  const date= formData.get("dateKey");
 
   if (date) {
     const dateObject = new Date(date); 
@@ -80,7 +80,7 @@ export default function CreateSchedule() {
                   placeholder="년"
                   aria-label="년"
                   type="date"
-                  name="date"
+                  name="dateKey"
                   defaultValue={date}
                   style={{width:'100%', border:'1px solid #eee', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)', fontSize:'2vh'}}
                   required

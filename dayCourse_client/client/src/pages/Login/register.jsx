@@ -83,18 +83,18 @@ export default function Register() {
                     placeholder='이름 입력' 
                     value={userName} 
                     onChange={(event)=>setUserName(event.target.value)}
-                    style={{width:'30vh'}}
+                    style={{width:'100%'}}
                     className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
                     required    
                 />
                 
-                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'2vh'}}>
+                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'0.5vh'}}>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
                         value={userId} 
                         onChange={(event)=>setUserId(event.target.value)}
-                        style={{width:'30vh', height:'100%'}}
+                        style={{width:'100%', height:'100%'}}
                         className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
                         required    
                     />
