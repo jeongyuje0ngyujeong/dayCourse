@@ -835,17 +835,19 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             }
             // 이전 장소가 음식점인 경우, 음식점 제외
             if (restaurantsCheck && location.category === previousCategory && location.category === 'restaurant') {
-                console.log("previousCategory: ",previousCategory)
+                console.log("이전 장소가 음식점인 경우, 음식점 제외");
                 return false;
             }
             // 이전 장소가 동일 키워드의 카페인 경우 제외
             if (cafeKeywordsCheck && location.category === previousCategory && location.category === 'cafe' && location.keyword === previousKeyword) {
+                console.log("이전 장소가 동일 키워드의 카페인 경우 제외");
                 return false;
             }
             return true;
-            // console.log("재배치 중 로케이션: ", candidates);
+            
         });
-
+        console.log("재배치 중 로케이션: ", candidates);
+        
         // 후보가 없을 경우 조건을 완화하여 모든 장소를 후보로 설정
         if (candidates.length === 0) {
             candidates = allLocations;
