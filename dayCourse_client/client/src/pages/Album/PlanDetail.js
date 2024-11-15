@@ -138,39 +138,39 @@ const PlanDetail = () => {
         setIsUploading(true); // 업로드 상태 시작
         try {
             const processedFiles = await Promise.all(files.map(async (file) => {
-
-                if(file.type.startsWith('image/') || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')){
+                const isHeicOrHeif = file.type.startsWith('image/heic') || file.type.startsWith('image/heif')
+                                     || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
+            
+                if (file.type.startsWith('image/') && !isHeicOrHeif) {
                     alert('이미지 파일만 업로드할 수 있습니다.');
-                    return null;
+                    return;
                 }
-
-
-                if (file.type === 'image/heic' || file.type === 'image/heif'
-               || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif'))
-             {
+            
+                if (isHeicOrHeif) {
                     try {
                         const convertBlob = await heic2any({
                             blob: file,
                             toType: 'image/jpeg',
                             quality: 0.8,
                             multiple: false,
-                        })
-                        return new File([convertBlob],file.name.replace(/\.[^/.]+$/, ".jpg"), { type: 'image/jpeg' });
+                        });
+                        return new File([convertBlob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: 'image/jpeg' });
                     } catch (conversionError) {
-                        console.error('Heic변환실패', conversionError);
-                        alert('변환실패');
+                        console.error('HEIC 변환 실패', conversionError);
+                        alert('변환 실패');
                         return null;
                     }
                 }
+                
                 return file;
-            }))
-
-            const finalFiles = processedFiles.filter(file => file !== null);
+            }));
 
             if (finalFiles.length === 0) {
                 alert('업로드할 파일이 없음');
                 return;
             }
+
+            console.log("업로드 시작")
 
             await uploadImage(finalFiles, planId);
             await fetchImageUrls();
