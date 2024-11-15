@@ -131,11 +131,11 @@ const PlanDetail = () => {
 
         setIsUploading(true); // 업로드 상태 시작
         try {
-            const processedFiles = await Promise.all(files.map(async (file) => {
+            const processedFiles = await Promise.all(Array.from(files).map(async (file) => {
                 const isHeicOrHeif = file.type.startsWith('image/heic') || file.type.startsWith('image/heif')
                                      || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
             
-                if (file.type.startsWith('image/') && !isHeicOrHeif) {
+                if (!file.type.startsWith('image/') && !isHeicOrHeif) {
                     alert('이미지 파일만 업로드할 수 있습니다.');
                     return;
                 }

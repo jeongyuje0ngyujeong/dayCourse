@@ -144,24 +144,21 @@ const Album = ({ userId }) => {
         }
       };
 
-      // const fetchMoments = async () => {
-      //   try {
-      //     const data = await getMoment();
-      //     setMomentsData(data);
-      //     const totalCount = Object.keys(data).length;
-      //     setMomentCount(totalCount);
-      //   } catch (error) {
-      //     console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
-      //   }
-      // };
-
+      const fetchMomentCount = async () => {
+        try {
+          const data = await getPlan();
+          const totalCount = Object.keys(data).length;
+          setMomentCount(totalCount);
+        } catch (error) {
+          console.error('모먼트를 가져오는 중 오류가 발생했습니다:', error);
+        }
+      };
 
       fetchPlans();
-      // fetchMoments();
+      fetchMomentCount();
     } else {
       console.error('유저 ID를 가져올 수 없습니다.');
     }
-    // console.log('userName', currentUserId.userName); // 현재 userId는 string이므로 userName을 가져올 수 없음
   }, [currentUserId]);
 
   const renderContent = () => {
