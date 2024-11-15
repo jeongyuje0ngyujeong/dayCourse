@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import React, { useState, useEffect } from 'react';
 import Moment from './moment.js';
 import RecentPlan from './RecentPlan.js';
-import { getPlan  } from './AlbumApi'; // 플랜 가져오는 API 함수
+import { getMoment , getPlan } from './AlbumApi'; // 플랜 가져오는 API 함수
 
 const Container = styled.div`
   width: calc(100% - 17%); /* 화면 너비에서 사이드바 너비를 뺀 값 */
@@ -146,7 +146,7 @@ const Album = ({ userId }) => {
 
       const fetchMomentCount = async () => {
         try {
-          const data = await getPlan();
+          const data = await getMoment();
           const totalCount = Object.keys(data).length;
           setMomentCount(totalCount);
         } catch (error) {
