@@ -130,7 +130,8 @@ export async function getSchedules(query, startDate) {
 
 export async function createSchedule(dateKey, formData) {
     // let schedules = await localforage.getItem("schedules");
-    console.log('create: ', dateKey)
+    console.log('create: ', formData.get("groupId"))
+    console.log(dateKey);
 
     const postData = async () => {
         let response = axios.post(`${BASE_URL}/home/plan`, 
@@ -151,7 +152,7 @@ export async function createSchedule(dateKey, formData) {
     
     let result = await postData();
 
-    getSchedules(dateKey);
+    getSchedules(null,dateKey);
     // set(result);
 
     return result.data;
@@ -193,7 +194,7 @@ export async function updateSchedule(planId, updates) {
     
     // }
     // if (!schedule) throw new Error(`No schedule found for planId: ${planId}`);
-  
+    
     await set(schedules);
 
     const postData = async () => {

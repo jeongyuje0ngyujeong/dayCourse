@@ -88,7 +88,7 @@ export default function Register() {
                     required    
                 />
                 
-                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center'}}>
+                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'2vh'}}>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
@@ -104,7 +104,8 @@ export default function Register() {
                             event.preventDefault();
                             doubleCheck();
                         }}
-                        style={{height:'100%'}}
+                        style={{marginBottom:'0'}}
+                        height='100%'
                     >
                         중복 확인
                     </Button>
