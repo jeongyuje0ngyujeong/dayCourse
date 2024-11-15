@@ -76,8 +76,7 @@ export default function Register() {
     return (
         <div className="regi_box">
             <h1 className='bagel-fat-one-regular'>회원가입</h1>
-            <form onSubmit={handleRegi}>
-                
+            <form style={{padding: '5vh'}}onSubmit={handleRegi}>
                 <input 
                     type="text" 
                     placeholder='이름 입력' 
