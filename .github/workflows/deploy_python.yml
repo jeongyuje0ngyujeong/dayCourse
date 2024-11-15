@@ -1,0 +1,91 @@
+name: Deploy Ai Server
+
+on:
+  push:
+    branches:
+      - AiServer
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          lfs: true  
+
+      # 1. SSH 설정 및 Python 설치
+      - name: Install Python on EC2 if missing
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if ! command -v python3 &> /dev/null; then
+              echo 'Installing Python 3.x'
+              sudo apt-get update &&
+              sudo apt-get install -y python3 python3-venv python3-pip
+            else
+              echo 'Ensuring python3-venv is installed'
+              sudo apt-get install -y python3-venv
+            fi"
+
+      # 2. 코드 배포 및 환경 설정
+      - name: Deploy code to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}          
+          APP_DIR: '/home/ubuntu/dayCourseAi'  
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            if [ -d \"$APP_DIR/.git\" ]; then
+              echo 'exists + pull'
+              cd $APP_DIR/dayCourse_ai &&
+              git config pull.rebase true &&
+              git reset --hard origin/AiServer &&
+              git pull origin AiServer;
+            else
+              echo 'not exist + clone'
+              git clone -b AiServer https://github.com/jeongyuje0ngyujeong/dayCourse.git $APP_DIR;
+              cd $APP_DIR/dayCourse_ai
+            fi"
+
+      # 3. 가상 환경 설정 및 의존성 설치
+      - name: Set up virtual environment and install dependencies
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}            
+          APP_DIR: '/home/ubuntu/dayCourseAi/dayCourse_ai'
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            cd $APP_DIR &&
+            python3 -m venv venv &&
+            source venv/bin/activate &&
+            pip install -r requirements.txt &&
+            pip install gunicorn"
+
+      # 4. systemd 서비스를 구성하고 애플리케이션을 시작합니다
+      - name: Configure and Start Flask AI Application via systemd
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.AI_EC2_HOST }}
+          REMOTE_USER: ${{ secrets.EC2_USER }}
+          APP_DIR: '/home/ubuntu/dayCourseAi/dayCourse_ai'
+        run: |
+          eval "$(ssh-agent -s)"
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - 
+          ssh -o StrictHostKeyChecking=no $REMOTE_USER@$REMOTE_HOST "
+            sudo cp /home/ubuntu/dayCourseAi/dayCourse_ai/deploy/gunicorn.service /etc/systemd/system/gunicorn.service &&
+            sudo systemctl daemon-reload &&
+            sudo systemctl restart gunicorn &&
+            sudo systemctl enable gunicorn"
