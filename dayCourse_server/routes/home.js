@@ -758,7 +758,9 @@ function classifyLocations(locations) {
             others.push(location);
         }
     });
-
+    console.log("restaurants: ", restaurants);
+    console.log("cafesByKeyword: ", cafesByKeyword);
+    console.log("others: ", others);
     return { restaurants, cafesByKeyword, others };
 }
 
@@ -776,6 +778,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
 
     if (restaurants != null && cafesByKeyword != null && others != null) {
         // 모든 장소를 합친 배열 생성
+        console.log("여기에 안 들어오면 망한거임");
         allLocations = [
             ...restaurants,
             ...Object.values(cafesByKeyword).flat(),
