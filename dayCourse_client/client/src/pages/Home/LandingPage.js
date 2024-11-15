@@ -116,12 +116,6 @@ const UserCursor = styled(FontAwesomeIcon)`
 //     }
 // `;
 
-    &:disabled {
-        background-color: #ff4d4d;
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-`;
 const DistanceBox = styled.div`
     margin: 10px 0;
     font-weight: bold;
