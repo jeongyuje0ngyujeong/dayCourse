@@ -131,7 +131,7 @@ const PlanDetail = () => {
 
         setIsUploading(true); // 업로드 상태 시작
         try {
-            const processedFiles = await Promise.all(files.map(async (file) => {
+            const processedFiles = await Promise.all(Array.from(files).map(async (file) => {
                 const isHeicOrHeif = file.type.startsWith('image/heic') || file.type.startsWith('image/heif')
                                      || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif');
             
