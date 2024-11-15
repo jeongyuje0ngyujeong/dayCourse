@@ -54,7 +54,7 @@
 사용자의 과거 일정과 선호도를 바탕으로 다양한 장소 추천
 
 
-<img width="800" alt="스크린샷 2024-11-15 오후 3 29 30" src="https://github.com/user-attachments/assets/902f8eea-f45b-4bc6-a26e-2915529dceb4">
+<img src="https://github.com/user-attachments/assets/206ff009-4f9c-4031-8e97-75d17de3379d" alt="스크린샷" height="300" width="350"><img width="600" alt="스크린샷 2024-11-15 오후 3 29 30" src="https://github.com/user-attachments/assets/902f8eea-f45b-4bc6-a26e-2915529dceb4">
 
 
 
