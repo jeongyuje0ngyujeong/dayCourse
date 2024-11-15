@@ -45,22 +45,25 @@ export async function loader({ params }) {
 }
 
 export default function CreateSchedule() {
-  const [currentDate, setCurrentDate] = useState(new Date());
- 
-  const [selectedDate, setSelectedDate] = useState(`${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2,'0')}`);
-
+  
+  
   
   const { event } = useLoaderData();
   console.log('event: ', event);
-
+  
   let date;
   let group, planName;
-
+  
   if (event) {
     date = event.dateKey;
     group = event.groupId;
     planName = event.planName;
   }
+  
+  const initialDate = date ? new Date(date) : new Date();
+
+  const [selectedDate, setSelectedDate] = useState(`${initialDate.getFullYear()}-${String(initialDate.getMonth()+1).padStart(2, '0')}-${String(initialDate.getDate()).padStart(2,'0')}`);
+  const [currentDate, setCurrentDate] = useState(initialDate);
 
   return (
     <>
