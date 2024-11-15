@@ -265,6 +265,7 @@ router.post('/plan/update', authenticateJWT, async (req, res) => {
 
     const { planId, dateKey, endDate, planName, town, town_code } = schedule;
     console.log('계획 수정 planId :', planId)
+    console.log('계획 수정 dateKey :', dateKey)
 
     // Check if required parameters are provided
     if (!planId) {
@@ -999,6 +1000,7 @@ async function SpotSuggest(locations, Cate, key){
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
 			l_priority: 1,
+            keyword: row.keyword,
 			category: row.category,
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
@@ -1066,6 +1068,7 @@ async function SpotSuggest(locations, Cate, key){
             x: parseFloat(row.longitude),
             y: parseFloat(row.latitude),
 			l_priority: 1,
+            keyword: row.keyword,
 			category: row.category,
             road_address_name: "12345", // 임시값
             phone: "01000000000" //필드없음
