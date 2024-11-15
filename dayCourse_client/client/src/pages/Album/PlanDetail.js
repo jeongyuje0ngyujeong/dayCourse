@@ -137,7 +137,7 @@ const PlanDetail = () => {
 
         setIsUploading(true); // 업로드 상태 시작
         try {
-            const processedFiles = await Promise.all(validFiles.map(async (file) => {
+            const processedFiles = await Promise.all(files.map(async (file) => {
 
                 if(file.type.startsWith('image/') || file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif')){
                     alert('이미지 파일만 업로드할 수 있습니다.');
