@@ -1489,6 +1489,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                 continue;
             }
 
+            console.log("이미지 분석 :", s3ImageUrl)
+
             // 비동기 처리 내부 함수 정의
             const promise = (async () => {
                 try {
@@ -1501,6 +1503,8 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
                             ...form.getHeaders(),
                         },
                     });
+
+                    
 
 
                     // S3 메타데이터 업데이트를 위한 파라미터 설정
@@ -1529,7 +1533,7 @@ router.post('/plan/upload/:planId/images', upload.array('image'), authenticateJW
 
                 } catch (error) {
                     console.error('이미지 분석 중 오류 발생:', imgNAME);
-                    if (retries < maxRetries) {
+                    if (retries < 3) {
                         console.error(`${imgNAME} 파일 분석 실패. 재시도.`);
                         fileQueue.push({ name: name, type: type, location: location, retries: retries+1 });
                     } else {
