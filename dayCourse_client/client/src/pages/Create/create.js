@@ -116,7 +116,18 @@ export default function CreateSchedule() {
               </div>
               <Group group={group}/>
               {/* <div style={{display:'flex', marginTop:'2rem'}}> */}
-              <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000', fontSize:'2vh'}} width='4rem' height='3rem' border='none' $background='#90B54C' color='white' > 다음 </Button> 
+              {/* <Button type='submit' style={{ position: 'fixed', bottom: '2%', right: '3.5%', zIndex:'1000', fontSize:'2vh'}} width='4rem' height='3rem' border='none' $background='#90B54C' color='white' > 다음 </Button>  */}
+              <Button 
+                  type='submit' 
+                  style={{ position: 'fixed', bottom: '5%', right: '3%', zIndex:'1000', fontSize:'2vh' }} 
+                  width='4rem' 
+                  height='3rem' 
+                  border='none' 
+                  $background='#90B54C' 
+                  color='white'
+              > 
+                  다음 
+              </Button>  
               {/* </div> */}
             </Form>
           </div>
