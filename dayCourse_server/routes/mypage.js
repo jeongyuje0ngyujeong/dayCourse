@@ -12,8 +12,8 @@ router.get('/load', authenticateJWT, async (req, res) => {
     const sql = `
         SELECT User.userName, User.userAge, User.userGender, User_survey.*
         FROM User
-        LEFT JOIN User_survey ON User.userId = User_survey.userId;
-        WHERE User.userId = ?
+        LEFT JOIN User_survey ON User.userId = User_survey.userId
+        WHERE User.userId = ?;
     `;
     
     try {
