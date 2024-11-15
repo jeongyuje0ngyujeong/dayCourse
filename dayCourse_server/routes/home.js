@@ -787,6 +787,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             ...others
         ];
         const restaurantsCheck = restaurants.length >= 2;
+        console.log("restaurantsCheck: ", restaurantsCheck)
         const cafeKeywordsCheckCnt = Object.keys(cafesByKeyword)
             .filter(keyword => cafesByKeyword[keyword].length >= 2);
         const cafeKeywordsCheck = cafeKeywordsCheckCnt.length > 0;
@@ -821,6 +822,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
 
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
+        console.log("previousCategory: ",previousCategory)
         let candidates = allLocations.filter(location => {
             // 검색해서 카테고리를 모르는 경우엔 무조건 true로 return
             if (!location.category) {
@@ -828,6 +830,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
             }
             // 이전 장소가 음식점인 경우, 음식점 제외
             if (restaurantsCheck && location.category === previousCategory && location.category === 'restaurant') {
+                console.log("previousCategory: ",previousCategory)
                 return false;
             }
             // 이전 장소가 동일 키워드의 카페인 경우 제외
