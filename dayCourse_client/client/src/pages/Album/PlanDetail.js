@@ -165,7 +165,7 @@ const PlanDetail = () => {
                 return file;
             }));
 
-            if (finalFiles.length === 0) {
+            if (processedFiles.length === 0) {
                 alert('업로드할 파일이 없음');
                 return;
             }
