@@ -4,12 +4,43 @@ import { useState } from 'react';
 import './register.css';
 import axios from 'axios';
 import { Button } from '../../Button';
+import styled from "styled-components";
+import {PageTitle} from '../../commonStyles';
 
 const BASE_URL = process.env.REACT_APP_BASE_URL; 
+
+const StyledForm = styled.form`
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap:1vh;
+`;
+
+
+const RegiBox = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    text-align: center;
+    justify-content: center; 
+    align-items: center;
+    padding:8vh;
+
+    width: 70vh;
+    height: 80vh;
+
+    margin: auto;
+    border: 1px solid gray;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+`
 
 export default function Register() {
     const [userName , setUserName] = useState('');
     const [userGender , setUserGender] = useState('');
+    const [userAge , setUserAge] = useState('');
     const [userId , setUserId] = useState('');
     const [checkId, setCheckId] = useState(false);
     const [message, setMessage] = useState('아이디를 입력해주세요');
@@ -29,8 +60,8 @@ export default function Register() {
                     userId:userId, 
                     pw:password, 
                     userName:userName, 
-                    userGender:userGender, 
-                    userAge:25
+                    userGender: userGender, 
+                    userAge:userAge
                 },
                
             });
@@ -74,27 +105,25 @@ export default function Register() {
     };
 
     return (
-        <div className="regi_box">
-            <h1 className='bagel-fat-one-regular'>회원가입</h1>
-            <form style={{padding: '5vh'}}onSubmit={handleRegi}>
+        <RegiBox>
+            <PageTitle style={{fontSize:'5vh', margin:'2vh'}}>회원가입</PageTitle>
+            <StyledForm onSubmit={handleRegi}>
                 <input 
                     type="text" 
                     placeholder='이름 입력' 
                     value={userName} 
                     onChange={(event)=>setUserName(event.target.value)}
-                    style={{width:'100%'}}
-                    className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                    style={{height:'6vh'}}
                     required    
                 />
                 
-                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', padding:'0.5vh'}}>
+                <div id='info_id' style={{display:'flex', alignItems:'center', justifyContent:'center', height:'6vh'}}>
                     <input 
                         type="text" 
                         placeholder='아이디 입력' 
                         value={userId} 
                         onChange={(event)=>setUserId(event.target.value)}
-                        style={{width:'100%', height:'100%'}}
-                        className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                        style={{flex:'1', height:'100%'}}
                         required    
                     />
                     <Button 
@@ -103,14 +132,14 @@ export default function Register() {
                             event.preventDefault();
                             doubleCheck();
                         }}
-                        style={{marginBottom:'0'}}
+                        width='10vh'
                         height='100%'
                     >
                         중복 확인
                     </Button>
                 </div>
-                <p style={{ color: checkId ? 'green' : 'red', textAlign: 'left', marginLeft:'90px'}}>{message}</p>
-                <p>
+                <div style={{ color: checkId ? 'green' : 'red', textAlign: 'left', marginLeft:'1vh'}}>{message}</div>
+                
                 <input 
                     type="password" 
                     placeholder='비밀번호 입력' 
@@ -127,10 +156,10 @@ export default function Register() {
                             setIdentPass(false);
                         }
                     }}
-                    className="w-80 p-2.5 mt-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                    style={{width:'100%'}}
                     required
                 />
-                </p>
+               
                 <input 
                     type="password" 
                     placeholder='비밀번호 재입력' 
@@ -148,36 +177,52 @@ export default function Register() {
                             setIdentPass(false);
                         }
                     }}
-                    className="w-80 p-2.5 mt-2 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
+                    style={{width:'100%'}}
                     required    
                 />
-                <p style={{ color: identPass ? 'green' : 'red', textAlign: 'left', marginLeft:'90px'}}>{passMess}</p>
-                <p>
-                    <input 
-                        type="text" 
-                        placeholder='성별' 
-                        value={userGender} 
-                        onChange={(event)=>setUserGender(event.target.value)}
-                        className="w-80 p-2.5 bg-white border border-slate-300 rounded-md text-sm shadow-sm placeholder-slate-400 focus:outline-none" 
-                        required    
-                    />
-                </p>
-               
+                <div style={{ color: identPass ? 'green' : 'red', textAlign: 'left', marginLeft:'1vh'}}>{passMess}</div>
+                
+                <select 
+                    value={userGender} 
+                    onChange={(event)=>setUserGender(event.target.value)}
+                    style={{width:'100%', height:'6vh', paddingLeft:'1vh', borderRadius:'1vh', border:'1px solid #ccc'}}
+                    required    
+                >
+                    <option disabled hidden value=''>
+                        성별
+                    </option>
+                    <option value="남">남</option>
+                    <option value="여">여</option>
+                </select>
+                <input type="hidden" name="userGender" value={userGender} />
+
+                <input 
+                    type="text" 
+                    placeholder='나이' 
+                    value={userAge} 
+                    onChange={(event)=>setUserAge(event.target.value)}
+                    style={{width:'100%'}}
+                    required    
+                />
+                    
+                
+                <Button 
+                    type="submit"
+                    disabled={!checkId || !identPass} 
+                    width='100%'
+                    height='5vh'
+                    style={{background:'#90B54C', color:'white'}}
+                    
+                >
+                    가입하기
+                </Button>
                 
                 <div>
-                    <button 
-                        type="submit"
-                        disabled={!checkId || !identPass} 
-                        className=" text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-16 py-2.5 text-center mt-5">
-                        가입하기
-                    </button>
+                    <Link to="/">
+                        <p className="text-center mt-5">메인으로</p>
+                    </Link>
                 </div>
-                <div>
-                <Link to="/">
-                    <p className="text-center mt-5">메인으로</p>
-                </Link>
-            </div>
-            </form>
-        </div>
+            </StyledForm>
+        </RegiBox>
     );
 } 

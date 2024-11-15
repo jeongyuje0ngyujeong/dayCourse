@@ -45,6 +45,7 @@ const NonAnimatedPlaceBox = styled.div`
 
 const PlaceBox = styled(motion.div)`
     display: flex;
+    flx
     align-items: center;
     justify-content: space-between;
     width: 100%;
@@ -244,8 +245,9 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
     const [applyError, setApplyError] = useState(null); // 적용 에러 상태
    // const [distances, setDistances] = useState([]);
    const [notifications, setNotifications] = useState([]);
-    
 
+   console.log('selectedPlaces: ', selectedPlaces);
+    
     // 알림 애니메이션 설정
     const notificationVariants = {
         hidden: { opacity: 0, y: -20 },
@@ -655,119 +657,124 @@ const LandingPage = ({ userId, planId, place, context, setUniqueUsers }) => {
 
 
 
-                            <ButtonContainer>
-                                <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
-                                    {isRecommending ? '추천 중...' : '코스 추천'}
-                                </RecommendButton>
-                                <ApplyButton 
-                                    onClick={applyRecommendedPlaces} 
-                                    disabled={recommendedPlaces.length === 0 || isRecommending || isApplying}
-                                >
-                                    {isApplying ? '적용 중...' : '적용'}
-                                </ApplyButton>
-                            </ButtonContainer>
+                    <ButtonContainer>
+                        <RecommendButton onClick={fetchFullCourse} disabled={isRecommending}>
+                            {isRecommending ? '추천 중...' : '코스 추천'}
+                        </RecommendButton>
+                        <ApplyButton 
+                            onClick={applyRecommendedPlaces} 
+                            disabled={recommendedPlaces.length === 0 || isRecommending || isApplying}
+                        >
+                            {isApplying ? '적용 중...' : '적용'}
+                        </ApplyButton>
+                    </ButtonContainer>
 
-                    </div>
-                    <RowContainer>
-                        {/* 기존 장소 목록 */}
-                        <SelectedPlacesContainer>
-                            <DragDropContext onDragEnd={onDragEnd}>
-                                <Droppable droppableId="places">
-                                    {(provided) => (
-                                        <div 
-                                            ref={provided.innerRef}
-                                            {...provided.droppableProps}
-                                        >
-                                            <AnimatePresence>
-                               
-                                            {(selectedPlaces || [] ).map((place, index) => (
-                                                <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
-                                                    <Draggable
-                                                        draggableId={place.placeId?.toString() || place.id?.toString()}
-                                                        index={index}
-                                                    >
-                                                      
-                                                      {(provided) => (
-                                                        <NonAnimatedPlaceBox
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                        >
-                                                        
-                                                            <PlaceBox
-                                                                variants={itemVariants}
-                                                                initial="hidden"
-                                                                animate="visible"
-                                                                exit="exit"
-                                                            >
-                                                                <div>
-                                                                    <h5  style={{fontSize: '2vh'}}>{index + 1}. {place.place_name}</h5>
-                                                                    <span  style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
-                                                                </div>
-                                                                <DeleteButton 
-                                                                    onClick={() => removePlace(place.placeId || place.id, place.isRecommended, place.place_name)}
-                                                                    disabled={isDeleting}
-                                                                >
-                                                                    X
-                                                                </DeleteButton>
-                                                            </PlaceBox>
-                                                        
-                                                        </NonAnimatedPlaceBox> 
-                                                        )}
-                                                    </Draggable>
-
-                                                  
-                                                    {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
-                                                        <DistanceBox>
-
-                                                            {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
-                                                        </DistanceBox>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
-                                            {provided.placeholder}
-                                            </AnimatePresence>
-                                        </div>
-                                    )}
-                                </Droppable>
-                            </DragDropContext>
-                            <AnimatePresence>
-                                {isDeleting && <div>삭제 중입니다...</div>}
-                                {deleteError && <div style={{ color: 'red' }}>{deleteError}</div>}
-                            </AnimatePresence>
-                        </SelectedPlacesContainer>
-
-                        {/* 추천 장소 목록 */}
-                        <RecommendedPlacesContainer id="places_container">
-                            {isRecommending && <div>추천 중입니다...</div>}
-                            {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
-                            {isApplying && <div>적용 중입니다...</div>}
-                            {applyError && <div style={{ color: 'red' }}>{applyError}</div>}
+                </div>
+                <RowContainer>
+                    {/* 기존 장소 목록 */}
+                    <SelectedPlacesContainer>
+                        <DragDropContext onDragEnd={onDragEnd}>
+                            <Droppable droppableId="places">
+                                {(provided) => (
+                                    <div 
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                    >
+                                        <AnimatePresence>
                             
-                            {recommendedPlaces.map((place, index) => (
-                                <PlaceBox key={place.placeId?.toString() || place.id?.toString()}>
-                                    <div>
-                                        <h5 style={{fontSize: '2vh'}}>{index + 1}. {place.place_name}</h5>
-                                        <span style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
-                                    </div>
-                                    {/* 추천 장소에는 삭제 버튼 없음 */}
-                                </PlaceBox>
-                                
-                            ))}
-                        </RecommendedPlacesContainer>
+                                        {(selectedPlaces || [] ).map((place, index) => (
+                                            <React.Fragment key={place.placeId?.toString() || place.id?.toString()}>
+                                                <Draggable
+                                                    draggableId={place.placeId?.toString() || place.id?.toString()}
+                                                    index={index}
+                                                >
+                                                    
+                                                    {(provided) => (
+                                                    <NonAnimatedPlaceBox
+                                                        ref={provided.innerRef}
+                                                        {...provided.draggableProps}
+                                                        {...provided.dragHandleProps}
+                                                    >
+                                                    
+                                                        <PlaceBox
+                                                            variants={itemVariants}
+                                                            initial="hidden"
+                                                            animate="visible"
+                                                            exit="exit"
+                                                        >
+                                                            <div>
+                                                                <div>
+                                                                    <span style={{fontSize: '2vh', fontWeight:'800'}}>{index + 1}. {place.place_name}</span>
+                                                                </div>
+                                                                <span  style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
+                                                            </div>
+                                                            <DeleteButton 
+                                                                onClick={() => removePlace(place.placeId || place.id, place.isRecommended, place.place_name)}
+                                                                disabled={isDeleting}
+                                                            >
+                                                                X
+                                                            </DeleteButton>
+                                                        </PlaceBox>
+                                                    
+                                                    </NonAnimatedPlaceBox> 
+                                                    )}
+                                                </Draggable>
 
-                        {/* 다른 사용자의 마우스 커서 표시 */}
-                        {Object.entries(userCursors).map(([userId, cursorData]) => (
-                            <div key={userId}>
-                                <UserCursor 
-                                    icon={faMousePointer} 
-                                    color={userColors[userId]} 
-                                    style={{ top: (cursorData.y), left: (cursorData.x)}}
-                                    title={cursorData.name}
-                                />
-                            </div>
+                                                
+                                                {selectedPlaces.length > 1 && index < selectedPlaces.length - 1 && (
+                                                    <DistanceBox>
+
+                                                        {/* {`거리 : ${(distances[index] / 1000).toFixed(2)} km`} */}
+                                                    </DistanceBox>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
+                                        {provided.placeholder}
+                                        </AnimatePresence>
+                                    </div>
+                                )}
+                            </Droppable>
+                        </DragDropContext>
+                        <AnimatePresence>
+                            {isDeleting && <div>삭제 중입니다...</div>}
+                            {deleteError && <div style={{ color: 'red' }}>{deleteError}</div>}
+                        </AnimatePresence>
+                    </SelectedPlacesContainer>
+
+                    {/* 추천 장소 목록 */}
+                    <RecommendedPlacesContainer id="places_container">
+                        {isRecommending && <div>추천 중입니다...</div>}
+                        {recommendError && <div style={{ color: 'red' }}>{recommendError}</div>}
+                        {isApplying && <div>적용 중입니다...</div>}
+                        {applyError && <div style={{ color: 'red' }}>{applyError}</div>}
+                        
+                        {recommendedPlaces.map((place, index) => (
+                            <PlaceBox key={place.placeId?.toString() || place.id?.toString()}>
+                                <div style={{display:'flex', flexDirection:'column', width:'100%'}}>
+                                    <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', width:'100%'}}>
+                                        <span style={{fontSize: '2vh', fontWeight:'800'}}>{index + 1}. {place.place_name}</span>
+                                        <span style={{fontSize: '2vh'}}>{place.category}</span>
+                                    </div>
+                                    <span style={{fontSize: '2vh'}}>{place.placeAddr || place.place || "주소 정보 없음"}</span>
+                                </div>
+                                {/* 추천 장소에는 삭제 버튼 없음 */}
+                            </PlaceBox>
+                            
                         ))}
-                    </RowContainer>
+                    </RecommendedPlacesContainer>
+
+                    {/* 다른 사용자의 마우스 커서 표시 */}
+                    {Object.entries(userCursors).map(([userId, cursorData]) => (
+                        <div key={userId}>
+                            <UserCursor 
+                                icon={faMousePointer} 
+                                color={userColors[userId]} 
+                                style={{ top: (cursorData.y), left: (cursorData.x)}}
+                                title={cursorData.name}
+                            />
+                        </div>
+                    ))}
+                </RowContainer>
                 </>
             )}
         </div>
