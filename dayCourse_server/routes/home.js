@@ -825,7 +825,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
     // 장소 순서를 조건에 맞게 재배치
     while (allLocations.length > 0) {
         let candidates = allLocations.filter(location => {
-            console.log(++num + "번째");
+            console.log(num + "번째");
             console.log("previousCategory: ",previousCategory);
             console.log("location.category: ",location.category);
 
@@ -866,6 +866,7 @@ async function arrangeLocations(restaurants, cafesByKeyword, others, planId) {
         // 이전 카테고리와 키워드 업데이트
         previousCategory = nextLocation.category;
         previousKeyword = nextLocation.keyword;
+        num++;
     }
 
     return result;
