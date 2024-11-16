@@ -28,7 +28,7 @@ export const SocketProvider = ({ children, userId }) => {
             }
             
             if (Array.isArray(incomingMessages)) {
-                setMessages(incomingMessages.reverse());
+                setMessages([...incomingMessages].reverse());
             } else if (typeof incomingMessages === 'object') {
                 setMessages((prevMessages) => [incomingMessages, ...prevMessages]);
             } else {
