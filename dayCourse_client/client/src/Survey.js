@@ -88,7 +88,7 @@ const Survey = () => {
     useEffect(() => {
         const checkOk = async () => {
             const token = sessionStorage.getItem('token'); // 토큰 가져오기
-            console.log('토큰 값:', token);
+            //console.log('토큰 값:', token);
             if (!token) {
                 console.error('토큰이 존재하지 않습니다.');
                 setLoading(false); // 토큰이 없으면 서베이를 표시하거나 로그인 페이지로 이동
@@ -101,7 +101,7 @@ const Survey = () => {
                     }
                 });
 
-                console.log('서버 응답:', response.data);
+                //console.log('서버 응답:', response.data);
 
                 const { dataPresence } = response.data;
 
