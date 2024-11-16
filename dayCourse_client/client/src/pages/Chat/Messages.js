@@ -1,7 +1,7 @@
 // src/pages/Chat/Messages.js
 import styled from 'styled-components';
 import Message from "./Message";
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const ChatContent = styled.div`
     flex: 1;
@@ -18,27 +18,27 @@ const ChatContent = styled.div`
 `;
 
 export default function Messages({ messages, name, chatSound }) {
-    const previousMessagesCountRef = useRef(messages.length);
-    const [messagesWithStatus, setMessagesWithStatus] = useState([]);
+    // const previousMessagesCountRef = useRef(messages.length);
+    // const [messagesWithStatus, setMessagesWithStatus] = useState([]);
     const [highlightMessageIndex, setHighlightMessageIndex] = useState(0);
 
-    useEffect(() => {
-        if (messages.length > previousMessagesCountRef.current) {
-            chatSound.play().catch((error) => {
-                console.error("Sound playback failed:", error);
-            });
+    // useEffect(() => {
+    //     if (messages.length > previousMessagesCountRef.current) {
+    //         chatSound.play().catch((error) => {
+    //             console.error("Sound playback failed:", error);
+    //         });
 
-            const updatedMessages = messages.map((message, index) => ({
-                ...message,
-                isNewMessage: index >= previousMessagesCountRef.current
-            }));
+    //         const updatedMessages = messages.map((message, index) => ({
+    //             ...message,
+    //             isNewMessage: index >= previousMessagesCountRef.current
+    //         }));
 
-            setMessagesWithStatus(updatedMessages);
-            previousMessagesCountRef.current = messages.length;
-        } else {
-            setMessagesWithStatus(messages.map(message => ({ ...message, isNewMessage: false })));
-        }
-    }, [messages, chatSound]);
+    //         setMessagesWithStatus(updatedMessages);
+    //         previousMessagesCountRef.current = messages.length;
+    //     } else {
+    //         setMessagesWithStatus(messages.map(message => ({ ...message, isNewMessage: false })));
+    //     }
+    // }, [messages, chatSound]);
 
     useEffect(() => {
         setHighlightMessageIndex(0);
@@ -52,7 +52,7 @@ export default function Messages({ messages, name, chatSound }) {
 
     return (
         <ChatContent>
-            {messagesWithStatus.map((message, index) => (
+            {messages.map((message, index) => (
                 <div key={index}>
                     <Message 
                         user={message.user} 

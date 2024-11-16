@@ -1,5 +1,5 @@
 // src/pages/Chat/Message.js
-import React from 'react';
+import React, { useEffect, } from 'react';
 import styled from 'styled-components';
 
 const ChatMessage = styled.div`
@@ -105,7 +105,16 @@ const Name = styled.p`
 
 function Message({ user, text, name, isNewMessage, color }) {
   const isSentByCurrentUser = user.trim().toLowerCase() === name.trim().toLowerCase();
+  // const chatSound = new Audio('/chatSound_copy.wav');
 
+  useEffect(() => {
+    if (isNewMessage) {
+      const chatSound = new Audio('/chatSound_copy.wav');
+      chatSound.play().catch(error => {
+        console.error("Failed to play sound: ", error);
+      });
+    }
+  }, [isNewMessage]);
 
   return (
       <MessageContainer style={{ alignItems: isSentByCurrentUser? 'flex-end' : 'flex-start', fontSize:'2vh'}} >
