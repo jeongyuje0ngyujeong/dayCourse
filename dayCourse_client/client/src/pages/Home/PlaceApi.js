@@ -74,7 +74,7 @@ export const deletePlace = async (placeId, userId, planId = null) => {
 export const fetchDistance = async (planId, userId) => {
     const token = sessionStorage.getItem('token'); // 토큰을 세션 저장소에서 가져옴
     try {
-        console.log("플랜 ID:", planId);
+        //console.log("플랜 ID:", planId);
         const response = await axios.post(`${BASE_URL}/home/plan/place_distance`, {
             planId,
             userId, // userId를 본문에 포함
@@ -165,7 +165,15 @@ export const addRecommendedPlace = async (userId, planId, place) => {
             X: place.X || place.x,
             Y: place.Y || place.y,
 
-        });
+        const headers = {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`, // Authorization 헤더 추가
+        };
+
+        //console.log('addRecommendedPlace payload:', payload); // 데이터 확인
+
+        const response = await axios.post(`${BASE_URL}/home/plan/addRecommendedPlace`, payload, { headers });
+        //console.log('addRecommendedPlace response:', response.data); // 응답 확인
         return response.data;
     } catch (error) {
         console.error('추천 장소 추가 실패: ', error.response ? error.response.data : error.message);

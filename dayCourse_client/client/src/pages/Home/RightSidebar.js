@@ -173,10 +173,10 @@ const RightSidebar = ({ userId, planId, planInfo, places, setPlaces, onSubmitKey
             if (selectedCategory && selectedKeyword) {
                 try {
                     const data = await recommendPlace(selectedCategory, selectedKeyword);
-                    console.log('recommendPlace data:', data); // 데이터 확인
+                    //console.log('recommendPlace data:', data); // 데이터 확인
 
                     // 추가 로그: Array.isArray(data)
-                    console.log('Is data an array?', Array.isArray(data));
+                    //console.log('Is data an array?', Array.isArray(data));
 
                     // 데이터 구조에 따라 설정
                     if (Array.isArray(data)) {
