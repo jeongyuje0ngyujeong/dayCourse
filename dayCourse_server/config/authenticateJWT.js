@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+
 const authenticateJWT = async (req, res, next) => {
   // console.log("Request Headers:", JSON.stringify(req.headers, null, 2));
   // console.log('헤더에 담긴 token:', req.headers.authorization);
