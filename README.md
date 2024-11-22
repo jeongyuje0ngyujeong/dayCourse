@@ -29,11 +29,11 @@
 
 
 
-| Name      | 정유정     | 하혜민     | 김경은      | 김민경      |
+| Name      | 정유정     | 김경은      | 김민경      | 하혜민     |
 |-----------|-----------|-----------|-----------|-----------|
-| Profile   | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1L7BGRTHH80zzy6FvbqZJZ4kpVkcJ70bk" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1nvMU-Rm3fGY4R2LEqQhT1jXOgZaGzxdc" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1X5j_bAN3q3VhRCF9JjWZVuuDAqUpj1YK" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1Tz5SnbuHF4p1PC7hMQmOpFnyuvqD4Dxk" alt="이미지 설명" width="100"></p> |
-| Role  | Backend(팀장)<br>CI/CD 구축<br>데이터 처리<br>API 설계 및 구현<br>데이터베이스 설계   | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 실시간 마우스 트래킹 구현   | Backend<br>장소 추천 알고리즘 구현<br>사진 업로드 및 분석<br>API 설계 및 구현<br>데이터베이스 설계          | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 채팅 구현  |
-| Git       | <small>[@jeongyuje0ngyujeong](https://github.com/jeongyuje0ngyujeong)</small> | <small>[@aehyemin](https://github.com/aehyemin)</small> | <small>[@kimkeongeun](https://github.com/kimkeongeun)</small> | <small>[@Minkyoung00](https://github.com/Minkyoung00)</small> |
+| Profile   | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1L7BGRTHH80zzy6FvbqZJZ4kpVkcJ70bk" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1X5j_bAN3q3VhRCF9JjWZVuuDAqUpj1YK" alt="이미지 설명" width="100"></p> | <p align="center"><img src="https://drive.google.com/uc?export=view&id=1Tz5SnbuHF4p1PC7hMQmOpFnyuvqD4Dxk" alt="이미지 설명" width="100"></p> |  <p align="center"><img src="https://drive.google.com/uc?export=view&id=1nvMU-Rm3fGY4R2LEqQhT1jXOgZaGzxdc" alt="이미지 설명" width="100"></p> |
+| Role  | Backend(팀장)<br>CI/CD 구축<br>데이터 처리<br>API 설계 및 구현<br>데이터베이스 설계   | Backend<br>장소 추천 알고리즘 구현<br>사진 업로드 및 분석<br>API 설계 및 구현<br>데이터베이스 설계          | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 채팅 구현  | Frontend<br>UI/UX 디자인<br>React 개발<br>WebSocket 활용 실시간 마우스 트래킹 구현   |
+| Git       | <small>[@jeongyuje0ngyujeong](https://github.com/jeongyuje0ngyujeong)</small> | <small>[@kimkeongeun](https://github.com/kimkeongeun)</small> | <small>[@Minkyoung00](https://github.com/Minkyoung00)</small> | <small>[@aehyemin](https://github.com/aehyemin)</small> |
 
 
 
