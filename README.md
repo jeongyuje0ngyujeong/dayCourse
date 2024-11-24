@@ -13,8 +13,7 @@
 
 데이코스는 모임을 계획하고, 모임의 즐거움을 극대화할 수 있도록 돕는 서비스입니다. <br>사용자는 데이코스를 통해 모임 참여자들과 일정을 함께 계획하고, 일정동안 찍은 사진들을 공유할 수 있습니다. <br>데이코스를 통해 모임에 대한 고민은 줄이고, 즐거움에 집중해보세요!
 - [데이코스 접속](http://daycourse-front-deploy.s3-website.ap-northeast-2.amazonaws.com/)
-- 데이코스 소개 영상
-- 데이코스 발표 영상
+- [데이코스 발표 영상](https://youtu.be/z_Y9Xj7k7eg?si=zAFgqcA1_HMy22TZ)
 
 
 
